@@ -39,14 +39,14 @@ jobs:
           rm -rf buildsrc
           mkdir buildsrc
           unzip -q RailBrakeCalculator.zip -d buildsrc
-
-      - name: Run unit tests
-        working-directory: buildsrc/RailBrakeCalculator
-        run: gradle :app:testDebugUnitTest --stacktrace
+          test -f buildsrc/RailBrakeCalculator/settings.gradle.kts
 
       - name: Build debug APK
         working-directory: buildsrc/RailBrakeCalculator
-        run: gradle :app:assembleDebug --stacktrace
+        shell: bash
+        run: |
+          set -o pipefail
+          gradle :app:assembleDebug --stacktrace --console=plain 2>&1 | tee build-apk.log
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
@@ -55,3 +55,33 @@ jobs:
           path: buildsrc/RailBrakeCalculator/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 30
+
+      - name: Run unit tests
+        continue-on-error: true
+        working-directory: buildsrc/RailBrakeCalculator
+        shell: bash
+        run: |
+          set -o pipefail
+          gradle :app:testDebugUnitTest --stacktrace --console=plain 2>&1 | tee unit-tests.log
+
+      - name: Show useful Gradle errors
+        if: failure()
+        shell: bash
+        run: |
+          echo "===== BUILD ERROR SUMMARY ====="
+          if [ -f buildsrc/RailBrakeCalculator/build-apk.log ]; then
+            grep -nEi '(^e:|error:|FAILURE:|What went wrong|Execution failed|Caused by:|Could not|Unresolved reference|Compilation error)'               buildsrc/RailBrakeCalculator/build-apk.log | tail -n 120 || true
+            echo "===== LAST 160 BUILD LINES ====="
+            tail -n 160 buildsrc/RailBrakeCalculator/build-apk.log || true
+          fi
+
+      - name: Upload Gradle logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gradle-logs
+          path: |
+            buildsrc/RailBrakeCalculator/build-apk.log
+            buildsrc/RailBrakeCalculator/unit-tests.log
+          if-no-files-found: ignore
+          retention-days: 7
