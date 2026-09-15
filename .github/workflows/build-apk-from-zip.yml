@@ -6,6 +6,7 @@ on:
     branches: [ main, master ]
     paths:
       - 'RailBrakeCalculator.zip'
+      - 'patch/**'
       - '.github/workflows/build-apk-from-zip.yml'
 
 jobs:
@@ -50,6 +51,8 @@ jobs:
           mkdir buildsrc
           unzip -q RailBrakeCalculator.zip -d buildsrc
           test -f buildsrc/RailBrakeCalculator/settings.gradle.kts
+          if [ -d patch ]; then cp -a patch/. buildsrc/RailBrakeCalculator/; fi
+          test -f buildsrc/RailBrakeCalculator/app/src/main/java/ru/railbrake/calculator/core/BrakeCalculator.kt
 
       - name: Run unit tests
         working-directory: buildsrc/RailBrakeCalculator
