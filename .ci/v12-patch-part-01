@@ -1,0 +1,231 @@
+       summary = "Формулы №1 и №2, малые уклоны, замасленность, ветер и стояночные тормоза.",
++            body = listOf(
++                "При уклоне до 0,5‰ включительно применяются по одному тормозному башмаку с обеих сторон.",
++                "Формула №1: K = n × (1,5i + 1) / 200. Формула №2: K = n × (4i + 1) / 200.",
++                "При уклоне более 0,5‰ до 1‰ включительно добавляется один башмак с противоположной стороны.",
++                "На замасленных рельсах норма по пункту 8 увеличивается в 1,5 раза. Результат округляется вверх.",
++                "При ветре более 15 м/с в опасном направлении добавляют 3 башмака на каждые 200 осей, при ветре более 21 м/с — 7.",
++                "При недостатке башмаков 5 тормозных осей заменяют 1 башмак. На горизонтальном пути или при уклоне менее 0,5‰ действует специальная норма: один стояночный тормоз одной единицы может заменить башмаки с обеих сторон."
++            ),
++            tags = listOf("ИДП", "Приложение 12", "закрепление", "ветер", "замасленные рельсы", "стояночный тормоз"),
++            source = KnowledgeSource(
++                title = "ПТЭ РФ, Приложение №12 к Инструкции по организации движения поездов и маневровой работы",
++                note = "Текст памятки подготовлен по загруженной нормативной базе."
++            )
++        )
++    )
++
++    val categories: List<String> = listOf("Все") + articles.map { it.category }.distinct()
++
++    fun search(query: String, category: String): List<KnowledgeArticle> {
++        val q = query.trim().lowercase()
++        return articles.filter { article ->
++            val categoryMatches = category == "Все" || article.category == category
++            val textMatches = q.isBlank() || listOf(
++                article.title,
++                article.summary,
++                article.category,
++                article.status,
++                article.body.joinToString(" "),
++                article.tags.joinToString(" ")
++            ).joinToString(" ").lowercase().contains(q)
++            categoryMatches && textMatches
++        }
++    }
++
++    val vl80LayoutHotspots = listOf(
++        DiagramHotspot(
++            id = "bsa1",
++            title = "Блок силовых аппаратов №1",
++            subtitle = "Левая группа силовых аппаратов",
++            details = "На учебной схеме в блоке указаны сопротивления ослабления поля, ножи отключения ТЭД, контакторы ослабления поля, линейные контакторы, реле перегрузки, реле перегрузки торможения, реле времени и реле боксования.",
++            left = 0.196f, top = 0.335f, right = 0.410f, bottom = 0.475f
++        ),
++        DiagramHotspot(
++            id = "bsa2",
++            title = "Блок силовых аппаратов №2",
++            subtitle = "Правая группа силовых аппаратов",
++            details = "Парный блок силовых аппаратов второй группы ТЭД. На схеме показаны аппараты второй стороны, соответствующие блоку №1.",
++            left = 0.745f, top = 0.335f, right = 0.940f, bottom = 0.475f
++        ),
++        DiagramHotspot(
++            id = "transformer",
++            title = "Тяговый трансформатор",
++            subtitle = "ОДЦЭ-5000/25Б",
++            details = "Расположен в трансформаторном помещении по центру секции. На схеме рядом показаны блок конденсаторов, расширитель и аппаратура трансформаторного помещения.",
++            left = 0.430f, top = 0.435f, right = 0.605f, bottom = 0.725f
++        ),
++        DiagramHotspot(
++            id = "vvk1",
++            title = "Отсек ВВК1",
++            subtitle = "Высоковольтная камера, левая часть",
++            details = "На схеме отсек ВВК1 расположен слева от трансформаторного помещения.",
++            left = 0.220f, top = 0.530f, right = 0.290f, bottom = 0.650f
++        ),
++        DiagramHotspot(
++            id = "vvk2",
++            title = "Отсек ВВК2",
++            subtitle = "Высоковольтная камера, правая часть",
++            details = "На схеме отсек ВВК2 расположен справа от трансформаторного помещения.",
++            left = 0.795f, top = 0.530f, right = 0.865f, bottom = 0.650f
++        ),
++        DiagramHotspot(
++            id = "mv3",
++            title = "МВ3",
++            subtitle = "Мотор-вентилятор",
++            details = "МВ3 показан в левой половине кузова рядом с силовым оборудованием.",
++            left = 0.325f, top = 0.570f, right = 0.380f, bottom = 0.790f
++        ),
++        DiagramHotspot(
++            id = "mv4",
++            title = "МВ4",
++            subtitle = "Мотор-вентилятор",
++            details = "МВ4 показан в правой половине кузова рядом с силовым оборудованием.",
++            left = 0.650f, top = 0.570f, right = 0.705f, bottom = 0.790f
++        ),
++        DiagramHotspot(
++            id = "mk",
++            title = "МК",
++            subtitle = "Мотор-компрессор",
++            details = "Мотор-компрессор обозначен на схеме как МК и расположен в правой части кузова.",
++            left = 0.710f, top = 0.570f, right = 0.785f, bottom = 0.795f
++        ),
++        DiagramHotspot(
++            id = "burt",
++            title = "БУРТ",
++            subtitle = "Блоки управления реостатным торможением",
++            details = "На схеме блоки управления реостатным торможением БУРТ размещены в правой части секции.",
++            left = 0.850f, top = 0.730f, right = 0.940f, bottom = 0.865f
++        )
++    )
++}
+diff -ruN '--exclude=README.md' '--exclude=legacy' '--exclude=vl80s_layout_section1.png' a/app/src/main/java/ru/railbrake/calculator/ui/BrakeCalculatorApp.kt b/app/src/main/java/ru/railbrake/calculator/ui/BrakeCalculatorApp.kt
+--- a/app/src/main/java/ru/railbrake/calculator/ui/BrakeCalculatorApp.kt	2026-09-15 10:34:04.000000000 +0000
++++ b/app/src/main/java/ru/railbrake/calculator/ui/BrakeCalculatorApp.kt	2026-09-15 12:58:26.247633623 +0000
+@@ -13,6 +13,7 @@
+ import androidx.compose.foundation.layout.height
+ import androidx.compose.foundation.layout.padding
+ import androidx.compose.foundation.layout.safeDrawing
++import androidx.compose.foundation.layout.weight
+ import androidx.compose.foundation.layout.windowInsetsPadding
+ import androidx.compose.foundation.lazy.LazyColumn
+ import androidx.compose.foundation.lazy.LazyRow
+@@ -77,6 +78,7 @@
+     APPENDIX("ИДП №12"),
+     HISTORY("История"),
+     LOCOMOTIVES("Локомотивы"),
++    KNOWLEDGE("Справочник"),
+     COLORS("Цвета")
+ }
+ 
+@@ -170,6 +172,7 @@
+                     onCleared = { historyVersion++ }
+                 )
+                 AppScreen.LOCOMOTIVES -> LocomotiveReferenceScreen()
++                AppScreen.KNOWLEDGE -> KnowledgeBaseScreen()
+                 AppScreen.COLORS -> ScrollPage {
+                     PaletteScreen(palette, onPaletteChange)
+                 }
+@@ -190,7 +193,7 @@
+             fontWeight = FontWeight.Black
+         )
+         Text(
+-            "ВУ-45, ручные тормоза и закрепление по ИДП",
++            "ВУ-45, ИДП и карманный железнодорожный справочник",
+             style = MaterialTheme.typography.bodyMedium,
+             color = MaterialTheme.colorScheme.onSurfaceVariant
+         )
+@@ -477,7 +480,7 @@
+                     axleCount = axleCount,
+                     manualAxleLoadTons = manualAxleLoad,
+                     slopePermille = slope,
+-                    educationalTenTonsChoice = tenChoice
++                    tenTonsChoice = tenChoice
+                 )
+             )
+             val supplementResult = BrakeCalculator.calculateMassSupplement(
+@@ -622,9 +625,9 @@
+                 color = MaterialTheme.colorScheme.onSurfaceVariant
+             )
+             if (supplement.shoeShortage > 0) {
+-                Formula("осей/ТБ = ${fmt(result.manualAxleCoefficientPer100Tons)} / ${fmt(result.shoeCoefficientPer100Tons)} = ${fmt(supplement.manualAxlesPerMissingShoe)}")
++                Formula("осей/ТБ = ${fmt(result.manualAxleCoefficientPer100Tons)} / ${fmt(result.shoeCoefficientPer100Tons)} = ${fmt(supplement.manualAxlesPerShoeEquivalent)}")
+                 Formula("Остаток = max(0; ${fmt(result.shoesExact)} − ${supplement.availableShoes}) = ${fmt(supplement.remainingShoeEquivalent)} ТБ")
+-                Formula("Nдоп = ${fmt(supplement.remainingShoeEquivalent)} × ${fmt(supplement.manualAxlesPerMissingShoe)} = ${fmt(supplement.additionalManualAxlesExact)} → ${supplement.additionalManualAxles} осей")
++                Formula("Nдоп = ${fmt(supplement.remainingShoeEquivalent)} × ${fmt(supplement.manualAxlesPerShoeEquivalent)} = ${fmt(supplement.additionalManualAxlesExact)} → ${supplement.additionalManualAxles} осей")
+             }
+         }
+     }
+@@ -797,8 +800,12 @@
+                     title = "${resultValue.totalRequiredShoes} ТБ • ${fmt(slopeValue)}‰",
+                     summary = "${axles.toIntOrNull() ?: 0} осей • доступно ${resultValue.availableShoes} ТБ",
+                     details = if (resultValue.shoeShortage > 0) {
+-                        if (resultValue.usesLowSlopeSingleHandBrakeRule) {
+-                            "Уклон <0,5‰: вместо башмаков с обеих сторон — 1 единица со стояночным тормозом"
++                        if (resultValue.specialUnderHalfPermilleRuleUsed) {
++                            if (resultValue.extraShoesAfterSpecialRule > 0) {
++                                "Уклон <0,5‰: 1 стояночный тормоз вместо базовой пары; дополнительная нехватка ${resultValue.extraShoesAfterSpecialRule} ТБ → ${resultValue.substituteBrakeAxles} тормозных осей"
++                            } else {
++                                "Уклон <0,5‰: вместо базовых башмаков с обеих сторон — 1 единица со стояночным тормозом"
++                            }
+                         } else {
+                             "Не хватает ${resultValue.shoeShortage} ТБ; замена ${resultValue.substituteBrakeAxles} тормозных осей"
+                         }
+@@ -847,19 +854,26 @@
+     if (!enough) {
+         SectionCard(
+             "Недостаток башмаков",
+-            if (result.usesLowSlopeSingleHandBrakeRule) {
+-                "При уклоне менее 0,5‰ один стояночный тормоз одной единицы допускается вместо башмаков с обеих сторон"
+-            } else {
++            if (result.specialUnderHalfPermilleRuleUsed)
++                "При уклоне <0,5‰ использована специальная норма стояночного тормоза"
++            else
+                 "По Приложению №12: 5 тормозных осей заменяют 1 башмак в предусмотренных случаях"
+-            }
+         ) {
+             Metric("Не хватает башмаков", result.shoeShortage.toString(), true)
+-            if (result.substituteBrakeAxles > 0) {
++            if (result.specialUnderHalfPermilleRuleUsed) {
++                Metric("Специальная замена", "1 стояночный тормоз вместо базовых башмаков с обеих сторон", true)
++                if (result.extraShoesAfterSpecialRule > 0) {
++                    Metric("Доп. нехватка после спец. нормы", "${result.extraShoesAfterSpecialRule} ТБ")
++                    Metric("Для доп. нехватки требуется осей", result.substituteBrakeAxles.toString(), true)
++                }
++            } else {
+                 Metric("Требуется тормозных осей", result.substituteBrakeAxles.toString(), true)
+             }
+             Metric("Единиц со стояночным тормозом", result.requiredHandBrakeUnits.toString(), true)
+-            Metric("Фактически заторможено осей", result.actuallyBrakedAxles.toString())
+-            if (result.substituteBrakeAxles > 0) Metric("Запас по осям", result.reserveBrakeAxles.toString())
++            Metric("Фактически задействовано осей", result.actuallyBrakedAxles.toString())
++            if (!result.specialUnderHalfPermilleRuleUsed || result.extraShoesAfterSpecialRule > 0) {
++                Metric("Запас по осям", result.reserveBrakeAxles.toString())
++            }
+             WarningBox("Замена башмаков стояночными тормозами применяется только в случаях, предусмотренных нормативным и локальным порядком.")
+         }
+     }
+diff -ruN '--exclude=README.md' '--exclude=legacy' '--exclude=vl80s_layout_section1.png' a/app/src/main/java/ru/railbrake/calculator/ui/KnowledgeBaseScreen.kt b/app/src/main/java/ru/railbrake/calculator/ui/KnowledgeBaseScreen.kt
+--- a/app/src/main/java/ru/railbrake/calculator/ui/KnowledgeBaseScreen.kt	1970-01-01 00:00:00.000000000 +0000
++++ b/app/src/main/java/ru/railbrake/calculator/ui/KnowledgeBaseScreen.kt	2026-09-15 12:55:01.021960950 +0000
+@@ -0,0 +1,303 @@
++package ru.railbrake.calculator.ui
++
++import android.content.ActivityNotFoundException
++import android.content.Intent
++import android.net.Uri
++import android.widget.Toast
++import androidx.compose.foundation.Canvas
++import androidx.compose.foundation.background
++import androidx.compose.foundation.gestures.detectTapGestures
++import androidx.compose.foundation.horizontalScroll
++import androidx.compose.foundation.layout.Arrangement
++import androidx.compose.foundation.layout.Box
++import androidx.compose.foundation.layout.Column
++import androidx.compose.foundation.layout.Row
++import androidx.compose.foundation.layout.Spacer
++import androidx.compose.foundation.layout.aspectRatio
++import androidx.compose.foundation.layout.fillMaxSize
++import androidx.compose.foundation.layout.fillMaxWidth
++import androidx.compose.foundation.layout.height
++import androidx.compose.foundatio
