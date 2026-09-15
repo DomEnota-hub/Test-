@@ -12,6 +12,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      RELEASE_KEYSTORE_B64: ${{ secrets.RAILBRAKE_KEYSTORE_BASE64 }}
 
     steps:
       - name: Checkout
@@ -41,6 +43,13 @@ jobs:
           unzip -q RailBrakeCalculator.zip -d buildsrc
           test -f buildsrc/RailBrakeCalculator/settings.gradle.kts
 
+      - name: Run unit tests
+        working-directory: buildsrc/RailBrakeCalculator
+        shell: bash
+        run: |
+          set -o pipefail
+          gradle :app:testDebugUnitTest --stacktrace --console=plain 2>&1 | tee unit-tests.log
+
       - name: Build debug APK
         working-directory: buildsrc/RailBrakeCalculator
         shell: bash
@@ -56,13 +65,68 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-      - name: Run unit tests
-        continue-on-error: true
+      - name: Build unsigned release APK
+        if: env.RELEASE_KEYSTORE_B64 == ''
         working-directory: buildsrc/RailBrakeCalculator
         shell: bash
         run: |
           set -o pipefail
-          gradle :app:testDebugUnitTest --stacktrace --console=plain 2>&1 | tee unit-tests.log
+          gradle :app:assembleRelease --stacktrace --console=plain 2>&1 | tee build-release.log
+
+      - name: Upload unsigned release APK
+        if: env.RELEASE_KEYSTORE_B64 == ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: RailBrakeCalculator-release-unsigned
+          path: buildsrc/RailBrakeCalculator/app/build/outputs/apk/release/app-release-unsigned.apk
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Prepare Android signing tools
+        if: env.RELEASE_KEYSTORE_B64 == ''
+        shell: bash
+        run: |
+          mkdir -p signing-tools/lib
+          cp "$ANDROID_SDK_ROOT/build-tools/34.0.0/zipalign" signing-tools/
+          cp "$ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner" signing-tools/
+          cp "$ANDROID_SDK_ROOT/build-tools/34.0.0/lib/apksigner.jar" signing-tools/lib/
+
+      - name: Upload Android signing tools
+        if: env.RELEASE_KEYSTORE_B64 == ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-signing-tools
+          path: signing-tools
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Decode release signing key
+        if: env.RELEASE_KEYSTORE_B64 != ''
+        working-directory: buildsrc/RailBrakeCalculator
+        shell: bash
+        run: echo "$RELEASE_KEYSTORE_B64" | base64 --decode > release.keystore
+
+      - name: Build signed release APK
+        if: env.RELEASE_KEYSTORE_B64 != ''
+        working-directory: buildsrc/RailBrakeCalculator
+        shell: bash
+        env:
+          RAILBRAKE_KEYSTORE_PATH: ${{ github.workspace }}/buildsrc/RailBrakeCalculator/release.keystore
+          RAILBRAKE_STORE_PASSWORD: ${{ secrets.RAILBRAKE_STORE_PASSWORD }}
+          RAILBRAKE_KEY_ALIAS: ${{ secrets.RAILBRAKE_KEY_ALIAS }}
+          RAILBRAKE_KEY_PASSWORD: ${{ secrets.RAILBRAKE_KEY_PASSWORD }}
+        run: |
+          set -o pipefail
+          gradle :app:assembleRelease --stacktrace --console=plain 2>&1 | tee build-release.log
+
+      - name: Upload signed release APK
+        if: env.RELEASE_KEYSTORE_B64 != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: RailBrakeCalculator-release
+          path: buildsrc/RailBrakeCalculator/app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: error
+          retention-days: 30
 
       - name: Show useful Gradle errors
         if: failure()
@@ -82,6 +146,7 @@ jobs:
           name: gradle-logs
           path: |
             buildsrc/RailBrakeCalculator/build-apk.log
+            buildsrc/RailBrakeCalculator/build-release.log
             buildsrc/RailBrakeCalculator/unit-tests.log
           if-no-files-found: ignore
           retention-days: 7
