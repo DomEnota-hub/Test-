@@ -7,7 +7,6 @@ on:
     paths:
       - 'RailBrakeCalculator.zip'
       - '.github/workflows/build-apk-from-zip.yml'
-  pull_request:
 
 jobs:
   build:
@@ -45,25 +44,12 @@ jobs:
         with:
           gradle-version: '8.7'
 
-      - name: Extract project and apply v1.2 merge patch
-        shell: bash
+      - name: Extract project
         run: |
-          head -c 16000 .ci/v12-patch-part-00 > /tmp/v12.patch
-          cat .ci/v12-patch-part-01 >> /tmp/v12.patch
-          head -c 16000 .ci/v12-patch-part-02 >> /tmp/v12.patch
-          cat .ci/v12-patch-part-03 >> /tmp/v12.patch
-          echo "Patch SHA256: $(sha256sum /tmp/v12.patch | awk '{print $1}')"
-          test "$(sha256sum /tmp/v12.patch | awk '{print $1}')" = "e7edc9dcdd119100b89bc3427c8666ca4b7451daeeb7fbf749b83a74604d5b16"
           rm -rf buildsrc
           mkdir buildsrc
           unzip -q RailBrakeCalculator.zip -d buildsrc
           test -f buildsrc/RailBrakeCalculator/settings.gradle.kts
-          cd buildsrc/RailBrakeCalculator
-          patch --batch -p1 < /tmp/v12.patch
-          sed -i '/^import androidx\.compose\.foundation\.layout\.weight$/d' app/src/main/java/ru/railbrake/calculator/ui/BrakeCalculatorApp.kt app/src/main/java/ru/railbrake/calculator/ui/KnowledgeBaseScreen.kt
-          sed -i '/^import androidx\.compose\.foundation\.layout\.matchParentSize$/d' app/src/main/java/ru/railbrake/calculator/ui/KnowledgeBaseScreen.kt
-          mkdir -p app/src/main/res/drawable-nodpi
-          echo 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9ZQMcAAAAASUVORK5CYII=' | base64 --decode > app/src/main/res/drawable-nodpi/vl80s_layout_section1.png
 
       - name: Run unit tests
         working-directory: buildsrc/RailBrakeCalculator
