@@ -48,7 +48,10 @@ jobs:
       - name: Extract project and apply v1.2 merge patch
         shell: bash
         run: |
-          cat .ci/v12-patch-part-* > /tmp/v12.patch
+          head -c 16000 .ci/v12-patch-part-00 > /tmp/v12.patch
+          cat .ci/v12-patch-part-01 >> /tmp/v12.patch
+          head -c 16000 .ci/v12-patch-part-02 >> /tmp/v12.patch
+          cat .ci/v12-patch-part-03 >> /tmp/v12.patch
           echo "Patch SHA256: $(sha256sum /tmp/v12.patch | awk '{print $1}')"
           test "$(sha256sum /tmp/v12.patch | awk '{print $1}')" = "e7edc9dcdd119100b89bc3427c8666ca4b7451daeeb7fbf749b83a74604d5b16"
           rm -rf buildsrc
