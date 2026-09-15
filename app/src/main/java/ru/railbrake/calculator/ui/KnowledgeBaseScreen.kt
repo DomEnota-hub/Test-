@@ -59,6 +59,7 @@ import ru.railbrake.calculator.core.KnowledgeArticle
 import ru.railbrake.calculator.core.KnowledgeRepository
 import ru.railbrake.calculator.core.PneumaticScenario
 import ru.railbrake.calculator.data.FavoriteArticleRepository
+import kotlin.math.sqrt
 
 @Composable
 fun KnowledgeBaseScreen() {
@@ -352,7 +353,7 @@ private fun PneumaticSimulatorCard() {
 private fun PneumaticVisualRoute(scenario: PneumaticScenario, activeStepIndex: Int) {
     var selectedComponent by remember { mutableStateOf<PneumaticComponent?>(null) }
     val horizontal = rememberScrollState()
-    val paths = pneumaticPaths(scenario.mode)
+    val routeSteps = pneumaticRouteSteps(scenario.mode)
     val routeColor = when (scenario.mode) {
         ru.railbrake.calculator.core.PneumaticMode.CHARGING -> Color(0xFF1976D2)
         ru.railbrake.calculator.core.PneumaticMode.SERVICE_BRAKE -> Color(0xFFE53935)
@@ -393,16 +394,20 @@ private fun PneumaticVisualRoute(scenario: PneumaticScenario, activeStepIndex: I
                             }
                         }
                     ) {
-                        paths.forEachIndexed { index, path ->
+                        routeSteps.forEachIndexed { index, routeStep ->
                             if (index <= activeStepIndex) {
-                                path.zipWithNext().forEach { (from, to) ->
-                                    val a = Offset(from.x * size.width, from.y * size.height)
-                                    val b = Offset(to.x * size.width, to.y * size.height)
-                                    drawLine(Color.White.copy(alpha = 0.82f), a, b, strokeWidth = 11.dp.toPx())
-                                    drawLine(routeColor, a, b, strokeWidth = 6.dp.toPx())
-                                    val marker = Offset(a.x + (b.x - a.x) * 0.72f, a.y + (b.y - a.y) * 0.72f)
-                                    drawCircle(routeColor, 5.dp.toPx(), marker)
-                                    drawCircle(Color.White, 2.dp.toPx(), marker)
+                                routeStep.segments.forEach { segment ->
+                                    val points = segment.map { point ->
+                                        Offset(
+                                            point.x / PNEUMATIC_SCHEME_WIDTH * size.width,
+                                            point.y / PNEUMATIC_SCHEME_HEIGHT * size.height
+                                        )
+                                    }
+                                    points.zipWithNext().forEach { (from, to) ->
+                                        drawLine(routeColor.copy(alpha = 0.34f), from, to, strokeWidth = 11.dp.toPx())
+                                        drawLine(routeColor.copy(alpha = 0.96f), from, to, strokeWidth = 4.dp.toPx())
+                                    }
+                                    drawRouteArrow(points, routeColor)
                                 }
                             }
                         }
@@ -422,7 +427,7 @@ private fun PneumaticVisualRoute(scenario: PneumaticScenario, activeStepIndex: I
             }
             Spacer(Modifier.height(7.dp))
             Text(
-                "Цветная линия — пройденный маршрут; белая обводка отделяет его от линий исходной схемы. Точки показывают направление движения.",
+                "Цветная линия проходит по трубопроводу исходной схемы. Стрелки показывают направление движения воздуха; внутри аппаратов путь условно прерывается.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -439,7 +444,37 @@ private fun PneumaticVisualRoute(scenario: PneumaticScenario, activeStepIndex: I
     }
 }
 
-private data class NormalizedPoint(val x: Float, val y: Float)
+private const val PNEUMATIC_SCHEME_WIDTH = 1181f
+private const val PNEUMATIC_SCHEME_HEIGHT = 573f
+
+private data class SchemePoint(val x: Float, val y: Float)
+
+private data class PneumaticRouteStep(val segments: List<List<SchemePoint>>)
+
+private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawRouteArrow(points: List<Offset>, color: Color) {
+    val longest = points.zipWithNext().maxByOrNull { (from, to) ->
+        val dx = to.x - from.x
+        val dy = to.y - from.y
+        dx * dx + dy * dy
+    } ?: return
+    val (from, to) = longest
+    val dx = to.x - from.x
+    val dy = to.y - from.y
+    val length = sqrt(dx * dx + dy * dy)
+    if (length < 1f) return
+    val ux = dx / length
+    val uy = dy / length
+    val tip = Offset(from.x + dx * 0.72f, from.y + dy * 0.72f)
+    val arrowLength = 11.dp.toPx()
+    val arrowWidth = 6.dp.toPx()
+    val base = Offset(tip.x - ux * arrowLength, tip.y - uy * arrowLength)
+    val left = Offset(base.x - uy * arrowWidth, base.y + ux * arrowWidth)
+    val right = Offset(base.x + uy * arrowWidth, base.y - ux * arrowWidth)
+    drawLine(Color.White.copy(alpha = 0.9f), tip, left, strokeWidth = 5.dp.toPx())
+    drawLine(Color.White.copy(alpha = 0.9f), tip, right, strokeWidth = 5.dp.toPx())
+    drawLine(color, tip, left, strokeWidth = 2.5.dp.toPx())
+    drawLine(color, tip, right, strokeWidth = 2.5.dp.toPx())
+}
 
 private data class PneumaticComponent(
     val title: String,
@@ -462,35 +497,119 @@ private val pneumaticComponents = listOf(
     PneumaticComponent("Тормозные цилиндры", "Преобразуют давление воздуха в механическое усилие тормозной рычажной передачи.", 0.20f, 0.78f, 0.86f, 0.98f)
 )
 
-private fun pneumaticPaths(mode: ru.railbrake.calculator.core.PneumaticMode): List<List<NormalizedPoint>> = when (mode) {
+private fun pneumaticSegment(vararg points: Pair<Int, Int>): List<SchemePoint> =
+    points.map { (x, y) -> SchemePoint(x.toFloat(), y.toFloat()) }
+
+private fun pneumaticStep(vararg segments: List<SchemePoint>) = PneumaticRouteStep(segments.toList())
+
+private val compressorToReservoirs = pneumaticSegment(
+    718 to 101, 657 to 101, 641 to 101, 612 to 101, 594 to 101, 576 to 101,
+    558 to 91, 558 to 59, 552 to 50, 542 to 50, 533 to 59, 533 to 103,
+    524 to 112, 514 to 112, 505 to 103, 505 to 58, 497 to 49, 486 to 49,
+    477 to 58, 477 to 102, 468 to 111, 458 to 111, 449 to 102, 449 to 66, 438 to 66
+)
+
+private val gr1ToGr2 = pneumaticSegment(360 to 66, 307 to 66)
+private val gr2ToGr3 = pneumaticSegment(207 to 66, 154 to 66)
+
+private val reservoirsToPm = pneumaticSegment(
+    68 to 66, 56 to 74, 56 to 277, 92 to 277, 92 to 298
+)
+
+private val pmToKm395 = pneumaticSegment(
+    92 to 298, 221 to 298, 221 to 239, 219 to 239, 219 to 176
+)
+
+private val km395ToTmRight = pneumaticSegment(
+    244 to 176, 244 to 369, 1137 to 369
+)
+
+private val km395ToTmLeft = pneumaticSegment(
+    244 to 176, 244 to 369, 39 to 369
+)
+
+private val km395ToEqualizingReservoir = pneumaticSegment(
+    225 to 176, 204 to 176, 204 to 196
+)
+
+private val tmRightToAirDistributor = pneumaticSegment(
+    1137 to 369, 518 to 369, 518 to 220, 532 to 220
+)
+
+private val tmLeftToAirDistributor = pneumaticSegment(
+    39 to 369, 518 to 369
+)
+
+private val auxiliaryReservoirToAirDistributor = pneumaticSegment(
+    608 to 235, 574 to 235, 574 to 220
+)
+
+private val airDistributorToKvt = pneumaticSegment(
+    532 to 220, 518 to 220, 518 to 323, 389 to 323, 389 to 163, 289 to 163
+)
+
+private val pmToKvt = pneumaticSegment(
+    92 to 298, 221 to 298, 221 to 239, 270 to 239, 270 to 185, 285 to 185
+)
+
+private val kvtToFirstBogie = pneumaticSegment(
+    287 to 185, 287 to 349, 716 to 349, 716 to 468, 303 to 468, 289 to 458
+)
+
+private val kvtToPressureRelay = pneumaticSegment(
+    287 to 349, 716 to 349, 716 to 432, 811 to 432, 811 to 414
+)
+
+private val pmToPressureRelay = pneumaticSegment(
+    92 to 298, 451 to 298, 451 to 414, 811 to 414
+)
+
+private val pressureRelayToSecondBogie = pneumaticSegment(
+    811 to 414, 811 to 466, 878 to 466, 891 to 458
+)
+
+private fun pneumaticRouteSteps(mode: ru.railbrake.calculator.core.PneumaticMode): List<PneumaticRouteStep> = when (mode) {
     ru.railbrake.calculator.core.PneumaticMode.CHARGING -> listOf(
-        listOf(NormalizedPoint(.72f, .18f), NormalizedPoint(.72f, .06f), NormalizedPoint(.43f, .06f), NormalizedPoint(.43f, .09f), NormalizedPoint(.05f, .09f)),
-        listOf(NormalizedPoint(.05f, .09f), NormalizedPoint(.05f, .53f), NormalizedPoint(.98f, .53f)),
-        listOf(NormalizedPoint(.20f, .53f), NormalizedPoint(.20f, .33f), NormalizedPoint(.16f, .33f), NormalizedPoint(.16f, .66f), NormalizedPoint(.98f, .66f)),
-        listOf(NormalizedPoint(.46f, .66f), NormalizedPoint(.46f, .36f))
+        pneumaticStep(compressorToReservoirs, gr1ToGr2, gr2ToGr3),
+        pneumaticStep(reservoirsToPm),
+        pneumaticStep(pmToKm395, km395ToTmLeft, km395ToTmRight),
+        pneumaticStep(tmLeftToAirDistributor, tmRightToAirDistributor, auxiliaryReservoirToAirDistributor)
     )
     ru.railbrake.calculator.core.PneumaticMode.SERVICE_BRAKE -> listOf(
-        listOf(NormalizedPoint(.20f, .32f), NormalizedPoint(.16f, .32f), NormalizedPoint(.16f, .66f)),
-        listOf(NormalizedPoint(.98f, .66f), NormalizedPoint(.46f, .66f), NormalizedPoint(.46f, .36f)),
-        listOf(NormalizedPoint(.46f, .36f), NormalizedPoint(.46f, .61f), NormalizedPoint(.20f, .61f)),
-        listOf(NormalizedPoint(.20f, .61f), NormalizedPoint(.20f, .33f)),
-        listOf(NormalizedPoint(.20f, .53f), NormalizedPoint(.20f, .72f), NormalizedPoint(.29f, .72f), NormalizedPoint(.29f, .88f)),
-        listOf(NormalizedPoint(.29f, .72f), NormalizedPoint(.70f, .72f), NormalizedPoint(.70f, .80f)),
-        listOf(NormalizedPoint(.70f, .80f), NormalizedPoint(.82f, .88f))
+        pneumaticStep(gr1ToGr2, gr2ToGr3, reservoirsToPm),
+        pneumaticStep(km395ToEqualizingReservoir),
+        pneumaticStep(km395ToTmLeft.reversed(), km395ToTmRight.reversed()),
+        pneumaticStep(tmLeftToAirDistributor, tmRightToAirDistributor),
+        pneumaticStep(auxiliaryReservoirToAirDistributor, airDistributorToKvt),
+        pneumaticStep(pmToKvt, kvtToFirstBogie),
+        pneumaticStep(kvtToPressureRelay, pmToPressureRelay, pressureRelayToSecondBogie)
     )
     ru.railbrake.calculator.core.PneumaticMode.RELEASE -> listOf(
-        listOf(NormalizedPoint(.05f, .53f), NormalizedPoint(.20f, .53f), NormalizedPoint(.20f, .33f)),
-        listOf(NormalizedPoint(.20f, .33f), NormalizedPoint(.16f, .33f), NormalizedPoint(.16f, .66f), NormalizedPoint(.98f, .66f)),
-        listOf(NormalizedPoint(.46f, .66f), NormalizedPoint(.46f, .36f)),
-        listOf(NormalizedPoint(.29f, .88f), NormalizedPoint(.29f, .72f), NormalizedPoint(.20f, .72f))
+        pneumaticStep(pmToKm395),
+        pneumaticStep(km395ToTmLeft, km395ToTmRight),
+        pneumaticStep(tmLeftToAirDistributor, tmRightToAirDistributor),
+        pneumaticStep(kvtToFirstBogie.reversed(), pressureRelayToSecondBogie.reversed())
     )
     ru.railbrake.calculator.core.PneumaticMode.AUXILIARY_BRAKE -> listOf(
-        listOf(NormalizedPoint(.05f, .53f), NormalizedPoint(.20f, .53f)),
-        listOf(NormalizedPoint(.20f, .53f), NormalizedPoint(.20f, .33f)),
-        listOf(NormalizedPoint(.20f, .33f), NormalizedPoint(.20f, .72f), NormalizedPoint(.29f, .72f), NormalizedPoint(.29f, .88f)),
-        listOf(NormalizedPoint(.29f, .72f), NormalizedPoint(.70f, .72f), NormalizedPoint(.70f, .80f), NormalizedPoint(.82f, .88f))
+        pneumaticStep(gr1ToGr2, gr2ToGr3, reservoirsToPm),
+        pneumaticStep(pmToKvt),
+        pneumaticStep(kvtToFirstBogie),
+        pneumaticStep(kvtToPressureRelay, pmToPressureRelay, pressureRelayToSecondBogie)
     )
 }
+
+internal fun pneumaticRouteStepCounts(): List<Int> =
+    ru.railbrake.calculator.core.PneumaticMode.entries.map { pneumaticRouteSteps(it).size }
+
+internal fun allPneumaticRoutePointsFitSourceImage(): Boolean =
+    ru.railbrake.calculator.core.PneumaticMode.entries
+        .flatMap(::pneumaticRouteSteps)
+        .flatMap(PneumaticRouteStep::segments)
+        .all { segment ->
+            segment.size >= 2 && segment.all { point ->
+                point.x in 0f..PNEUMATIC_SCHEME_WIDTH && point.y in 0f..PNEUMATIC_SCHEME_HEIGHT
+            }
+        }
 
 @Composable
 private fun ArticleCard(content: @Composable () -> Unit) {
