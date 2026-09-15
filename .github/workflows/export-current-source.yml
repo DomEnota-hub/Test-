@@ -1,0 +1,22 @@
+name: Export current RailBrakeCalculator source
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/export-current-source.yml'
+  workflow_dispatch:
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Upload current source archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: current-RailBrakeCalculator-source
+          path: RailBrakeCalculator.zip
+          if-no-files-found: error
+          retention-days: 1
