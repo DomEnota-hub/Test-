@@ -1,3 +1,4 @@
+// Build metadata for the synchronized VL80S 1.2.1-dev4 verification build.
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
