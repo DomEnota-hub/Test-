@@ -133,7 +133,9 @@
       ],
       "requiresImage": false,
       "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "equipmentIds": [
+        "bogie"
+      ],
       "knowledgeTopics": [
         "Подвижной состав и экипажная часть"
       ],
@@ -158,7 +160,9 @@
       ],
       "requiresImage": false,
       "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "equipmentIds": [
+        "bogie"
+      ],
       "knowledgeTopics": [
         "Подвижной состав и экипажная часть"
       ],
@@ -185,7 +189,9 @@
       ],
       "requiresImage": false,
       "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "equipmentIds": [
+        "bogie"
+      ],
       "knowledgeTopics": [
         "Подвижной состав и экипажная часть"
       ],
@@ -210,7 +216,9 @@
       ],
       "requiresImage": false,
       "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "equipmentIds": [
+        "bogie"
+      ],
       "knowledgeTopics": [
         "Подвижной состав и экипажная часть"
       ],
@@ -240,7 +248,9 @@
       ],
       "requiresImage": false,
       "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "equipmentIds": [
+        "bogie"
+      ],
       "knowledgeTopics": [
         "Подвижной состав и экипажная часть"
       ],
@@ -408,7 +418,9 @@
       ],
       "requiresImage": false,
       "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "equipmentIds": [
+        "bogie"
+      ],
       "knowledgeTopics": [
         "Подвижной состав и экипажная часть"
       ],
@@ -464,8 +476,12 @@
         "более"
       ],
       "requiresImage": false,
-      "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "diagnosticScenarioIds": [
+        "mechanical-noise-heating"
+      ],
+      "equipmentIds": [
+        "bogie"
+      ],
       "knowledgeTopics": [
         "Подвижной состав и экипажная часть"
       ],
@@ -1576,8 +1592,14 @@
         "локомотива"
       ],
       "requiresImage": false,
-      "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "diagnosticScenarioIds": [
+        "brakes-no-apply-release"
+      ],
+      "equipmentIds": [
+        "kvt254",
+        "pressure-relay",
+        "tc"
+      ],
       "knowledgeTopics": [
         "Тормозное оборудование"
       ],
@@ -1951,8 +1973,13 @@
         "пяти"
       ],
       "requiresImage": false,
-      "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "diagnosticScenarioIds": [
+        "brakes-no-apply-release"
+      ],
+      "equipmentIds": [
+        "km395",
+        "brake-pipe"
+      ],
       "knowledgeTopics": [
         "Тормозное оборудование"
       ],
@@ -2032,8 +2059,14 @@
         "пять"
       ],
       "requiresImage": false,
-      "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "diagnosticScenarioIds": [
+        "brakes-no-apply-release"
+      ],
+      "equipmentIds": [
+        "kvt254",
+        "pressure-relay",
+        "tc"
+      ],
       "knowledgeTopics": [
         "Тормозное оборудование"
       ],
@@ -2063,8 +2096,14 @@
         "резервуарами"
       ],
       "requiresImage": false,
-      "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "diagnosticScenarioIds": [
+        "brakes-no-apply-release"
+      ],
+      "equipmentIds": [
+        "kvt254",
+        "pressure-relay",
+        "tc"
+      ],
       "knowledgeTopics": [
         "Тормозное оборудование"
       ],
@@ -2093,8 +2132,14 @@
         "атмосферой"
       ],
       "requiresImage": false,
-      "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "diagnosticScenarioIds": [
+        "brakes-no-apply-release"
+      ],
+      "equipmentIds": [
+        "kvt254",
+        "pressure-relay",
+        "tc"
+      ],
       "knowledgeTopics": [
         "Тормозное оборудование"
       ],
@@ -2122,7 +2167,9 @@
       ],
       "requiresImage": false,
       "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "equipmentIds": [
+        "pressure-gauges"
+      ],
       "knowledgeTopics": [
         "Сигнализация и движение поездов"
       ],
@@ -2149,7 +2196,9 @@
       ],
       "requiresImage": false,
       "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "equipmentIds": [
+        "pressure-gauges"
+      ],
       "knowledgeTopics": [
         "Сигнализация и движение поездов"
       ],
@@ -2207,7 +2256,10 @@
       ],
       "requiresImage": false,
       "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "equipmentIds": [
+        "alsn",
+        "epk"
+      ],
       "knowledgeTopics": [
         "Сигнализация и движение поездов"
       ],
@@ -2313,8 +2365,13 @@
         "обнаружении"
       ],
       "requiresImage": false,
-      "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "diagnosticScenarioIds": [
+        "smoke-fire-flashover"
+      ],
+      "equipmentIds": [
+        "fire-system",
+        "fire-suppression"
+      ],
       "knowledgeTopics": [
         "Пожарная безопасность"
       ],
@@ -2343,7 +2400,10 @@
       ],
       "requiresImage": false,
       "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "equipmentIds": [
+        "fire-system",
+        "fire-suppression"
+      ],
       "knowledgeTopics": [
         "Пожарная безопасность"
       ],
@@ -2404,8 +2464,13 @@
         "ручной"
       ],
       "requiresImage": false,
-      "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "diagnosticScenarioIds": [
+        "smoke-fire-flashover"
+      ],
+      "equipmentIds": [
+        "fire-system",
+        "fire-suppression"
+      ],
       "knowledgeTopics": [
         "Пожарная безопасность"
       ],
@@ -4655,8 +4720,13 @@
         "органа"
       ],
       "requiresImage": false,
-      "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "diagnosticScenarioIds": [
+        "brakes-no-apply-release"
+      ],
+      "equipmentIds": [
+        "km395",
+        "brake-pipe"
+      ],
       "knowledgeTopics": [
         "Сигнализация и движение поездов"
       ],
@@ -4983,8 +5053,12 @@
         "молотком"
       ],
       "requiresImage": false,
-      "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "diagnosticScenarioIds": [
+        "mechanical-noise-heating"
+      ],
+      "equipmentIds": [
+        "bogie"
+      ],
       "knowledgeTopics": [
         "Электрические машины и цепи"
       ],
@@ -5014,8 +5088,12 @@
         "колесного"
       ],
       "requiresImage": false,
-      "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "diagnosticScenarioIds": [
+        "mechanical-noise-heating"
+      ],
+      "equipmentIds": [
+        "bogie"
+      ],
       "knowledgeTopics": [
         "Электрические машины и цепи"
       ],
@@ -5075,7 +5153,9 @@
       ],
       "requiresImage": false,
       "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "equipmentIds": [
+        "bogie"
+      ],
       "knowledgeTopics": [
         "Электрические машины и цепи"
       ],
@@ -5102,8 +5182,12 @@
         "молоток"
       ],
       "requiresImage": false,
-      "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "diagnosticScenarioIds": [
+        "mechanical-noise-heating"
+      ],
+      "equipmentIds": [
+        "bogie"
+      ],
       "knowledgeTopics": [
         "Электрические машины и цепи"
       ],
@@ -5130,8 +5214,12 @@
         "линейкой"
       ],
       "requiresImage": false,
-      "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "diagnosticScenarioIds": [
+        "mechanical-noise-heating"
+      ],
+      "equipmentIds": [
+        "bogie"
+      ],
       "knowledgeTopics": [
         "Электрические машины и цепи"
       ],
@@ -5270,8 +5358,12 @@
         "кельвин"
       ],
       "requiresImage": false,
-      "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "diagnosticScenarioIds": [
+        "mechanical-noise-heating"
+      ],
+      "equipmentIds": [
+        "bogie"
+      ],
       "knowledgeTopics": [
         "Сигнализация и движение поездов"
       ],
@@ -6513,8 +6605,12 @@
         "звуков"
       ],
       "requiresImage": false,
-      "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "diagnosticScenarioIds": [
+        "smoke-fire-flashover"
+      ],
+      "equipmentIds": [
+        "fire-system"
+      ],
       "knowledgeTopics": [
         "Пожарная безопасность"
       ],
@@ -7336,7 +7432,9 @@
       ],
       "requiresImage": false,
       "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "equipmentIds": [
+        "bogie"
+      ],
       "knowledgeTopics": [
         "Сигнализация и движение поездов"
       ],
@@ -7810,8 +7908,12 @@
         "длиной"
       ],
       "requiresImage": false,
-      "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "diagnosticScenarioIds": [
+        "mechanical-noise-heating"
+      ],
+      "equipmentIds": [
+        "bogie"
+      ],
       "knowledgeTopics": [
         "Подвижной состав и экипажная часть"
       ],
@@ -7841,8 +7943,12 @@
         "длиной"
       ],
       "requiresImage": false,
-      "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "diagnosticScenarioIds": [
+        "mechanical-noise-heating"
+      ],
+      "equipmentIds": [
+        "bogie"
+      ],
       "knowledgeTopics": [
         "Подвижной состав и экипажная часть"
       ],
@@ -7872,8 +7978,12 @@
         "длиной"
       ],
       "requiresImage": false,
-      "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "diagnosticScenarioIds": [
+        "mechanical-noise-heating"
+      ],
+      "equipmentIds": [
+        "bogie"
+      ],
       "knowledgeTopics": [
         "Подвижной состав и экипажная часть"
       ],
@@ -7898,8 +8008,12 @@
         "перечисленное"
       ],
       "requiresImage": false,
-      "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "diagnosticScenarioIds": [
+        "mechanical-noise-heating"
+      ],
+      "equipmentIds": [
+        "bogie"
+      ],
       "knowledgeTopics": [
         "Подвижной состав и экипажная часть"
       ],
@@ -7955,8 +8069,12 @@
         "пару"
       ],
       "requiresImage": false,
-      "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "diagnosticScenarioIds": [
+        "mechanical-noise-heating"
+      ],
+      "equipmentIds": [
+        "bogie"
+      ],
       "knowledgeTopics": [
         "Подвижной состав и экипажная часть"
       ],
@@ -8039,8 +8157,12 @@
         "токоприёмниках"
       ],
       "requiresImage": false,
-      "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "diagnosticScenarioIds": [
+        "mechanical-noise-heating"
+      ],
+      "equipmentIds": [
+        "bogie"
+      ],
       "knowledgeTopics": [
         "Электрические машины и цепи"
       ],
@@ -8065,8 +8187,12 @@
         "градусов"
       ],
       "requiresImage": false,
-      "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "diagnosticScenarioIds": [
+        "mechanical-noise-heating"
+      ],
+      "equipmentIds": [
+        "bogie"
+      ],
       "knowledgeTopics": [
         "Электрические машины и цепи"
       ],
@@ -8095,8 +8221,12 @@
         "более"
       ],
       "requiresImage": false,
-      "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "diagnosticScenarioIds": [
+        "mechanical-noise-heating"
+      ],
+      "equipmentIds": [
+        "bogie"
+      ],
       "knowledgeTopics": [
         "Электрические машины и цепи"
       ],
@@ -8150,8 +8280,12 @@
         "ощупь"
       ],
       "requiresImage": false,
-      "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "diagnosticScenarioIds": [
+        "mechanical-noise-heating"
+      ],
+      "equipmentIds": [
+        "bogie"
+      ],
       "knowledgeTopics": [
         "Подвижной состав и экипажная часть"
       ],
@@ -8366,7 +8500,10 @@
       ],
       "requiresImage": false,
       "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "equipmentIds": [
+        "alsn",
+        "epk"
+      ],
       "knowledgeTopics": [
         "Сигнализация и движение поездов"
       ],
@@ -8426,8 +8563,13 @@
         "сигнал"
       ],
       "requiresImage": false,
-      "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "diagnosticScenarioIds": [
+        "alsn-epk"
+      ],
+      "equipmentIds": [
+        "alsn",
+        "epk"
+      ],
       "knowledgeTopics": [
         "Сигнализация и движение поездов"
       ],
@@ -8636,8 +8778,12 @@
         "рискам"
       ],
       "requiresImage": false,
-      "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "diagnosticScenarioIds": [
+        "mechanical-noise-heating"
+      ],
+      "equipmentIds": [
+        "bogie"
+      ],
       "knowledgeTopics": [
         "Подвижной состав и экипажная часть"
       ],
@@ -8665,8 +8811,12 @@
         "витков"
       ],
       "requiresImage": false,
-      "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "diagnosticScenarioIds": [
+        "mechanical-noise-heating"
+      ],
+      "equipmentIds": [
+        "bogie"
+      ],
       "knowledgeTopics": [
         "Электрические машины и цепи"
       ],
@@ -8818,8 +8968,13 @@
         "торможение"
       ],
       "requiresImage": false,
-      "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "diagnosticScenarioIds": [
+        "alsn-epk"
+      ],
+      "equipmentIds": [
+        "alsn",
+        "epk"
+      ],
       "knowledgeTopics": [
         "АЛСН и устройства безопасности"
       ],
@@ -8850,7 +9005,10 @@
       ],
       "requiresImage": false,
       "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "equipmentIds": [
+        "alsn",
+        "epk"
+      ],
       "knowledgeTopics": [
         "АЛСН и устройства безопасности"
       ],
@@ -8878,8 +9036,13 @@
         "огонь"
       ],
       "requiresImage": false,
-      "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "diagnosticScenarioIds": [
+        "alsn-epk"
+      ],
+      "equipmentIds": [
+        "alsn",
+        "epk"
+      ],
       "knowledgeTopics": [
         "АЛСН и устройства безопасности"
       ],
@@ -8909,8 +9072,13 @@
         "распоряжением"
       ],
       "requiresImage": false,
-      "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "diagnosticScenarioIds": [
+        "alsn-epk"
+      ],
+      "equipmentIds": [
+        "alsn",
+        "epk"
+      ],
       "knowledgeTopics": [
         "АЛСН и устройства безопасности"
       ],
@@ -8941,7 +9109,10 @@
       ],
       "requiresImage": false,
       "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "equipmentIds": [
+        "alsn",
+        "epk"
+      ],
       "knowledgeTopics": [
         "АЛСН и устройства безопасности"
       ],
@@ -9449,8 +9620,13 @@
         "песок"
       ],
       "requiresImage": false,
-      "diagnosticScenarioIds": [],
-      "equipmentIds": [],
+      "diagnosticScenarioIds": [
+        "smoke-fire-flashover"
+      ],
+      "equipmentIds": [
+        "fire-system",
+        "fire-suppression"
+      ],
       "knowledgeTopics": [
         "Пожарная безопасность"
       ],

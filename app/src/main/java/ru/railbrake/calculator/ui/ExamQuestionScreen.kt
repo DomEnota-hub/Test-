@@ -29,6 +29,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.shape.RoundedCornerShape
 import ru.railbrake.calculator.core.ExamQuestion
 import ru.railbrake.calculator.core.ExamQuestionRepository
+import ru.railbrake.calculator.core.DiagnosticRepository
+import ru.railbrake.calculator.core.Vl80sObservationCatalog
 
 @Composable
 fun ExamQuestionScreen(onHide: () -> Unit) {
@@ -91,6 +93,13 @@ private fun ExamQuestionCard(item: ExamQuestion) {
             Text(item.correctAnswer, style = MaterialTheme.typography.bodyLarge)
             if (item.requiresImage) {
                 Text("Вопрос требует исходного изображения", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.error)
+            }
+            val linkedScenarios = item.diagnosticScenarioIds.mapNotNull(DiagnosticRepository::scenario)
+            val linkedEquipment = item.equipmentIds.mapNotNull(Vl80sObservationCatalog::equipment)
+            if (linkedScenarios.isNotEmpty() || linkedEquipment.isNotEmpty()) {
+                Text("Связано с приложением", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+                linkedScenarios.forEach { Text("Диагностика: ${it.title}", style = MaterialTheme.typography.bodySmall) }
+                linkedEquipment.forEach { Text("Оборудование: ${it.title}", style = MaterialTheme.typography.bodySmall) }
             }
         }
     }

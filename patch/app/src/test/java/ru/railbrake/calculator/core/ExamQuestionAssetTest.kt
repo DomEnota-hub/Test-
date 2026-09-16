@@ -45,6 +45,30 @@ class ExamQuestionAssetTest {
     }
 
     @Test
+    fun diagnosticAndEquipmentLinksAreValid() {
+        val questions = root.getJSONArray("questions")
+        val scenarioIds = DiagnosticRepository.scenarios.map { it.id }.toSet()
+        val equipmentIds = Vl80sObservationCatalog.equipment.map { it.id }.toSet()
+        var linkedToScenario = 0
+        var linkedToEquipment = 0
+        for (index in 0 until questions.length()) {
+            val item = questions.getJSONObject(index)
+            val scenarios = item.getJSONArray("diagnosticScenarioIds")
+            val equipment = item.getJSONArray("equipmentIds")
+            for (linkIndex in 0 until scenarios.length()) {
+                assertTrue("Unknown scenario in ${item.getString("id")}", scenarios.getString(linkIndex) in scenarioIds)
+                linkedToScenario++
+            }
+            for (linkIndex in 0 until equipment.length()) {
+                assertTrue("Unknown equipment in ${item.getString("id")}", equipment.getString(linkIndex) in equipmentIds)
+                linkedToEquipment++
+            }
+        }
+        assertTrue(linkedToScenario >= 25)
+        assertTrue(linkedToEquipment >= 50)
+    }
+
+    @Test
     fun searchNormalizationHandlesRussianYoAndPunctuation() {
         assertEquals("колесная пара", ExamQuestionRepository.normalize("Колёсная, пара!"))
     }

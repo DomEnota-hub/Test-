@@ -56,6 +56,64 @@ def keywords_for(question: str, answer: str) -> list[str]:
     return result
 
 
+def links_for(question: str, answer: str) -> tuple[list[str], list[str]]:
+    """Conservative cross-links; exam wording is not promoted into operating guidance."""
+    text = question.lower().replace("ё", "е")
+    scenarios: list[str] = []
+    equipment: list[str] = []
+
+    def add(scenario: str | None = None, *equipment_ids: str) -> None:
+        if scenario and scenario not in scenarios:
+            scenarios.append(scenario)
+        for equipment_id in equipment_ids:
+            if equipment_id not in equipment:
+                equipment.append(equipment_id)
+
+    if any(term in text for term in ("алсн", "эпк", "локомотивного светофора", "локомотивном светофоре")):
+        add(None, "alsn", "epk")
+        if any(term in text for term in ("неисправ", "пропал", "сбой", "срабатыван", "погасш", "кж")):
+            add("alsn-epk")
+    if "токоприемник" in text and any(term in text for term in ("вл80", "электровоз")):
+        add("pantograph-no-rise", "pantograph", "valve245")
+    if "главн" in text and "выключател" in text and any(term in text for term in ("вл80", "электровоз")):
+        add("gv-no-close", "gv", "vvk")
+    if "экг" in text:
+        add("ekg-stuck", "ekg")
+    if "фазорасщеп" in text:
+        add("phase-splitter-no-start", "phase-splitter")
+    if "мотор-вентилят" in text:
+        add("motor-fan-failure", "motor-fans")
+    if "компрессор" in text and any(term in text for term in ("вл80", "электровоз")):
+        add("compressor-pressure", "compressor", "main-reservoirs", "pressure-regulator")
+    if "кран машиниста" in text or "тормозная магистрал" in text:
+        add("brakes-no-apply-release", "km395", "brake-pipe")
+    if "уравнительн" in text and "резервуар" in text:
+        add("brakes-no-apply-release", "equalizing-reservoir", "km395")
+    if "манометр" in text:
+        add(None, "pressure-gauges")
+    if "вспомогательн" in text and "тормоз" in text:
+        add("brakes-no-apply-release", "kvt254", "pressure-relay", "tc")
+    if any(term in text for term in ("бандаж", "колесн", "ползун", "букс", "рессорн")):
+        add(None, "bogie")
+        if any(term in text for term in ("неисправ", "ползун", "нагрев", "ослаб", "проворот", "смещен", "излом", "поврежден")):
+            add("mechanical-noise-heating")
+    if "песок" in text or "песочн" in text:
+        add("sanding-failure", "sanders")
+    if any(term in text for term in ("пожар", "огнетуш", "возгоран", "горени")):
+        add(None, "fire-system")
+        if any(term in text for term in ("пожаротуш", "огнетуш")):
+            add(None, "fire-suppression")
+        if any(term in text for term in ("неисправ", "пожар", "возгоран", "горени")):
+            add("smoke-fire-flashover")
+    if "тягов" in text and "двигател" in text and any(term in text for term in ("вл80", "электровоз")):
+        add("traction-current-imbalance", "traction-motors")
+    if any(term in text for term in ("радиосвяз", "радиостанц")):
+        add("radio-communication-loss", "radio")
+    if any(term in text for term in ("прожектор", "буферн фонар")):
+        add("headlight-fault", "cab-lighting")
+    return scenarios, equipment
+
+
 def parse_block(text: str, block_id: str, title: str, expected: int) -> list[dict]:
     pattern = re.compile(
         r"(?ms)^\s*(\d+)\.\s+(.*?)\n\s*Правильный ответ:\s*\n(.*?)(?=^\s*\d+\.\s+|\Z)"
@@ -65,6 +123,7 @@ def parse_block(text: str, block_id: str, title: str, expected: int) -> list[dic
         question = normalize(question_raw)
         answer = normalize(answer_raw)
         category = category_for(question, answer)
+        diagnostic_links, equipment_links = links_for(question, answer)
         records.append({
             "id": f"{block_id}-q{int(number):03d}",
             "blockId": block_id,
@@ -75,8 +134,8 @@ def parse_block(text: str, block_id: str, title: str, expected: int) -> list[dic
             "category": category,
             "keywords": keywords_for(question, answer),
             "requiresImage": bool(re.search(r"рисунк|изображен|показан.{0,12}схем", question.lower())),
-            "diagnosticScenarioIds": [],
-            "equipmentIds": [],
+            "diagnosticScenarioIds": diagnostic_links,
+            "equipmentIds": equipment_links,
             "knowledgeTopics": [category],
             "source": "Вопросы_и_правильные_ответы_OCR_исправлено(1).pdf",
             "sourceVersion": "2026-09-16-reviewed",

@@ -28,6 +28,12 @@ class ExamQuestionRepository(context: Context) {
         root.getJSONArray("questions").toExamQuestions().also { parsed ->
             check(parsed.size == 329) { "Фактически загружено ${parsed.size} вопросов" }
             check(parsed.map { it.id }.toSet().size == parsed.size) { "В базе есть повторяющиеся ID" }
+            val scenarioIds = DiagnosticRepository.scenarios.map { it.id }.toSet()
+            val equipmentIds = Vl80sObservationCatalog.equipment.map { it.id }.toSet()
+            val missingScenarios = parsed.flatMap { it.diagnosticScenarioIds }.toSet() - scenarioIds
+            val missingEquipment = parsed.flatMap { it.equipmentIds }.toSet() - equipmentIds
+            check(missingScenarios.isEmpty()) { "Неизвестные сценарии в Q&A: $missingScenarios" }
+            check(missingEquipment.isEmpty()) { "Неизвестное оборудование в Q&A: $missingEquipment" }
         }
     }
 

@@ -146,4 +146,19 @@ class DiagnosticRepositoryTest {
                 .forEach { target -> assertTrue("${scenario.id}: missing $target", scenario.questions.any { it.key == target }) }
         }
     }
+
+    @Test
+    fun equipmentAtlasHasFortyNodesAndOnlyValidScenarioLinks() {
+        val equipment = Vl80sObservationCatalog.equipment
+        assertTrue(equipment.size >= 40)
+        assertEquals(equipment.size, equipment.map { it.id }.distinct().size)
+        equipment.forEach { item ->
+            assertTrue(item.title.isNotBlank())
+            assertTrue(item.purpose.isNotBlank())
+            assertTrue(item.location.isNotBlank())
+            item.scenarioIds.forEach { scenarioId ->
+                assertTrue("${item.id}: missing scenario $scenarioId", DiagnosticRepository.scenario(scenarioId) != null)
+            }
+        }
+    }
 }
