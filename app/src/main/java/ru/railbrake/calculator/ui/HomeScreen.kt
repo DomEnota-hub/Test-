@@ -79,11 +79,11 @@ internal fun HomeScreen(
             )
         }
 
-        RailSectionHeader("Продолжить работу", "Последнее локальное действие")
+        RailSectionHeader("Последний расчёт", "Переход открывает раздел расчётов")
         if (latestHistory != null) {
             RailNavCard(
-                title = latestHistory.title,
-                subtitle = "${latestHistory.mode}: ${latestHistory.summary}",
+                title = "Открыть расчёты",
+                subtitle = "Последнее: ${latestHistory.mode} • ${latestHistory.title} • ${latestHistory.summary}",
                 marker = "↺",
                 onClick = onCalculations,
                 modifier = Modifier.fillMaxWidth()
