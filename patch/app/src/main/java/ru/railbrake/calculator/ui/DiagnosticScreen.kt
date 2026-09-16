@@ -87,7 +87,10 @@ fun DiagnosticScreen(initialScenarioId: String? = null, initialEquipmentId: Stri
         selectedEquipment != null -> EquipmentDetails(
             equipment = selectedEquipment,
             onBack = { selectedEquipmentId = null },
-            onOpenScenario = { selectedId = it }
+            onOpenScenario = { scenarioId ->
+                selectedEquipmentId = null
+                selectedId = scenarioId
+            }
         )
         selected == null -> DiagnosticCatalog(
             onOpen = { selectedId = it.id },
@@ -124,13 +127,22 @@ private fun DiagnosticCatalog(
     }
     val trainingScenario = trainingScenarios.firstOrNull { it.id == trainingScenarioId }
         ?: trainingScenarios.firstOrNull()
-    var trainingAnswer by rememberSaveable(trainingScenarioId) { mutableStateOf<DiagnosticResponse?>(null) }
+    var trainingAnswer by rememberSaveable(trainingScenario?.id ?: "none") { mutableStateOf<DiagnosticResponse?>(null) }
     val results = remember(query, category, selectedVariantId) {
         DiagnosticRepository.search(query, category).filter { scenario ->
             LocomotiveProfiles.appliesToVariant(selectedVariantId, scenario.applicableVariantIds)
         }
     }
-    val observationResults = remember(query) { Vl80sObservationCatalog.search(query) }
+    val observationResults = remember(query, selectedVariantId) {
+        val (observations, equipment) = Vl80sObservationCatalog.search(query)
+        observations.filter { observation ->
+            observation.scenarioIds.any { scenarioId ->
+                DiagnosticRepository.scenario(scenarioId)?.let { scenario ->
+                    LocomotiveProfiles.appliesToVariant(selectedVariantId, scenario.applicableVariantIds)
+                } == true
+            }
+        } to equipment
+    }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
@@ -414,6 +426,11 @@ private fun DiagnosticDetails(
     val variantId = profileRepository.selectedVariantId()
     val selectedVariant = LocomotiveProfiles.variant(variantId)
     val scenarioMatchesVariant = LocomotiveProfiles.appliesToVariant(variantId, scenario.applicableVariantIds)
+    val relatedScenarioIds = scenario.relatedScenarioIds.filter { relatedId ->
+        DiagnosticRepository.scenario(relatedId)?.let { relatedScenario ->
+            LocomotiveProfiles.appliesToVariant(variantId, relatedScenario.applicableVariantIds)
+        } == true
+    }
     var savedLocally by rememberSaveable(scenario.id) { mutableStateOf(false) }
 
     LazyColumn(
@@ -576,9 +593,9 @@ private fun DiagnosticDetails(
                 }
             }
         }
-        if (scenario.relatedScenarioIds.isNotEmpty()) {
+        if (relatedScenarioIds.isNotEmpty()) {
             item {
-                RelatedScenarios(scenario.relatedScenarioIds, onOpenRelated)
+                RelatedScenarios(relatedScenarioIds, onOpenRelated)
             }
         }
         val linkedEquipment = Vl80sObservationCatalog.equipment.filter { equipment ->
@@ -622,7 +639,13 @@ private fun EquipmentDetails(
     val relatedQuestions = remember(equipment.id) {
         if (examQuestionsUnlocked) examQuestionRepository.questions.filter { equipment.id in it.equipmentIds } else emptyList()
     }
-    val observations = Vl80sObservationCatalog.observations.filter { equipment.id in it.equipmentIds }
+    val observations = Vl80sObservationCatalog.observations.filter { observation ->
+        equipment.id in observation.equipmentIds && observation.scenarioIds.any { scenarioId ->
+            DiagnosticRepository.scenario(scenarioId)?.let { scenario ->
+                LocomotiveProfiles.appliesToVariant(selectedVariantId, scenario.applicableVariantIds)
+            } == true
+        }
+    }
     val normalValues = Vl80sNormalValues.forEquipment(equipment.id)
 
     LazyColumn(
@@ -677,6 +700,15 @@ private fun EquipmentDetails(
         item {
             Text("Связанная диагностика", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
             Text("Переход открывает безопасный маршрут, а не инструкцию по ремонту.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        if (relatedScenarios.isEmpty()) {
+            item {
+                InfoCard(
+                    "Нет связанной диагностики для исполнения",
+                    listOf("Для выбранного исполнения у этого аппарата нет подтверждённых связанных сценариев. Сменяйте исполнение только если оно соответствует фактической секции."),
+                    MaterialTheme.colorScheme.surfaceVariant
+                )
+            }
         }
         items(relatedScenarios, key = { it.id }) { scenario ->
             Card(
