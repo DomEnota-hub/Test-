@@ -65,8 +65,8 @@ import ru.railbrake.calculator.data.FavoriteArticleRepository
 import kotlin.math.sqrt
 
 @Composable
-fun KnowledgeBaseScreen() {
-    var selectedArticleId by rememberSaveable { mutableStateOf<String?>(null) }
+fun KnowledgeBaseScreen(initialArticleId: String? = null, initialQuery: String? = null) {
+    var selectedArticleId by rememberSaveable(initialArticleId) { mutableStateOf(initialArticleId) }
     val context = LocalContext.current
     val favoritesRepository = remember { FavoriteArticleRepository(context) }
     val examQuestionRepository = remember { ExamQuestionRepository(context) }
@@ -79,6 +79,7 @@ fun KnowledgeBaseScreen() {
 
     if (article == null) {
         KnowledgeHome(
+            initialQuery = initialQuery,
             favoriteIds = favoriteIds,
             examQuestionRepository = examQuestionRepository,
             onOpenArticle = { selectedArticleId = it.id },
@@ -97,12 +98,13 @@ fun KnowledgeBaseScreen() {
 
 @Composable
 private fun KnowledgeHome(
+    initialQuery: String?,
     favoriteIds: Set<String>,
     examQuestionRepository: ExamQuestionRepository,
     onOpenArticle: (KnowledgeArticle) -> Unit,
     onToggleFavorite: (String) -> Unit
 ) {
-    var query by rememberSaveable { mutableStateOf("") }
+    var query by rememberSaveable(initialQuery) { mutableStateOf(initialQuery.orEmpty()) }
     var category by rememberSaveable { mutableStateOf("Все") }
     var onlyFavorites by rememberSaveable { mutableStateOf(false) }
     val results = remember(query, category, onlyFavorites, favoriteIds) {
@@ -122,12 +124,11 @@ private fun KnowledgeHome(
         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 14.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Text("Карманная железнодорожная база", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-        Text(
-            "Материалы хранятся в приложении и доступны офлайн. Для открытия внешних ссылок на первоисточники требуется интернет.",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+        RailSectionHeader(
+            "Справочник",
+            "Офлайн-материалы, нормы, схемы и связанные рабочие сведения"
         )
+        RailInfoBand("Основная база работает без сети. Интернет нужен только для открытия внешних первоисточников.")
 
         OutlinedTextField(
             value = query,
@@ -156,14 +157,15 @@ private fun KnowledgeHome(
         }
 
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             items(results, key = { it.id }) { item ->
                 Card(
                     onClick = { onOpenArticle(item) },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(18.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                 ) {
                     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(7.dp)) {
@@ -217,7 +219,8 @@ private fun KnowledgeHome(
 private fun ThematicFactCard(item: ExamQuestion) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(18.dp),
+        shape = RoundedCornerShape(16.dp),
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(7.dp)) {
@@ -254,7 +257,10 @@ private fun KnowledgeArticleScreen(
                 Column(Modifier.weight(1f)) {
                     Text(article.title, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
                     Spacer(Modifier.height(4.dp))
-                    Text("${article.category} • ${article.status}", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        RailStatusPill(article.category)
+                        RailStatusPill(article.status, MaterialTheme.colorScheme.secondary)
+                    }
                 }
                 TextButton(onClick = { onToggleFavorite(article.id) }) {
                     Text(if (article.id in favoriteIds) "★" else "☆", style = MaterialTheme.typography.titleLarge)
@@ -750,8 +756,9 @@ internal fun pneumaticRoutesExposeFlowReleaseAndControl(): Boolean {
 private fun ArticleCard(content: @Composable () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f))
+        shape = RoundedCornerShape(16.dp),
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(Modifier.padding(16.dp)) { content() }
     }

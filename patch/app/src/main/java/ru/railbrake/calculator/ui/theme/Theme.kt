@@ -11,20 +11,25 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 enum class AccentPalette(val title: String, val primary: Color, val container: Color) {
-    BLUE("Холодный синий", Color(0xFF82A9FF), Color(0xFF182947)),
-    GREEN("Яркий зелёный", Color(0xFF62E675), Color(0xFF153B24)),
-    YELLOW("Сигнальный жёлтый", Color(0xFFFFD54F), Color(0xFF443814)),
-    PURPLE("Фиолетовый", Color(0xFFC6A0FF), Color(0xFF35204F)),
-    RED("Красный", Color(0xFFFF8A80), Color(0xFF4B2020))
+    BLUE("Янтарный", RailAmber, RailAmberSoft),
+    GREEN("Стальной зелёный", Color(0xFF68C9A5), Color(0xFF18342C)),
+    YELLOW("Сигнальный жёлтый", Color(0xFFFFC857), Color(0xFF3B3017)),
+    PURPLE("Холодный фиолетовый", Color(0xFFB9A3E8), Color(0xFF302744))
 }
 
 private fun darkColors(palette: AccentPalette) = darkColorScheme(
     primary = palette.primary,
-    onPrimary = Color(0xFF0A1833),
+    onPrimary = Color(0xFF231006),
     primaryContainer = palette.container,
-    onPrimaryContainer = Color(0xFFDCE7FF),
-    secondary = Color(0xFFBAC8DD),
-    onSecondary = Color(0xFF1B2839),
+    onPrimaryContainer = Color(0xFFFFE6D0),
+    secondary = RailMetal,
+    onSecondary = Color(0xFF1C252E),
+    secondaryContainer = Color(0xFF232C35),
+    onSecondaryContainer = Ink,
+    tertiary = Color(0xFF88A7C5),
+    onTertiary = Color(0xFF10202E),
+    tertiaryContainer = Color(0xFF20303D),
+    onTertiaryContainer = Color(0xFFDCECF7),
     background = Night,
     onBackground = Ink,
     surface = NightRaised,
@@ -32,8 +37,10 @@ private fun darkColors(palette: AccentPalette) = darkColorScheme(
     surfaceVariant = NightCardAlt,
     onSurfaceVariant = InkMuted,
     error = Danger,
+    errorContainer = Color(0xFF3B1C1E),
+    onErrorContainer = Color(0xFFFFDAD9),
     outline = Divider,
-    outlineVariant = Color(0xFF202B39)
+    outlineVariant = Color(0xFF222B34)
 )
 
 @Composable

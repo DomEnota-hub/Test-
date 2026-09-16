@@ -72,9 +72,9 @@ private val quickRouteItems = listOf(
 )
 
 @Composable
-fun DiagnosticScreen() {
-    var selectedId by rememberSaveable { mutableStateOf<String?>(null) }
-    var selectedEquipmentId by rememberSaveable { mutableStateOf<String?>(null) }
+fun DiagnosticScreen(initialScenarioId: String? = null, initialEquipmentId: String? = null) {
+    var selectedId by rememberSaveable(initialScenarioId) { mutableStateOf(initialScenarioId) }
+    var selectedEquipmentId by rememberSaveable(initialEquipmentId) { mutableStateOf(initialEquipmentId) }
     val selected = DiagnosticRepository.scenarios.firstOrNull { it.id == selectedId }
     val selectedEquipment = Vl80sObservationCatalog.equipment(selectedEquipmentId.orEmpty())
 
@@ -122,10 +122,9 @@ private fun DiagnosticCatalog(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
-            Text("Диагностика ВЛ80С", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
-            Text(
-                "${DiagnosticRepository.scenarios.size} сценариев: поиск причины, безопасная проверка и подготовка доклада",
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+            RailSectionHeader(
+                "Диагностика ВЛ80С",
+                "${DiagnosticRepository.scenarios.size} сценариев • ветвящиеся уточнения • безопасные проверки"
             )
         }
         item { SafetyNotice() }
@@ -390,8 +389,10 @@ private fun DiagnosticDetails(
     ) {
         item {
             TextButton(onClick = onBack) { Text("← Все неисправности") }
-            Text(scenario.category, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
-            SeverityLabel(scenario.severity)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                RailStatusPill(scenario.category)
+                SeverityLabel(scenario.severity)
+            }
             Text(scenario.title, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
             Text(scenario.summary, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Text(
@@ -669,8 +670,9 @@ private fun TriageCard(
     onReset: () -> Unit
 ) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
-        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.42f)),
+        shape = RoundedCornerShape(17.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -717,8 +719,9 @@ private fun SessionJournal(
     prompts: List<String>
 ) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        shape = RoundedCornerShape(17.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -737,8 +740,9 @@ private fun SessionJournal(
 private fun RelatedScenarios(ids: List<String>, onOpen: (String) -> Unit) {
     val related = ids.mapNotNull(DiagnosticRepository::scenario)
     Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        shape = RoundedCornerShape(17.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -754,8 +758,9 @@ private fun RelatedScenarios(ids: List<String>, onOpen: (String) -> Unit) {
 @Composable
 private fun RelatedEquipment(items: List<EquipmentReference>, onOpen: (String) -> Unit) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        shape = RoundedCornerShape(17.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -771,8 +776,9 @@ private fun RelatedEquipment(items: List<EquipmentReference>, onOpen: (String) -
 @Composable
 private fun RelatedExamQuestions(items: List<ExamQuestion>) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        shape = RoundedCornerShape(17.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(7.dp)) {
@@ -829,7 +835,7 @@ private fun BorderedCautionCard(title: String, lines: List<String>) {
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.error),
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(17.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(7.dp)) {
@@ -841,13 +847,24 @@ private fun BorderedCautionCard(title: String, lines: List<String>) {
 
 @Composable
 private fun InfoCard(title: String, lines: List<String>, tone: Color) {
+    val danger = tone == MaterialTheme.colorScheme.errorContainer
+    val accent = when {
+        danger -> MaterialTheme.colorScheme.error
+        tone == MaterialTheme.colorScheme.primaryContainer -> MaterialTheme.colorScheme.primary
+        tone == MaterialTheme.colorScheme.tertiaryContainer -> MaterialTheme.colorScheme.tertiary
+        tone == MaterialTheme.colorScheme.secondaryContainer -> MaterialTheme.colorScheme.secondary
+        else -> MaterialTheme.colorScheme.outline
+    }
     Card(
-        colors = CardDefaults.cardColors(containerColor = tone),
-        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (danger) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.surface
+        ),
+        border = BorderStroke(1.dp, accent.copy(alpha = if (danger) 0.72f else 0.38f)),
+        shape = RoundedCornerShape(17.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(7.dp)) {
-            Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+            Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black, color = accent)
             lines.forEach { Text("• $it") }
         }
     }

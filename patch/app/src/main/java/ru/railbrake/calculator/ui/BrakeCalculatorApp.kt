@@ -1,6 +1,7 @@
 package ru.railbrake.calculator.ui
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -53,10 +55,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import ru.railbrake.calculator.R
 import ru.railbrake.calculator.core.Appendix12Input
 import ru.railbrake.calculator.core.Appendix12Result
 import ru.railbrake.calculator.core.AppendixFormula
@@ -81,15 +85,17 @@ import java.util.Locale
 import kotlin.math.abs
 
 private enum class AppScreen(val title: String) {
-    MASS("По массе"),
-    APPENDIX("ИДП №12"),
-    LOCOMOTIVES("Локомотивы"),
+    HOME("Главная"),
     DIAGNOSTICS("Диагностика"),
+    LOCOMOTIVES("Локомотивы / атлас"),
     KNOWLEDGE("Справочник"),
     FIRST_AID("Первая помощь"),
-    EXAM_QUESTIONS("Вопросы и ответы"),
+    CALCULATIONS("Расчёты"),
+    MASS("По массе"),
+    APPENDIX("ИДП №12"),
     HISTORY("История"),
-    COLORS("Цвета")
+    EXAM_QUESTIONS("Вопросы и ответы"),
+    SETTINGS("Настройки")
 }
 
 private enum class OutputMode(val title: String) {
@@ -128,8 +134,12 @@ fun BrakeCalculatorApp(
     val secretAccessRepository = remember { SecretAccessRepository(context) }
     var examQuestionsUnlocked by remember { mutableStateOf(secretAccessRepository.isUnlocked()) }
     var historyVersion by remember { mutableIntStateOf(0) }
-    var screenName by rememberSaveable { mutableStateOf(AppScreen.MASS.name) }
+    var screenName by rememberSaveable { mutableStateOf(AppScreen.HOME.name) }
     var appendixPrefill by remember { mutableStateOf<AppendixPrefill?>(null) }
+    var knowledgeStartArticleId by rememberSaveable { mutableStateOf<String?>(null) }
+    var knowledgeStartQuery by rememberSaveable { mutableStateOf<String?>(null) }
+    var diagnosticStartScenarioId by rememberSaveable { mutableStateOf<String?>(null) }
+    var diagnosticStartEquipmentId by rememberSaveable { mutableStateOf<String?>(null) }
     val screen = AppScreen.valueOf(screenName)
     val drawerState = androidx.compose.material3.rememberDrawerState(DrawerValue.Closed)
     val drawerScope = rememberCoroutineScope()
@@ -138,20 +148,41 @@ fun BrakeCalculatorApp(
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet {
-                Column(
-                    modifier = Modifier.padding(start = 24.dp, end = 20.dp, top = 22.dp, bottom = 14.dp),
-                    verticalArrangement = Arrangement.spacedBy(3.dp)
+                Row(
+                    modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Text("Железнодорожный помощник", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
-                    Text("Разделы приложения", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Image(
+                        painter = painterResource(R.drawable.ic_launcher_art),
+                        contentDescription = null,
+                        modifier = Modifier.size(50.dp)
+                    )
+                    Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
+                        Text("Железнодорожный помощник", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                        Text("ВЛ80С • рабочий профиль • офлайн", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
+                    }
                 }
-                AppScreen.entries.filter {
-                    it != AppScreen.COLORS && (it != AppScreen.EXAM_QUESTIONS || examQuestionsUnlocked)
-                }.forEach { item ->
+
+                val mainItems = listOf(AppScreen.HOME, AppScreen.DIAGNOSTICS, AppScreen.LOCOMOTIVES, AppScreen.KNOWLEDGE, AppScreen.FIRST_AID)
+                val toolItems = buildList {
+                    add(AppScreen.CALCULATIONS)
+                    add(AppScreen.HISTORY)
+                    if (examQuestionsUnlocked) add(AppScreen.EXAM_QUESTIONS)
+                }
+                mainItems.forEach { item ->
                     NavigationDrawerItem(
                         label = { Text(item.title) },
                         selected = screen == item,
                         onClick = {
+                            if (item == AppScreen.KNOWLEDGE) {
+                                knowledgeStartArticleId = null
+                                knowledgeStartQuery = null
+                            }
+                            if (item == AppScreen.DIAGNOSTICS) {
+                                diagnosticStartScenarioId = null
+                                diagnosticStartEquipmentId = null
+                            }
                             screenName = item.name
                             drawerScope.launch { drawerState.close() }
                         },
@@ -159,13 +190,19 @@ fun BrakeCalculatorApp(
                     )
                 }
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                toolItems.forEach { item ->
+                    NavigationDrawerItem(
+                        label = { Text(item.title) },
+                        selected = screen == item || (item == AppScreen.CALCULATIONS && screen in listOf(AppScreen.MASS, AppScreen.APPENDIX)),
+                        onClick = { screenName = item.name; drawerScope.launch { drawerState.close() } },
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                    )
+                }
+                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                 NavigationDrawerItem(
-                    label = { Text(AppScreen.COLORS.title) },
-                    selected = screen == AppScreen.COLORS,
-                    onClick = {
-                        screenName = AppScreen.COLORS.name
-                        drawerScope.launch { drawerState.close() }
-                    },
+                    label = { Text(AppScreen.SETTINGS.title) },
+                    selected = screen == AppScreen.SETTINGS,
+                    onClick = { screenName = AppScreen.SETTINGS.name; drawerScope.launch { drawerState.close() } },
                     modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                 )
             }
@@ -177,11 +214,41 @@ fun BrakeCalculatorApp(
                     .fillMaxSize()
                     .windowInsetsPadding(WindowInsets.safeDrawing)
             ) {
-                AppHeader(
-                    onOpenMenu = { drawerScope.launch { drawerState.open() } },
-                    onOpenFirstAid = { screenName = AppScreen.FIRST_AID.name }
-                )
+                if (screen == AppScreen.HOME) {
+                    AppHeader(
+                        onOpenMenu = { drawerScope.launch { drawerState.open() } },
+                        onOpenFirstAid = { screenName = AppScreen.FIRST_AID.name }
+                    )
+                } else {
+                    RailCompactHeader(
+                        title = screen.title,
+                        onOpenMenu = { drawerScope.launch { drawerState.open() } },
+                        onOpenFirstAid = { screenName = AppScreen.FIRST_AID.name },
+                        onHome = { screenName = AppScreen.HOME.name }
+                    )
+                }
                 when (screen) {
+                AppScreen.HOME -> HomeScreen(
+                    latestHistory = remember(historyVersion) { historyRepository.load().firstOrNull() },
+                    onDiagnostics = {
+                        diagnosticStartScenarioId = null
+                        diagnosticStartEquipmentId = null
+                        screenName = AppScreen.DIAGNOSTICS.name
+                    },
+                    onKnowledge = {
+                        knowledgeStartArticleId = null
+                        knowledgeStartQuery = null
+                        screenName = AppScreen.KNOWLEDGE.name
+                    },
+                    onLocomotives = { screenName = AppScreen.LOCOMOTIVES.name },
+                    onCalculations = { screenName = AppScreen.CALCULATIONS.name }
+                )
+                AppScreen.CALCULATIONS -> ScrollPage {
+                    CalculationsHub(
+                        onMass = { screenName = AppScreen.MASS.name },
+                        onAppendix = { screenName = AppScreen.APPENDIX.name }
+                    )
+                }
                 AppScreen.MASS -> ScrollPage {
                     MassScreen(
                         onHistory = {
@@ -212,18 +279,43 @@ fun BrakeCalculatorApp(
                     version = historyVersion,
                     onCleared = { historyVersion++ }
                 )
-                AppScreen.LOCOMOTIVES -> LocomotiveReferenceScreen()
-                AppScreen.DIAGNOSTICS -> DiagnosticScreen()
-                AppScreen.KNOWLEDGE -> KnowledgeBaseScreen()
-                AppScreen.FIRST_AID -> FirstAidScreen(onBack = { screenName = AppScreen.MASS.name })
+                AppScreen.LOCOMOTIVES -> LocomotiveReferenceScreen(
+                    onOpenAtlas = { knowledgeStartQuery = null; knowledgeStartArticleId = "vl80-layout"; screenName = AppScreen.KNOWLEDGE.name },
+                    onOpenPneumatic = { knowledgeStartQuery = null; knowledgeStartArticleId = "vl80-pneumatic-simulator"; screenName = AppScreen.KNOWLEDGE.name },
+                    onOpenElectrical = { knowledgeStartQuery = null; knowledgeStartArticleId = "vl80-electrical-simulator"; screenName = AppScreen.KNOWLEDGE.name }
+                )
+                AppScreen.DIAGNOSTICS -> DiagnosticScreen(
+                    initialScenarioId = diagnosticStartScenarioId,
+                    initialEquipmentId = diagnosticStartEquipmentId
+                )
+                AppScreen.KNOWLEDGE -> KnowledgeBaseScreen(
+                    initialArticleId = knowledgeStartArticleId,
+                    initialQuery = knowledgeStartQuery
+                )
+                AppScreen.FIRST_AID -> FirstAidScreen(onBack = { screenName = AppScreen.HOME.name })
                 AppScreen.EXAM_QUESTIONS -> ExamQuestionScreen(
                     onHide = {
                         secretAccessRepository.hide()
                         examQuestionsUnlocked = false
-                        screenName = AppScreen.MASS.name
+                        screenName = AppScreen.HOME.name
+                    },
+                    onOpenScenario = { scenarioId ->
+                        diagnosticStartScenarioId = scenarioId
+                        diagnosticStartEquipmentId = null
+                        screenName = AppScreen.DIAGNOSTICS.name
+                    },
+                    onOpenEquipment = { equipmentId ->
+                        diagnosticStartScenarioId = null
+                        diagnosticStartEquipmentId = equipmentId
+                        screenName = AppScreen.DIAGNOSTICS.name
+                    },
+                    onOpenKnowledgeTopic = { topic ->
+                        knowledgeStartArticleId = null
+                        knowledgeStartQuery = topic
+                        screenName = AppScreen.KNOWLEDGE.name
                     }
                 )
-                AppScreen.COLORS -> ScrollPage {
+                AppScreen.SETTINGS -> ScrollPage {
                     PaletteScreen(palette, onPaletteChange)
                 }
                 }
@@ -243,6 +335,12 @@ private fun AppHeader(onOpenMenu: () -> Unit, onOpenFirstAid: () -> Unit) {
         IconButton(onClick = onOpenMenu) {
             Text("☰", style = MaterialTheme.typography.headlineMedium)
         }
+        Image(
+            painter = painterResource(R.drawable.ic_launcher_art),
+            contentDescription = null,
+            modifier = Modifier.size(42.dp)
+        )
+        Spacer(Modifier.size(8.dp))
         Column(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(3.dp)
@@ -253,7 +351,7 @@ private fun AppHeader(onOpenMenu: () -> Unit, onOpenFirstAid: () -> Unit) {
                 fontWeight = FontWeight.Black
             )
             Text(
-                "Расчёты, локомотивы и интерактивный справочник",
+                "Рабочий помощник локомотивной бригады",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -281,6 +379,25 @@ private fun ScrollPage(content: @Composable ColumnScope.() -> Unit) {
         verticalArrangement = Arrangement.spacedBy(12.dp),
         content = content
     )
+}
+
+@Composable
+private fun CalculationsHub(onMass: () -> Unit, onAppendix: () -> Unit) {
+    RailSectionHeader("Расчёты", "Инструменты тормозных расчётов вынесены из главной страницы")
+    RailHeroCard(
+        title = "По массе",
+        subtitle = "Расчёт требуемых тормозных башмаков, осей и дополнительных условий по исходным данным состава.",
+        action = "ОТКРЫТЬ РАСЧЁТ  →",
+        onClick = onMass
+    )
+    RailNavCard(
+        title = "ИДП №12",
+        subtitle = "Отдельный расчёт по приложению №12 с учётом уклона, ветра и условий закрепления.",
+        marker = "№12",
+        onClick = onAppendix,
+        modifier = Modifier.fillMaxWidth()
+    )
+    RailInfoBand("Результаты сохраняются локально в разделе «История». Учебный режим с формулами остаётся доступен внутри расчёта.")
 }
 
 @Composable
@@ -998,40 +1115,62 @@ private fun AppendixResultCard(result: Appendix12Result, slope: Double, oily: Bo
 @Composable
 private fun HistoryScreen(repository: HistoryRepository, version: Int, onCleared: () -> Unit) {
     val records = remember(version) { repository.load() }
+    var filter by rememberSaveable { mutableStateOf("Все") }
+    val visible = remember(records, filter) {
+        when (filter) {
+            "По массе" -> records.filter { it.mode == "По массе" }
+            "ИДП №12" -> records.filter { it.mode == "ИДП №12" }
+            else -> records
+        }
+    }
     Column(
         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 14.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
-                Text("Последние расчёты", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                Text("Хранятся локально на телефоне", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                RailSectionHeader("История расчётов", "Локальный журнал рабочих расчётов")
             }
             if (records.isNotEmpty()) {
-                OutlinedButton(onClick = { repository.clear(); onCleared() }, shape = RoundedCornerShape(14.dp)) { Text("Очистить") }
+                TextButton(onClick = { repository.clear(); onCleared() }) { Text("Очистить") }
+            }
+        }
+
+        if (records.isNotEmpty()) {
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                items(listOf("Все", "По массе", "ИДП №12")) { item ->
+                    FilterChip(
+                        selected = filter == item,
+                        onClick = { filter = item },
+                        label = { Text(item) }
+                    )
+                }
             }
         }
 
         if (records.isEmpty()) {
             EmptyCard("История пока пуста. После первого расчёта здесь появится запись.")
+        } else if (visible.isEmpty()) {
+            EmptyCard("В выбранной категории записей пока нет.")
         } else {
             LazyColumn(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                items(records) { record ->
+                items(visible) { record ->
                     Card(
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                        shape = RoundedCornerShape(20.dp),
+                        shape = RoundedCornerShape(16.dp),
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
                     ) {
-                        Column(Modifier.padding(15.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
-                            Row {
-                                Text(record.mode, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary, modifier = Modifier.weight(1f))
+                        Column(Modifier.padding(15.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                RailStatusPill(record.mode)
+                                Spacer(Modifier.weight(1f))
                                 Text(formatDate(record.timestampMillis), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
-                            Text(record.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                            Text(record.summary, style = MaterialTheme.typography.bodyMedium)
+                            Text(record.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                            Text(record.summary, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary)
                             Text(record.details, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
@@ -1042,19 +1181,44 @@ private fun HistoryScreen(repository: HistoryRepository, version: Int, onCleared
 }
 
 @Composable
-private fun LocomotiveReferenceScreen() {
+private fun LocomotiveReferenceScreen(
+    onOpenAtlas: () -> Unit,
+    onOpenPneumatic: () -> Unit,
+    onOpenElectrical: () -> Unit
+) {
     var query by rememberSaveable { mutableStateOf("") }
     val found = remember(query) { LocomotiveDatabase.search(query) }
     Column(
         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 14.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        Text("База локомотивов", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-        Text(
-            "Масса и число осей справочные и могут отличаться по модификации. Если известны точные данные конкретной машины, используйте ручной ввод — он имеет приоритет над справочником.",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+        RailSectionHeader(
+            "Локомотив / атлас",
+            "Рабочий профиль ВЛ80С, оборудование, схемы и справочная база серий"
         )
+        RailHeroCard(
+            title = "Интерактивный атлас ВЛ80С",
+            subtitle = "Схема расположения оборудования с активными зонами и переходами к материалам.",
+            action = "ОТКРЫТЬ АТЛАС  →",
+            onClick = onOpenAtlas
+        )
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            RailNavCard(
+                title = "Пневматика",
+                subtitle = "Маршруты воздуха и режимы",
+                marker = "P",
+                onClick = onOpenPneumatic,
+                modifier = Modifier.weight(1f)
+            )
+            RailNavCard(
+                title = "Электрика",
+                subtitle = "Цепи и логика аппаратов",
+                marker = "E",
+                onClick = onOpenElectrical,
+                modifier = Modifier.weight(1f)
+            )
+        }
+        RailSectionHeader("Справочная база серий", "Масса и число осей могут отличаться по модификации")
         OutlinedTextField(
             value = query,
             onValueChange = { query = it },
@@ -1076,7 +1240,7 @@ private fun LocomotiveReferenceScreen() {
 private fun LocomotiveCard(loco: LocomotiveSpec) {
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        shape = RoundedCornerShape(18.dp),
+        shape = RoundedCornerShape(16.dp),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
     ) {
         Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(3.dp)) {
@@ -1098,21 +1262,26 @@ private fun PaletteScreen(
     palette: AccentPalette,
     onPaletteChange: (AccentPalette) -> Unit
 ) {
-    SectionCard("Цветовая палитра", "Выбранный акцент сохраняется после перезапуска приложения") {
+    SectionCard("Оформление", "Графитовая основа постоянна; меняется только рабочий акцент") {
         AccentPalette.entries.forEach { option ->
             ChoiceOption(
                 title = option.title,
                 subtitle = when (option) {
-                    AccentPalette.BLUE -> "Спокойный холодный акцент"
-                    AccentPalette.GREEN -> "Яркий зелёный акцент"
-                    AccentPalette.YELLOW -> "Контрастный сигнальный акцент"
-                    AccentPalette.PURPLE -> "Мягкий фиолетовый акцент"
-                    AccentPalette.RED -> "Тёплый красный акцент"
+                    AccentPalette.BLUE -> "Основной янтарный акцент нового интерфейса"
+                    AccentPalette.GREEN -> "Спокойный зелёный для альтернативного оформления"
+                    AccentPalette.YELLOW -> "Более светлый сигнальный акцент"
+                    AccentPalette.PURPLE -> "Холодный дополнительный акцент"
                 },
                 selected = palette == option,
                 onClick = { onPaletteChange(option) }
             )
         }
+    }
+    RailInfoBand("Основная тема dev8: графитовый фон, металлические вторичные элементы и янтарный рабочий акцент. Красный зарезервирован для опасности и ОПП.")
+    SectionCard("О приложении", "Текущая рабочая сборка") {
+        Metric("Версия", "1.2.1-dev8 (136)")
+        Metric("Профиль", "ВЛ80С")
+        Metric("Режим", "Основной функционал работает офлайн")
     }
     SafetyNotice()
 }
@@ -1122,7 +1291,7 @@ private fun SectionCard(title: String, subtitle: String?, content: @Composable C
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        shape = RoundedCornerShape(22.dp),
+        shape = RoundedCornerShape(16.dp),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
     ) {
         Column(
@@ -1130,7 +1299,7 @@ private fun SectionCard(title: String, subtitle: String?, content: @Composable C
             verticalArrangement = Arrangement.spacedBy(11.dp)
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.primary)
                 subtitle?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
             }
             content()

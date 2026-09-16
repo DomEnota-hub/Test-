@@ -16,8 +16,8 @@ android {
         applicationId = "ru.railbrake.calculator"
         minSdk = 26
         targetSdk = 34
-        versionCode = 135
-        versionName = "1.2.1-dev7"
+        versionCode = 136
+        versionName = "1.2.1-dev8"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -92,3 +92,20 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.json:json:20240303")
 }
+
+val launcherIconSource = rootProject.file("design/launcher_icon.webp.b64").let { primary ->
+    if (primary.isFile) primary else rootProject.file("patch/design/launcher_icon.webp.b64")
+}
+val launcherIconOutput = layout.projectDirectory.file("src/main/res/drawable-nodpi/ic_launcher_art.webp").asFile
+val generateLauncherIcon = tasks.register("generateLauncherIcon") {
+    inputs.file(launcherIconSource)
+    outputs.file(launcherIconOutput)
+    doLast {
+        check(launcherIconSource.isFile) { "Launcher icon source not found: ${launcherIconSource.absolutePath}" }
+        launcherIconOutput.parentFile.mkdirs()
+        val encoded = launcherIconSource.readText().filterNot(Char::isWhitespace)
+        launcherIconOutput.writeBytes(java.util.Base64.getDecoder().decode(encoded))
+    }
+}
+
+tasks.matching { it.name == "preBuild" }.configureEach { dependsOn(generateLauncherIcon) }

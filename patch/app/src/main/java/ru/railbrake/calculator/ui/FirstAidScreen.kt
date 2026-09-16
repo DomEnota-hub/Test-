@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
@@ -223,14 +224,17 @@ fun FirstAidScreen(onBack: () -> Unit) {
     ) {
         item {
             TextButton(onClick = onBack) { Text("← На главную") }
-            Text("Оказание первой помощи", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
-            Text("Быстрый офлайн-справочник для работника. Не заменяет обучение первой помощи и указания диспетчера 112/103.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+            RailSectionHeader(
+                "Оказание первой помощи",
+                "Быстрый офлайн-справочник работника • экстренные действия • аптечка"
+            )
         }
 
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
+                shape = RoundedCornerShape(17.dp),
+                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.error),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
             ) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -244,14 +248,18 @@ fun FirstAidScreen(onBack: () -> Unit) {
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+                shape = RoundedCornerShape(17.dp),
+                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.55f)),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     Text("Экстренные службы", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
                     Text("112 — единый номер. 103 — скорая медицинская помощь.")
                     Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        Button(onClick = { context.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:112"))) }) { Text("Набрать 112") }
+                        Button(
+                            onClick = { context.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:112"))) },
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                        ) { Text("Набрать 112") }
                         OutlinedButton(onClick = { context.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:103"))) }) { Text("Набрать 103") }
                     }
                     Text("Сообщите место, что произошло, число пострадавших, их состояние и какую помощь уже оказывают.", style = MaterialTheme.typography.bodySmall)
@@ -316,17 +324,18 @@ fun FirstAidScreen(onBack: () -> Unit) {
 private fun FirstAidTopicCard(topic: FirstAidTopic) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        shape = RoundedCornerShape(17.dp),
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(topic.title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
             if (topic.whenToUse.isNotEmpty()) {
-                Text("Когда", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                Text("Когда", color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold)
                 topic.whenToUse.forEach { Text("• $it") }
             }
-            Text("Что делать", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
-            topic.actions.forEachIndexed { index, action -> Text("${index + 1}. $action") }
+            Text("Что делать", color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold)
+            topic.actions.forEachIndexed { index, action -> Text("${index + 1}. $action", fontWeight = if (index == 0) FontWeight.SemiBold else FontWeight.Normal) }
             if (topic.dont.isNotEmpty()) {
                 Text("Не делать", color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold)
                 topic.dont.forEach { Text("• $it") }
@@ -340,8 +349,9 @@ private fun FirstAidTopicCard(topic: FirstAidTopic) {
 private fun FirstAidInfoCard(title: String, lines: List<String>, tone: Color) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = tone)
+        shape = RoundedCornerShape(17.dp),
+        border = androidx.compose.foundation.BorderStroke(1.dp, tone.copy(alpha = 0.65f)),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(7.dp)) {
             Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
