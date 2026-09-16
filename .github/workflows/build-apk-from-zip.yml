@@ -1,10 +1,10 @@
-# Verification run for the fully synchronized VL80S 1.2.1-dev7 workspace.
+# Verification run for the fully synchronized VL80S 1.2.1-dev8 workspace.
 name: Build Android APK from ZIP
 
 on:
   workflow_dispatch:
   push:
-    branches: [ main, master, vl80s-qa-dev5 ]
+    branches: [ main, master, vl80s-qa-dev5, dev8-design ]
     paths:
       - 'RailBrakeCalculator.zip'
       - 'patch/**'
@@ -100,7 +100,7 @@ jobs:
         run: |
           APK=app/build/outputs/apk/release/app-release-unsigned.apk
           "$ANDROID_SDK_ROOT/build-tools/34.0.0/aapt" dump badging "$APK" | tee apk-badging.log
-          grep -q "package: name='ru.railbrake.calculator' versionCode='135' versionName='1.2.1-dev7'" apk-badging.log
+          grep -q "package: name='ru.railbrake.calculator' versionCode='136' versionName='1.2.1-dev8'" apk-badging.log
 
       - name: Upload unsigned release APK
         if: env.RELEASE_KEYSTORE_B64 == ''
@@ -155,7 +155,7 @@ jobs:
         run: |
           APK=app/build/outputs/apk/release/app-release.apk
           "$ANDROID_SDK_ROOT/build-tools/34.0.0/aapt" dump badging "$APK" | tee apk-badging.log
-          grep -q "package: name='ru.railbrake.calculator' versionCode='135' versionName='1.2.1-dev7'" apk-badging.log
+          grep -q "package: name='ru.railbrake.calculator' versionCode='136' versionName='1.2.1-dev8'" apk-badging.log
           "$ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner" verify --verbose --print-certs "$APK" | tee signed-apksigner.log
           grep -qi "Signer #1 certificate SHA-256 digest: $EXPECTED_SIGNING_CERT_SHA256" signed-apksigner.log
 
