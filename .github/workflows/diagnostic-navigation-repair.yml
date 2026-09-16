@@ -1,0 +1,282 @@
+name: Repair diagnostic navigation and build dev12
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - 'artifacts/diagnostic-navigation-audit-trigger.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  repair-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      RELEASE_KEYSTORE_B64: ${{ secrets.RAILBRAKE_KEYSTORE_BASE64 }}
+      EXPECTED_SIGNING_CERT_SHA256: ea9fe9341a6ba72b585bd7ff82ce29c8fc5b7b59e76b8b134df203eaab8e2788
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Apply audited diagnostic navigation fixes
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          diagnostic_paths = [
+              Path('app/src/main/java/ru/railbrake/calculator/ui/DiagnosticScreen.kt'),
+              Path('patch/app/src/main/java/ru/railbrake/calculator/ui/DiagnosticScreen.kt'),
+          ]
+
+          def replace_once(text: str, old: str, new: str, label: str) -> str:
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f'{label}: expected exactly one match, found {count}')
+              return text.replace(old, new, 1)
+
+          for path in diagnostic_paths:
+              text = path.read_text(encoding='utf-8')
+
+              text = replace_once(
+                  text,
+                  '''        selectedEquipment != null -> EquipmentDetails(
+                      equipment = selectedEquipment,
+                      onBack = { selectedEquipmentId = null },
+                      onOpenScenario = { selectedId = it }
+                  )''',
+                  '''        selectedEquipment != null -> EquipmentDetails(
+                      equipment = selectedEquipment,
+                      onBack = { selectedEquipmentId = null },
+                      onOpenScenario = { scenarioId ->
+                          selectedEquipmentId = null
+                          selectedId = scenarioId
+                      }
+                  )''',
+                  f'{path}: equipment-to-scenario navigation'
+              )
+
+              text = replace_once(
+                  text,
+                  '''    val observationResults = remember(query) { Vl80sObservationCatalog.search(query) }''',
+                  '''    val observationResults = remember(query, selectedVariantId) {
+                      val (observations, equipment) = Vl80sObservationCatalog.search(query)
+                      observations.filter { observation ->
+                          observation.scenarioIds.any { scenarioId ->
+                              DiagnosticRepository.scenario(scenarioId)?.let { scenario ->
+                                  LocomotiveProfiles.appliesToVariant(selectedVariantId, scenario.applicableVariantIds)
+                              } == true
+                          }
+                      } to equipment
+                  }''',
+                  f'{path}: observation applicability filter'
+              )
+
+              text = replace_once(
+                  text,
+                  '''    val scenarioMatchesVariant = LocomotiveProfiles.appliesToVariant(variantId, scenario.applicableVariantIds)
+                  var savedLocally by rememberSaveable(scenario.id) { mutableStateOf(false) }''',
+                  '''    val scenarioMatchesVariant = LocomotiveProfiles.appliesToVariant(variantId, scenario.applicableVariantIds)
+                  val relatedScenarioIds = scenario.relatedScenarioIds.filter { relatedId ->
+                      DiagnosticRepository.scenario(relatedId)?.let { relatedScenario ->
+                          LocomotiveProfiles.appliesToVariant(variantId, relatedScenario.applicableVariantIds)
+                      } == true
+                  }
+                  var savedLocally by rememberSaveable(scenario.id) { mutableStateOf(false) }''',
+                  f'{path}: related scenario applicability'
+              )
+
+              text = replace_once(
+                  text,
+                  '''        if (scenario.relatedScenarioIds.isNotEmpty()) {
+                      item {
+                          RelatedScenarios(scenario.relatedScenarioIds, onOpenRelated)
+                      }
+                  }''',
+                  '''        if (relatedScenarioIds.isNotEmpty()) {
+                      item {
+                          RelatedScenarios(relatedScenarioIds, onOpenRelated)
+                      }
+                  }''',
+                  f'{path}: filtered related scenario block'
+              )
+
+              text = replace_once(
+                  text,
+                  '''        item {
+                      Text("Связанная диагностика", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+                      Text("Переход открывает безопасный маршрут, а не инструкцию по ремонту.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                  }
+                  items(relatedScenarios, key = { it.id }) { scenario ->
+                      Card(
+                          onClick = { onOpenScenario(scenario.id) },
+                          modifier = Modifier.fillMaxWidth(),
+                          shape = RoundedCornerShape(20.dp),
+                          colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                      ) {
+                          Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                              Text(scenario.severity.title, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                              Text(scenario.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                              Text(scenario.summary, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                          }
+                      }
+                  }''',
+                  '''        if (relatedScenarios.isNotEmpty()) {
+                      item {
+                          Text("Связанная диагностика", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+                          Text("Переход открывает безопасный маршрут, а не инструкцию по ремонту.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                      }
+                      items(relatedScenarios, key = { it.id }) { scenario ->
+                          Card(
+                              onClick = { onOpenScenario(scenario.id) },
+                              modifier = Modifier.fillMaxWidth(),
+                              shape = RoundedCornerShape(20.dp),
+                              colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                          ) {
+                              Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                  Text(scenario.severity.title, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                                  Text(scenario.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                                  Text(scenario.summary, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                              }
+                          }
+                      }
+                  } else {
+                      item {
+                          InfoCard(
+                              "Связанная диагностика",
+                              listOf("Для выбранного исполнения нет связанных диагностических сценариев. Смените исполнение только если оно соответствует фактической секции."),
+                              MaterialTheme.colorScheme.surfaceVariant
+                          )
+                      }
+                  }''',
+                  f'{path}: empty related diagnostic state'
+              )
+
+              path.write_text(text, encoding='utf-8')
+
+          for path in [Path('app/build.gradle.kts'), Path('patch/app/build.gradle.kts')]:
+              text = path.read_text(encoding='utf-8')
+              if 'versionCode = 139' not in text or 'versionName = "1.2.2-dev11"' not in text:
+                  raise SystemExit(f'{path}: unexpected version before dev12 bump')
+              text = text.replace('versionCode = 139', 'versionCode = 140', 1)
+              text = text.replace('versionName = "1.2.2-dev11"', 'versionName = "1.2.2-dev12"', 1)
+              path.write_text(text, encoding='utf-8')
+
+          readme = Path('README.md')
+          text = readme.read_text(encoding='utf-8')
+          text = text.replace('1.2.2-dev10', '1.2.2-dev12')
+          text = text.replace('Интерфейс dev10', 'Интерфейс dev12')
+          marker = '- обновлены диагностика, справочник, локомотив/атлас, первая помощь, расчёты, история, Q&A и настройки.'
+          addition = marker + '\n- аудит навигации диагностики устраняет пустые переходы «аппарат → связанная диагностика», скрывает недоступные для выбранного исполнения наблюдения и фильтрует связанные сценарии по исполнению.'
+          if marker in text and 'аудит навигации диагностики' not in text:
+              text = text.replace(marker, addition, 1)
+          readme.write_text(text, encoding='utf-8')
+
+          workflow = Path('.github/workflows/build-apk-from-zip.yml')
+          text = workflow.read_text(encoding='utf-8')
+          text = text.replace("versionCode='138' versionName='1.2.2-dev10'", "versionCode='140' versionName='1.2.2-dev12'")
+          text = text.replace('RailBrakeCalculator-1.2.2-dev10-signed.apk', 'RailBrakeCalculator-1.2.2-dev12-signed.apk')
+          text = text.replace('Publish verified signed APK 1.2.2-dev10', 'Publish verified signed APK 1.2.2-dev12')
+          workflow.write_text(text, encoding='utf-8')
+          PY
+
+          cmp app/src/main/java/ru/railbrake/calculator/ui/DiagnosticScreen.kt patch/app/src/main/java/ru/railbrake/calculator/ui/DiagnosticScreen.kt
+          cmp app/build.gradle.kts patch/app/build.gradle.kts
+
+      - name: Require signing material
+        shell: bash
+        run: |
+          test -n "$RELEASE_KEYSTORE_B64" || { echo "Release signing key is unavailable"; exit 1; }
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install Android SDK 34
+        shell: bash
+        run: |
+          yes | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
+          "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-34' 'build-tools;34.0.0'
+
+      - name: Set up Gradle 8.7
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+
+      - name: Extract canonical project and overlay patch
+        shell: bash
+        run: |
+          rm -rf buildsrc
+          mkdir buildsrc
+          unzip -q RailBrakeCalculator.zip -d buildsrc
+          test -f buildsrc/RailBrakeCalculator/settings.gradle.kts
+          cp -a patch/. buildsrc/RailBrakeCalculator/
+
+      - name: Run unit tests
+        working-directory: buildsrc/RailBrakeCalculator
+        run: gradle :app:testDebugUnitTest --stacktrace --console=plain
+
+      - name: Run Android lint
+        working-directory: buildsrc/RailBrakeCalculator
+        run: gradle :app:lintDebug --stacktrace --console=plain
+
+      - name: Decode release signing key
+        working-directory: buildsrc/RailBrakeCalculator
+        shell: bash
+        run: echo "$RELEASE_KEYSTORE_B64" | base64 --decode > release.keystore
+
+      - name: Build signed release APK
+        working-directory: buildsrc/RailBrakeCalculator
+        env:
+          RAILBRAKE_KEYSTORE_PATH: ${{ github.workspace }}/buildsrc/RailBrakeCalculator/release.keystore
+          RAILBRAKE_STORE_PASSWORD: ${{ secrets.RAILBRAKE_STORE_PASSWORD }}
+          RAILBRAKE_KEY_ALIAS: ${{ secrets.RAILBRAKE_KEY_ALIAS }}
+          RAILBRAKE_KEY_PASSWORD: ${{ secrets.RAILBRAKE_KEY_PASSWORD }}
+        run: gradle :app:assembleRelease --stacktrace --console=plain
+
+      - name: Verify dev12 metadata and certificate
+        working-directory: buildsrc/RailBrakeCalculator
+        shell: bash
+        run: |
+          APK=app/build/outputs/apk/release/app-release.apk
+          "$ANDROID_SDK_ROOT/build-tools/34.0.0/aapt" dump badging "$APK" | tee apk-badging.log
+          grep -q "package: name='ru.railbrake.calculator' versionCode='140' versionName='1.2.2-dev12'" apk-badging.log
+          "$ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner" verify --verbose --print-certs "$APK" | tee signed-apksigner.log
+          grep -qi "Signer #1 certificate SHA-256 digest: $EXPECTED_SIGNING_CERT_SHA256" signed-apksigner.log
+
+      - name: Stage verified APK
+        shell: bash
+        run: |
+          mkdir -p artifacts out
+          cp buildsrc/RailBrakeCalculator/app/build/outputs/apk/release/app-release.apk artifacts/RailBrakeCalculator-1.2.2-dev12-navigation-fixed.apk
+          cp artifacts/RailBrakeCalculator-1.2.2-dev12-navigation-fixed.apk out/
+          sha256sum out/RailBrakeCalculator-1.2.2-dev12-navigation-fixed.apk | tee out/SHA256SUMS.txt
+
+      - name: Upload verified dev12 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: RailBrakeCalculator-1.2.2-dev12-navigation-fixed
+          path: |
+            out/RailBrakeCalculator-1.2.2-dev12-navigation-fixed.apk
+            out/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Commit verified repair and remove one-shot scaffolding
+        shell: bash
+        run: |
+          rm -f artifacts/diagnostic-navigation-audit-trigger.txt
+          rm -f .github/workflows/diagnostic-navigation-repair.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Fix diagnostic navigation and publish verified dev12"
+          git push origin HEAD:main
