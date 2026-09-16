@@ -32,10 +32,8 @@ jobs:
             src/main/java/ru/railbrake/calculator/ui/ExamQuestionScreen.kt \
             src/main/java/ru/railbrake/calculator/ui/FirstAidScreen.kt \
             src/test/java/ru/railbrake/calculator/core/DiagnosticRepositoryTest.kt; do
-            install -D "app/$rel" "patch/app/$rel"
+            install -D -m 0644 "app/$rel" "patch/app/$rel"
           done
-
-          sed -i "s/1.2.1-dev6 workspace/1.2.1-dev7 workspace/g; s/versionCode='134' versionName='1.2.1-dev6'/versionCode='135' versionName='1.2.1-dev7'/g" .github/workflows/build-apk-from-zip.yml
 
           git diff --check
 
@@ -45,6 +43,6 @@ jobs:
           set -euo pipefail
           git config user.name "DomEnota-hub"
           git config user.email "domenota6212@gmail.com"
-          git add README.md app patch .github/workflows/build-apk-from-zip.yml
+          git add README.md app patch
           git commit -m "Add first aid and responsive diagnostic feedback"
           git push origin HEAD:dev7-first-aid
