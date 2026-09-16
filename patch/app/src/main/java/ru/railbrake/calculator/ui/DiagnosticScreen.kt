@@ -37,14 +37,14 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ru.railbrake.calculator.core.DiagnosticActionLevel
+import ru.railbrake.calculator.core.DiagnosticCatalogRepository
 import ru.railbrake.calculator.core.DiagnosticCheck
-import ru.railbrake.calculator.core.DiagnosticRepository
 import ru.railbrake.calculator.core.DiagnosticScenario
 
 @Composable
 fun DiagnosticScreen() {
     var selectedId by rememberSaveable { mutableStateOf<String?>(null) }
-    val selected = DiagnosticRepository.scenarios.firstOrNull { it.id == selectedId }
+    val selected = DiagnosticCatalogRepository.scenarios.firstOrNull { it.id == selectedId }
 
     if (selected == null) {
         DiagnosticCatalog(onOpen = { selectedId = it.id })
@@ -57,7 +57,7 @@ fun DiagnosticScreen() {
 private fun DiagnosticCatalog(onOpen: (DiagnosticScenario) -> Unit) {
     var query by rememberSaveable { mutableStateOf("") }
     var category by rememberSaveable { mutableStateOf("Все") }
-    val results = remember(query, category) { DiagnosticRepository.search(query, category) }
+    val results = remember(query, category) { DiagnosticCatalogRepository.search(query, category) }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
@@ -83,7 +83,7 @@ private fun DiagnosticCatalog(onOpen: (DiagnosticScenario) -> Unit) {
         }
         item {
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                items(DiagnosticRepository.categories) { item ->
+                items(DiagnosticCatalogRepository.categories) { item ->
                     FilterChip(
                         selected = category == item,
                         onClick = { category = item },
@@ -259,7 +259,7 @@ private fun DiagnosticCheckCard(check: DiagnosticCheck) {
 private fun SafetyNotice() {
     InfoCard(
         title = "Важно: это не допуск к работам",
-        lines = listOf(DiagnosticRepository.safetyNotice),
+        lines = listOf(DiagnosticCatalogRepository.safetyNotice),
         tone = MaterialTheme.colorScheme.errorContainer
     )
 }
