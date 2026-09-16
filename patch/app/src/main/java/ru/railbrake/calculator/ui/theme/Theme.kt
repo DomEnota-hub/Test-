@@ -19,9 +19,9 @@ enum class AccentPalette(val title: String, val primary: Color, val container: C
 
 private fun darkColors(palette: AccentPalette) = darkColorScheme(
     primary = palette.primary,
-    onPrimary = Color(0xFF231006),
+    onPrimary = Color(0xFF11161B),
     primaryContainer = palette.container,
-    onPrimaryContainer = Color(0xFFFFE6D0),
+    onPrimaryContainer = Ink,
     secondary = RailMetal,
     onSecondary = Color(0xFF1C252E),
     secondaryContainer = Color(0xFF232C35),

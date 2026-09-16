@@ -1,5 +1,6 @@
 package ru.railbrake.calculator.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -77,6 +78,10 @@ fun DiagnosticScreen(initialScenarioId: String? = null, initialEquipmentId: Stri
     var selectedEquipmentId by rememberSaveable(initialEquipmentId) { mutableStateOf(initialEquipmentId) }
     val selected = DiagnosticRepository.scenarios.firstOrNull { it.id == selectedId }
     val selectedEquipment = Vl80sObservationCatalog.equipment(selectedEquipmentId.orEmpty())
+
+    BackHandler(enabled = selected != null || selectedEquipment != null) {
+        if (selectedEquipment != null) selectedEquipmentId = null else selectedId = null
+    }
 
     when {
         selectedEquipment != null -> EquipmentDetails(

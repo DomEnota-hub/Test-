@@ -46,12 +46,9 @@ internal fun HomeScreen(
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
-                Text("ВЛ80С", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
-                Text("Рабочий профиль • основная база доступна офлайн", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-            RailStatusPill("ОФЛАЙН")
+        Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
+            Text("ВЛ80С", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+            Text("Рабочий профиль локомотивной бригады", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
 
         RailInfoBand(

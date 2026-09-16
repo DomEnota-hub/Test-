@@ -134,12 +134,22 @@ internal fun RailCompactHeader(
         }
         Text(
             title,
-            modifier = Modifier
-                .weight(1f)
-                .clickable(onClick = onHome),
+            modifier = Modifier.weight(1f),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Black
         )
+        Surface(
+            modifier = Modifier.clickable(onClick = onHome),
+            shape = RoundedCornerShape(12.dp),
+            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f)
+        ) {
+            Text(
+                "⌂ Главная",
+                modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.Bold
+            )
+        }
         Column(
             modifier = Modifier
                 .clip(RoundedCornerShape(12.dp))

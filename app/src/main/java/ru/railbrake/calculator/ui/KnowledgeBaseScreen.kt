@@ -4,6 +4,7 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -65,13 +66,24 @@ import ru.railbrake.calculator.data.FavoriteArticleRepository
 import kotlin.math.sqrt
 
 @Composable
-fun KnowledgeBaseScreen(initialArticleId: String? = null, initialQuery: String? = null) {
+fun KnowledgeBaseScreen(
+    initialArticleId: String? = null,
+    initialQuery: String? = null,
+    sectionBackLabel: String? = null,
+    onSectionBack: (() -> Unit)? = null
+) {
     var selectedArticleId by rememberSaveable(initialArticleId) { mutableStateOf(initialArticleId) }
     val context = LocalContext.current
     val favoritesRepository = remember { FavoriteArticleRepository(context) }
     val examQuestionRepository = remember { ExamQuestionRepository(context) }
     var favoriteIds by remember { mutableStateOf(favoritesRepository.load()) }
     val article = selectedArticleId?.let(KnowledgeRepository::articleById)
+
+    val backFromArticle: () -> Unit = {
+        if (initialArticleId != null && onSectionBack != null) onSectionBack() else selectedArticleId = null
+    }
+
+    BackHandler(enabled = article != null) { backFromArticle() }
 
     fun toggleFavorite(articleId: String) {
         favoriteIds = favoritesRepository.toggle(articleId)
@@ -80,6 +92,8 @@ fun KnowledgeBaseScreen(initialArticleId: String? = null, initialQuery: String? 
     if (article == null) {
         KnowledgeHome(
             initialQuery = initialQuery,
+            sectionBackLabel = sectionBackLabel,
+            onSectionBack = onSectionBack,
             favoriteIds = favoriteIds,
             examQuestionRepository = examQuestionRepository,
             onOpenArticle = { selectedArticleId = it.id },
@@ -89,7 +103,7 @@ fun KnowledgeBaseScreen(initialArticleId: String? = null, initialQuery: String? 
         KnowledgeArticleScreen(
             article = article,
             favoriteIds = favoriteIds,
-            onBack = { selectedArticleId = null },
+            onBack = backFromArticle,
             onOpenArticle = { selectedArticleId = it.id },
             onToggleFavorite = ::toggleFavorite
         )
@@ -99,6 +113,8 @@ fun KnowledgeBaseScreen(initialArticleId: String? = null, initialQuery: String? 
 @Composable
 private fun KnowledgeHome(
     initialQuery: String?,
+    sectionBackLabel: String?,
+    onSectionBack: (() -> Unit)?,
     favoriteIds: Set<String>,
     examQuestionRepository: ExamQuestionRepository,
     onOpenArticle: (KnowledgeArticle) -> Unit,
@@ -124,11 +140,16 @@ private fun KnowledgeHome(
         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 14.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+        if (sectionBackLabel != null && onSectionBack != null) {
+            TextButton(onClick = onSectionBack) {
+                Text("← $sectionBackLabel", fontWeight = FontWeight.Bold)
+            }
+        }
         RailSectionHeader(
             "Справочник",
-            "Офлайн-материалы, нормы, схемы и связанные рабочие сведения"
+            "Материалы, нормы, схемы и связанные рабочие сведения"
         )
-        RailInfoBand("Основная база работает без сети. Интернет нужен только для открытия внешних первоисточников.")
+        RailInfoBand("Внешние первоисточники открываются в браузере.")
 
         OutlinedTextField(
             value = query,
@@ -357,7 +378,7 @@ private fun PneumaticSimulatorCard() {
     ArticleCard {
         Text("Путь воздуха", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(4.dp))
-        Text("Выберите режим и листайте маршрут по шагам. Всё работает офлайн.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text("Выберите режим и листайте маршрут по шагам.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(Modifier.height(10.dp))
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             items(scenarios) { item ->
