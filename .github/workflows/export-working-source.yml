@@ -15,7 +15,8 @@ jobs:
       - name: Package repository source
         shell: bash
         run: |
-          tar --exclude=.git -czf railbrake-current-source.tar.gz .
+          tar --exclude=.git -czf /tmp/railbrake-current-source.tar.gz .
+          mv /tmp/railbrake-current-source.tar.gz .
       - name: Upload source bundle
         uses: actions/upload-artifact@v4
         with:
