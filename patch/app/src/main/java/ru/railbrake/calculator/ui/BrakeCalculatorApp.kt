@@ -75,6 +75,8 @@ import ru.railbrake.calculator.core.MassCalculationResult
 import ru.railbrake.calculator.core.MassSupplementResult
 import ru.railbrake.calculator.core.ProfileMode
 import ru.railbrake.calculator.core.TenTonsChoice
+import ru.railbrake.calculator.core.TechnicalFamily
+import ru.railbrake.calculator.core.TechnicalSection
 import ru.railbrake.calculator.data.HistoryRecord
 import ru.railbrake.calculator.data.HistoryRepository
 import ru.railbrake.calculator.data.SecretAccessRepository
@@ -91,6 +93,7 @@ private enum class AppScreen(val title: String) {
     DIAGNOSTICS("Диагностика"),
     LOCOMOTIVES("Локомотивы / атлас"),
     LOCOMOTIVE_MATERIAL("Локомотивы / атлас"),
+    LOCOMOTIVE_LEGACY("Локомотивы / атлас"),
     KNOWLEDGE("Справочник"),
     FIRST_AID("Первая помощь"),
     CALCULATIONS("Расчёты"),
@@ -145,6 +148,8 @@ fun BrakeCalculatorApp(
     var diagnosticStartEquipmentId by rememberSaveable { mutableStateOf<String?>(null) }
     var locomotiveMaterialArticleId by rememberSaveable { mutableStateOf<String?>(null) }
     var locomotiveMaterialQuery by rememberSaveable { mutableStateOf<String?>(null) }
+    var technicalFamilyName by rememberSaveable { mutableStateOf(TechnicalFamily.VL80S.name) }
+    var technicalSectionName by rememberSaveable { mutableStateOf(TechnicalSection.EQUIPMENT.name) }
     var diagnosticRootVersion by rememberSaveable { mutableIntStateOf(0) }
     var locomotiveRootVersion by rememberSaveable { mutableIntStateOf(0) }
     var knowledgeRootVersion by rememberSaveable { mutableIntStateOf(0) }
@@ -176,7 +181,7 @@ fun BrakeCalculatorApp(
                     )
                     Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
                         Text("Железнодорожный помощник", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
-                        Text("ВЛ80С • рабочий профиль", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
+                        Text("ВЛ80С • Ермак", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
                     }
                 }
 
@@ -189,7 +194,7 @@ fun BrakeCalculatorApp(
                 mainItems.forEach { item ->
                     NavigationDrawerItem(
                         label = { Text(item.title) },
-                        selected = screen == item || (item == AppScreen.LOCOMOTIVES && screen == AppScreen.LOCOMOTIVE_MATERIAL),
+                        selected = screen == item || (item == AppScreen.LOCOMOTIVES && screen in listOf(AppScreen.LOCOMOTIVE_MATERIAL, AppScreen.LOCOMOTIVE_LEGACY)),
                         onClick = {
                             when (item) {
                                 AppScreen.DIAGNOSTICS -> {
@@ -247,7 +252,7 @@ fun BrakeCalculatorApp(
         BackHandler(enabled = screen != AppScreen.HOME) {
             screenName = when (screen) {
                 AppScreen.MASS, AppScreen.APPENDIX -> AppScreen.CALCULATIONS.name
-                AppScreen.LOCOMOTIVE_MATERIAL -> AppScreen.LOCOMOTIVES.name
+                AppScreen.LOCOMOTIVE_MATERIAL, AppScreen.LOCOMOTIVE_LEGACY -> AppScreen.LOCOMOTIVES.name
                 else -> AppScreen.HOME.name
             }
         }
@@ -328,14 +333,24 @@ fun BrakeCalculatorApp(
                 }
                 AppScreen.LOCOMOTIVES -> key(locomotiveRootVersion) {
                     LocomotiveReferenceScreen(
-                        onOpenEquipment = { locomotiveMaterialArticleId = null; locomotiveMaterialQuery = "оборудование ВЛ80С"; screenName = AppScreen.LOCOMOTIVE_MATERIAL.name },
-                        onOpenArticles = { locomotiveMaterialArticleId = null; locomotiveMaterialQuery = "ВЛ80С"; screenName = AppScreen.LOCOMOTIVE_MATERIAL.name },
-                        onOpenAtlas = { locomotiveMaterialQuery = null; locomotiveMaterialArticleId = "vl80-layout"; screenName = AppScreen.LOCOMOTIVE_MATERIAL.name },
-                        onOpenPneumatic = { locomotiveMaterialQuery = null; locomotiveMaterialArticleId = "vl80-pneumatic-simulator"; screenName = AppScreen.LOCOMOTIVE_MATERIAL.name },
-                        onOpenElectrical = { locomotiveMaterialQuery = null; locomotiveMaterialArticleId = "vl80-electrical-simulator"; screenName = AppScreen.LOCOMOTIVE_MATERIAL.name }
+                        onOpenTechnical = { family, section ->
+                            technicalFamilyName = family.name
+                            technicalSectionName = section.name
+                            screenName = AppScreen.LOCOMOTIVE_MATERIAL.name
+                        },
+                        onOpenInteractiveVl80s = {
+                            locomotiveMaterialQuery = null
+                            locomotiveMaterialArticleId = "vl80-layout"
+                            screenName = AppScreen.LOCOMOTIVE_LEGACY.name
+                        }
                     )
                 }
-                AppScreen.LOCOMOTIVE_MATERIAL -> KnowledgeBaseScreen(
+                AppScreen.LOCOMOTIVE_MATERIAL -> TechnicalCatalogScreen(
+                    initialFamily = TechnicalFamily.valueOf(technicalFamilyName),
+                    initialSection = TechnicalSection.valueOf(technicalSectionName),
+                    onSectionBack = { screenName = AppScreen.LOCOMOTIVES.name }
+                )
+                AppScreen.LOCOMOTIVE_LEGACY -> KnowledgeBaseScreen(
                     initialArticleId = locomotiveMaterialArticleId,
                     initialQuery = locomotiveMaterialQuery,
                     sectionBackLabel = "Локомотивы / атлас",
@@ -445,7 +460,7 @@ private fun ScrollPage(content: @Composable ColumnScope.() -> Unit) {
 }
 
 @Composable
-private fun ChildBackButton(parentTitle: String, onBack: () -> Unit) {
+internal fun ChildBackButton(parentTitle: String, onBack: () -> Unit) {
     TextButton(onClick = onBack) {
         Text("← $parentTitle", fontWeight = FontWeight.Bold)
     }
@@ -1252,14 +1267,13 @@ private fun HistoryScreen(repository: HistoryRepository, version: Int, onCleared
 
 @Composable
 private fun LocomotiveReferenceScreen(
-    onOpenEquipment: () -> Unit,
-    onOpenArticles: () -> Unit,
-    onOpenAtlas: () -> Unit,
-    onOpenPneumatic: () -> Unit,
-    onOpenElectrical: () -> Unit
+    onOpenTechnical: (TechnicalFamily, TechnicalSection) -> Unit,
+    onOpenInteractiveVl80s: () -> Unit
 ) {
     var query by rememberSaveable { mutableStateOf("") }
     var seriesExpanded by rememberSaveable { mutableStateOf(false) }
+    var familyName by rememberSaveable { mutableStateOf(TechnicalFamily.VL80S.name) }
+    val family = TechnicalFamily.valueOf(familyName)
     val found = remember(query) { LocomotiveDatabase.search(query) }
     Column(
         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 8.dp),
@@ -1267,14 +1281,32 @@ private fun LocomotiveReferenceScreen(
     ) {
         RailSectionHeader(
             "Локомотив / атлас",
-            "Выберите материал или найдите серию в справочной базе"
+            "Выберите серию и тип материала"
         )
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            item { FilterChip(selected = false, onClick = onOpenEquipment, label = { Text("Оборудование") }) }
-            item { FilterChip(selected = false, onClick = onOpenArticles, label = { Text("Статьи") }) }
-            item { FilterChip(selected = false, onClick = onOpenElectrical, label = { Text("Электросхемы") }) }
-            item { FilterChip(selected = false, onClick = onOpenPneumatic, label = { Text("Пневмосхемы") }) }
-            item { FilterChip(selected = false, onClick = onOpenAtlas, label = { Text("Интерактивный атлас") }) }
+            items(TechnicalFamily.entries) { option ->
+                FilterChip(
+                    selected = family == option,
+                    onClick = { familyName = option.name },
+                    label = { Text(option.title) }
+                )
+            }
+        }
+        Text(family.subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            item { FilterChip(selected = false, onClick = { onOpenTechnical(family, TechnicalSection.PROFILES) }, label = { Text("Исполнения") }) }
+            item { FilterChip(selected = false, onClick = { onOpenTechnical(family, TechnicalSection.EQUIPMENT) }, label = { Text("Оборудование") }) }
+            if (family == TechnicalFamily.ERMAK) {
+                item { FilterChip(selected = false, onClick = { onOpenTechnical(family, TechnicalSection.SYSTEMS) }, label = { Text("Системы") }) }
+                item { FilterChip(selected = false, onClick = { onOpenTechnical(family, TechnicalSection.KNOWLEDGE) }, label = { Text("Статьи") }) }
+            }
+            item { FilterChip(selected = false, onClick = { onOpenTechnical(family, TechnicalSection.DIAGNOSTICS) }, label = { Text("Диагностика") }) }
+            item { FilterChip(selected = false, onClick = { onOpenTechnical(family, TechnicalSection.ELECTRICAL) }, label = { Text("Электросхемы") }) }
+            item { FilterChip(selected = false, onClick = { onOpenTechnical(family, TechnicalSection.PNEUMATIC) }, label = { Text("Пневмосхемы") }) }
+            if (family == TechnicalFamily.VL80S) {
+                item { FilterChip(selected = false, onClick = { onOpenTechnical(family, TechnicalSection.ACCEPTANCE) }, label = { Text("Приёмка") }) }
+                item { FilterChip(selected = false, onClick = onOpenInteractiveVl80s, label = { Text("Интерактивный атлас") }) }
+            }
         }
         if (!seriesExpanded) Spacer(Modifier.weight(1f))
         Surface(

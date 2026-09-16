@@ -47,8 +47,8 @@ internal fun HomeScreen(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
-            Text("ВЛ80С", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
-            Text("Рабочий профиль локомотивной бригады", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text("ВЛ80С • Ермак", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+            Text("Два технических профиля локомотивной бригады", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
 
         RailInfoBand(
@@ -72,7 +72,7 @@ internal fun HomeScreen(
             )
             RailNavCard(
                 title = "Локомотив / атлас",
-                subtitle = "Оборудование, расположение и схемы",
+                subtitle = "ВЛ80С и Ермак: оборудование, статьи и схемы",
                 marker = "⌁",
                 onClick = onLocomotives,
                 modifier = Modifier.weight(1f)

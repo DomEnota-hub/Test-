@@ -35,10 +35,17 @@ jobs:
             "src/main/java/ru/railbrake/calculator/core/DiagnosticRepository.kt"
             "src/main/java/ru/railbrake/calculator/core/Vl80sNormalValues.kt"
             "src/main/java/ru/railbrake/calculator/core/Vl80sObservationCatalog.kt"
+            "src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt"
             "src/main/java/ru/railbrake/calculator/ui/DiagnosticScreen.kt"
             "src/main/java/ru/railbrake/calculator/ui/KnowledgeBaseScreen.kt"
+            "src/main/java/ru/railbrake/calculator/ui/TechnicalCatalogScreen.kt"
             "src/test/java/ru/railbrake/calculator/core/DiagnosticRepositoryTest.kt"
             "src/test/java/ru/railbrake/calculator/core/LocomotiveProfileTest.kt"
+            "src/test/java/ru/railbrake/calculator/core/TechnicalDataAssetTest.kt"
+            "src/main/assets/technical/ermak_equipment.json.gz"
+            "src/main/assets/technical/ermak_diagnostics.json.gz"
+            "src/main/assets/technical/vl80s_equipment.json.gz"
+            "src/main/assets/technical/vl80s_diagnostics.json.gz"
           )
           for rel in "${files[@]}"; do
             if [ -f "app/$rel" ] && [ -f "patch/app/$rel" ]; then

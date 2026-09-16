@@ -923,7 +923,7 @@ private fun BorderedCautionCard(title: String, lines: List<String>) {
 }
 
 @Composable
-private fun InfoCard(title: String, lines: List<String>, tone: Color) {
+internal fun InfoCard(title: String, lines: List<String>, tone: Color) {
     val danger = tone == MaterialTheme.colorScheme.errorContainer
     val accent = when {
         danger -> MaterialTheme.colorScheme.error
