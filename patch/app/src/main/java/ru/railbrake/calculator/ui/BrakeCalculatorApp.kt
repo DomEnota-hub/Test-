@@ -1,6 +1,7 @@
 package ru.railbrake.calculator.ui
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -85,6 +86,7 @@ private enum class AppScreen(val title: String) {
     LOCOMOTIVES("Локомотивы"),
     DIAGNOSTICS("Диагностика"),
     KNOWLEDGE("Справочник"),
+    FIRST_AID("Первая помощь"),
     EXAM_QUESTIONS("Вопросы и ответы"),
     HISTORY("История"),
     COLORS("Цвета")
@@ -175,7 +177,10 @@ fun BrakeCalculatorApp(
                     .fillMaxSize()
                     .windowInsetsPadding(WindowInsets.safeDrawing)
             ) {
-                AppHeader(onOpenMenu = { drawerScope.launch { drawerState.open() } })
+                AppHeader(
+                    onOpenMenu = { drawerScope.launch { drawerState.open() } },
+                    onOpenFirstAid = { screenName = AppScreen.FIRST_AID.name }
+                )
                 when (screen) {
                 AppScreen.MASS -> ScrollPage {
                     MassScreen(
@@ -210,6 +215,7 @@ fun BrakeCalculatorApp(
                 AppScreen.LOCOMOTIVES -> LocomotiveReferenceScreen()
                 AppScreen.DIAGNOSTICS -> DiagnosticScreen()
                 AppScreen.KNOWLEDGE -> KnowledgeBaseScreen()
+                AppScreen.FIRST_AID -> FirstAidScreen(onBack = { screenName = AppScreen.MASS.name })
                 AppScreen.EXAM_QUESTIONS -> ExamQuestionScreen(
                     onHide = {
                         secretAccessRepository.hide()
@@ -227,15 +233,20 @@ fun BrakeCalculatorApp(
 }
 
 @Composable
-private fun AppHeader(onOpenMenu: () -> Unit) {
+private fun AppHeader(onOpenMenu: () -> Unit, onOpenFirstAid: () -> Unit) {
     Row(
-        modifier = Modifier.padding(start = 8.dp, end = 18.dp, top = 12.dp, bottom = 8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 8.dp, end = 18.dp, top = 12.dp, bottom = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(onClick = onOpenMenu) {
             Text("☰", style = MaterialTheme.typography.headlineMedium)
         }
-        Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(3.dp)
+        ) {
             Text(
                 "Железнодорожный помощник",
                 style = MaterialTheme.typography.titleLarge,
@@ -246,6 +257,16 @@ private fun AppHeader(onOpenMenu: () -> Unit) {
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+        }
+        Column(
+            modifier = Modifier
+                .clickable(onClick = onOpenFirstAid)
+                .padding(horizontal = 8.dp, vertical = 2.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(0.dp)
+        ) {
+            Text("✚", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Black)
+            Text("ОПП", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Black)
         }
     }
 }

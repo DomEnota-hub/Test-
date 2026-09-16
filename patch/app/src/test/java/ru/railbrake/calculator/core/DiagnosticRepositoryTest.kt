@@ -219,4 +219,16 @@ class DiagnosticRepositoryTest {
             assertTrue("$id: related routes", scenario.relatedScenarioIds.size >= 4)
         }
     }
+    @Test
+    fun diagnosticAnswersProduceDifferentCurrentAssessments() {
+        val scenario = DiagnosticRepository.scenario("gv-no-close")!!
+        val start = DiagnosticDecisionEngine.start(scenario)
+        val yes = DiagnosticDecisionEngine.answer(scenario, start, DiagnosticResponse.YES)
+        val no = DiagnosticDecisionEngine.answer(scenario, start, DiagnosticResponse.NO)
+
+        assertTrue(yes.state.answers.last().conclusion.isNotBlank())
+        assertTrue(no.state.answers.last().conclusion.isNotBlank())
+        assertTrue(yes.state.answers.last().conclusion != no.state.answers.last().conclusion)
+    }
+
 }
