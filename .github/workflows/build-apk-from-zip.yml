@@ -1,4 +1,4 @@
-# Verification run for the fully synchronized VL80S 1.2.1-dev5 workspace.
+# Verification run for the fully synchronized VL80S 1.2.1-dev6 workspace.
 name: Build Android APK from ZIP
 
 on:
@@ -16,6 +16,7 @@ jobs:
     timeout-minutes: 35
     env:
       RELEASE_KEYSTORE_B64: ${{ secrets.RAILBRAKE_KEYSTORE_BASE64 }}
+      EXPECTED_SIGNING_CERT_SHA256: ea9fe9341a6ba72b585bd7ff82ce29c8fc5b7b59e76b8b134df203eaab8e2788
 
     steps:
       - name: Checkout
@@ -147,6 +148,17 @@ jobs:
           set -o pipefail
           gradle :app:assembleRelease --stacktrace --console=plain 2>&1 | tee build-release.log
 
+      - name: Verify signed release metadata and developer certificate
+        if: env.RELEASE_KEYSTORE_B64 != ''
+        working-directory: buildsrc/RailBrakeCalculator
+        shell: bash
+        run: |
+          APK=app/build/outputs/apk/release/app-release.apk
+          "$ANDROID_SDK_ROOT/build-tools/34.0.0/aapt" dump badging "$APK" | tee apk-badging.log
+          grep -q "package: name='ru.railbrake.calculator' versionCode='134' versionName='1.2.1-dev6'" apk-badging.log
+          "$ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner" verify --verbose --print-certs "$APK" | tee signed-apksigner.log
+          grep -qi "Signer #1 certificate SHA-256 digest: $EXPECTED_SIGNING_CERT_SHA256" signed-apksigner.log
+
       - name: Upload signed release APK
         if: env.RELEASE_KEYSTORE_B64 != ''
         uses: actions/upload-artifact@v4
@@ -161,10 +173,10 @@ jobs:
         shell: bash
         run: |
           echo "===== BUILD ERROR SUMMARY ====="
-          for f in buildsrc/RailBrakeCalculator/unit-tests.log buildsrc/RailBrakeCalculator/lint.log buildsrc/RailBrakeCalculator/build-apk.log buildsrc/RailBrakeCalculator/build-release.log; do
+          for f in buildsrc/RailBrakeCalculator/unit-tests.log buildsrc/RailBrakeCalculator/lint.log buildsrc/RailBrakeCalculator/build-apk.log buildsrc/RailBrakeCalculator/build-release.log buildsrc/RailBrakeCalculator/signed-apksigner.log; do
             if [ -f "$f" ]; then
               echo "===== $f ====="
-              grep -nEi '(^e:|error:|FAILURE:|What went wrong|Execution failed|Caused by:|Could not|Unresolved reference|Compilation error|Lint found)' "$f" | tail -n 120 || true
+              grep -nEi '(^e:|error:|FAILURE:|What went wrong|Execution failed|Caused by:|Could not|Unresolved reference|Compilation error|Lint found|Signer #1 certificate SHA-256)' "$f" | tail -n 120 || true
               tail -n 100 "$f" || true
             fi
           done
@@ -180,6 +192,7 @@ jobs:
             buildsrc/RailBrakeCalculator/unit-tests.log
             buildsrc/RailBrakeCalculator/lint.log
             buildsrc/RailBrakeCalculator/apk-badging.log
+            buildsrc/RailBrakeCalculator/signed-apksigner.log
             buildsrc/RailBrakeCalculator/app/build/reports/lint-results-debug.html
           if-no-files-found: ignore
           retention-days: 7
