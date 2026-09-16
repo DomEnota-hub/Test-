@@ -643,8 +643,13 @@ private fun pneumaticRouteSteps(mode: ru.railbrake.calculator.core.PneumaticMode
         pneumaticTypedStep(PneumaticLinkKind.CONTROL, tmLeftToAirDistributor, tmRightToAirDistributor),
         pneumaticStep(auxiliaryReservoirToAirDistributor.reversed(), airDistributorToKvt),
         pneumaticStep(pmToKvt, kvtToFirstBogie),
-        pneumaticTypedStep(PneumaticLinkKind.CONTROL, kvtToPressureRelay),
-        pneumaticStep(pmToPressureRelay, pressureRelayToSecondBogie)
+        PneumaticRouteStep(
+            listOf(
+                PneumaticRouteSegment(kvtToPressureRelay, PneumaticLinkKind.CONTROL),
+                PneumaticRouteSegment(pmToPressureRelay, PneumaticLinkKind.FLOW),
+                PneumaticRouteSegment(pressureRelayToSecondBogie, PneumaticLinkKind.FLOW)
+            )
+        )
     )
     ru.railbrake.calculator.core.PneumaticMode.RELEASE -> listOf(
         pneumaticStep(pmToKm395),
