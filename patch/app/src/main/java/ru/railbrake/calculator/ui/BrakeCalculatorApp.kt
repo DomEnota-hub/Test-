@@ -258,8 +258,8 @@ private fun MassScreen(
     var extraAxles by rememberSaveable { mutableStateOf("0") }
     var manualLoad by rememberSaveable { mutableStateOf("18.87") }
     var slope by rememberSaveable { mutableStateOf(12.0) }
-    var availableShoes by rememberSaveable { mutableStateOf("16") }
-    var axlesPerHandBrake by rememberSaveable { mutableStateOf("4") }
+    var availableShoes by rememberSaveable { mutableStateOf("") }
+    var axlesPerHandBrake by rememberSaveable { mutableStateOf("") }
     var tenChoiceName by rememberSaveable { mutableStateOf("") }
     var oily by rememberSaveable { mutableStateOf(false) }
     var wind by rememberSaveable { mutableStateOf("0") }
@@ -293,6 +293,10 @@ private fun MassScreen(
             }
         )
     }
+
+    WarningBox(
+        "Таблица III.4 применяется для удержания грузового, грузопассажирского, почтово-багажного, рефрижераторного или хозяйственного поезда после остановки на перегоне, если автотормоза неисправны либо их невозможно привести в действие. Для станционного закрепления используйте расчёт по приложению №12 ИДП."
+    )
 
     SectionCard("Исходные данные", "Выберите удобный способ задать состав") {
         MassSource.entries.forEach { option ->
@@ -334,6 +338,7 @@ private fun MassScreen(
                 MiniMetric("Рассчитано осей", counted.toString())
             }
             MassSource.CONSIST -> {
+                WarningBox("Расчёт локомотивной сплотки по таблице III.4 является только справочной оценкой: отдельное нормативное основание для применения этой таблицы к сплотке не подтверждено. Для закрепления сплотки используйте приложение №12 и фактическое число осей.")
                 Text(
                     "Добавляйте только локомотивы, которые входят в расчёт. Ведущий локомотив не добавляйте, если по условию он не учитывается.",
                     style = MaterialTheme.typography.bodySmall,
@@ -409,7 +414,7 @@ private fun MassScreen(
         SectionCard("Нагрузка на ось", null) {
             MiniMetric(
                 if (source == MassSource.MANUAL_LOAD) "Введённая нагрузка на ось" else "Средняя расчётная нагрузка",
-                "${fmt(previewLoad)} т/ось"
+                            "${fmt(previewLoad)} т/ось"
             )
             if (source != MassSource.MANUAL_LOAD) {
                 Text(
@@ -420,7 +425,7 @@ private fun MassScreen(
             }
             when {
                 previewLoad == 10.0 -> {
-                    StatusText("Нормативно применяется строка: 10 т/ось и более", true)
+                    StatusText("Нормативно применяется строка: 10 тс/ось и более", true)
                     if (outputMode == OutputMode.STUDY) {
                         Text(
                             "Нижняя строка доступна только для сравнения, это не нормативный вариант при 10,00 т/ось.",
@@ -437,8 +442,8 @@ private fun MassScreen(
                         )
                     }
                 }
-                previewLoad < 10.0 -> StatusText("Будет применена строка: менее 10 т/ось", true)
-                else -> StatusText("Будет применена строка: 10 т/ось и более", true)
+                previewLoad < 10.0 -> StatusText("Будет применена строка: менее 10 тс/ось", true)
+                else -> StatusText("Будет применена строка: 10 тс/ось и более", true)
             }
         }
     }
@@ -456,8 +461,8 @@ private fun MassScreen(
     }
 
     SectionCard("Фактические средства", "Башмаки используются первыми, ручной тормоз дополняет только недостающую часть") {
-        NumericField("Доступно тормозных башмаков", availableShoes, false) { availableShoes = it; invalidate() }
-        NumericField("На сколько осей действует ручной тормоз одной единицы", axlesPerHandBrake, false) { axlesPerHandBrake = it; invalidate() }
+        NumericField("Доступно тормозных башмаков (например, 16)", availableShoes, false) { availableShoes = it; invalidate() }
+        NumericField("Оси на одну единицу ручного тормоза (например, 4)", axlesPerHandBrake, false) { axlesPerHandBrake = it; invalidate() }
     }
 
     error?.let { ErrorBox(it) }
@@ -625,7 +630,7 @@ private fun MassResultCard(
             if (result.axleCount != null) "Средняя расчётная нагрузка" else "Введённая нагрузка на ось",
             "${fmt(result.axleLoadTons)} т/ось"
         )
-        Metric("Категория", if (result.heavyCategory) "10 т/ось и более" else "менее 10 т/ось")
+        Metric("Категория III.4", if (result.heavyCategory) "10 тс/ось и более" else "менее 10 тс/ось")
         Metric("Уклон", "${fmt(result.slopePermille)}‰")
         Metric("Требуется башмаков", result.requiredShoes.toString(), true)
         Metric("Полная норма ручных тормозных осей", result.fullManualBrakeAxles.toString(), true)
@@ -644,6 +649,14 @@ private fun MassResultCard(
             Metric("Запас по осям", supplement.reserveManualAxles.toString())
             WarningBox("Пропорциональное дополнение башмаков ручными тормозами является расчётной функцией приложения. Для эксплуатационного применения сверяйте установленный порядок.")
         }
+    }
+
+    if (!study) {
+        Text(
+            "Дробные результаты округляются вверх как реализация приложения; это не выдаётся за отдельную дословную строку таблицы III.4.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 
     if (study) {
@@ -759,10 +772,10 @@ private fun AppendixScreen(
     var oily by rememberSaveable(prefill?.token) { mutableStateOf(prefill?.oilyRails ?: false) }
     var wind by rememberSaveable(prefill?.token) { mutableStateOf(prefill?.windSpeedMs ?: "0") }
     var windMatches by rememberSaveable(prefill?.token) { mutableStateOf(prefill?.windMatches ?: false) }
-    var availableShoes by rememberSaveable { mutableStateOf("16") }
-    var axlesPerHandBrake by rememberSaveable { mutableStateOf("4") }
+    var availableShoes by rememberSaveable { mutableStateOf("") }
+    var axlesPerHandBrake by rememberSaveable { mutableStateOf("") }
     var leavingWithoutLocomotive by rememberSaveable { mutableStateOf(true) }
-    var point20Confirmed by rememberSaveable { mutableStateOf(false) }
+    var point20ConditionName by rememberSaveable { mutableStateOf("") }
     var result by remember { mutableStateOf<Appendix12Result?>(null) }
     var error by remember { mutableStateOf<String?>(null) }
 
@@ -771,7 +784,7 @@ private fun AppendixScreen(
 
     SectionCard("Закрепляемая группа", "Расчёт по конкретному пути или его отрезку") {
         NumericField("Количество осей", axles, false) { axles = it; result = null }
-        Text("Профиль", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text("Подсказка по выбору уклона", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
         ChoiceOption("Обычный", "Уклон задан для пути", profile == ProfileMode.NORMAL) { profileName = ProfileMode.NORMAL.name; result = null }
         ChoiceOption("Ломаный, весь путь", "Используется средний уклон всего пути", profile == ProfileMode.BROKEN_FULL_TRACK) { profileName = ProfileMode.BROKEN_FULL_TRACK.name; result = null }
         ChoiceOption("Отдельный отрезок", "Используется фактический уклон отрезка", profile == ProfileMode.SEPARATE_SEGMENT) { profileName = ProfileMode.SEPARATE_SEGMENT.name; result = null }
@@ -800,12 +813,17 @@ private fun AppendixScreen(
             leavingWithoutLocomotive
         ) { leavingWithoutLocomotive = it; result = null }
         if (leavingWithoutLocomotive && slopeValue > 2.5) {
-            WarningBox("При уклоне более 2,5‰ расчёт применим только при выполнении условий п. 20 приложения №12 ИДП. Подтвердите их по действующему ТРА/локальному акту.")
-            SwitchRow(
-                "Условия п. 20 проверены",
-                "Подтверждаю перед эксплуатационным применением",
-                point20Confirmed
-            ) { point20Confirmed = it; result = null }
+            WarningBox("При уклоне более 2,5‰ оставление без локомотива запрещено, кроме случаев п. 20 приложения №12. Выберите реально выполненное условие; без него расчёт блокируется.")
+            ChoiceOption(
+                "Маршрут со стороны спуска защищён или изолирован",
+                "Условие подтверждено ТРА и фактической обстановкой",
+                point20ConditionName == "route"
+            ) { point20ConditionName = "route"; result = null }
+            ChoiceOption(
+                "Применено стационарное устройство закрепления",
+                "Параметры устройства достаточны для этой группы",
+                point20ConditionName == "device"
+            ) { point20ConditionName = "device"; result = null }
         }
         SwitchRow("Замасленные рельсы", "Норма по п. 8 увеличивается в 1,5 раза", oily) { oily = it; result = null }
         NumericField("Скорость ветра, м/с", wind, true) { wind = it; result = null }
@@ -819,8 +837,8 @@ private fun AppendixScreen(
     }
 
     SectionCard("Фактические средства", null) {
-        NumericField("Доступно тормозных башмаков", availableShoes, false) { availableShoes = it; result = null }
-        NumericField("На сколько осей действует стояночный тормоз одной единицы", axlesPerHandBrake, false) { axlesPerHandBrake = it; result = null }
+        NumericField("Доступно тормозных башмаков (например, 16)", availableShoes, false) { availableShoes = it; result = null }
+        NumericField("Оси на одну единицу стояночного тормоза (например, 4)", axlesPerHandBrake, false) { axlesPerHandBrake = it; result = null }
     }
 
     error?.let { ErrorBox(it) }
@@ -837,9 +855,9 @@ private fun AppendixScreen(
                     windSpeedMs = wind.requireNonNegativeDouble("Введите скорость ветра"),
                     windDirectionMatchesPossibleMovement = windMatches,
                     availableShoes = availableShoes.requireNonNegativeInt("Введите количество доступных башмаков"),
-                    axlesPerHandBrakeUnit = axlesPerHandBrake.requirePositiveInt("Введите число осей на одну единицу стояночного тормоза")
-                    , leavingWithoutLocomotive = leavingWithoutLocomotive,
-                    point20ConditionConfirmed = point20Confirmed
+                    axlesPerHandBrakeUnit = axlesPerHandBrake.requirePositiveInt("Введите число осей на одну единицу стояночного тормоза"),
+                    leavingWithoutLocomotive = leavingWithoutLocomotive,
+                    point20ConditionConfirmed = point20ConditionName.isNotBlank()
                 )
             )
             result = resultValue
@@ -880,7 +898,7 @@ private fun AppendixResultCard(result: Appendix12Result, slope: Double, oily: Bo
     )
     SectionCard("Разбор закрепления", null) {
         Metric(
-            if (result.isLowSlopeRule) "Башмаки с обеих сторон" else "Со стороны спуска",
+            if (result.isLowSlopeRule) "Базовая норма всего" else "Со стороны спуска",
             result.baseShoes.toString()
         )
         if (result.oppositeSideShoes > 0) Metric("С противоположной стороны", result.oppositeSideShoes.toString())
@@ -1022,6 +1040,8 @@ private fun LocomotiveCard(loco: LocomotiveSpec) {
             }
             Text(loco.category, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             if (loco.note.isNotBlank()) Text(loco.note, style = MaterialTheme.typography.labelSmall, color = Warning)
+            Text(loco.massKind, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(loco.sourceNote, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }
@@ -1288,4 +1308,3 @@ private fun fmt(value: Double): String = String.format(Locale.US, "%.2f", value)
     .replace('.', ',')
 
 private fun formatDate(timestamp: Long): String = SimpleDateFormat("dd.MM HH:mm", Locale("ru", "RU")).format(Date(timestamp))
-

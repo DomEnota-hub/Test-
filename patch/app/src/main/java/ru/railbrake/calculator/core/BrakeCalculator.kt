@@ -302,4 +302,3 @@ object BrakeCalculator {
         return ceil(value - 1e-12).toInt()
     }
 }
-

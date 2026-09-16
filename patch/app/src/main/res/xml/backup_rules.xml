@@ -2,4 +2,3 @@
 <full-backup-content>
     <exclude domain="root" path="." />
 </full-backup-content>
-

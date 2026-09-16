@@ -83,6 +83,25 @@ class BrakeCalculatorTest {
     }
 
     @Test
+    fun values_extremely_close_to_ten_are_not_mistaken_for_exact_boundary() {
+        val below = BrakeCalculator.calculateMass(MassCalculationInput(1000.0, manualAxleLoadTons = 10.0 - 1e-10, slopePermille = 10.0))
+        val above = BrakeCalculator.calculateMass(MassCalculationInput(1000.0, manualAxleLoadTons = 10.0 + 1e-10, slopePermille = 10.0))
+        assertFalse(below.isExactlyTenTons)
+        assertFalse(below.heavyCategory)
+        assertFalse(above.isExactlyTenTons)
+        assertTrue(above.heavyCategory)
+    }
+
+    @Test
+    fun point20_confirmation_starts_only_above_two_and_half_permille() {
+        fun input(slope: Double) = Appendix12Input(200, ProfileMode.NORMAL, slope, AppendixFormula.FORMULA_1, false, 0.0, false, 10, 4, leavingWithoutLocomotive = true)
+        BrakeCalculator.calculateAppendix12(input(2.5))
+        org.junit.Assert.assertThrows(IllegalArgumentException::class.java) {
+            BrakeCalculator.calculateAppendix12(input(2.5001))
+        }
+    }
+
+    @Test
     fun mass_supplement_uses_exact_remaining_shoe_equivalent() {
         val result = BrakeCalculator.calculateMass(
             MassCalculationInput(3800.0, axleCount = 200, slopePermille = 12.0)
@@ -239,4 +258,3 @@ class BrakeCalculatorTest {
         assertEquals(8, windShoes(22.0))
     }
 }
-
