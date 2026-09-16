@@ -1,1 +1,0 @@
-d42d86663fd206001119b183b767ebf56703db3d04f335136cbd12c807e1c143  artifacts/RailBrakeCalculator-1.2.2-dev10-signed.apk
