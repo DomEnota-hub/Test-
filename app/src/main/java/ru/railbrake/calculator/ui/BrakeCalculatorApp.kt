@@ -159,6 +159,11 @@ fun BrakeCalculatorApp(
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                ) {
                 Row(
                     modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 14.dp),
                     verticalAlignment = Alignment.CenterVertically,
@@ -230,11 +235,12 @@ fun BrakeCalculatorApp(
                 }
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                 NavigationDrawerItem(
-                    label = { Text(AppScreen.SETTINGS.title) },
+                    label = { Text("Настройки и палитра") },
                     selected = screen == AppScreen.SETTINGS,
                     onClick = { screenName = AppScreen.SETTINGS.name; drawerScope.launch { drawerState.close() } },
                     modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                 )
+                }
             }
         }
     ) {
@@ -1253,6 +1259,7 @@ private fun LocomotiveReferenceScreen(
     onOpenElectrical: () -> Unit
 ) {
     var query by rememberSaveable { mutableStateOf("") }
+    var seriesExpanded by rememberSaveable { mutableStateOf(false) }
     val found = remember(query) { LocomotiveDatabase.search(query) }
     Column(
         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 8.dp),
@@ -1269,20 +1276,45 @@ private fun LocomotiveReferenceScreen(
             item { FilterChip(selected = false, onClick = onOpenPneumatic, label = { Text("Пневмосхемы") }) }
             item { FilterChip(selected = false, onClick = onOpenAtlas, label = { Text("Интерактивный атлас") }) }
         }
-        RailSectionHeader("Справочная база серий", "Масса и оси зависят от модификации")
-        OutlinedTextField(
-            value = query,
-            onValueChange = { query = it },
+        if (!seriesExpanded) Spacer(Modifier.weight(1f))
+        Surface(
             modifier = Modifier.fillMaxWidth(),
-            label = { Text("Поиск по серии или типу") },
-            singleLine = true,
-            shape = RoundedCornerShape(14.dp)
-        )
-        LazyColumn(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
+            onClick = { seriesExpanded = !seriesExpanded },
+            shape = RoundedCornerShape(14.dp),
+            color = MaterialTheme.colorScheme.surface,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
         ) {
-            items(found) { loco -> LocomotiveCard(loco) }
+            Row(
+                modifier = Modifier.padding(horizontal = 14.dp, vertical = 11.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Text("Справочная база серий", fontWeight = FontWeight.Bold)
+                    Text(
+                        if (seriesExpanded) "Нажмите, чтобы свернуть" else "Масса и число осей по сериям",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Text(if (seriesExpanded) "⌃" else "⌄", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary)
+            }
+        }
+        if (seriesExpanded) {
+            OutlinedTextField(
+                value = query,
+                onValueChange = { query = it },
+                modifier = Modifier.fillMaxWidth(),
+                label = { Text("Поиск по серии или типу") },
+                singleLine = true,
+                shape = RoundedCornerShape(14.dp)
+            )
+            LazyColumn(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                items(found) { loco -> LocomotiveCard(loco) }
+            }
         }
     }
 }
@@ -1329,7 +1361,7 @@ private fun PaletteScreen(
     }
     RailInfoBand("Основная тема dev8: графитовый фон, металлические вторичные элементы и янтарный рабочий акцент. Красный зарезервирован для опасности и ОПП.")
     SectionCard("О приложении", "Текущая рабочая сборка") {
-        Metric("Версия", "1.2.2-dev9 (137)")
+        Metric("Версия", "1.2.2-dev10 (138)")
         Metric("Профиль", "ВЛ80С")
         Metric("Режим", "Локальное хранение рабочих данных")
     }
