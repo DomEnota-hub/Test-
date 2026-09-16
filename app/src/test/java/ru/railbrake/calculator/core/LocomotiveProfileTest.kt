@@ -73,4 +73,16 @@ class LocomotiveProfileTest {
             assertNotNull("quick route missing $scenarioId", DiagnosticRepository.scenario(scenarioId))
         }
     }
+
+    @Test
+    fun normalValuesAreSourcedAndMappedToKnownEquipment() {
+        assertTrue(Vl80sNormalValues.all.isNotEmpty())
+        Vl80sNormalValues.all.forEach { value ->
+            assertTrue("${value.id}: value", value.normalValue.isNotBlank())
+            assertTrue("${value.id}: source", value.source.isNotBlank())
+            value.equipmentIds.forEach { id ->
+                assertNotNull("${value.id}: unknown equipment $id", Vl80sObservationCatalog.equipment(id))
+            }
+        }
+    }
 }
