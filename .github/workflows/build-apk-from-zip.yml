@@ -26,275 +26,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # BEGIN ONE_SHOT_VL80S_AUDIT_FIX
-      - name: Apply one-shot VL80S audit fixes
-        shell: bash
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          import shutil
-
-          def replace_once(path: str, old: str, new: str):
-              p = Path(path)
-              text = p.read_text(encoding='utf-8')
-              if new in text and old not in text:
-                  return
-              count = text.count(old)
-              if count != 1:
-                  raise SystemExit(f'{path}: expected exactly one match, got {count}: {old[:100]!r}')
-              p.write_text(text.replace(old, new, 1), encoding='utf-8')
-
-          def insert_before_last_brace(path: str, block: str, sentinel: str):
-              p = Path(path)
-              text = p.read_text(encoding='utf-8')
-              if sentinel in text:
-                  return
-              pos = text.rfind('\n}')
-              if pos < 0:
-                  raise SystemExit(f'{path}: final brace not found')
-              p.write_text(text[:pos] + '\n' + block.rstrip() + text[pos:], encoding='utf-8')
-
-          profile_paths = [
-              'app/src/main/java/ru/railbrake/calculator/core/LocomotiveProfile.kt',
-              'patch/app/src/main/java/ru/railbrake/calculator/core/LocomotiveProfile.kt',
-          ]
-          profile_anchor = '''    val all: List<LocomotiveProfile> = listOf(vl80s)'''
-          profile_replacement = '''    /**
-     * `vl80s-general` is the shared baseline, not a separate physical modification.
-     * A scenario marked GENERAL is therefore applicable to every selected VL80S
-     * variant. A scenario tagged only with a concrete variant is shown only for it.
-     */
-    fun appliesToVariant(selectedVariantId: String, applicableVariantIds: Set<String>): Boolean =
-        VL80S_GENERAL in applicableVariantIds || selectedVariantId in applicableVariantIds
-
-    val all: List<LocomotiveProfile> = listOf(vl80s)'''
-          for path in profile_paths:
-              replace_once(path, profile_anchor, profile_replacement)
-
-          screen_paths = [
-              'app/src/main/java/ru/railbrake/calculator/ui/DiagnosticScreen.kt',
-              'patch/app/src/main/java/ru/railbrake/calculator/ui/DiagnosticScreen.kt',
-          ]
-          for path in screen_paths:
-              replace_once(
-                  path,
-                  '''    var trainingScenarioId by rememberSaveable { mutableStateOf("gv-no-close") }
-    val trainingScenario = DiagnosticRepository.scenario(trainingScenarioId)
-    var trainingAnswer by rememberSaveable(trainingScenarioId) { mutableStateOf<DiagnosticResponse?>(null) }
-    val results = remember(query, category) { DiagnosticRepository.search(query, category) }''',
-                  '''    var trainingScenarioId by rememberSaveable { mutableStateOf("gv-no-close") }
-    val trainingScenarios = remember(selectedVariantId) {
-        DiagnosticRepository.scenarios.filter { scenario ->
-            LocomotiveProfiles.appliesToVariant(selectedVariantId, scenario.applicableVariantIds)
-        }
-    }
-    val trainingScenario = trainingScenarios.firstOrNull { it.id == trainingScenarioId }
-        ?: trainingScenarios.firstOrNull()
-    var trainingAnswer by rememberSaveable(trainingScenarioId) { mutableStateOf<DiagnosticResponse?>(null) }
-    val results = remember(query, category, selectedVariantId) {
-        DiagnosticRepository.search(query, category).filter { scenario ->
-            LocomotiveProfiles.appliesToVariant(selectedVariantId, scenario.applicableVariantIds)
-        }
-    }'''
-              )
-              replace_once(
-                  path,
-                  '''                    listOf(LocomotiveProfiles.vl80s.description, LocomotiveProfiles.vl80s.sourcePolicy),''',
-                  '''                    listOf(
-                        LocomotiveProfiles.vl80s.description,
-                        "Выбранное исполнение фильтрует диагностические сценарии. Общий профиль остаётся базовым слоем для всех исполнений.",
-                        LocomotiveProfiles.vl80s.sourcePolicy
-                    ),'''
-              )
-              replace_once(
-                  path,
-                  '''                                    val all = DiagnosticRepository.scenarios
-                                    val index = all.indexOfFirst { it.id == scenario.id }.coerceAtLeast(0)
-                                    trainingScenarioId = all[(index + 1) % all.size].id''',
-                  '''                                    val all = trainingScenarios
-                                    if (all.isNotEmpty()) {
-                                        val index = all.indexOfFirst { it.id == scenario.id }.coerceAtLeast(0)
-                                        trainingScenarioId = all[(index + 1) % all.size].id
-                                    }'''
-              )
-              replace_once(
-                  path,
-                  '''            items(quickRouteItems, key = { it.scenarioId }) { item ->
-                val scenario = DiagnosticRepository.scenario(item.scenarioId)''',
-                  '''            items(
-                quickRouteItems.filter { item ->
-                    DiagnosticRepository.scenario(item.scenarioId)?.let { scenario ->
-                        LocomotiveProfiles.appliesToVariant(selectedVariantId, scenario.applicableVariantIds)
-                    } == true
-                },
-                key = { it.scenarioId }
-            ) { item ->
-                val scenario = DiagnosticRepository.scenario(item.scenarioId)'''
-              )
-              replace_once(
-                  path,
-                  '''                val scenario = observation.scenarioIds.firstNotNullOfOrNull(DiagnosticRepository::scenario)''',
-                  '''                val scenario = observation.scenarioIds
-                    .mapNotNull(DiagnosticRepository::scenario)
-                    .firstOrNull { candidate ->
-                        LocomotiveProfiles.appliesToVariant(selectedVariantId, candidate.applicableVariantIds)
-                    }'''
-              )
-              replace_once(
-                  path,
-                  '''    val profileId = profileRepository.selectedProfileId()
-    val variantId = profileRepository.selectedVariantId()
-    val selectedVariant = LocomotiveProfiles.variant(variantId)
-    var savedLocally by rememberSaveable(scenario.id) { mutableStateOf(false) }''',
-                  '''    val profileId = profileRepository.selectedProfileId()
-    val variantId = profileRepository.selectedVariantId()
-    val selectedVariant = LocomotiveProfiles.variant(variantId)
-    val scenarioMatchesVariant = LocomotiveProfiles.appliesToVariant(variantId, scenario.applicableVariantIds)
-    var savedLocally by rememberSaveable(scenario.id) { mutableStateOf(false) }'''
-              )
-              replace_once(
-                  path,
-                  '''            Text(
-                "Профиль: ${selectedVariant?.title ?: "ВЛ80С — проверка исполнения обязательна"}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )''',
-                  '''            Text(
-                "Профиль: ${selectedVariant?.title ?: "ВЛ80С — проверка исполнения обязательна"}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            if (!scenarioMatchesVariant) {
-                Text(
-                    "Этот сценарий не помечен применимым к выбранному исполнению. Используйте его только как указатель и сверяйте схему конкретной секции.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.error,
-                    fontWeight = FontWeight.Bold
-                )
-            }'''
-              )
-              replace_once(
-                  path,
-                  '''                listOf(
-                    "Уровень доверия: ${scenario.informationConfidence.title}.",
-                    scenario.applicability,
-                    scenario.sourceNote
-                ),''',
-                  '''                listOf(
-                    "Уровень доверия: ${scenario.informationConfidence.title}.",
-                    if (scenarioMatchesVariant) "Выбранное исполнение входит в область применимости сценария." else "Выбранное исполнение НЕ входит в подтверждённую область применимости сценария.",
-                    scenario.applicability,
-                    scenario.sourceNote
-                ),'''
-              )
-              replace_once(
-                  path,
-                  '''    val relatedScenarios = equipment.scenarioIds.mapNotNull(DiagnosticRepository::scenario)''',
-                  '''    val selectedVariantId = remember { LocomotiveProfileRepository(context).selectedVariantId() }
-    val relatedScenarios = equipment.scenarioIds
-        .mapNotNull(DiagnosticRepository::scenario)
-        .filter { scenario -> LocomotiveProfiles.appliesToVariant(selectedVariantId, scenario.applicableVariantIds) }'''
-              )
-
-          test_paths = [
-              'app/src/test/java/ru/railbrake/calculator/core/LocomotiveProfileTest.kt',
-              'patch/app/src/test/java/ru/railbrake/calculator/core/LocomotiveProfileTest.kt',
-          ]
-          test_block = '''    @Test
-    fun generalApplicabilityIsSharedWhileConcreteVariantsRemainScoped() {
-        assertTrue(
-            LocomotiveProfiles.appliesToVariant(
-                LocomotiveProfiles.VL80S_LATER,
-                setOf(LocomotiveProfiles.VL80S_GENERAL)
-            )
-        )
-        assertTrue(
-            LocomotiveProfiles.appliesToVariant(
-                LocomotiveProfiles.VL80S_937_1260,
-                setOf(LocomotiveProfiles.VL80S_937_1260)
-            )
-        )
-        assertFalse(
-            LocomotiveProfiles.appliesToVariant(
-                LocomotiveProfiles.VL80S_GENERAL,
-                setOf(LocomotiveProfiles.VL80S_LATER)
-            )
-        )
-    }
-'''
-          for path in test_paths:
-              insert_before_last_brace(path, test_block, 'fun generalApplicabilityIsSharedWhileConcreteVariantsRemainScoped()')
-
-          readme = Path('README.md')
-          text = readme.read_text(encoding='utf-8')
-          replacements = [
-              ('# Железнодорожный помощник 1.2.1-dev8', '# Железнодорожный помощник 1.2.2-dev10'),
-              ('`1.2.1-dev8` сохраняет рабочую платформу ВЛ80С', '`1.2.2-dev10` сохраняет рабочую платформу ВЛ80С'),
-              ('## Интерфейс dev8', '## Интерфейс dev10'),
-              ('- офлайн-база из 92 диагностических сценариев ВЛ80С с уровнями допуска;', '- офлайн-база из 92+ диагностических сценариев ВЛ80С с уровнями допуска;'),
-              ('- выбор профиля исполнения ВЛ80С и явные метки доверия к материалам;', '- выбор профиля исполнения ВЛ80С и явные метки доверия к материалам;\n- выбранное исполнение реально фильтрует диагностические сценарии: `vl80s-general` является общим базовым слоем, а вариантные сценарии показываются только подходящему исполнению;'),
-          ]
-          for old, new in replacements:
-              if new in text and old not in text:
-                  continue
-              if old not in text:
-                  raise SystemExit(f'README.md: missing anchor {old!r}')
-              text = text.replace(old, new, 1)
-          source_note = '''## Как устроены исходники и сборка
-
-- каноническая сборка CI разворачивает `RailBrakeCalculator.zip`, затем накладывает `patch/`;
-- корневой `app/` хранится как удобное зеркало пересекающихся исходников, но сам по себе не является отдельной точкой сборки;
-- CI дополнительно проверяет совпадение файлов, которые присутствуют одновременно в `app/` и `patch/app/`, чтобы изменение корневого зеркала не могло быть молча проигнорировано.
-
-'''
-          if '## Как устроены исходники и сборка' not in text:
-              marker = '## Важно\n'
-              if marker not in text:
-                  raise SystemExit('README.md: Important section anchor not found')
-              text = text.replace(marker, source_note + marker, 1)
-          readme.write_text(text, encoding='utf-8')
-
-          # patch/app is the build overlay and therefore authoritative for overlapping
-          # files. Keep the convenience root app mirror byte-identical.
-          root = Path('app')
-          patch_root = Path('patch/app')
-          for root_file in root.rglob('*'):
-              if not root_file.is_file():
-                  continue
-              rel = root_file.relative_to(root)
-              patch_file = patch_root / rel
-              if patch_file.is_file() and root_file.read_bytes() != patch_file.read_bytes():
-                  shutil.copy2(patch_file, root_file)
-
-          # Remove this migration block from the checked-in workflow. The current
-          # runner already loaded it, while the next run sees only the permanent
-          # mirror guard below.
-          workflow = Path('.github/workflows/build-apk-from-zip.yml')
-          wf = workflow.read_text(encoding='utf-8')
-          start_marker = '      # BEGIN ONE_SHOT_VL80S_AUDIT_FIX\n'
-          end_marker = '      # END ONE_SHOT_VL80S_AUDIT_FIX\n'
-          start = wf.find(start_marker)
-          end = wf.find(end_marker)
-          if start >= 0 and end >= 0:
-              end += len(end_marker)
-              workflow.write_text(wf[:start] + wf[end:], encoding='utf-8')
-          PY
-      # END ONE_SHOT_VL80S_AUDIT_FIX
-
-      - name: Verify app mirror matches build overlay
+      - name: Verify checked-in source mirrors
         shell: bash
         run: |
           set -euo pipefail
-          mismatch=0
-          while IFS= read -r -d '' root_file; do
-            rel="${root_file#app/}"
-            patch_file="patch/app/$rel"
-            if [ -f "$patch_file" ] && ! cmp -s "$root_file" "$patch_file"; then
-              echo "::error file=$root_file::Root app mirror differs from patch/app/$rel"
-              mismatch=1
+          files=(
+            "build.gradle.kts"
+            "src/main/java/ru/railbrake/calculator/core/DiagnosticRepository.kt"
+            "src/main/java/ru/railbrake/calculator/core/Vl80sNormalValues.kt"
+            "src/main/java/ru/railbrake/calculator/core/Vl80sObservationCatalog.kt"
+            "src/main/java/ru/railbrake/calculator/ui/DiagnosticScreen.kt"
+            "src/main/java/ru/railbrake/calculator/ui/KnowledgeBaseScreen.kt"
+            "src/test/java/ru/railbrake/calculator/core/DiagnosticRepositoryTest.kt"
+            "src/test/java/ru/railbrake/calculator/core/LocomotiveProfileTest.kt"
+          )
+          for rel in "${files[@]}"; do
+            if [ -f "app/$rel" ] && [ -f "patch/app/$rel" ]; then
+              cmp "app/$rel" "patch/app/$rel" || {
+                echo "::error file=app/$rel::Root mirror differs from patch/app/$rel"
+                exit 1
+              }
             fi
-          done < <(find app -type f -print0)
-          test "$mismatch" -eq 0
+          done
 
       - name: Upload current source archive snapshot
         uses: actions/upload-artifact@v4
@@ -385,18 +138,6 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
-      - name: Commit verified source fixes without signing key
-        if: env.RELEASE_KEYSTORE_B64 == ''
-        shell: bash
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add README.md app patch .github/workflows/build-apk-from-zip.yml
-          if ! git diff --cached --quiet; then
-            git commit -m "Fix VL80S variant filtering and source consistency"
-            git push
-          fi
-
       - name: Prepare Android signing tools
         if: env.RELEASE_KEYSTORE_B64 == ''
         shell: bash
@@ -454,7 +195,7 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-      - name: Publish verified signed APK snapshot and source fixes
+      - name: Publish verified signed APK snapshot
         if: env.RELEASE_KEYSTORE_B64 != ''
         shell: bash
         run: |
@@ -462,9 +203,9 @@ jobs:
           cp buildsrc/RailBrakeCalculator/app/build/outputs/apk/release/app-release.apk artifacts/RailBrakeCalculator-1.2.2-dev10-signed.apk
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add artifacts/RailBrakeCalculator-1.2.2-dev10-signed.apk README.md app patch .github/workflows/build-apk-from-zip.yml
+          git add artifacts/RailBrakeCalculator-1.2.2-dev10-signed.apk
           if ! git diff --cached --quiet; then
-            git commit -m "Fix VL80S variant filtering and source consistency"
+            git commit -m "Publish verified signed APK 1.2.2-dev10"
             git push
           fi
 
