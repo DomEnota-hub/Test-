@@ -1,10 +1,10 @@
-name: Apply dev8 design payload
+name: Apply dev8 design patch
 
 on:
   push:
     branches: [ dev8-design-staging ]
     paths:
-      - '.dev8/READY'
+      - '.dev8patch/READY'
 
 permissions:
   contents: write
@@ -16,14 +16,16 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Reconstruct and apply payload
+      - name: Verify and apply dev8 patch
         shell: bash
         run: |
           set -euo pipefail
-          cat .dev8/part-* | base64 --decode > /tmp/dev8-payload.tar.gz
-          echo "06db98d4cd7364b6d30a7d1cb06b049f59cf40ad085faec4c24850c71eedcc04  /tmp/dev8-payload.tar.gz" | sha256sum -c -
-          tar -xzf /tmp/dev8-payload.tar.gz
-          rm -rf .dev8
+          cat .dev8patch/part-* | base64 --decode > /tmp/dev8.patch.gz
+          echo "27b061316b3f9cd280817c285747c4075e3bad830ac3e42a78946cecf8c65b47  /tmp/dev8.patch.gz" | sha256sum -c -
+          gzip -dc /tmp/dev8.patch.gz > /tmp/dev8.patch
+          git apply --check /tmp/dev8.patch
+          git apply /tmp/dev8.patch
+          rm -rf .dev8patch .dev8
           rm -f .github/workflows/apply-dev8-payload.yml
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
