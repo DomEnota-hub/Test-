@@ -161,4 +161,42 @@ class DiagnosticRepositoryTest {
             }
         }
     }
+
+    @Test
+    fun priorityBrakeAndAuxiliaryScenariosUseSubjectSpecificTrees() {
+        val priorityIds = setOf(
+            "aux-common-loss",
+            "fan-low-airflow",
+            "compressor-long-run",
+            "brake-pipe-no-charge",
+            "equalizing-reservoir-mismatch",
+            "independent-brake-no-apply",
+            "independent-brake-no-release",
+            "brake-cylinder-imbalance"
+        )
+
+        priorityIds.forEach { id ->
+            val scenario = DiagnosticRepository.scenario(id)!!
+            assertEquals("$id: question depth", 3, scenario.questions.size)
+            assertTrue("$id: authorized boundary", scenario.checks.any { it.level == DiagnosticActionLevel.AUTHORIZED_ONLY })
+            assertTrue("$id: tailored causes", scenario.probableCauses.size >= 5)
+            assertTrue("$id: related routes", scenario.relatedScenarioIds.size >= 4)
+            assertTrue("$id: no generic first question", !scenario.questions.first().text.contains("одной секции, тележке или группе"))
+        }
+    }
+
+    @Test
+    fun observationsAndEquipmentOnlyLinkToExistingEntities() {
+        val scenarioIds = DiagnosticRepository.scenarios.map { it.id }.toSet()
+        val equipmentIds = Vl80sObservationCatalog.equipment.map { it.id }.toSet()
+
+        Vl80sObservationCatalog.observations.forEach { observation ->
+            observation.scenarioIds.forEach { id ->
+                assertTrue("${observation.id}: missing scenario $id", id in scenarioIds)
+            }
+            observation.equipmentIds.forEach { id ->
+                assertTrue("${observation.id}: missing equipment $id", id in equipmentIds)
+            }
+        }
+    }
 }
