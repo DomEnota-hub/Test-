@@ -60,7 +60,7 @@ object LocomotiveProfiles {
                 title = "Общий профиль ВЛ80С",
                 applicability = "Когда номер, год выпуска или модернизация неизвестны.",
                 confidence = InformationConfidence.REQUIRES_VARIANT_CHECK,
-                note = "Показывает только общую логику и явно помечает данные, которые нужно сверить по фактической схеме."
+                note = "Общий профиль является базовым слоем: его сценарии допустимы как общая логика для всех исполнений, а конкретные обозначения и уставки всё равно сверяются по фактической схеме."
             ),
             LocomotiveVariant(
                 id = VL80S_937_1260,
@@ -80,6 +80,14 @@ object LocomotiveProfiles {
         sourcePolicy = "Нормативные действия имеют приоритет над учебными материалами. При расхождении с документацией конкретного локомотива действует документация конкретного локомотива и установленный местный порядок.",
         supportedFeatures = ProfileFeature.entries.toSet()
     )
+
+    /**
+     * `vl80s-general` — общий базовый слой, а не отдельная физическая модификация.
+     * Поэтому сценарий с GENERAL применим к любому выбранному исполнению. Сценарий,
+     * помеченный только конкретным variant-id, показывается лишь для этого варианта.
+     */
+    fun appliesToVariant(selectedVariantId: String, applicableVariantIds: Set<String>): Boolean =
+        VL80S_GENERAL in applicableVariantIds || selectedVariantId in applicableVariantIds
 
     val all: List<LocomotiveProfile> = listOf(vl80s)
 
