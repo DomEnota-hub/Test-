@@ -85,4 +85,26 @@ class LocomotiveProfileTest {
             }
         }
     }
+
+    @Test
+    fun generalApplicabilityIsSharedWhileConcreteVariantsRemainScoped() {
+        assertTrue(
+            LocomotiveProfiles.appliesToVariant(
+                LocomotiveProfiles.VL80S_LATER,
+                setOf(LocomotiveProfiles.VL80S_GENERAL)
+            )
+        )
+        assertTrue(
+            LocomotiveProfiles.appliesToVariant(
+                LocomotiveProfiles.VL80S_937_1260,
+                setOf(LocomotiveProfiles.VL80S_937_1260)
+            )
+        )
+        assertFalse(
+            LocomotiveProfiles.appliesToVariant(
+                LocomotiveProfiles.VL80S_GENERAL,
+                setOf(LocomotiveProfiles.VL80S_LATER)
+            )
+        )
+    }
 }
