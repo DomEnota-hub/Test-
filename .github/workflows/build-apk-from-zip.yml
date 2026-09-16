@@ -99,7 +99,7 @@ jobs:
         run: |
           APK=app/build/outputs/apk/release/app-release-unsigned.apk
           "$ANDROID_SDK_ROOT/build-tools/34.0.0/aapt" dump badging "$APK" | tee apk-badging.log
-          grep -q "package: name='ru.railbrake.calculator' versionCode='133' versionName='1.2.1-dev5'" apk-badging.log
+          grep -q "package: name='ru.railbrake.calculator' versionCode='134' versionName='1.2.1-dev6'" apk-badging.log
 
       - name: Upload unsigned release APK
         if: env.RELEASE_KEYSTORE_B64 == ''
