@@ -61,6 +61,7 @@ class DiagnosticRepositoryTest {
             fire.probableCauses,
             fire.prohibited,
             fire.stopConditions,
+            fire.questions.flatMap { listOf(it.text, it.yesMeaning, it.noMeaning) },
             fire.checks.flatMap { listOf(it.action, it.expected, it.ifAbnormal) }
         ).flatten().joinToString(" ")
 
