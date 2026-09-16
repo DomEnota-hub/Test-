@@ -369,6 +369,7 @@ private fun DiagnosticDetails(
     var instrumentNote by rememberSaveable(scenario.id) { mutableStateOf("") }
     var feedbackNote by rememberSaveable(scenario.id) { mutableStateOf("") }
     var candidateScores by remember(scenario.id) { mutableStateOf(emptyMap<String, Int>()) }
+    var currentAssessment by rememberSaveable(scenario.id) { mutableStateOf("") }
     val clipboard = LocalClipboardManager.current
     val context = LocalContext.current
     val sessionRepository = remember { DiagnosticSessionRepository(context) }
@@ -413,6 +414,7 @@ private fun DiagnosticDetails(
                 onAnswer = { response ->
                     val question = scenario.questions.first { it.key == currentQuestionKey }
                     val meaning = DiagnosticRepository.meaning(question, response)
+                    currentAssessment = meaning
                     answers = answers + "${question.text} — ${response.title}. $meaning"
                     candidateScores = candidateScores.toMutableMap().also { scores ->
                         DiagnosticRepository.candidateCauseIds(question, response).forEach { causeId ->
@@ -424,9 +426,24 @@ private fun DiagnosticDetails(
                 onReset = {
                     answers = emptyList()
                     candidateScores = emptyMap()
+                    currentAssessment = ""
                     currentQuestionKey = scenario.questions.firstOrNull()?.key
                 }
             )
+        }
+        if (currentAssessment.isNotBlank()) {
+            val nextQuestion = scenario.questions.firstOrNull { it.key == currentQuestionKey }
+            item {
+                InfoCard(
+                    "Текущая оценка по ответам",
+                    buildList {
+                        add(currentAssessment)
+                        if (nextQuestion != null) add("Следующее уточнение: ${nextQuestion.text}")
+                        else add("Вопросы этого маршрута пройдены. Сопоставьте вывод с признаками, проверками и условиями прекращения диагностики ниже.")
+                    },
+                    MaterialTheme.colorScheme.primaryContainer
+                )
+            }
         }
         if (scenario.systemExplanation.isNotEmpty()) {
             item { InfoCard("Как связана система", scenario.systemExplanation, MaterialTheme.colorScheme.secondaryContainer) }
@@ -652,7 +669,7 @@ private fun TriageCard(
     onReset: () -> Unit
 ) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
         shape = RoundedCornerShape(20.dp),
         modifier = Modifier.fillMaxWidth()
     ) {

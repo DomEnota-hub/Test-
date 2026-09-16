@@ -32,6 +32,14 @@ import ru.railbrake.calculator.core.ExamQuestionRepository
 import ru.railbrake.calculator.core.DiagnosticRepository
 import ru.railbrake.calculator.core.Vl80sObservationCatalog
 
+private fun examBlockDisplayTitle(sourceTitle: String): String = when (sourceTitle) {
+    "Тест 1" -> "Блок 1"
+    "Тест 2 - блок 1" -> "Блок 2"
+    "Тест 2 - блок 2" -> "Блок 3"
+    "Тест 2 - блок 3" -> "Блок 4"
+    else -> sourceTitle
+}
+
 @Composable
 fun ExamQuestionScreen(onHide: () -> Unit) {
     val context = LocalContext.current
@@ -63,7 +71,7 @@ fun ExamQuestionScreen(onHide: () -> Unit) {
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             item { FilterChip(selected = block == null, onClick = { block = null }, label = { Text("Все блоки") }) }
             items(repository.blocks) { value ->
-                FilterChip(selected = block == value, onClick = { block = value }, label = { Text(value) })
+                FilterChip(selected = block == value, onClick = { block = value }, label = { Text(examBlockDisplayTitle(value)) })
             }
         }
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -87,7 +95,7 @@ private fun ExamQuestionCard(item: ExamQuestion) {
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("${item.blockTitle} • №${item.sourceNumber} • ${item.category}", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+            Text("${examBlockDisplayTitle(item.blockTitle)} • №${item.sourceNumber} • ${item.category}", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
             Text(item.question, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
             Text("Правильный ответ", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Text(item.correctAnswer, style = MaterialTheme.typography.bodyLarge)
