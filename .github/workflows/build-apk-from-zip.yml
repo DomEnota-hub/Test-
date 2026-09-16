@@ -1,3 +1,4 @@
+# Verification run for the fully synchronized VL80S 1.2.1-dev4 workspace.
 name: Build Android APK from ZIP
 
 on:
