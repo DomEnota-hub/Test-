@@ -5,6 +5,8 @@ package ru.railbrake.calculator.core
  * наблюдение, локализацию и ремонт: наличие карточки не расширяет допуск бригады.
  */
 object DiagnosticExpansion {
+    private const val END = DiagnosticRepository.END_OF_FLOW
+
     val scenarios = listOf(
         expandedScenario(
             id = "control-voltage-low",
@@ -395,8 +397,6 @@ object DiagnosticExpansion {
             related = listOf("smoke-fire-flashover", "motor-fan-failure", "transformer-protection", "protection-trip")
         )
     )
-
-    private const val END = DiagnosticRepository.END_OF_FLOW
 
     private fun expandedScenario(
         id: String,
