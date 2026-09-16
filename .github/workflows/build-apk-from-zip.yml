@@ -1,4 +1,4 @@
-# Verification run for the fully synchronized VL80S 1.2.2-dev10 workspace.
+# Canonical Android verification/build workflow. Version is read from the patched Gradle project.
 name: Build Android APK from ZIP
 
 on:
@@ -12,7 +12,7 @@ on:
       - '.github/workflows/build-apk-from-zip.yml'
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build:
@@ -74,14 +74,29 @@ jobs:
         with:
           gradle-version: '8.7'
 
-      - name: Extract project
+      - name: Extract canonical project and overlay patch
+        shell: bash
         run: |
           rm -rf buildsrc
           mkdir buildsrc
           unzip -q RailBrakeCalculator.zip -d buildsrc
           test -f buildsrc/RailBrakeCalculator/settings.gradle.kts
-          if [ -d patch ]; then cp -a patch/. buildsrc/RailBrakeCalculator/; fi
+          cp -a patch/. buildsrc/RailBrakeCalculator/
           test -f buildsrc/RailBrakeCalculator/app/src/main/java/ru/railbrake/calculator/core/BrakeCalculator.kt
+
+      - name: Read expected app version
+        id: version
+        working-directory: buildsrc/RailBrakeCalculator
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION_CODE=$(sed -nE 's/^[[:space:]]*versionCode[[:space:]]*=[[:space:]]*([0-9]+).*/\1/p' app/build.gradle.kts | head -n1)
+          VERSION_NAME=$(sed -nE 's/^[[:space:]]*versionName[[:space:]]*=[[:space:]]*"([^"]+)".*/\1/p' app/build.gradle.kts | head -n1)
+          test -n "$VERSION_CODE"
+          test -n "$VERSION_NAME"
+          echo "version_code=$VERSION_CODE" >> "$GITHUB_OUTPUT"
+          echo "version_name=$VERSION_NAME" >> "$GITHUB_OUTPUT"
+          echo "Building version $VERSION_NAME ($VERSION_CODE)"
 
       - name: Run unit tests
         working-directory: buildsrc/RailBrakeCalculator
@@ -104,10 +119,10 @@ jobs:
           set -o pipefail
           gradle :app:assembleDebug --stacktrace --console=plain 2>&1 | tee build-apk.log
 
-      - name: Upload APK
+      - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: RailBrakeCalculator-debug
+          name: RailBrakeCalculator-${{ steps.version.outputs.version_name }}-debug
           path: buildsrc/RailBrakeCalculator/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 30
@@ -120,39 +135,21 @@ jobs:
           set -o pipefail
           gradle :app:assembleRelease --stacktrace --console=plain 2>&1 | tee build-release.log
 
-      - name: Verify package and version metadata
+      - name: Verify unsigned release metadata
         if: env.RELEASE_KEYSTORE_B64 == ''
         working-directory: buildsrc/RailBrakeCalculator
         shell: bash
         run: |
           APK=app/build/outputs/apk/release/app-release-unsigned.apk
           "$ANDROID_SDK_ROOT/build-tools/34.0.0/aapt" dump badging "$APK" | tee apk-badging.log
-          grep -q "package: name='ru.railbrake.calculator' versionCode='138' versionName='1.2.2-dev10'" apk-badging.log
+          grep -Fq "package: name='ru.railbrake.calculator' versionCode='${{ steps.version.outputs.version_code }}' versionName='${{ steps.version.outputs.version_name }}'" apk-badging.log
 
       - name: Upload unsigned release APK
         if: env.RELEASE_KEYSTORE_B64 == ''
         uses: actions/upload-artifact@v4
         with:
-          name: RailBrakeCalculator-release-unsigned
+          name: RailBrakeCalculator-${{ steps.version.outputs.version_name }}-release-unsigned
           path: buildsrc/RailBrakeCalculator/app/build/outputs/apk/release/app-release-unsigned.apk
-          if-no-files-found: error
-          retention-days: 7
-
-      - name: Prepare Android signing tools
-        if: env.RELEASE_KEYSTORE_B64 == ''
-        shell: bash
-        run: |
-          mkdir -p signing-tools/lib
-          cp "$ANDROID_SDK_ROOT/build-tools/34.0.0/zipalign" signing-tools/
-          cp "$ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner" signing-tools/
-          cp "$ANDROID_SDK_ROOT/build-tools/34.0.0/lib/apksigner.jar" signing-tools/lib/
-
-      - name: Upload Android signing tools
-        if: env.RELEASE_KEYSTORE_B64 == ''
-        uses: actions/upload-artifact@v4
-        with:
-          name: android-signing-tools
-          path: signing-tools
           if-no-files-found: error
           retention-days: 7
 
@@ -182,7 +179,7 @@ jobs:
         run: |
           APK=app/build/outputs/apk/release/app-release.apk
           "$ANDROID_SDK_ROOT/build-tools/34.0.0/aapt" dump badging "$APK" | tee apk-badging.log
-          grep -q "package: name='ru.railbrake.calculator' versionCode='138' versionName='1.2.2-dev10'" apk-badging.log
+          grep -Fq "package: name='ru.railbrake.calculator' versionCode='${{ steps.version.outputs.version_code }}' versionName='${{ steps.version.outputs.version_name }}'" apk-badging.log
           "$ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner" verify --verbose --print-certs "$APK" | tee signed-apksigner.log
           grep -qi "Signer #1 certificate SHA-256 digest: $EXPECTED_SIGNING_CERT_SHA256" signed-apksigner.log
 
@@ -190,24 +187,10 @@ jobs:
         if: env.RELEASE_KEYSTORE_B64 != ''
         uses: actions/upload-artifact@v4
         with:
-          name: RailBrakeCalculator-release
+          name: RailBrakeCalculator-${{ steps.version.outputs.version_name }}-release-signed
           path: buildsrc/RailBrakeCalculator/app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
           retention-days: 30
-
-      - name: Publish verified signed APK snapshot
-        if: env.RELEASE_KEYSTORE_B64 != ''
-        shell: bash
-        run: |
-          mkdir -p artifacts
-          cp buildsrc/RailBrakeCalculator/app/build/outputs/apk/release/app-release.apk artifacts/RailBrakeCalculator-1.2.2-dev10-signed.apk
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add artifacts/RailBrakeCalculator-1.2.2-dev10-signed.apk
-          if ! git diff --cached --quiet; then
-            git commit -m "Publish verified signed APK 1.2.2-dev10"
-            git push
-          fi
 
       - name: Show useful Gradle errors
         if: failure()
@@ -226,7 +209,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: gradle-logs
+          name: gradle-logs-${{ steps.version.outputs.version_name || 'unknown' }}
           path: |
             buildsrc/RailBrakeCalculator/build-apk.log
             buildsrc/RailBrakeCalculator/build-release.log
