@@ -10,7 +10,7 @@ class DiagnosticRepositoryTest {
     fun scenarios_haveUniqueIdsAndCompleteSafetyContent() {
         val scenarios = DiagnosticRepository.scenarios
 
-        assertTrue(scenarios.size >= 80)
+        assertTrue(scenarios.size >= 92)
         assertEquals(scenarios.size, scenarios.map { it.id }.distinct().size)
         scenarios.forEach { scenario ->
             assertTrue(scenario.title.isNotBlank())
@@ -150,7 +150,7 @@ class DiagnosticRepositoryTest {
     @Test
     fun equipmentAtlasHasFortyNodesAndOnlyValidScenarioLinks() {
         val equipment = Vl80sObservationCatalog.equipment
-        assertTrue(equipment.size >= 40)
+        assertTrue(equipment.size >= 46)
         assertEquals(equipment.size, equipment.map { it.id }.distinct().size)
         equipment.forEach { item ->
             assertTrue(item.title.isNotBlank())
@@ -197,6 +197,26 @@ class DiagnosticRepositoryTest {
             observation.equipmentIds.forEach { id ->
                 assertTrue("${observation.id}: missing equipment $id", id in equipmentIds)
             }
+        }
+    }
+
+    @Test
+    fun completionPassAddsDistinctRoutesAndAtlasBacklinks() {
+        val completionIds = setOf(
+            "brake-lock-state-mismatch",
+            "main-reservoir-safety-valve",
+            "aux-machine-single-trip",
+            "ventilation-duct-damage",
+            "rheostatic-resistor-overheat",
+            "pneumatic-instrument-line-leak"
+        )
+        val equipmentLinks = Vl80sObservationCatalog.equipment.flatMap { it.scenarioIds }.toSet()
+
+        completionIds.forEach { id ->
+            val scenario = DiagnosticRepository.scenario(id)!!
+            assertEquals("$id: three-step route", 3, scenario.questions.size)
+            assertTrue("$id: atlas backlink", id in equipmentLinks)
+            assertTrue("$id: related routes", scenario.relatedScenarioIds.size >= 4)
         }
     }
 }

@@ -374,7 +374,7 @@ object DiagnosticRepository {
     )
 
     val scenarios: List<DiagnosticScenario> = (
-        baseScenarios + DiagnosticExpansion.scenarios + DiagnosticExtendedCatalog.scenarios
+        baseScenarios + DiagnosticExpansion.scenarios + DiagnosticExtendedCatalog.scenarios + DiagnosticCompletionCatalog.scenarios
     ).map(DiagnosticDeepening::enrich).map(::enrichScenario)
 
     val categories: List<String> get() = listOf("Все") + scenarios.map { it.category }.distinct()
