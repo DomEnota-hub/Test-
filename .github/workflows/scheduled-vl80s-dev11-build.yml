@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: '*/5 * * * *'
   workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - 'patch/**'
+      - '.github/workflows/scheduled-vl80s-dev11-build.yml'
 
 permissions:
   contents: write
