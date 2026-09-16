@@ -85,8 +85,7 @@ fun DiagnosticScreen() {
             onOpen = { selectedId = it.id },
             onOpenEquipment = { selectedEquipmentId = it.id }
         )
-    } else {
-        DiagnosticDetails(
+        else -> DiagnosticDetails(
             scenario = selected,
             onBack = { selectedId = null },
             onOpenRelated = { selectedId = it },
@@ -130,25 +129,25 @@ private fun DiagnosticCatalog(
         item {
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 item {
-                FilterChip(
-                    selected = catalogMode == "scenarios",
-                    onClick = { catalogMode = "scenarios" },
-                    label = { Text("Неисправность") }
-                )
+                    FilterChip(
+                        selected = catalogMode == "scenarios",
+                        onClick = { catalogMode = "scenarios" },
+                        label = { Text("Неисправность") }
+                    )
                 }
                 item {
-                FilterChip(
-                    selected = catalogMode == "observations",
-                    onClick = { catalogMode = "observations" },
-                    label = { Text("Что я вижу?") }
-                )
+                    FilterChip(
+                        selected = catalogMode == "observations",
+                        onClick = { catalogMode = "observations" },
+                        label = { Text("Что я вижу?") }
+                    )
                 }
                 item {
-                FilterChip(
-                    selected = catalogMode == "quick",
-                    onClick = { catalogMode = "quick" },
-                    label = { Text("В пути") }
-                )
+                    FilterChip(
+                        selected = catalogMode == "quick",
+                        onClick = { catalogMode = "quick" },
+                        label = { Text("В пути") }
+                    )
                 }
                 item { FilterChip(catalogMode == "training", { catalogMode = "training" }, label = { Text("Тренажёр") }) }
                 item { FilterChip(catalogMode == "profile", { catalogMode = "profile" }, label = { Text("Исполнение") }) }
