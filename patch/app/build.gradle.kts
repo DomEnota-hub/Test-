@@ -1,3 +1,5 @@
+import java.util.Base64
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -104,7 +106,7 @@ val generateLauncherIcon = tasks.register("generateLauncherIcon") {
         check(launcherIconSource.isFile) { "Launcher icon source not found: ${launcherIconSource.absolutePath}" }
         launcherIconOutput.parentFile.mkdirs()
         val encoded = launcherIconSource.readText().filterNot(Char::isWhitespace)
-        launcherIconOutput.writeBytes(java.util.Base64.getDecoder().decode(encoded))
+        launcherIconOutput.writeBytes(Base64.getDecoder().decode(encoded))
     }
 }
 
