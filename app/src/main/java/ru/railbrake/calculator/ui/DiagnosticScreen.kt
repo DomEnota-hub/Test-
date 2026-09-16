@@ -758,11 +758,22 @@ private fun DiagnosticCheckCard(check: DiagnosticCheck) {
 
 @Composable
 private fun SafetyNotice() {
-    InfoCard(
-        title = "Важно: это не допуск к работам",
-        lines = listOf(DiagnosticRepository.safetyNotice),
-        tone = MaterialTheme.colorScheme.errorContainer
-    )
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(20.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.error),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+    ) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(7.dp)) {
+            Text(
+                "Важно: это не допуск к работам",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Black,
+                color = MaterialTheme.colorScheme.error
+            )
+            Text("• ${DiagnosticRepository.safetyNotice}")
+        }
+    }
 }
 
 @Composable
