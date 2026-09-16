@@ -10,7 +10,7 @@ class DiagnosticRepositoryTest {
     fun scenarios_haveUniqueIdsAndCompleteSafetyContent() {
         val scenarios = DiagnosticRepository.scenarios
 
-        assertTrue(scenarios.size >= 10)
+        assertTrue(scenarios.size >= 25)
         assertEquals(scenarios.size, scenarios.map { it.id }.distinct().size)
         scenarios.forEach { scenario ->
             assertTrue(scenario.title.isNotBlank())
@@ -24,12 +24,53 @@ class DiagnosticRepositoryTest {
             assertFalse(scenario.reportFields.isEmpty())
             assertTrue(scenario.sourceNote.isNotBlank())
             assertTrue(scenario.applicability.isNotBlank())
+            assertEquals(scenario.questions.size, scenario.questions.map { it.key }.distinct().size)
             scenario.checks.forEach { check ->
                 assertTrue(check.action.isNotBlank())
                 assertTrue(check.expected.isNotBlank())
                 assertTrue(check.ifAbnormal.isNotBlank())
             }
         }
+    }
+
+    @Test
+    fun expandedScenarios_haveExplanationsFeedbackAndValidLinks() {
+        val expanded = DiagnosticRepository.scenarios.filter {
+            it.observableSigns.isNotEmpty() || it.systemExplanation.isNotEmpty()
+        }
+
+        assertTrue(expanded.size >= 16)
+        expanded.forEach { scenario ->
+            assertFalse("${scenario.id}: observable signs", scenario.observableSigns.isEmpty())
+            assertFalse("${scenario.id}: explanation", scenario.systemExplanation.isEmpty())
+            assertFalse("${scenario.id}: consequences", scenario.operationalConsequences.isEmpty())
+            assertFalse("${scenario.id}: feedback", scenario.feedbackPrompts.isEmpty())
+            scenario.relatedScenarioIds.forEach { relatedId ->
+                assertTrue("${scenario.id}: missing link $relatedId", DiagnosticRepository.scenario(relatedId) != null)
+            }
+            scenario.questions.forEach { question ->
+                listOfNotNull(question.yesNextKey, question.noNextKey)
+                    .filter { it != DiagnosticRepository.END_OF_FLOW }
+                    .forEach { target ->
+                        assertTrue(
+                            "${scenario.id}: missing branch $target",
+                            scenario.questions.any { it.key == target }
+                        )
+                    }
+            }
+        }
+    }
+
+    @Test
+    fun branchingEngine_followsExplicitRouteAndStops() {
+        val scenario = DiagnosticRepository.scenario("control-voltage-low")!!
+        val first = scenario.questions.first()
+        val second = DiagnosticRepository.nextQuestion(scenario, first.key, answerYes = true)
+        val third = DiagnosticRepository.nextQuestion(scenario, second!!.key, answerYes = false)
+
+        assertEquals("ctrl-section", second.key)
+        assertEquals("ctrl-charge", third!!.key)
+        assertEquals(null, DiagnosticRepository.nextQuestion(scenario, third.key, answerYes = true))
     }
 
     @Test
@@ -50,6 +91,9 @@ class DiagnosticRepositoryTest {
         assertTrue(DiagnosticRepository.search("ЭКГ").any { it.id == "ekg-stuck" })
         assertTrue(DiagnosticRepository.search("БУРТ").any { it.id == "rheostatic-brake" })
         assertTrue(DiagnosticRepository.search("АЛСН").any { it.id == "alsn-epk" })
+        assertTrue(DiagnosticRepository.search("АК-11Б").any { it.id == "compressor-no-start" })
+        assertTrue(DiagnosticRepository.search("фазорасщепитель").any { it.id == "phase-splitter-no-start" })
+        assertTrue(DiagnosticRepository.search("песок").any { it.id == "sanding-failure" })
     }
 
     @Test

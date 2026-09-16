@@ -7,6 +7,19 @@ enum class DiagnosticActionLevel(val title: String) {
     STOP("Прекратить действия")
 }
 
+enum class DiagnosticSeverity(val title: String) {
+    INFORMATION("Справочно"),
+    ATTENTION("Требует внимания"),
+    RESTRICT_OPERATION("Ограничить эксплуатацию"),
+    STOP_AND_REPORT("Остановиться и доложить")
+}
+
+enum class DiagnosticResponse(val title: String) {
+    YES("Да"),
+    NO("Нет"),
+    UNKNOWN("Не знаю")
+}
+
 data class DiagnosticCheck(
     val title: String,
     val action: String,
@@ -18,7 +31,22 @@ data class DiagnosticCheck(
 data class DiagnosticQuestion(
     val text: String,
     val yesMeaning: String,
-    val noMeaning: String
+    val noMeaning: String,
+    val key: String = text,
+    val yesNextKey: String? = null,
+    val noNextKey: String? = null,
+    val unknownMeaning: String = "Недостаточно данных: не делать вывод по предположению и зафиксировать этот факт в докладе.",
+    val unknownNextKey: String? = null,
+    val yesCandidateCauseIds: List<String> = emptyList(),
+    val noCandidateCauseIds: List<String> = emptyList(),
+    val unknownCandidateCauseIds: List<String> = emptyList()
+)
+
+data class DiagnosticCause(
+    val id: String,
+    val title: String,
+    val explanation: String,
+    val confidence: InformationConfidence = InformationConfidence.REQUIRES_VARIANT_CHECK
 )
 
 data class DiagnosticScenario(
@@ -36,14 +64,26 @@ data class DiagnosticScenario(
     val reportFields: List<String>,
     val relatedEquipment: List<String>,
     val sourceNote: String,
-    val applicability: String = "ВЛ80С. Исполнение и модернизацию конкретной секции сверять по её схеме и местной инструкции."
+    val applicability: String = "ВЛ80С. Исполнение и модернизацию конкретной секции сверять по её схеме и местной инструкции.",
+    val severity: DiagnosticSeverity = DiagnosticSeverity.ATTENTION,
+    val observableSigns: List<String> = emptyList(),
+    val systemExplanation: List<String> = emptyList(),
+    val operationalConsequences: List<String> = emptyList(),
+    val trainingNotes: List<String> = emptyList(),
+    val feedbackPrompts: List<String> = emptyList(),
+    val relatedScenarioIds: List<String> = emptyList(),
+    val profileId: String = LocomotiveProfiles.VL80S_ID,
+    val applicableVariantIds: Set<String> = setOf(LocomotiveProfiles.VL80S_GENERAL),
+    val informationConfidence: InformationConfidence = InformationConfidence.MANUFACTURER_OR_MANUAL,
+    val diagnosticCauses: List<DiagnosticCause> = emptyList()
 )
 
 object DiagnosticRepository {
+    const val END_OF_FLOW = "__end__"
     const val safetyNotice =
         "Раздел помогает локализовать отказ и подготовить доклад. Он не разрешает работы, на которые у локомотивной бригады нет допуска, не заменяет местную инструкцию и не отменяет требования ограждения, снятия напряжения, проверки его отсутствия и заземления."
 
-    val scenarios = listOf(
+    private val baseScenarios = listOf(
         DiagnosticScenario(
             id = "pantograph-no-rise",
             category = "Высоковольтные цепи",
@@ -333,6 +373,8 @@ object DiagnosticRepository {
         )
     )
 
+    val scenarios: List<DiagnosticScenario> = (baseScenarios + DiagnosticExpansion.scenarios).map(::enrichScenario)
+
     val categories: List<String> get() = listOf("Все") + scenarios.map { it.category }.distinct()
 
     fun search(query: String, category: String = "Все"): List<DiagnosticScenario> {
@@ -344,8 +386,95 @@ object DiagnosticRepository {
                     scenario.summary,
                     scenario.category,
                     scenario.relatedEquipment.joinToString(" "),
-                    scenario.probableCauses.joinToString(" ")
+                    scenario.probableCauses.joinToString(" "),
+                    scenario.observableSigns.joinToString(" "),
+                    scenario.systemExplanation.joinToString(" ")
                 ).joinToString(" ").lowercase().contains(q))
         }
+    }
+
+    fun scenario(id: String): DiagnosticScenario? = scenarios.firstOrNull { it.id == id }
+
+    fun nextQuestion(
+        scenario: DiagnosticScenario,
+        currentKey: String,
+        response: DiagnosticResponse
+    ): DiagnosticQuestion? {
+        val currentIndex = scenario.questions.indexOfFirst { it.key == currentKey }
+        if (currentIndex < 0) return scenario.questions.firstOrNull()
+        val current = scenario.questions[currentIndex]
+        val explicitNext = when (response) {
+            DiagnosticResponse.YES -> current.yesNextKey
+            DiagnosticResponse.NO -> current.noNextKey
+            DiagnosticResponse.UNKNOWN -> current.unknownNextKey
+        }
+        if (explicitNext == END_OF_FLOW) return null
+        if (explicitNext != null) return scenario.questions.firstOrNull { it.key == explicitNext }
+        return scenario.questions.getOrNull(currentIndex + 1)
+    }
+
+    fun nextQuestion(
+        scenario: DiagnosticScenario,
+        currentKey: String,
+        answerYes: Boolean
+    ): DiagnosticQuestion? = nextQuestion(
+        scenario,
+        currentKey,
+        if (answerYes) DiagnosticResponse.YES else DiagnosticResponse.NO
+    )
+
+    fun meaning(question: DiagnosticQuestion, response: DiagnosticResponse): String = when (response) {
+        DiagnosticResponse.YES -> question.yesMeaning
+        DiagnosticResponse.NO -> question.noMeaning
+        DiagnosticResponse.UNKNOWN -> question.unknownMeaning
+    }
+
+    fun candidateCauseIds(question: DiagnosticQuestion, response: DiagnosticResponse): List<String> = when (response) {
+        DiagnosticResponse.YES -> question.yesCandidateCauseIds
+        DiagnosticResponse.NO -> question.noCandidateCauseIds
+        DiagnosticResponse.UNKNOWN -> question.unknownCandidateCauseIds
+    }
+
+    private fun enrichScenario(scenario: DiagnosticScenario): DiagnosticScenario = when (scenario.id) {
+        "gv-no-close" -> scenario.copy(
+            informationConfidence = InformationConfidence.MANUFACTURER_OR_MANUAL,
+            applicableVariantIds = setOf(LocomotiveProfiles.VL80S_GENERAL, LocomotiveProfiles.VL80S_937_1260, LocomotiveProfiles.VL80S_LATER),
+            diagnosticCauses = listOf(
+                DiagnosticCause("gv-drive", "Пневмопривод или давление ГВ", "Команда есть, но привод не выполняет включение/удержание."),
+                DiagnosticCause("gv-control", "Цепь управления или разрешающая блокировка", "До привода не доходит команда либо отсутствует условие включения."),
+                DiagnosticCause("gv-protection", "Действие защиты", "ГВ отключается вследствие аварийного или контрольного сигнала связанной цепи."),
+                DiagnosticCause("gv-power", "Силовая цепь после ГВ", "Отключение связано с режимом тяги, ЭКГ, ВУ, ТЭД или трансформатором."),
+                DiagnosticCause("gv-device", "Сам ГВ", "Неисправность механизма, катушки или контактов выключателя подтверждается только проверкой.")
+            ),
+            questions = scenario.questions.mapIndexed { index, question ->
+                when (index) {
+                    0 -> question.copy(
+                        yesCandidateCauseIds = listOf("gv-drive", "gv-protection", "gv-device"),
+                        noCandidateCauseIds = listOf("gv-control"),
+                        unknownCandidateCauseIds = listOf("gv-control", "gv-drive")
+                    )
+                    1 -> question.copy(
+                        yesCandidateCauseIds = listOf("gv-power", "gv-protection"),
+                        noCandidateCauseIds = listOf("gv-control", "gv-drive"),
+                        unknownCandidateCauseIds = listOf("gv-protection")
+                    )
+                    else -> question.copy(
+                        yesCandidateCauseIds = listOf("gv-protection"),
+                        noCandidateCauseIds = listOf("gv-control", "gv-device"),
+                        unknownCandidateCauseIds = listOf("gv-control", "gv-protection")
+                    )
+                }
+            }
+        )
+        "brake-pipe-leak" -> scenario.copy(
+            informationConfidence = InformationConfidence.NORMATIVE,
+            diagnosticCauses = listOf(
+                DiagnosticCause("tm-loco", "Утечка локомотивной тормозной сети", "Утечка сохраняется после штатного отделения состава."),
+                DiagnosticCause("tm-train", "Утечка или открытый путь в составе", "Проверяется установленным порядком после отделения локомотивной части."),
+                DiagnosticCause("tm-device", "Кран машиниста, блокировка или ЭПК", "Пневматический прибор локомотива создаёт расход воздуха."),
+                DiagnosticCause("tm-large", "Крупная утечка/разрыв", "Резкое падение давления или невозможность зарядки ТМ."),
+            )
+        )
+        else -> scenario
     }
 }
