@@ -58,6 +58,13 @@ jobs:
                   f'{path}: observation applicability'
               )
 
+              text = one(
+                  text,
+                  '    var trainingAnswer by rememberSaveable(trainingScenarioId) { mutableStateOf<DiagnosticResponse?>(null) }',
+                  '    var trainingAnswer by rememberSaveable(trainingScenario?.id ?: "none") { mutableStateOf<DiagnosticResponse?>(null) }',
+                  f'{path}: training state key'
+              )
+
               anchor = '    val scenarioMatchesVariant = LocomotiveProfiles.appliesToVariant(variantId, scenario.applicableVariantIds)'
               insertion = anchor + '\n    val relatedScenarioIds = scenario.relatedScenarioIds.filter { relatedId ->\n        DiagnosticRepository.scenario(relatedId)?.let { relatedScenario ->\n            LocomotiveProfiles.appliesToVariant(variantId, relatedScenario.applicableVariantIds)\n        } == true\n    }'
               text = one(text, anchor, insertion, f'{path}: related applicability anchor')
@@ -79,6 +86,13 @@ jobs:
               heading_plus_empty = heading + '\n        if (relatedScenarios.isEmpty()) {\n            item {\n                InfoCard(\n                    "Нет связанной диагностики для исполнения",\n                    listOf("Для выбранного исполнения у этого аппарата нет подтверждённых связанных сценариев. Сменяйте исполнение только если оно соответствует фактической секции."),\n                    MaterialTheme.colorScheme.surfaceVariant\n                )\n            }\n        }'
               text = one(text, heading, heading_plus_empty, f'{path}: equipment empty state')
 
+              text = one(
+                  text,
+                  '    val observations = Vl80sObservationCatalog.observations.filter { equipment.id in it.equipmentIds }',
+                  '    val observations = Vl80sObservationCatalog.observations.filter { observation ->\n        equipment.id in observation.equipmentIds && observation.scenarioIds.any { scenarioId ->\n            DiagnosticRepository.scenario(scenarioId)?.let { scenario ->\n                LocomotiveProfiles.appliesToVariant(selectedVariantId, scenario.applicableVariantIds)\n            } == true\n        }\n    }',
+                  f'{path}: equipment observations applicability'
+              )
+
               path.write_text(text, encoding='utf-8')
 
           for path in [Path('app/build.gradle.kts'), Path('patch/app/build.gradle.kts')]:
@@ -93,15 +107,8 @@ jobs:
           text = text.replace('Интерфейс dev10', 'Интерфейс dev12')
           marker = '- обновлены диагностика, справочник, локомотив/атлас, первая помощь, расчёты, история, Q&A и настройки.'
           if marker in text and 'аудит навигации диагностики' not in text:
-              text = text.replace(marker, marker + '\n- аудит навигации диагностики устраняет пустые переходы «аппарат → связанная диагностика», скрывает недоступные для выбранного исполнения наблюдения и фильтрует связанные сценарии по исполнению.', 1)
+              text = text.replace(marker, marker + '\n- аудит навигации диагностики устраняет пустые переходы «аппарат → связанная диагностика», скрывает недоступные для выбранного исполнения наблюдения, фильтрует связанные сценарии и сбрасывает состояние тренажёра при смене исполнения.', 1)
           readme.write_text(text, encoding='utf-8')
-
-          workflow = Path('.github/workflows/build-apk-from-zip.yml')
-          text = workflow.read_text(encoding='utf-8')
-          text = text.replace("versionCode='138' versionName='1.2.2-dev10'", "versionCode='140' versionName='1.2.2-dev12'")
-          text = text.replace('RailBrakeCalculator-1.2.2-dev10-signed.apk', 'RailBrakeCalculator-1.2.2-dev12-signed.apk')
-          text = text.replace('Publish verified signed APK 1.2.2-dev10', 'Publish verified signed APK 1.2.2-dev12')
-          workflow.write_text(text, encoding='utf-8')
           PY
 
           cmp app/src/main/java/ru/railbrake/calculator/ui/DiagnosticScreen.kt patch/app/src/main/java/ru/railbrake/calculator/ui/DiagnosticScreen.kt
@@ -109,6 +116,7 @@ jobs:
           grep -q 'selectedEquipmentId = null' patch/app/src/main/java/ru/railbrake/calculator/ui/DiagnosticScreen.kt
           grep -q 'relatedScenarioIds' patch/app/src/main/java/ru/railbrake/calculator/ui/DiagnosticScreen.kt
           grep -q 'Нет связанной диагностики для исполнения' patch/app/src/main/java/ru/railbrake/calculator/ui/DiagnosticScreen.kt
+          grep -q 'trainingScenario?.id' patch/app/src/main/java/ru/railbrake/calculator/ui/DiagnosticScreen.kt
 
       - name: Require signing material
         shell: bash
@@ -174,9 +182,8 @@ jobs:
       - name: Stage verified APK
         shell: bash
         run: |
-          mkdir -p artifacts out
-          cp buildsrc/RailBrakeCalculator/app/build/outputs/apk/release/app-release.apk artifacts/RailBrakeCalculator-1.2.2-dev12-navigation-fixed.apk
-          cp artifacts/RailBrakeCalculator-1.2.2-dev12-navigation-fixed.apk out/
+          mkdir -p out
+          cp buildsrc/RailBrakeCalculator/app/build/outputs/apk/release/app-release.apk out/RailBrakeCalculator-1.2.2-dev12-navigation-fixed.apk
           sha256sum out/RailBrakeCalculator-1.2.2-dev12-navigation-fixed.apk | tee out/SHA256SUMS.txt
 
       - name: Upload verified dev12 artifact
@@ -189,15 +196,13 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-      - name: Commit verified repair and clean one-shot scaffolding
+      - name: Commit verified source repair
         shell: bash
         run: |
-          rm -f artifacts/diagnostic-navigation-audit-trigger.txt
-          rm -f artifacts/diagnostic-navigation-audit-trigger-v2.txt
-          rm -f .github/workflows/diagnostic-navigation-repair.yml
-          rm -f .github/workflows/diagnostic-navigation-repair-v2.yml
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
+          git add app/src/main/java/ru/railbrake/calculator/ui/DiagnosticScreen.kt
+          git add patch/app/src/main/java/ru/railbrake/calculator/ui/DiagnosticScreen.kt
+          git add app/build.gradle.kts patch/app/build.gradle.kts README.md
           git commit -m "Fix diagnostic navigation and publish verified dev12"
           git push origin HEAD:main
