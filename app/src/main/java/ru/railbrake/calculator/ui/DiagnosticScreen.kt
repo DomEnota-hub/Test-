@@ -117,9 +117,19 @@ private fun DiagnosticCatalog(
     var historyVersion by remember { mutableStateOf(0) }
     val sessions = remember(historyVersion) { sessionRepository.load() }
     var trainingScenarioId by rememberSaveable { mutableStateOf("gv-no-close") }
-    val trainingScenario = DiagnosticRepository.scenario(trainingScenarioId)
+    val trainingScenarios = remember(selectedVariantId) {
+        DiagnosticRepository.scenarios.filter { scenario ->
+            LocomotiveProfiles.appliesToVariant(selectedVariantId, scenario.applicableVariantIds)
+        }
+    }
+    val trainingScenario = trainingScenarios.firstOrNull { it.id == trainingScenarioId }
+        ?: trainingScenarios.firstOrNull()
     var trainingAnswer by rememberSaveable(trainingScenarioId) { mutableStateOf<DiagnosticResponse?>(null) }
-    val results = remember(query, category) { DiagnosticRepository.search(query, category) }
+    val results = remember(query, category, selectedVariantId) {
+        DiagnosticRepository.search(query, category).filter { scenario ->
+            LocomotiveProfiles.appliesToVariant(selectedVariantId, scenario.applicableVariantIds)
+        }
+    }
     val observationResults = remember(query) { Vl80sObservationCatalog.search(query) }
 
     LazyColumn(
@@ -186,7 +196,11 @@ private fun DiagnosticCatalog(
             item {
                 InfoCard(
                     "Профиль ВЛ80С",
-                    listOf(LocomotiveProfiles.vl80s.description, LocomotiveProfiles.vl80s.sourcePolicy),
+                    listOf(
+                        LocomotiveProfiles.vl80s.description,
+                        "Выбранное исполнение фильтрует диагностические сценарии. Общий профиль остаётся базовым слоем для всех исполнений.",
+                        LocomotiveProfiles.vl80s.sourcePolicy
+                    ),
                     MaterialTheme.colorScheme.secondaryContainer
                 )
             }
@@ -249,9 +263,11 @@ private fun DiagnosticCatalog(
                             trainingAnswer?.let { answer ->
                                 Text(DiagnosticRepository.meaning(scenario.questions.first(), answer), color = MaterialTheme.colorScheme.primary)
                                 Button(onClick = {
-                                    val all = DiagnosticRepository.scenarios
-                                    val index = all.indexOfFirst { it.id == scenario.id }.coerceAtLeast(0)
-                                    trainingScenarioId = all[(index + 1) % all.size].id
+                                    val all = trainingScenarios
+                                    if (all.isNotEmpty()) {
+                                        val index = all.indexOfFirst { it.id == scenario.id }.coerceAtLeast(0)
+                                        trainingScenarioId = all[(index + 1) % all.size].id
+                                    }
                                 }) { Text("Следующая ситуация") }
                             }
                         }
@@ -268,7 +284,14 @@ private fun DiagnosticCatalog(
                     )
                 )
             }
-            items(quickRouteItems, key = { it.scenarioId }) { item ->
+            items(
+                quickRouteItems.filter { item ->
+                    DiagnosticRepository.scenario(item.scenarioId)?.let { scenario ->
+                        LocomotiveProfiles.appliesToVariant(selectedVariantId, scenario.applicableVariantIds)
+                    } == true
+                },
+                key = { it.scenarioId }
+            ) { item ->
                 val scenario = DiagnosticRepository.scenario(item.scenarioId)
                 Card(
                     onClick = { scenario?.let(onOpen) },
@@ -294,7 +317,11 @@ private fun DiagnosticCatalog(
                 }
             }
             items(observationResults.first, key = { "observation-${it.id}" }) { observation ->
-                val scenario = observation.scenarioIds.firstNotNullOfOrNull(DiagnosticRepository::scenario)
+                val scenario = observation.scenarioIds
+                    .mapNotNull(DiagnosticRepository::scenario)
+                    .firstOrNull { candidate ->
+                        LocomotiveProfiles.appliesToVariant(selectedVariantId, candidate.applicableVariantIds)
+                    }
                 Card(
                     onClick = { scenario?.let(onOpen) },
                     modifier = Modifier.fillMaxWidth(),
@@ -386,6 +413,7 @@ private fun DiagnosticDetails(
     val profileId = profileRepository.selectedProfileId()
     val variantId = profileRepository.selectedVariantId()
     val selectedVariant = LocomotiveProfiles.variant(variantId)
+    val scenarioMatchesVariant = LocomotiveProfiles.appliesToVariant(variantId, scenario.applicableVariantIds)
     var savedLocally by rememberSaveable(scenario.id) { mutableStateOf(false) }
 
     LazyColumn(
@@ -405,6 +433,14 @@ private fun DiagnosticDetails(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+            if (!scenarioMatchesVariant) {
+                Text(
+                    "Этот сценарий не помечен применимым к выбранному исполнению. Используйте его только как указатель и сверяйте схему конкретной секции.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error,
+                    fontWeight = FontWeight.Bold
+                )
+            }
         }
         item { SafetyNotice() }
         item { InfoCard("Сначала", scenario.immediateActions, MaterialTheme.colorScheme.primaryContainer) }
@@ -559,6 +595,7 @@ private fun DiagnosticDetails(
                 "Применимость и источник",
                 listOf(
                     "Уровень доверия: ${scenario.informationConfidence.title}.",
+                    if (scenarioMatchesVariant) "Выбранное исполнение входит в область применимости сценария." else "Выбранное исполнение НЕ входит в подтверждённую область применимости сценария.",
                     scenario.applicability,
                     scenario.sourceNote
                 ),
@@ -578,7 +615,10 @@ private fun EquipmentDetails(
     val context = LocalContext.current
     val examQuestionRepository = remember { ExamQuestionRepository(context) }
     val examQuestionsUnlocked = remember { SecretAccessRepository(context).isUnlocked() }
-    val relatedScenarios = equipment.scenarioIds.mapNotNull(DiagnosticRepository::scenario)
+    val selectedVariantId = remember { LocomotiveProfileRepository(context).selectedVariantId() }
+    val relatedScenarios = equipment.scenarioIds
+        .mapNotNull(DiagnosticRepository::scenario)
+        .filter { scenario -> LocomotiveProfiles.appliesToVariant(selectedVariantId, scenario.applicableVariantIds) }
     val relatedQuestions = remember(equipment.id) {
         if (examQuestionsUnlocked) examQuestionRepository.questions.filter { equipment.id in it.equipmentIds } else emptyList()
     }
