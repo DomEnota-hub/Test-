@@ -70,6 +70,7 @@ import ru.railbrake.calculator.core.ProfileMode
 import ru.railbrake.calculator.core.TenTonsChoice
 import ru.railbrake.calculator.data.HistoryRecord
 import ru.railbrake.calculator.data.HistoryRepository
+import ru.railbrake.calculator.data.SecretAccessRepository
 import ru.railbrake.calculator.ui.theme.AccentPalette
 import ru.railbrake.calculator.ui.theme.Success
 import ru.railbrake.calculator.ui.theme.Warning
@@ -84,6 +85,7 @@ private enum class AppScreen(val title: String) {
     LOCOMOTIVES("Локомотивы"),
     DIAGNOSTICS("Диагностика"),
     KNOWLEDGE("Справочник"),
+    EXAM_QUESTIONS("Вопросы и ответы"),
     HISTORY("История"),
     COLORS("Цвета")
 }
@@ -111,6 +113,9 @@ private data class AppendixPrefill(
 internal fun isDeveloperEasterEgg(massTons: Double, axleCount: Int?): Boolean =
     abs(massTons - 2381.0) < 1e-9 && axleCount == 999
 
+internal fun isSecretExamAccessCode(massTons: Double, axleCount: Int?): Boolean =
+    abs(massTons - 1000.0) < 1e-9 && axleCount == 2381
+
 @Composable
 fun BrakeCalculatorApp(
     palette: AccentPalette,
@@ -118,6 +123,8 @@ fun BrakeCalculatorApp(
 ) {
     val context = LocalContext.current
     val historyRepository = remember { HistoryRepository(context) }
+    val secretAccessRepository = remember { SecretAccessRepository(context) }
+    var examQuestionsUnlocked by remember { mutableStateOf(secretAccessRepository.isUnlocked()) }
     var historyVersion by remember { mutableIntStateOf(0) }
     var screenName by rememberSaveable { mutableStateOf(AppScreen.MASS.name) }
     var appendixPrefill by remember { mutableStateOf<AppendixPrefill?>(null) }
@@ -136,7 +143,9 @@ fun BrakeCalculatorApp(
                     Text("Железнодорожный помощник", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
                     Text("Разделы приложения", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
-                AppScreen.entries.filter { it != AppScreen.COLORS }.forEach { item ->
+                AppScreen.entries.filter {
+                    it != AppScreen.COLORS && (it != AppScreen.EXAM_QUESTIONS || examQuestionsUnlocked)
+                }.forEach { item ->
                     NavigationDrawerItem(
                         label = { Text(item.title) },
                         selected = screen == item,
@@ -177,6 +186,10 @@ fun BrakeCalculatorApp(
                         onOpenAppendix = { prefill ->
                             appendixPrefill = prefill
                             screenName = AppScreen.APPENDIX.name
+                        },
+                        onExamQuestionsUnlocked = {
+                            secretAccessRepository.unlock()
+                            examQuestionsUnlocked = true
                         }
                     )
                 }
@@ -197,6 +210,13 @@ fun BrakeCalculatorApp(
                 AppScreen.LOCOMOTIVES -> LocomotiveReferenceScreen()
                 AppScreen.DIAGNOSTICS -> DiagnosticScreen()
                 AppScreen.KNOWLEDGE -> KnowledgeBaseScreen()
+                AppScreen.EXAM_QUESTIONS -> ExamQuestionScreen(
+                    onHide = {
+                        secretAccessRepository.hide()
+                        examQuestionsUnlocked = false
+                        screenName = AppScreen.MASS.name
+                    }
+                )
                 AppScreen.COLORS -> ScrollPage {
                     PaletteScreen(palette, onPaletteChange)
                 }
@@ -245,7 +265,8 @@ private fun ScrollPage(content: @Composable ColumnScope.() -> Unit) {
 @Composable
 private fun MassScreen(
     onHistory: (HistoryRecord) -> Unit,
-    onOpenAppendix: (AppendixPrefill) -> Unit
+    onOpenAppendix: (AppendixPrefill) -> Unit,
+    onExamQuestionsUnlocked: () -> Unit
 ) {
     var outputModeName by rememberSaveable { mutableStateOf(OutputMode.QUICK.name) }
     var sourceName by rememberSaveable { mutableStateOf(MassSource.DIRECT.name) }
@@ -528,6 +549,9 @@ private fun MassScreen(
             error = null
             showDeveloperEasterEgg = source == MassSource.DIRECT &&
                 isDeveloperEasterEgg(massValue, axleCount)
+            if (source == MassSource.DIRECT && isSecretExamAccessCode(massValue, axleCount)) {
+                onExamQuestionsUnlocked()
+            }
 
             onHistory(
                 HistoryRecord(

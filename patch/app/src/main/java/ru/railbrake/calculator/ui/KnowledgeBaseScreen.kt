@@ -56,6 +56,8 @@ import androidx.compose.ui.unit.dp
 import ru.railbrake.calculator.R
 import ru.railbrake.calculator.core.AirRoute
 import ru.railbrake.calculator.core.DiagramHotspot
+import ru.railbrake.calculator.core.ExamQuestion
+import ru.railbrake.calculator.core.ExamQuestionRepository
 import ru.railbrake.calculator.core.KnowledgeArticle
 import ru.railbrake.calculator.core.KnowledgeRepository
 import ru.railbrake.calculator.core.PneumaticScenario
@@ -67,6 +69,7 @@ fun KnowledgeBaseScreen() {
     var selectedArticleId by rememberSaveable { mutableStateOf<String?>(null) }
     val context = LocalContext.current
     val favoritesRepository = remember { FavoriteArticleRepository(context) }
+    val examQuestionRepository = remember { ExamQuestionRepository(context) }
     var favoriteIds by remember { mutableStateOf(favoritesRepository.load()) }
     val article = selectedArticleId?.let(KnowledgeRepository::articleById)
 
@@ -77,6 +80,7 @@ fun KnowledgeBaseScreen() {
     if (article == null) {
         KnowledgeHome(
             favoriteIds = favoriteIds,
+            examQuestionRepository = examQuestionRepository,
             onOpenArticle = { selectedArticleId = it.id },
             onToggleFavorite = ::toggleFavorite
         )
@@ -94,6 +98,7 @@ fun KnowledgeBaseScreen() {
 @Composable
 private fun KnowledgeHome(
     favoriteIds: Set<String>,
+    examQuestionRepository: ExamQuestionRepository,
     onOpenArticle: (KnowledgeArticle) -> Unit,
     onToggleFavorite: (String) -> Unit
 ) {
@@ -102,6 +107,15 @@ private fun KnowledgeHome(
     var onlyFavorites by rememberSaveable { mutableStateOf(false) }
     val results = remember(query, category, onlyFavorites, favoriteIds) {
         KnowledgeRepository.search(query, category).filter { !onlyFavorites || it.id in favoriteIds }
+    }
+    val categories = remember {
+        (KnowledgeRepository.categories + examQuestionRepository.categories).distinct()
+    }
+    val thematicFacts = remember(query, category, onlyFavorites) {
+        if (onlyFavorites) emptyList() else examQuestionRepository.thematicFacts(
+            query = query,
+            category = category.takeUnless { it == "Все" }
+        )
     }
 
     Column(
@@ -132,7 +146,7 @@ private fun KnowledgeHome(
                     label = { Text("★ Избранное") }
                 )
             }
-            items(KnowledgeRepository.categories) { item ->
+            items(categories) { item ->
                 FilterChip(
                     selected = category == item,
                     onClick = { category = item },
@@ -173,13 +187,48 @@ private fun KnowledgeHome(
                     }
                 }
             }
-            if (results.isEmpty()) {
+            if (thematicFacts.isNotEmpty()) {
+                item {
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Text("Проверочные сведения", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        Text(
+                            "Тематическая выборка из проверенной базы 329 вопросов. Формулировки экзаменационных ответов не заменяют действующие эксплуатационные документы.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+                items(thematicFacts, key = { "fact-${it.id}" }) { fact ->
+                    ThematicFactCard(fact)
+                }
+            }
+            if (results.isEmpty() && thematicFacts.isEmpty()) {
                 item {
                     Card(shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
                         Text("Ничего не найдено. Попробуйте другой запрос.", modifier = Modifier.padding(18.dp))
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun ThematicFactCard(item: ExamQuestion) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+    ) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(7.dp)) {
+            Text(item.category, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+            Text(item.question, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+            Text(item.correctAnswer, style = MaterialTheme.typography.bodyMedium)
+            Text(
+                "Источник: ${item.blockTitle}, вопрос №${item.sourceNumber}",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }
