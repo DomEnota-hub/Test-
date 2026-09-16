@@ -88,8 +88,7 @@ fun DiagnosticScreen() {
             onOpen = { selectedId = it.id },
             onOpenEquipment = { selectedEquipmentId = it.id }
         )
-    } else {
-        DiagnosticDetails(
+        else -> DiagnosticDetails(
             scenario = selected,
             onBack = { selectedId = null },
             onOpenRelated = { selectedId = it },
