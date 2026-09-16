@@ -5,8 +5,11 @@ object DiagnosticCatalogRepository {
     val safetyNotice: String get() = DiagnosticRepository.safetyNotice
 
     val scenarios: List<DiagnosticScenario> by lazy {
-        (DiagnosticRepository.scenarios + DiagnosticExpansionRepository.scenarios)
-            .distinctBy { it.id }
+        (
+            DiagnosticRepository.scenarios +
+                DiagnosticExpansionRepository.scenarios +
+                DiagnosticExpansionRepository2.scenarios
+        ).distinctBy { it.id }
     }
 
     val categories: List<String> get() = listOf("Все") + scenarios.map { it.category }.distinct()
