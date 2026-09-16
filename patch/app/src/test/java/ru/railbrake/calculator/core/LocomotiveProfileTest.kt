@@ -45,4 +45,44 @@ class LocomotiveProfileTest {
         assertEquals(DiagnosticResponse.UNKNOWN, result.state.answers.single().response)
         assertTrue(result.state.answers.single().conclusion.contains("Недостаточно данных"))
     }
+
+    @Test
+    fun equipmentRoutesHaveValidScenariosAndLocations() {
+        Vl80sObservationCatalog.equipment.forEach { item ->
+            assertTrue("${item.id}: purpose", item.purpose.isNotBlank())
+            assertTrue("${item.id}: location", item.location.isNotBlank())
+            assertTrue("${item.id}: connections", item.connections.isNotEmpty())
+            assertTrue("${item.id}: diagnostic route", item.scenarioIds.isNotEmpty())
+            item.scenarioIds.forEach { scenarioId ->
+                assertNotNull("${item.id}: missing scenario $scenarioId", DiagnosticRepository.scenario(scenarioId))
+            }
+        }
+    }
+
+    @Test
+    fun fastRouteTargetsAreAvailable() {
+        val required = setOf(
+            "gv-no-close",
+            "traction-no-assemble",
+            "aux-machines",
+            "brake-pipe-leak",
+            "alsn-epk",
+            "smoke-fire-flashover"
+        )
+        required.forEach { scenarioId ->
+            assertNotNull("quick route missing $scenarioId", DiagnosticRepository.scenario(scenarioId))
+        }
+    }
+
+    @Test
+    fun normalValuesAreSourcedAndMappedToKnownEquipment() {
+        assertTrue(Vl80sNormalValues.all.isNotEmpty())
+        Vl80sNormalValues.all.forEach { value ->
+            assertTrue("${value.id}: value", value.normalValue.isNotBlank())
+            assertTrue("${value.id}: source", value.source.isNotBlank())
+            value.equipmentIds.forEach { id ->
+                assertNotNull("${value.id}: unknown equipment $id", Vl80sObservationCatalog.equipment(id))
+            }
+        }
+    }
 }

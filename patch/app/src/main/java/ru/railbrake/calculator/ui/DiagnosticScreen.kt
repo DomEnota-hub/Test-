@@ -42,33 +42,76 @@ import ru.railbrake.calculator.core.DiagnosticRepository
 import ru.railbrake.calculator.core.DiagnosticResponse
 import ru.railbrake.calculator.core.DiagnosticScenario
 import ru.railbrake.calculator.core.DiagnosticSeverity
+import ru.railbrake.calculator.core.EquipmentReference
 import ru.railbrake.calculator.core.LocomotiveProfiles
 import ru.railbrake.calculator.core.Vl80sObservationCatalog
+import ru.railbrake.calculator.core.Vl80sNormalValues
 import ru.railbrake.calculator.data.DiagnosticSessionRecord
 import ru.railbrake.calculator.data.DiagnosticSessionRepository
 import ru.railbrake.calculator.data.LocomotiveProfileRepository
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
+private data class QuickRouteItem(
+    val title: String,
+    val subtitle: String,
+    val scenarioId: String
+)
+
+private val quickRouteItems = listOf(
+    QuickRouteItem("Токоприёмник / ГВ", "Не поднимается токоприёмник, не включается или отключается ГВ.", "gv-no-close"),
+    QuickRouteItem("Тяга и ЭКГ", "Нет тяги, не набираются позиции, различается ток секций или групп.", "traction-no-assemble"),
+    QuickRouteItem("Вспомогательные машины", "Не запускаются фазорасщепитель, вентиляторы или компрессор.", "aux-machines"),
+    QuickRouteItem("Тормоза и давление", "Падает ТМ, не отпускает тормоз, не набирается давление ГР.", "brake-pipe-leak"),
+    QuickRouteItem("Безопасность движения", "АЛСН/ЭПК, внезапное торможение, срабатывание контроля бдительности.", "alsn-epk"),
+    QuickRouteItem("Нагрев, дым, запах", "Признаки пожара, пробоя или опасного нагрева оборудования.", "smoke-fire-flashover")
+)
 
 @Composable
 fun DiagnosticScreen() {
     var selectedId by rememberSaveable { mutableStateOf<String?>(null) }
+    var selectedEquipmentId by rememberSaveable { mutableStateOf<String?>(null) }
     val selected = DiagnosticRepository.scenarios.firstOrNull { it.id == selectedId }
+    val selectedEquipment = Vl80sObservationCatalog.equipment(selectedEquipmentId.orEmpty())
 
-    if (selected == null) {
-        DiagnosticCatalog(onOpen = { selectedId = it.id })
+    when {
+        selectedEquipment != null -> EquipmentDetails(
+            equipment = selectedEquipment,
+            onBack = { selectedEquipmentId = null },
+            onOpenScenario = { selectedId = it }
+        )
+        selected == null -> DiagnosticCatalog(
+            onOpen = { selectedId = it.id },
+            onOpenEquipment = { selectedEquipmentId = it.id }
+        )
     } else {
         DiagnosticDetails(
             scenario = selected,
             onBack = { selectedId = null },
-            onOpenRelated = { selectedId = it }
+            onOpenRelated = { selectedId = it },
+            onOpenEquipment = { selectedEquipmentId = it }
         )
     }
 }
 
 @Composable
-private fun DiagnosticCatalog(onOpen: (DiagnosticScenario) -> Unit) {
+private fun DiagnosticCatalog(
+    onOpen: (DiagnosticScenario) -> Unit,
+    onOpenEquipment: (EquipmentReference) -> Unit
+) {
     var query by rememberSaveable { mutableStateOf("") }
     var category by rememberSaveable { mutableStateOf("Все") }
     var catalogMode by rememberSaveable { mutableStateOf("scenarios") }
+    val context = LocalContext.current
+    val profileRepository = remember { LocomotiveProfileRepository(context) }
+    val sessionRepository = remember { DiagnosticSessionRepository(context) }
+    var selectedVariantId by rememberSaveable { mutableStateOf(profileRepository.selectedVariantId()) }
+    var historyVersion by remember { mutableStateOf(0) }
+    val sessions = remember(historyVersion) { sessionRepository.load() }
+    var trainingScenarioId by rememberSaveable { mutableStateOf("gv-no-close") }
+    val trainingScenario = DiagnosticRepository.scenario(trainingScenarioId)
+    var trainingAnswer by rememberSaveable(trainingScenarioId) { mutableStateOf<DiagnosticResponse?>(null) }
     val results = remember(query, category) { DiagnosticRepository.search(query, category) }
     val observationResults = remember(query) { Vl80sObservationCatalog.search(query) }
 
@@ -85,20 +128,34 @@ private fun DiagnosticCatalog(onOpen: (DiagnosticScenario) -> Unit) {
         }
         item { SafetyNotice() }
         item {
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                item {
                 FilterChip(
                     selected = catalogMode == "scenarios",
                     onClick = { catalogMode = "scenarios" },
                     label = { Text("Неисправность") }
                 )
+                }
+                item {
                 FilterChip(
                     selected = catalogMode == "observations",
                     onClick = { catalogMode = "observations" },
                     label = { Text("Что я вижу?") }
                 )
+                }
+                item {
+                FilterChip(
+                    selected = catalogMode == "quick",
+                    onClick = { catalogMode = "quick" },
+                    label = { Text("В пути") }
+                )
+                }
+                item { FilterChip(catalogMode == "training", { catalogMode = "training" }, label = { Text("Тренажёр") }) }
+                item { FilterChip(catalogMode == "profile", { catalogMode = "profile" }, label = { Text("Исполнение") }) }
+                item { FilterChip(catalogMode == "history", { catalogMode = "history" }, label = { Text("Журнал") }) }
             }
         }
-        item {
+        if (catalogMode == "scenarios" || catalogMode == "observations") item {
             OutlinedTextField(
                 value = query,
                 onValueChange = { query = it },
@@ -119,7 +176,109 @@ private fun DiagnosticCatalog(onOpen: (DiagnosticScenario) -> Unit) {
                 }
             }
         }
-        if (catalogMode == "observations") {
+        if (catalogMode == "profile") {
+            item {
+                InfoCard(
+                    "Профиль ВЛ80С",
+                    listOf(LocomotiveProfiles.vl80s.description, LocomotiveProfiles.vl80s.sourcePolicy),
+                    MaterialTheme.colorScheme.secondaryContainer
+                )
+            }
+            items(LocomotiveProfiles.vl80s.variants, key = { it.id }) { variant ->
+                Card(
+                    onClick = {
+                        selectedVariantId = variant.id
+                        profileRepository.select(LocomotiveProfiles.VL80S_ID, variant.id)
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    border = if (selectedVariantId == variant.id) BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null,
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                ) {
+                    Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        Text(variant.title, fontWeight = FontWeight.Black)
+                        Text(variant.applicability)
+                        Text("${variant.confidence.title}: ${variant.note}", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                }
+            }
+        } else if (catalogMode == "history") {
+            item {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Text("Локальный журнал", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+                    if (sessions.isNotEmpty()) TextButton(onClick = { sessionRepository.clear(); historyVersion++ }) { Text("Очистить") }
+                }
+            }
+            if (sessions.isEmpty()) item { InfoCard("Пока пусто", listOf("Сохранённые результаты диагностики появятся здесь и останутся на устройстве."), MaterialTheme.colorScheme.surfaceVariant) }
+            items(sessions, key = { it.timestampMillis }) { session ->
+                Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant), modifier = Modifier.fillMaxWidth()) {
+                    Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
+                        Text(session.scenarioTitle, fontWeight = FontWeight.Black)
+                        Text(SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault()).format(Date(session.timestampMillis)), color = MaterialTheme.colorScheme.primary)
+                        Text(session.severity)
+                        Text(session.report, style = MaterialTheme.typography.bodySmall)
+                    }
+                }
+            }
+        } else if (catalogMode == "training") {
+            item {
+                InfoCard(
+                    "Учебный симулятор",
+                    listOf("Ситуации используют те же безопасные деревья, что и рабочий режим. Ответ не является разрешением на вмешательство."),
+                    MaterialTheme.colorScheme.tertiaryContainer
+                )
+            }
+            trainingScenario?.let { scenario ->
+                item {
+                    Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant), modifier = Modifier.fillMaxWidth()) {
+                        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Text("Ситуация", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                            Text(scenario.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                            Text(scenario.summary)
+                            Text(scenario.questions.first().text, fontWeight = FontWeight.Bold)
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Button(onClick = { trainingAnswer = DiagnosticResponse.YES }) { Text("Да") }
+                                OutlinedButton(onClick = { trainingAnswer = DiagnosticResponse.NO }) { Text("Нет") }
+                                TextButton(onClick = { trainingAnswer = DiagnosticResponse.UNKNOWN }) { Text("Не знаю") }
+                            }
+                            trainingAnswer?.let { answer ->
+                                Text(DiagnosticRepository.meaning(scenario.questions.first(), answer), color = MaterialTheme.colorScheme.primary)
+                                Button(onClick = {
+                                    val all = DiagnosticRepository.scenarios
+                                    val index = all.indexOfFirst { it.id == scenario.id }.coerceAtLeast(0)
+                                    trainingScenarioId = all[(index + 1) % all.size].id
+                                }) { Text("Следующая ситуация") }
+                            }
+                        }
+                    }
+                }
+            }
+        } else if (catalogMode == "quick") {
+            item {
+                InfoCard(
+                    "Быстрая оценка",
+                    listOf(
+                        "Выберите наблюдаемое явление. Здесь только безопасное первичное направление; оно не заменяет действующие инструкции.",
+                        "При дыме, огне, дуге, повреждении контактной сети, опасном нагреве или неясной высоковольтной защите прекратите диагностические действия и доложите."
+                    ),
+                    MaterialTheme.colorScheme.errorContainer
+                )
+            }
+            items(quickRouteItems, key = { it.scenarioId }) { item ->
+                val scenario = DiagnosticRepository.scenario(item.scenarioId)
+                Card(
+                    onClick = { scenario?.let(onOpen) },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                ) {
+                    Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        Text(item.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                        Text(item.subtitle, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("Открыть безопасный маршрут →", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
+        } else if (catalogMode == "observations") {
             if (observationResults.first.isEmpty() && observationResults.second.isEmpty()) {
                 item {
                     InfoCard(
@@ -147,9 +306,8 @@ private fun DiagnosticCatalog(onOpen: (DiagnosticScenario) -> Unit) {
                 }
             }
             items(observationResults.second, key = { "equipment-${it.id}" }) { equipment ->
-                val scenario = equipment.scenarioIds.firstNotNullOfOrNull(DiagnosticRepository::scenario)
                 Card(
-                    onClick = { scenario?.let(onOpen) },
+                    onClick = { onOpenEquipment(equipment) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
@@ -159,7 +317,7 @@ private fun DiagnosticCatalog(onOpen: (DiagnosticScenario) -> Unit) {
                         Text(equipment.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
                         Text(equipment.purpose)
                         Text("Где находится: ${equipment.location}", style = MaterialTheme.typography.bodySmall)
-                        Text("Диагностика →", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                        Text("Открыть аппарат →", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -198,7 +356,8 @@ private fun DiagnosticCatalog(onOpen: (DiagnosticScenario) -> Unit) {
 private fun DiagnosticDetails(
     scenario: DiagnosticScenario,
     onBack: () -> Unit,
-    onOpenRelated: (String) -> Unit
+    onOpenRelated: (String) -> Unit,
+    onOpenEquipment: (String) -> Unit
 ) {
     var currentQuestionKey by rememberSaveable(scenario.id) {
         mutableStateOf(scenario.questions.firstOrNull()?.key)
@@ -357,6 +516,12 @@ private fun DiagnosticDetails(
                 RelatedScenarios(scenario.relatedScenarioIds, onOpenRelated)
             }
         }
+        val linkedEquipment = Vl80sObservationCatalog.equipment.filter { equipment ->
+            equipment.scenarioIds.contains(scenario.id)
+        }
+        if (linkedEquipment.isNotEmpty()) {
+            item { RelatedEquipment(linkedEquipment, onOpenEquipment) }
+        }
         item {
             InfoCard(
                 "Применимость и источник",
@@ -365,6 +530,94 @@ private fun DiagnosticDetails(
                     scenario.applicability,
                     scenario.sourceNote
                 ),
+                MaterialTheme.colorScheme.surfaceVariant
+            )
+        }
+        item { Spacer(Modifier.height(20.dp)) }
+    }
+}
+
+@Composable
+private fun EquipmentDetails(
+    equipment: EquipmentReference,
+    onBack: () -> Unit,
+    onOpenScenario: (String) -> Unit
+) {
+    val relatedScenarios = equipment.scenarioIds.mapNotNull(DiagnosticRepository::scenario)
+    val observations = Vl80sObservationCatalog.observations.filter { equipment.id in it.equipmentIds }
+    val normalValues = Vl80sNormalValues.forEquipment(equipment.id)
+
+    LazyColumn(
+        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        item {
+            TextButton(onClick = onBack) { Text("← Диагностика") }
+            Text("Аппарат", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+            Text(equipment.title, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
+            Text(equipment.purpose, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        item { SafetyNotice() }
+        item {
+            InfoCard(
+                "Назначение и связи",
+                listOf("Связано с: ${equipment.connections.joinToString()}"),
+                MaterialTheme.colorScheme.secondaryContainer
+            )
+        }
+        item {
+            InfoCard(
+                "Где искать",
+                listOf(equipment.location, equipment.variantNote),
+                MaterialTheme.colorScheme.surfaceVariant
+            )
+        }
+        if (observations.isNotEmpty()) {
+            item {
+                InfoCard(
+                    "Что может быть видно бригаде",
+                    observations.map { "${it.kind.title}: ${it.title}" },
+                    MaterialTheme.colorScheme.tertiaryContainer
+                )
+            }
+        }
+        if (normalValues.isNotEmpty()) {
+            item {
+                InfoCard(
+                    "Опорные параметры",
+                    normalValues.flatMap { value ->
+                        listOf(
+                            "${value.title}: ${value.normalValue}",
+                            "Применимость: ${value.applicability}",
+                            "Источник: ${value.source}"
+                        )
+                    },
+                    MaterialTheme.colorScheme.secondaryContainer
+                )
+            }
+        }
+        item {
+            Text("Связанная диагностика", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+            Text("Переход открывает безопасный маршрут, а не инструкцию по ремонту.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        items(relatedScenarios, key = { it.id }) { scenario ->
+            Card(
+                onClick = { onOpenScenario(scenario.id) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+            ) {
+                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text(scenario.severity.title, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                    Text(scenario.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                    Text(scenario.summary, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+        }
+        item {
+            InfoCard(
+                "Применимость",
+                listOf("Уровень доверия: ${equipment.confidence.title}.", equipment.variantNote),
                 MaterialTheme.colorScheme.surfaceVariant
             )
         }
@@ -458,6 +711,23 @@ private fun RelatedScenarios(ids: List<String>, onOpen: (String) -> Unit) {
             Text("Один симптом может относиться сразу к нескольким системам.")
             related.forEach { item ->
                 TextButton(onClick = { onOpen(item.id) }) { Text("${item.title} →") }
+            }
+        }
+    }
+}
+
+@Composable
+private fun RelatedEquipment(items: List<EquipmentReference>, onOpen: (String) -> Unit) {
+    Card(
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+        shape = RoundedCornerShape(20.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Text("Связанные аппараты", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+            Text("Назначение и расположение отмечены с учётом варианта исполнения.")
+            items.forEach { equipment ->
+                TextButton(onClick = { onOpen(equipment.id) }) { Text("${equipment.title} →") }
             }
         }
     }

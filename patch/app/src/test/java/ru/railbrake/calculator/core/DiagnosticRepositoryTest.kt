@@ -10,7 +10,7 @@ class DiagnosticRepositoryTest {
     fun scenarios_haveUniqueIdsAndCompleteSafetyContent() {
         val scenarios = DiagnosticRepository.scenarios
 
-        assertTrue(scenarios.size >= 25)
+        assertTrue(scenarios.size >= 80)
         assertEquals(scenarios.size, scenarios.map { it.id }.distinct().size)
         scenarios.forEach { scenario ->
             assertTrue(scenario.title.isNotBlank())
@@ -74,6 +74,26 @@ class DiagnosticRepositoryTest {
     }
 
     @Test
+    fun mainBreakerTreeSeparatesNoAttemptFromLoadRelatedTrip() {
+        val scenario = DiagnosticRepository.scenario("gv-no-close")!!
+        val first = scenario.questions.first()
+
+        assertEquals("gv-command", DiagnosticRepository.nextQuestion(scenario, first.key, DiagnosticResponse.NO)?.key)
+        assertEquals("gv-load", DiagnosticRepository.nextQuestion(scenario, first.key, DiagnosticResponse.YES)?.key)
+        assertEquals("gv-protection", DiagnosticRepository.nextQuestion(scenario, "gv-load", DiagnosticResponse.YES)?.key)
+    }
+
+    @Test
+    fun tractionTreeScoresScopeAndPositionSeparately() {
+        val scenario = DiagnosticRepository.scenario("traction-no-assemble")!!
+        val state = DiagnosticDecisionEngine.start(scenario)
+        val result = DiagnosticDecisionEngine.answer(scenario, state, DiagnosticResponse.YES)
+
+        assertEquals("traction-ekg", result.nextQuestion?.key)
+        assertTrue(result.leadingCauses.any { it.id == "traction-section" })
+    }
+
+    @Test
     fun highVoltageScenarios_requireAuthorizedPersonnel() {
         val ids = setOf("pantograph-no-rise", "gv-no-close", "traction-no-assemble", "ekg-stuck", "protection-trip")
 
@@ -112,5 +132,18 @@ class DiagnosticRepositoryTest {
         assertTrue(text.contains("2 м"))
         assertTrue(text.contains("8 м"))
         assertTrue(text.contains("50 м"))
+    }
+
+    @Test
+    fun extendedCatalogKeepsSafetyBoundaryAndBranchIntegrity() {
+        assertTrue(DiagnosticExtendedCatalog.scenarios.size >= 50)
+        DiagnosticExtendedCatalog.scenarios.forEach { scenario ->
+            assertTrue("${scenario.id}: authorized boundary", scenario.checks.any { it.level == DiagnosticActionLevel.AUTHORIZED_ONLY })
+            assertTrue("${scenario.id}: safe stop", scenario.checks.any { it.level == DiagnosticActionLevel.SAFE_STOP })
+            assertTrue("${scenario.id}: bypass prohibition", scenario.prohibited.any { it.contains("Шунтировать") })
+            scenario.questions.flatMap { listOfNotNull(it.yesNextKey, it.noNextKey, it.unknownNextKey) }
+                .filter { it != DiagnosticRepository.END_OF_FLOW }
+                .forEach { target -> assertTrue("${scenario.id}: missing $target", scenario.questions.any { it.key == target }) }
+        }
     }
 }

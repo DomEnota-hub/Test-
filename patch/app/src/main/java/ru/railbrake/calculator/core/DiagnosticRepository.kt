@@ -373,7 +373,9 @@ object DiagnosticRepository {
         )
     )
 
-    val scenarios: List<DiagnosticScenario> = (baseScenarios + DiagnosticExpansion.scenarios).map(::enrichScenario)
+    val scenarios: List<DiagnosticScenario> = (
+        baseScenarios + DiagnosticExpansion.scenarios + DiagnosticExtendedCatalog.scenarios
+    ).map(::enrichScenario)
 
     val categories: List<String> get() = listOf("Все") + scenarios.map { it.category }.distinct()
 
@@ -446,22 +448,85 @@ object DiagnosticRepository {
                 DiagnosticCause("gv-power", "Силовая цепь после ГВ", "Отключение связано с режимом тяги, ЭКГ, ВУ, ТЭД или трансформатором."),
                 DiagnosticCause("gv-device", "Сам ГВ", "Неисправность механизма, катушки или контактов выключателя подтверждается только проверкой.")
             ),
+            questions = listOf(
+                scenario.questions[0].copy(
+                    key = "gv-attempt",
+                    yesNextKey = "gv-load",
+                    noNextKey = "gv-command",
+                    unknownNextKey = "gv-command",
+                    yesCandidateCauseIds = listOf("gv-drive", "gv-protection", "gv-device"),
+                    noCandidateCauseIds = listOf("gv-control"),
+                    unknownCandidateCauseIds = listOf("gv-control", "gv-drive")
+                ),
+                DiagnosticQuestion(
+                    key = "gv-command",
+                    text = "Подтверждены штатные нулевое положение и разрешающие блокировки?",
+                    yesMeaning = "Разрешающие условия внешне выполнены; вероятнее цепь команды, привод либо сам ГВ.",
+                    noMeaning = "Сначала устранить только штатным способом не выполненное условие и зафиксировать его в докладе; блокировки не обходить.",
+                    unknownMeaning = "Не считать условие выполненным по предположению; отметить, чего именно не удалось подтвердить.",
+                    yesNextKey = "gv-protection",
+                    noNextKey = END_OF_FLOW,
+                    unknownNextKey = "gv-protection",
+                    yesCandidateCauseIds = listOf("gv-control", "gv-device"),
+                    noCandidateCauseIds = listOf("gv-control"),
+                    unknownCandidateCauseIds = listOf("gv-control")
+                ),
+                scenario.questions[1].copy(
+                    key = "gv-load",
+                    yesNextKey = "gv-protection",
+                    noNextKey = "gv-protection",
+                    unknownNextKey = "gv-protection",
+                    yesCandidateCauseIds = listOf("gv-power", "gv-protection"),
+                    noCandidateCauseIds = listOf("gv-control", "gv-drive"),
+                    unknownCandidateCauseIds = listOf("gv-protection")
+                ),
+                scenario.questions[2].copy(
+                    key = "gv-protection",
+                    yesNextKey = END_OF_FLOW,
+                    noNextKey = END_OF_FLOW,
+                    unknownNextKey = END_OF_FLOW,
+                    yesCandidateCauseIds = listOf("gv-protection"),
+                    noCandidateCauseIds = listOf("gv-control", "gv-device"),
+                    unknownCandidateCauseIds = listOf("gv-control", "gv-protection")
+                )
+            )
+        )
+        "traction-no-assemble" -> scenario.copy(
+            diagnosticCauses = listOf(
+                DiagnosticCause("traction-section", "Локальная секция или группа", "Отказ ограничен одной секцией/группой: искать границу по её индикации и току."),
+                DiagnosticCause("traction-control", "Общее разрешение или цепь управления", "Не выполняются общие условия набора позиции или команда не приходит к аппаратам."),
+                DiagnosticCause("traction-ekg", "ЭКГ и подтверждение позиции", "Команда есть, но позиция не набирается либо не подтверждается."),
+                DiagnosticCause("traction-power", "Силовая цепь тяговой группы", "Признаки возникают после ЭКГ: ВУ, БСА, ТЭД или защита требуют проверки допущенным персоналом."),
+                DiagnosticCause("traction-protection", "Защитное отключение", "Тяга разбирается по сигналу защиты; повторные наборы без причины не допускаются.")
+            ),
             questions = scenario.questions.mapIndexed { index, question ->
                 when (index) {
                     0 -> question.copy(
-                        yesCandidateCauseIds = listOf("gv-drive", "gv-protection", "gv-device"),
-                        noCandidateCauseIds = listOf("gv-control"),
-                        unknownCandidateCauseIds = listOf("gv-control", "gv-drive")
+                        key = "traction-scope",
+                        yesNextKey = "traction-ekg",
+                        noNextKey = "traction-ekg",
+                        unknownNextKey = "traction-ekg",
+                        yesCandidateCauseIds = listOf("traction-section"),
+                        noCandidateCauseIds = listOf("traction-control"),
+                        unknownCandidateCauseIds = listOf("traction-section", "traction-control")
                     )
                     1 -> question.copy(
-                        yesCandidateCauseIds = listOf("gv-power", "gv-protection"),
-                        noCandidateCauseIds = listOf("gv-control", "gv-drive"),
-                        unknownCandidateCauseIds = listOf("gv-protection")
+                        key = "traction-ekg",
+                        yesNextKey = "traction-protection",
+                        noNextKey = "traction-protection",
+                        unknownNextKey = "traction-protection",
+                        yesCandidateCauseIds = listOf("traction-power"),
+                        noCandidateCauseIds = listOf("traction-ekg", "traction-control"),
+                        unknownCandidateCauseIds = listOf("traction-ekg")
                     )
                     else -> question.copy(
-                        yesCandidateCauseIds = listOf("gv-protection"),
-                        noCandidateCauseIds = listOf("gv-control", "gv-device"),
-                        unknownCandidateCauseIds = listOf("gv-control", "gv-protection")
+                        key = "traction-protection",
+                        yesNextKey = END_OF_FLOW,
+                        noNextKey = END_OF_FLOW,
+                        unknownNextKey = END_OF_FLOW,
+                        yesCandidateCauseIds = listOf("traction-protection"),
+                        noCandidateCauseIds = listOf("traction-power", "traction-ekg"),
+                        unknownCandidateCauseIds = listOf("traction-protection")
                     )
                 }
             }
