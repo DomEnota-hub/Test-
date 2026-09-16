@@ -1,0 +1,1 @@
+Build the signed audited VL80S APK from current main sources.
