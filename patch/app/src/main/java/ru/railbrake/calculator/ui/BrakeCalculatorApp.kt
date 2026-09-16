@@ -82,6 +82,7 @@ private enum class AppScreen(val title: String) {
     MASS("По массе"),
     APPENDIX("ИДП №12"),
     LOCOMOTIVES("Локомотивы"),
+    DIAGNOSTICS("Диагностика"),
     KNOWLEDGE("Справочник"),
     HISTORY("История"),
     COLORS("Цвета")
@@ -194,6 +195,7 @@ fun BrakeCalculatorApp(
                     onCleared = { historyVersion++ }
                 )
                 AppScreen.LOCOMOTIVES -> LocomotiveReferenceScreen()
+                AppScreen.DIAGNOSTICS -> DiagnosticScreen()
                 AppScreen.KNOWLEDGE -> KnowledgeBaseScreen()
                 AppScreen.COLORS -> ScrollPage {
                     PaletteScreen(palette, onPaletteChange)
