@@ -42,6 +42,7 @@ import ru.railbrake.calculator.core.TechnicalSection
 fun TechnicalCatalogScreen(
     initialFamily: TechnicalFamily = TechnicalFamily.VL80S,
     initialSection: TechnicalSection = TechnicalSection.EQUIPMENT,
+    sectionBackLabel: String = "Локомотивы / атлас",
     onSectionBack: () -> Unit
 ) {
     val context = LocalContext.current
@@ -76,10 +77,10 @@ fun TechnicalCatalogScreen(
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         item {
-            ChildBackButton("Локомотивы / атлас", onSectionBack)
+            ChildBackButton(sectionBackLabel, onSectionBack)
             RailSectionHeader(
                 "Техническая база ${family.title}",
-                "Канонические материалы, стабильные ID и связи между разделами"
+                "Материалы и связи между разделами"
             )
         }
         item {
@@ -115,7 +116,7 @@ fun TechnicalCatalogScreen(
                 onValueChange = { query = it },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                label = { Text("Поиск по названию, ID, аппарату или признаку") },
+                label = { Text("Поиск по названию, аппарату или признаку") },
                 shape = RoundedCornerShape(16.dp)
             )
         }
@@ -137,17 +138,21 @@ fun TechnicalCatalogScreen(
             }
         }
         items(visible, key = { it.id }) { entry ->
+            val borderColor = if (entry.status.equals("STOP_AND_REPORT", true) || entry.status.equals("RESTRICT_OPERATION", true)) {
+                MaterialTheme.colorScheme.error.copy(alpha = 0.55f)
+            } else {
+                MaterialTheme.colorScheme.primary.copy(alpha = 0.42f)
+            }
             Card(
                 onClick = { selectedId = entry.id },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(18.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+                border = BorderStroke(1.dp, borderColor)
             ) {
                 Column(Modifier.padding(15.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text(entry.id, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
-                        if (entry.status.isNotBlank()) Text(entry.status, style = MaterialTheme.typography.labelSmall)
+                    technicalStatusLabel(entry.status)?.let { status ->
+                        Text(status, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
                     }
                     Text(entry.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
                     if (entry.subtitle.isNotBlank()) {
@@ -173,25 +178,41 @@ private fun TechnicalEntryDetail(
     ) {
         item {
             ChildBackButton(entry.section.title, onBack)
-            Text(entry.id, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
             Text(entry.title, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
             if (entry.subtitle.isNotBlank()) {
                 Text(entry.subtitle, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
-            if (entry.status.isNotBlank()) RailStatusPill(entry.status)
+            technicalStatusLabel(entry.status)?.let { status ->
+                RailStatusPill(
+                    status,
+                    accent = if (entry.status.equals("STOP_AND_REPORT", true) || entry.status.equals("RESTRICT_OPERATION", true)) {
+                        MaterialTheme.colorScheme.error
+                    } else null
+                )
+            }
         }
         if (entry.sequence.isNotEmpty()) {
             item { TechnicalSequence(entry, repository, onOpen) }
         }
         items(entry.blocks, key = { it.title }) { block ->
+            val displayLines = repository.displayLines(block.lines)
+            val references = repository.referencedEntries(block.lines)
+            if (displayLines.isEmpty() && references.isEmpty()) return@items
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.34f)),
                 shape = RoundedCornerShape(18.dp)
             ) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(7.dp)) {
                     Text(block.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
-                    block.lines.forEach { line -> Text("• $line") }
+                    displayLines.forEach { line -> Text("• $line") }
+                    references.forEach { target ->
+                        OutlinedButton(
+                            onClick = { onOpen(target) },
+                            modifier = Modifier.fillMaxWidth()
+                        ) { Text("${target.title} →") }
+                    }
                 }
             }
         }
@@ -202,12 +223,10 @@ private fun TechnicalEntryDetail(
             }
             item {
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(entry.relatedIds.distinct().take(40)) { id ->
-                        val target = repository.entry(id)
+                    items(entry.relatedIds.distinct().mapNotNull(repository::entry).take(40), key = { it.id }) { target ->
                         AssistChip(
-                            onClick = { target?.let(onOpen) },
-                            enabled = target != null,
-                            label = { Text(target?.title ?: id) }
+                            onClick = { onOpen(target) },
+                            label = { Text(target.title) }
                         )
                     }
                 }
@@ -228,13 +247,13 @@ private fun TechnicalSequence(
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.42f)),
         shape = RoundedCornerShape(18.dp)
     ) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(9.dp)) {
             Text("Пошаговая цепь", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
             Text("Шаг ${step + 1} из ${entry.sequence.size}", color = MaterialTheme.colorScheme.primary)
-            Text(target?.title ?: currentId, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
-            Text(currentId, style = MaterialTheme.typography.labelSmall)
+            Text(target?.title ?: "Элемент цепи", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedButton(onClick = { if (step > 0) step-- }, enabled = step > 0) { Text("Назад") }
                 Button(onClick = { if (step < entry.sequence.lastIndex) step++ }, enabled = step < entry.sequence.lastIndex) { Text("Далее") }
@@ -244,4 +263,15 @@ private fun TechnicalSequence(
             }
         }
     }
+}
+
+internal fun technicalStatusLabel(status: String): String? = when (status.trim().uppercase()) {
+    "INFORMATION" -> "Справочно"
+    "ATTENTION" -> "Внимание"
+    "RESTRICT_OPERATION" -> "Ограничить эксплуатацию"
+    "STOP_AND_REPORT" -> "Остановиться и доложить"
+    "REQUIRED" -> "Обязательный параметр"
+    "PROFILE_REQUIRED" -> "Требуется выбрать исполнение"
+    "CONFLICT" -> "Требует уточнения"
+    else -> null
 }

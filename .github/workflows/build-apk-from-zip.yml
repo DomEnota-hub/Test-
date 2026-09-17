@@ -42,6 +42,7 @@ jobs:
             "src/test/java/ru/railbrake/calculator/core/DiagnosticRepositoryTest.kt"
             "src/test/java/ru/railbrake/calculator/core/LocomotiveProfileTest.kt"
             "src/test/java/ru/railbrake/calculator/core/TechnicalDataAssetTest.kt"
+            "src/test/java/ru/railbrake/calculator/core/TechnicalPresentationTest.kt"
             "src/main/assets/technical/ermak_system_map.json.gz"
             "src/main/assets/technical/ermak_equipment.json.gz"
             "src/main/assets/technical/ermak_knowledge.json.gz"

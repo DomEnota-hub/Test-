@@ -94,6 +94,7 @@ private enum class AppScreen(val title: String) {
     LOCOMOTIVES("Локомотивы / атлас"),
     LOCOMOTIVE_MATERIAL("Локомотивы / атлас"),
     LOCOMOTIVE_LEGACY("Локомотивы / атлас"),
+    ACCEPTANCE("Приёмка"),
     KNOWLEDGE("Справочник"),
     FIRST_AID("Первая помощь"),
     CALCULATIONS("Расчёты"),
@@ -152,6 +153,7 @@ fun BrakeCalculatorApp(
     var technicalSectionName by rememberSaveable { mutableStateOf(TechnicalSection.EQUIPMENT.name) }
     var diagnosticRootVersion by rememberSaveable { mutableIntStateOf(0) }
     var locomotiveRootVersion by rememberSaveable { mutableIntStateOf(0) }
+    var acceptanceRootVersion by rememberSaveable { mutableIntStateOf(0) }
     var knowledgeRootVersion by rememberSaveable { mutableIntStateOf(0) }
     var firstAidRootVersion by rememberSaveable { mutableIntStateOf(0) }
     var historyRootVersion by rememberSaveable { mutableIntStateOf(0) }
@@ -185,7 +187,7 @@ fun BrakeCalculatorApp(
                     }
                 }
 
-                val mainItems = listOf(AppScreen.HOME, AppScreen.DIAGNOSTICS, AppScreen.LOCOMOTIVES, AppScreen.KNOWLEDGE, AppScreen.FIRST_AID)
+                val mainItems = listOf(AppScreen.HOME, AppScreen.DIAGNOSTICS, AppScreen.LOCOMOTIVES, AppScreen.ACCEPTANCE, AppScreen.KNOWLEDGE, AppScreen.FIRST_AID)
                 val toolItems = buildList {
                     add(AppScreen.CALCULATIONS)
                     add(AppScreen.HISTORY)
@@ -206,6 +208,11 @@ fun BrakeCalculatorApp(
                                     locomotiveMaterialArticleId = null
                                     locomotiveMaterialQuery = null
                                     locomotiveRootVersion++
+                                }
+                                AppScreen.ACCEPTANCE -> {
+                                    technicalFamilyName = TechnicalFamily.VL80S.name
+                                    technicalSectionName = TechnicalSection.ACCEPTANCE.name
+                                    acceptanceRootVersion++
                                 }
                                 AppScreen.KNOWLEDGE -> {
                                     knowledgeStartArticleId = null
@@ -356,6 +363,14 @@ fun BrakeCalculatorApp(
                     sectionBackLabel = "Локомотивы / атлас",
                     onSectionBack = { screenName = AppScreen.LOCOMOTIVES.name }
                 )
+                AppScreen.ACCEPTANCE -> key(acceptanceRootVersion) {
+                    TechnicalCatalogScreen(
+                        initialFamily = TechnicalFamily.VL80S,
+                        initialSection = TechnicalSection.ACCEPTANCE,
+                        sectionBackLabel = "Главная",
+                        onSectionBack = { screenName = AppScreen.HOME.name }
+                    )
+                }
                 AppScreen.DIAGNOSTICS -> key(diagnosticRootVersion) {
                     DiagnosticScreen(
                         initialScenarioId = diagnosticStartScenarioId,
@@ -1270,6 +1285,8 @@ private fun LocomotiveReferenceScreen(
     onOpenTechnical: (TechnicalFamily, TechnicalSection) -> Unit,
     onOpenInteractiveVl80s: () -> Unit
 ) {
+    val context = LocalContext.current
+    val technicalRepository = remember { TechnicalDataRepository(context.applicationContext) }
     var query by rememberSaveable { mutableStateOf("") }
     var seriesExpanded by rememberSaveable { mutableStateOf(false) }
     var ermakSelected by rememberSaveable { mutableStateOf(false) }
@@ -1296,19 +1313,29 @@ private fun LocomotiveReferenceScreen(
             )
         }
         Text(family.subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            item { FilterChip(selected = false, onClick = { onOpenTechnical(family, TechnicalSection.PROFILES) }, label = { Text("Исполнения") }) }
-            item { FilterChip(selected = false, onClick = { onOpenTechnical(family, TechnicalSection.EQUIPMENT) }, label = { Text("Оборудование") }) }
+        val materials = buildList<Pair<String, () -> Unit>> {
+            add("Исполнения" to { onOpenTechnical(family, TechnicalSection.PROFILES) })
+            add("Оборудование" to { onOpenTechnical(family, TechnicalSection.EQUIPMENT) })
             if (family == TechnicalFamily.ERMAK) {
-                item { FilterChip(selected = false, onClick = { onOpenTechnical(family, TechnicalSection.SYSTEMS) }, label = { Text("Системы") }) }
-                item { FilterChip(selected = false, onClick = { onOpenTechnical(family, TechnicalSection.KNOWLEDGE) }, label = { Text("Статьи") }) }
+                add("Системы" to { onOpenTechnical(family, TechnicalSection.SYSTEMS) })
+                add("Статьи" to { onOpenTechnical(family, TechnicalSection.KNOWLEDGE) })
             }
-            item { FilterChip(selected = false, onClick = { onOpenTechnical(family, TechnicalSection.DIAGNOSTICS) }, label = { Text("Диагностика") }) }
-            item { FilterChip(selected = false, onClick = { onOpenTechnical(family, TechnicalSection.ELECTRICAL) }, label = { Text("Электросхемы") }) }
-            item { FilterChip(selected = false, onClick = { onOpenTechnical(family, TechnicalSection.PNEUMATIC) }, label = { Text("Пневмосхемы") }) }
+            add("Диагностика" to { onOpenTechnical(family, TechnicalSection.DIAGNOSTICS) })
+            add("Электросхемы · ${technicalRepository.count(family, TechnicalSection.ELECTRICAL)}" to { onOpenTechnical(family, TechnicalSection.ELECTRICAL) })
+            add("Пневмосхемы · ${technicalRepository.count(family, TechnicalSection.PNEUMATIC)}" to { onOpenTechnical(family, TechnicalSection.PNEUMATIC) })
             if (family == TechnicalFamily.VL80S) {
-                item { FilterChip(selected = false, onClick = { onOpenTechnical(family, TechnicalSection.ACCEPTANCE) }, label = { Text("Приёмка") }) }
-                item { FilterChip(selected = false, onClick = onOpenInteractiveVl80s, label = { Text("Интерактивный атлас") }) }
+                add("Приёмка" to { onOpenTechnical(family, TechnicalSection.ACCEPTANCE) })
+                add("Интерактивный атлас" to onOpenInteractiveVl80s)
+            }
+        }
+        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            materials.chunked(2).forEach { rowItems ->
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    rowItems.forEach { (label, action) ->
+                        OutlinedButton(onClick = action, modifier = Modifier.weight(1f)) { Text(label) }
+                    }
+                    if (rowItems.size == 1) Spacer(Modifier.weight(1f))
+                }
             }
         }
         if (!seriesExpanded) Spacer(Modifier.weight(1f))
