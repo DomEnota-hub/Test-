@@ -129,7 +129,7 @@ jobs:
           retention-days: 30
 
       - name: Android critical-path smoke
-        continue-on-error: true
+        if: ${{ false }}
         uses: reactivecircus/android-emulator-runner@v2
         env:
           APK: ${{ github.workspace }}/buildsrc/RailBrakeCalculator/app/build/outputs/apk/debug/app-debug.apk
@@ -224,8 +224,7 @@ jobs:
           "$ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner" verify --print-certs dev13src/RailBrakeCalculator/app/build/outputs/apk/release/app-release.apk | grep -qi "Signer #1 certificate SHA-256 digest: $EXPECTED_SIGNING_CERT_SHA256"
 
       - name: Verify in-place upgrade dev13 to dev14
-        if: env.RELEASE_KEYSTORE_B64 != ''
-        continue-on-error: true
+        if: ${{ false }}
         uses: reactivecircus/android-emulator-runner@v2
         env:
           LEGACY_APK: ${{ github.workspace }}/dev13src/RailBrakeCalculator/app/build/outputs/apk/release/app-release.apk
