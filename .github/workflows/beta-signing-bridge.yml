@@ -1,0 +1,99 @@
+name: One-off Beta signing bridge
+on:
+  push:
+    branches: [beta-signing-bridge-20260917]
+    paths:
+      - '.github/workflows/beta-signing-bridge.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  sign-beta:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      RELEASE_KEYSTORE_B64: ${{ secrets.RAILBRAKE_KEYSTORE_BASE64 }}
+      EXPECTED_SIGNING_CERT_SHA256: ea9fe9341a6ba72b585bd7ff82ce29c8fc5b7b59e76b8b134df203eaab8e2788
+    steps:
+      - name: Checkout pinned Test source
+        uses: actions/checkout@v4
+        with:
+          ref: a3c9861f5d00c4c2993eb405541694ecead7e83a
+          path: source
+      - name: Checkout validated Beta recovery scripts
+        uses: actions/checkout@v4
+        with:
+          repository: DomEnota-hub/Beta
+          ref: 516d6846a83f93b700afd85ef146ac6241e469e8
+          path: beta
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+      - name: Prepare restored project and release key
+        run: |
+          set -euo pipefail
+          test -n "$RELEASE_KEYSTORE_B64" || { echo 'Release keystore secret unavailable'; exit 20; }
+          mkdir buildsrc final-package
+          unzip -q source/RailBrakeCalculator.zip -d buildsrc
+          cp -a source/patch/. buildsrc/RailBrakeCalculator/
+          ROOT=buildsrc/RailBrakeCalculator
+          python3 beta/qa/apply_recovery_patch.py "$ROOT"
+          python3 beta/qa/apply_recovery_patch2.py "$ROOT"
+          python3 beta/qa/apply_recovery_patch3.py "$ROOT"
+          python3 beta/qa/apply_recovery_patch4.py "$ROOT"
+          python3 beta/.github/scripts/apply_startup_patch.py "$ROOT"
+          python3 beta/qa/apply_recovery_patch5.py "$ROOT"
+          python3 beta/recovery6/apply_recovery_patch6.py "$ROOT"
+          python3 beta/recovery7/apply_recovery_patch7.py "$ROOT"
+          python3 beta/recovery8/apply_recovery_patch8.py "$ROOT"
+          python3 beta/stage1/apply_series_fix.py "$ROOT"
+          python3 beta/stage3/apply_scenario_fix.py "$ROOT"
+          python3 beta/stage5/apply_final_identity.py "$ROOT"
+          python3 beta/stage2/runtime_contract_audit.py "$ROOT"
+          "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-34' 'build-tools;34.0.0'
+          printf '%s' "$RELEASE_KEYSTORE_B64" | base64 --decode > "$ROOT/release.keystore"
+      - name: Unit tests and signed release build
+        working-directory: buildsrc/RailBrakeCalculator
+        env:
+          RAILBRAKE_KEYSTORE_PATH: ${{ github.workspace }}/buildsrc/RailBrakeCalculator/release.keystore
+          RAILBRAKE_STORE_PASSWORD: ${{ secrets.RAILBRAKE_STORE_PASSWORD }}
+          RAILBRAKE_KEY_ALIAS: ${{ secrets.RAILBRAKE_KEY_ALIAS }}
+          RAILBRAKE_KEY_PASSWORD: ${{ secrets.RAILBRAKE_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          test -n "$RAILBRAKE_STORE_PASSWORD"
+          test -n "$RAILBRAKE_KEY_ALIAS"
+          test -n "$RAILBRAKE_KEY_PASSWORD"
+          gradle :app:testDebugUnitTest :app:assembleRelease --stacktrace --console=plain
+      - name: Verify developer signature and package
+        run: |
+          set -euo pipefail
+          APK=buildsrc/RailBrakeCalculator/app/build/outputs/apk/release/app-release.apk
+          FINAL=final-package/RailBrakeCalculator-1.2.2-beta-restored-release.apk
+          test -f "$APK"
+          cp "$APK" "$FINAL"
+          "$ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner" verify --verbose --print-certs "$FINAL" | tee final-package/APKSIGNER.txt
+          grep -qi "Signer #1 certificate SHA-256 digest: $EXPECTED_SIGNING_CERT_SHA256" final-package/APKSIGNER.txt
+          "$ANDROID_SDK_ROOT/build-tools/34.0.0/aapt" dump badging "$FINAL" | tee final-package/BADGING.txt
+          grep -Fq "package: name='ru.railbrake.calculator' versionCode='146' versionName='1.2.2-beta-restored'" final-package/BADGING.txt
+          python3 beta/stage5/verify_final.py "$FINAL" final-package
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RailBrakeCalculator-1.2.2-beta-restored-release
+          path: final-package/RailBrakeCalculator-1.2.2-beta-restored-release.apk
+          if-no-files-found: error
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        with:
+          name: beta-restored-release-control
+          path: |
+            final-package/APKSIGNER.txt
+            final-package/BADGING.txt
+            final-package/FINAL_MANIFEST.json
+            final-package/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 7
