@@ -1,0 +1,30 @@
+name: Dev14 export source
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ dev14-integration ]
+    paths:
+      - '.github/workflows/dev14-export-source.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Package current branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          tar --exclude=.git -czf dev14-source.tar.gz .
+          test -s dev14-source.tar.gz
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dev14-current-source
+          path: dev14-source.tar.gz
+          if-no-files-found: error
+          retention-days: 1
