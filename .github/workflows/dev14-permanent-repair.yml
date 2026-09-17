@@ -1,0 +1,156 @@
+name: Apply permanent dev14 repair
+
+on:
+  push:
+    branches: [ dev14-integration ]
+    paths:
+      - '.github/workflows/dev14-permanent-repair.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout dev14 integration
+        uses: actions/checkout@v4
+        with:
+          ref: dev14-integration
+          fetch-depth: 0
+
+      - name: Apply permanent loader workflow and version repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          repo_paths = [
+              Path('app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt'),
+              Path('patch/app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt'),
+          ]
+          replacement = '''    private fun json(asset: String): JSONObject {
+              return try {
+                  context.assets.open(asset).bufferedReader().use { reader -> JSONObject(reader.readText()) }
+              } catch (plainMissing: java.io.FileNotFoundException) {
+                  context.assets.open("$asset.gz").use { input ->
+                      GZIPInputStream(input).bufferedReader().use { reader -> JSONObject(reader.readText()) }
+                  }
+              }
+          }
+
+          '''
+          for path in repo_paths:
+              text = path.read_text(encoding='utf-8')
+              start = text.find('    private fun json(asset: String): JSONObject')
+              end = text.find('    private fun loadVl80sProfiles()', start if start >= 0 else 0)
+              if start < 0 or end < 0 or end <= start:
+                  raise SystemExit(f'Could not locate json() boundaries in {path}')
+              text = text[:start] + replacement + text[end:]
+              path.write_text(text, encoding='utf-8')
+
+          for path in [Path('app/build.gradle.kts'), Path('patch/app/build.gradle.kts')]:
+              text = path.read_text(encoding='utf-8')
+              text, n_code = re.subn(r'versionCode\s*=\s*\d+', 'versionCode = 143', text, count=1)
+              text, n_name = re.subn(r'versionName\s*=\s*"[^"]+"', 'versionName = "1.2.2-dev14-hotfix1"', text, count=1)
+              if n_code != 1 or n_name != 1:
+                  raise SystemExit(f'Could not update version in {path}')
+              path.write_text(text, encoding='utf-8')
+
+          workflow = Path('.github/workflows/build-apk-from-zip.yml')
+          text = workflow.read_text(encoding='utf-8')
+
+          mirror_line = '            "src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt"\n'
+          if mirror_line not in text:
+              text = text.replace(
+                  '            "build.gradle.kts"\n',
+                  '            "build.gradle.kts"\n' + mirror_line,
+                  1,
+              )
+
+          text = re.sub(
+              r'\n      - name: Android critical-path smoke\n.*?(?=\n      - name: Build unsigned release APK)',
+              '', text, flags=re.S,
+          )
+          text = re.sub(
+              r'\n      - name: Build immutable dev13 signed release for upgrade check\n.*?(?=\n      - name: Upload signed release APK)',
+              '', text, flags=re.S,
+          )
+
+          gradle_cmds = [
+              ':app:testDebugUnitTest',
+              ':app:lintDebug',
+              ':app:assembleDebug',
+              ':app:assembleRelease',
+          ]
+          for task in gradle_cmds:
+              text = text.replace(f'          gradle {task} ', f'          timeout --signal=TERM 15m gradle {task} ')
+
+          debug_anchor = '''      - name: Upload debug APK
+'''
+          debug_check = '''      - name: Verify technical assets in debug APK
+        working-directory: buildsrc/RailBrakeCalculator
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$GITHUB_WORKSPACE/qa/verify_technical_assets_in_apk.py" app/build/outputs/apk/debug/app-debug.apk | tee technical-assets-debug.log
+
+'''
+          if 'Verify technical assets in debug APK' not in text:
+              if debug_anchor not in text:
+                  raise SystemExit('Debug APK upload anchor not found')
+              text = text.replace(debug_anchor, debug_check + debug_anchor, 1)
+
+          unsigned_marker = "          grep -Fq \"package: name='ru.railbrake.calculator' versionCode='${{ steps.version.outputs.version_code }}' versionName='${{ steps.version.outputs.version_name }}'\" apk-badging.log\n"
+          unsigned_extra = "          python3 \"$GITHUB_WORKSPACE/qa/verify_technical_assets_in_apk.py\" \"$APK\" | tee technical-assets-release.log\n"
+          first = text.find(unsigned_marker)
+          if first >= 0:
+              insert_at = first + len(unsigned_marker)
+              if unsigned_extra.strip() not in text[first:insert_at + 300]:
+                  text = text[:insert_at] + unsigned_extra + text[insert_at:]
+
+          signed_cert = '          grep -qi "Signer #1 certificate SHA-256 digest: $EXPECTED_SIGNING_CERT_SHA256" signed-apksigner.log\n'
+          signed_extra = '          python3 "$GITHUB_WORKSPACE/qa/verify_technical_assets_in_apk.py" "$APK" | tee technical-assets-release.log\n'
+          signed_pos = text.find(signed_cert)
+          if signed_pos < 0:
+              raise SystemExit('Signed certificate verification anchor not found')
+          signed_end = signed_pos + len(signed_cert)
+          if signed_extra.strip() not in text[signed_pos:signed_end + 300]:
+              text = text[:signed_end] + signed_extra + text[signed_end:]
+
+          log_anchor = '            buildsrc/RailBrakeCalculator/signed-apksigner.log\n'
+          if 'buildsrc/RailBrakeCalculator/technical-assets-debug.log' not in text:
+              text = text.replace(
+                  log_anchor,
+                  log_anchor + '            buildsrc/RailBrakeCalculator/technical-assets-debug.log\n            buildsrc/RailBrakeCalculator/technical-assets-release.log\n',
+                  1,
+              )
+
+          workflow.write_text(text, encoding='utf-8')
+          PY
+
+          cmp app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt patch/app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt
+          cmp app/build.gradle.kts patch/app/build.gradle.kts
+          grep -Fq 'context.assets.open(asset).bufferedReader()' app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt
+          grep -Fq 'context.assets.open("$asset.gz")' app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt
+          grep -Fq 'versionCode = 143' app/build.gradle.kts
+          grep -Fq 'versionName = "1.2.2-dev14-hotfix1"' app/build.gradle.kts
+          grep -Fq 'Verify technical assets in debug APK' .github/workflows/build-apk-from-zip.yml
+          ! grep -Fq 'Android critical-path smoke' .github/workflows/build-apk-from-zip.yml
+          ! grep -Fq 'Verify in-place upgrade dev13 to dev14' .github/workflows/build-apk-from-zip.yml
+          python3 -m py_compile qa/verify_technical_assets_in_apk.py
+          git diff --check
+
+      - name: Commit permanent repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/dev14-permanent-repair.yml
+          git add app patch qa .github/workflows/build-apk-from-zip.yml
+          git commit -m 'fix(dev14): make technical asset loading resilient'
+          git push origin HEAD:dev14-integration
