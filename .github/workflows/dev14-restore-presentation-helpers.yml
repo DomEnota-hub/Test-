@@ -1,0 +1,69 @@
+name: Restore dev14 presentation helpers
+
+on:
+  push:
+    branches:
+      - dev14-integration
+    paths:
+      - .github/workflows/dev14-restore-presentation-helpers.yml
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: dev14-integration
+          fetch-depth: 0
+
+      - name: Restore missing helper functions
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/restore.py <<'PY'
+          from pathlib import Path
+
+          addition = r'''
+
+          internal fun isInternalTechnicalReference(value: String): Boolean =
+              value.trim().matches(Regex("^(?:VL80|VL|ER)-[A-Z0-9][A-Z0-9_-]*$", RegexOption.IGNORE_CASE))
+
+          internal fun userFacingTechnicalText(value: String): String = value
+              .replace(Regex("variant-profile", RegexOption.IGNORE_CASE), "профиль исполнения")
+              .replace(Regex("ER-EQ/KB\\s+карточки", RegexOption.IGNORE_CASE), "карточки оборудования и справочные материалы")
+              .replace(Regex("ER-EQ/KB", RegexOption.IGNORE_CASE), "карточки оборудования и справочные материалы")
+              .replace(Regex("\\b(?:VL80|VL|ER)-[A-Z0-9][A-Z0-9_-]*\\b", RegexOption.IGNORE_CASE), "")
+              .replace(Regex("\\s{2,}"), " ")
+              .replace(Regex("(?:\\s*•\\s*){2,}"), " • ")
+              .trim(' ', '•')
+          '''
+
+          for filename in (
+              'app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt',
+              'patch/app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt',
+          ):
+              path = Path(filename)
+              text = path.read_text(encoding='utf-8')
+              if 'internal fun isInternalTechnicalReference' not in text:
+                  text = text.rstrip() + addition + '\n'
+              path.write_text(text, encoding='utf-8')
+          PY
+          python3 /tmp/restore.py
+          cmp app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt patch/app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt
+          grep -Fq 'internal fun isInternalTechnicalReference' app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt
+          grep -Fq 'internal fun userFacingTechnicalText' app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt
+          git diff --check
+
+      - name: Commit helpers
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt patch/app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt
+          git commit -m 'fix(dev14): restore technical presentation helpers'
+          git push origin HEAD:dev14-integration
