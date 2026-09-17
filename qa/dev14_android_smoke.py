@@ -17,10 +17,16 @@ def adb(*args):
 def tree():
     global snapshot_number
     data = adb("exec-out", "uiautomator", "dump", "/dev/tty")
+    # Some adb versions append "UI hierarchy dumped" after the XML payload.
+    # Parse only the document, while retaining the unmodified fresh dump as evidence.
+    xml_end = data.find(b"</hierarchy>")
+    if xml_end < 0:
+        raise AssertionError("uiautomator did not return a hierarchy document")
+    document = data[:xml_end + len(b"</hierarchy>")]
     snapshot_number += 1
     with open(os.path.join(OUT, f"ui-{snapshot_number:02d}.xml"), "wb") as output:
-        output.write(data)
-    return ET.fromstring(data)
+        output.write(document)
+    return ET.fromstring(document)
 
 def text(node):
     return node.get("text") or node.get("content-desc") or ""
