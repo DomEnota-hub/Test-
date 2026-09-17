@@ -69,3 +69,16 @@ validation/audit and are not normal user content.
 6. Verify repository construction and index preparation stay off the UI thread.
 
 No dev14 UI component may be written until these checks pass.
+
+
+## Baseline audit result
+
+The initial audit passes on the source snapshot with **14 packages**, **604 declared
+technical identities** and **7,683 technical references**. It also exposes **89
+legacy VL80S equipment aliases** (`vl80-eq-*`). Those aliases are valid dev13
+identities, but they are not canonical dev14 equipment IDs. Stage 2 must provide
+an explicit alias-to-canonical mapping and tests for it; it must not create a
+second card for either identity.
+
+The audit treats indexes, state-applicability lists and variant-rule lists as
+references or declared constraint IDs, not as duplicate user entities.
