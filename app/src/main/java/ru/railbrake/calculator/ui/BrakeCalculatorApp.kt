@@ -346,8 +346,8 @@ fun BrakeCalculatorApp(
                     )
                 }
                 AppScreen.LOCOMOTIVE_MATERIAL -> TechnicalCatalogScreen(
-                    initialFamily = TechnicalFamily.valueOf(technicalFamilyName),
-                    initialSection = TechnicalSection.valueOf(technicalSectionName),
+                    initialFamily = runCatching { TechnicalFamily.valueOf(technicalFamilyName) }.getOrDefault(TechnicalFamily.VL80S),
+                    initialSection = runCatching { TechnicalSection.valueOf(technicalSectionName) }.getOrDefault(TechnicalSection.EQUIPMENT),
                     onSectionBack = { screenName = AppScreen.LOCOMOTIVES.name }
                 )
                 AppScreen.LOCOMOTIVE_LEGACY -> KnowledgeBaseScreen(
@@ -1272,8 +1272,8 @@ private fun LocomotiveReferenceScreen(
 ) {
     var query by rememberSaveable { mutableStateOf("") }
     var seriesExpanded by rememberSaveable { mutableStateOf(false) }
-    var familyName by rememberSaveable { mutableStateOf(TechnicalFamily.VL80S.name) }
-    val family = TechnicalFamily.valueOf(familyName)
+    var ermakSelected by rememberSaveable { mutableStateOf(false) }
+    val family = if (ermakSelected) TechnicalFamily.ERMAK else TechnicalFamily.VL80S
     val found = remember(query) { LocomotiveDatabase.search(query) }
     Column(
         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 8.dp),
@@ -1283,14 +1283,17 @@ private fun LocomotiveReferenceScreen(
             "Локомотив / атлас",
             "Выберите серию и тип материала"
         )
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(TechnicalFamily.entries) { option ->
-                FilterChip(
-                    selected = family == option,
-                    onClick = { familyName = option.name },
-                    label = { Text(option.title) }
-                )
-            }
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FilterChip(
+                selected = !ermakSelected,
+                onClick = { ermakSelected = false },
+                label = { Text("ВЛ80С") }
+            )
+            FilterChip(
+                selected = ermakSelected,
+                onClick = { ermakSelected = true },
+                label = { Text("Ермак") }
+            )
         }
         Text(family.subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

@@ -3,7 +3,6 @@ package ru.railbrake.calculator.core
 import android.content.Context
 import org.json.JSONArray
 import org.json.JSONObject
-import java.util.zip.GZIPInputStream
 
 enum class TechnicalFamily(val title: String, val subtitle: String) {
     VL80S("ВЛ80С", "Секционный профиль с учётом исполнений"),
@@ -93,7 +92,7 @@ class TechnicalDataRepository(private val context: Context) {
         entries.count { it.family == family && it.section == section }
 
     private fun json(asset: String): JSONObject =
-        GZIPInputStream(context.assets.open("$asset.gz")).bufferedReader().use { JSONObject(it.readText()) }
+        context.assets.open(asset).bufferedReader().use { JSONObject(it.readText()) }
 
     private fun loadVl80sProfiles(): List<TechnicalEntry> {
         val root = json("technical/vl80s_variants.json")

@@ -50,9 +50,9 @@ fun TechnicalCatalogScreen(
     var sectionName by rememberSaveable { mutableStateOf(initialSection.name) }
     var query by rememberSaveable { mutableStateOf("") }
     var selectedId by rememberSaveable { mutableStateOf<String?>(null) }
-    val family = TechnicalFamily.valueOf(familyName)
+    val family = runCatching { TechnicalFamily.valueOf(familyName) }.getOrDefault(TechnicalFamily.VL80S)
     val availableSections = remember(family) { repository.sections(family) }
-    val selectedSection = TechnicalSection.valueOf(sectionName).takeIf(availableSections::contains)
+    val selectedSection = runCatching { TechnicalSection.valueOf(sectionName) }.getOrNull()?.takeIf(availableSections::contains)
         ?: availableSections.first()
     val selected = selectedId?.let(repository::entry)
 
@@ -84,13 +84,13 @@ fun TechnicalCatalogScreen(
         }
         item {
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                items(TechnicalFamily.entries) { option ->
+                items(listOf(TechnicalFamily.VL80S, TechnicalFamily.ERMAK)) { option ->
                     FilterChip(
                         selected = family == option,
                         onClick = {
                             familyName = option.name
                             val sections = repository.sections(option)
-                            if (TechnicalSection.valueOf(sectionName) !in sections) sectionName = sections.first().name
+                            if (runCatching { TechnicalSection.valueOf(sectionName) }.getOrNull() !in sections) sectionName = sections.first().name
                             query = ""
                         },
                         label = { Text(option.title) }

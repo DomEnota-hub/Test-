@@ -42,10 +42,20 @@ jobs:
             "src/test/java/ru/railbrake/calculator/core/DiagnosticRepositoryTest.kt"
             "src/test/java/ru/railbrake/calculator/core/LocomotiveProfileTest.kt"
             "src/test/java/ru/railbrake/calculator/core/TechnicalDataAssetTest.kt"
+            "src/main/assets/technical/ermak_system_map.json.gz"
             "src/main/assets/technical/ermak_equipment.json.gz"
+            "src/main/assets/technical/ermak_knowledge.json.gz"
             "src/main/assets/technical/ermak_diagnostics.json.gz"
+            "src/main/assets/technical/ermak_schemes.json.gz"
+            "src/main/assets/technical/ermak_links.json.gz"
+            "src/main/assets/technical/vl80s_variants.json.gz"
             "src/main/assets/technical/vl80s_equipment.json.gz"
+            "src/main/assets/technical/vl80s_acceptance.json.gz"
             "src/main/assets/technical/vl80s_diagnostics.json.gz"
+            "src/main/assets/technical/vl80s_electrical.json.gz"
+            "src/main/assets/technical/vl80s_electrical_variants.json.gz"
+            "src/main/assets/technical/vl80s_pneumatic.json.gz"
+            "src/main/assets/technical/vl80s_pneumatic_variants.json.gz"
           )
           for rel in "${files[@]}"; do
             if [ -f "app/$rel" ] && [ -f "patch/app/$rel" ]; then
@@ -126,6 +136,35 @@ jobs:
           set -o pipefail
           gradle :app:assembleDebug --stacktrace --console=plain 2>&1 | tee build-apk.log
 
+      - name: Verify packaged technical data in debug APK
+        working-directory: buildsrc/RailBrakeCalculator
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=app/build/outputs/apk/debug/app-debug.apk
+          assets=(
+            ermak_diagnostics.json
+            ermak_equipment.json
+            ermak_knowledge.json
+            ermak_links.json
+            ermak_schemes.json
+            ermak_system_map.json
+            vl80s_acceptance.json
+            vl80s_diagnostics.json
+            vl80s_electrical.json
+            vl80s_electrical_variants.json
+            vl80s_equipment.json
+            vl80s_pneumatic.json
+            vl80s_pneumatic_variants.json
+            vl80s_variants.json
+          )
+          for asset in "${assets[@]}"; do
+            unzip -p "$APK" "assets/technical/$asset" | python3 -m json.tool >/dev/null || {
+              echo "::error::Missing or invalid packaged asset: assets/technical/$asset"
+              exit 1
+            }
+          done
+
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:
@@ -189,6 +228,36 @@ jobs:
           grep -Fq "package: name='ru.railbrake.calculator' versionCode='${{ steps.version.outputs.version_code }}' versionName='${{ steps.version.outputs.version_name }}'" apk-badging.log
           "$ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner" verify --verbose --print-certs "$APK" | tee signed-apksigner.log
           grep -qi "Signer #1 certificate SHA-256 digest: $EXPECTED_SIGNING_CERT_SHA256" signed-apksigner.log
+
+      - name: Verify packaged technical data in signed release APK
+        if: env.RELEASE_KEYSTORE_B64 != ''
+        working-directory: buildsrc/RailBrakeCalculator
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=app/build/outputs/apk/release/app-release.apk
+          assets=(
+            ermak_diagnostics.json
+            ermak_equipment.json
+            ermak_knowledge.json
+            ermak_links.json
+            ermak_schemes.json
+            ermak_system_map.json
+            vl80s_acceptance.json
+            vl80s_diagnostics.json
+            vl80s_electrical.json
+            vl80s_electrical_variants.json
+            vl80s_equipment.json
+            vl80s_pneumatic.json
+            vl80s_pneumatic_variants.json
+            vl80s_variants.json
+          )
+          for asset in "${assets[@]}"; do
+            unzip -p "$APK" "assets/technical/$asset" | python3 -m json.tool >/dev/null || {
+              echo "::error::Missing or invalid packaged asset: assets/technical/$asset"
+              exit 1
+            }
+          done
 
       - name: Upload signed release APK
         if: env.RELEASE_KEYSTORE_B64 != ''
