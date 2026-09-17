@@ -9,6 +9,7 @@ on:
       - 'RailBrakeCalculator.zip'
       - 'patch/**'
       - 'app/**'
+      - 'qa/**'
       - '.github/workflows/build-apk-from-zip.yml'
 
 permissions:
