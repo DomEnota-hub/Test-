@@ -206,6 +206,46 @@ jobs:
           "$ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner" verify --verbose --print-certs "$APK" | tee signed-apksigner.log
           grep -qi "Signer #1 certificate SHA-256 digest: $EXPECTED_SIGNING_CERT_SHA256" signed-apksigner.log
 
+      - name: Build immutable dev13 signed release for upgrade check
+        if: env.RELEASE_KEYSTORE_B64 != ''
+        shell: bash
+        env:
+          RAILBRAKE_KEYSTORE_PATH: ${{ github.workspace }}/buildsrc/RailBrakeCalculator/release.keystore
+          RAILBRAKE_STORE_PASSWORD: ${{ secrets.RAILBRAKE_STORE_PASSWORD }}
+          RAILBRAKE_KEY_ALIAS: ${{ secrets.RAILBRAKE_KEY_ALIAS }}
+          RAILBRAKE_KEY_PASSWORD: ${{ secrets.RAILBRAKE_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          mkdir -p dev13src
+          unzip -q RailBrakeCalculator.zip -d dev13src
+          gradle -p dev13src/RailBrakeCalculator :app:assembleRelease --stacktrace --console=plain
+          "$ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner" verify --print-certs dev13src/RailBrakeCalculator/app/build/outputs/apk/release/app-release.apk | grep -qi "Signer #1 certificate SHA-256 digest: $EXPECTED_SIGNING_CERT_SHA256"
+
+      - name: Verify in-place upgrade dev13 to dev14
+        if: env.RELEASE_KEYSTORE_B64 != ''
+        uses: reactivecircus/android-emulator-runner@v2
+        env:
+          LEGACY_APK: ${{ github.workspace }}/dev13src/RailBrakeCalculator/app/build/outputs/apk/release/app-release.apk
+          DEV14_APK: ${{ github.workspace }}/buildsrc/RailBrakeCalculator/app/build/outputs/apk/release/app-release.apk
+          QA_OUT: ${{ github.workspace }}/qa-upgrade-evidence
+        with:
+          api-level: 29
+          arch: x86_64
+          profile: pixel_2
+          cores: 2
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -memory 1536
+          script: bash "$GITHUB_WORKSPACE/qa/dev14_upgrade_smoke.sh"
+
+      - name: Upload upgrade QA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dev14-upgrade-qa-evidence
+          path: qa-upgrade-evidence
+          if-no-files-found: warn
+          retention-days: 30
+
       - name: Upload signed release APK
         if: env.RELEASE_KEYSTORE_B64 != ''
         uses: actions/upload-artifact@v4
