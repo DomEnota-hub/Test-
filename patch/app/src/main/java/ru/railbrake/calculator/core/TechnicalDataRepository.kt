@@ -155,10 +155,15 @@ class TechnicalDataRepository(private val context: Context) {
         return id.startsWith("VL-") || id.startsWith("VL80-") || id.startsWith("ER-") || id.startsWith("SYS-") || id.startsWith("route_") || id.matches(Regex("^[a-z][a-z0-9]+(?:-[a-z0-9]+)+$"))
     }
 
-    private fun json(asset: String): JSONObject =
-        context.assets.open("$asset.gz").use { input ->
-            GZIPInputStream(input).bufferedReader().use { reader -> JSONObject(reader.readText()) }
+    private fun json(asset: String): JSONObject {
+        return try {
+            context.assets.open(asset).bufferedReader().use { reader -> JSONObject(reader.readText()) }
+        } catch (plainMissing: java.io.FileNotFoundException) {
+            context.assets.open("$asset.gz").use { input ->
+                GZIPInputStream(input).bufferedReader().use { reader -> JSONObject(reader.readText()) }
+            }
         }
+    }
 
     private fun loadVl80sProfiles(): List<TechnicalEntry> {
         val root = json("technical/vl80s_variants.json")
@@ -557,15 +562,3 @@ private fun block(title: String, lines: List<String>): TechnicalBlock? =
     lines.filter(String::isNotBlank).distinct().takeIf { it.isNotEmpty() }?.let { TechnicalBlock(title, it) }
 
 private fun listOfNotEmpty(vararg blocks: TechnicalBlock?): List<TechnicalBlock> = blocks.filterNotNull()
-
-internal fun isInternalTechnicalReference(value: String): Boolean =
-    value.trim().matches(Regex("^(?:VL80|VL|ER)-[A-Z0-9][A-Z0-9_-]*$", RegexOption.IGNORE_CASE))
-
-internal fun userFacingTechnicalText(value: String): String = value
-    .replace(Regex("variant-profile", RegexOption.IGNORE_CASE), "профиль исполнения")
-    .replace(Regex("ER-EQ/KB\\s+карточки", RegexOption.IGNORE_CASE), "карточки оборудования и справочные материалы")
-    .replace(Regex("ER-EQ/KB", RegexOption.IGNORE_CASE), "карточки оборудования и справочные материалы")
-    .replace(Regex("\\b(?:VL80|VL|ER)-[A-Z0-9][A-Z0-9_-]*\\b", RegexOption.IGNORE_CASE), "")
-    .replace(Regex("\\s{2,}"), " ")
-    .replace(Regex("(?:\\s*•\\s*){2,}"), " • ")
-    .trim(' ', '•')
