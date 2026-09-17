@@ -34,11 +34,18 @@ def text(node):
 def labels(root):
     return [text(node) for node in root.iter("node") if text(node)]
 
-def wait_for(value, timeout=25):
+def wait_for(value, timeout=55):
     deadline = time.monotonic() + timeout
     while time.monotonic() < deadline:
         root = tree()
-        if value in labels(root):
+        current_labels = labels(root)
+        if "System UI isn't responding" in current_labels and "Wait" in current_labels:
+            # API 29 can show this transient dialog immediately after a cold boot.
+            # It belongs to the emulator, not to the application under test.
+            tap("Wait")
+            time.sleep(3)
+            continue
+        if value in current_labels:
             return root
         time.sleep(.5)
     raise AssertionError(f"Missing UI text: {value}")

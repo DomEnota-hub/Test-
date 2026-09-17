@@ -139,7 +139,7 @@ jobs:
           profile: pixel_2
           cores: 2
           disable-animations: true
-          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -memory 1536
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -memory 2048
           script: python3 "$GITHUB_WORKSPACE/qa/dev14_android_smoke.py"
 
       - name: Upload Android QA evidence
@@ -235,7 +235,7 @@ jobs:
           profile: pixel_2
           cores: 2
           disable-animations: true
-          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -memory 1536
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -memory 2048
           script: bash "$GITHUB_WORKSPACE/qa/dev14_upgrade_smoke.sh"
 
       - name: Upload upgrade QA evidence
