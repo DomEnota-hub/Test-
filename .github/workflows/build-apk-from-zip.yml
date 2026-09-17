@@ -1,4 +1,6 @@
-# Canonical Android verification/build workflow. Version is read from the patched Gradle project.
+# Canonical Android verification/build workflow for dev14.
+# Device/emulator QA is intentionally separate from release delivery: hosted emulator
+# instability must not prevent publication of an otherwise valid signed APK.
 name: Build Android APK from ZIP
 
 on:
@@ -27,12 +29,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Verify checked-in source mirrors
+      - name: Structural preflight and mirror audit
         shell: bash
         run: |
           set -euo pipefail
-          files=(
+
+          mirror_files=(
             "build.gradle.kts"
+            "src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt"
             "src/main/java/ru/railbrake/calculator/core/DiagnosticRepository.kt"
             "src/main/java/ru/railbrake/calculator/core/Vl80sNormalValues.kt"
             "src/main/java/ru/railbrake/calculator/core/Vl80sObservationCatalog.kt"
@@ -41,13 +45,29 @@ jobs:
             "src/test/java/ru/railbrake/calculator/core/DiagnosticRepositoryTest.kt"
             "src/test/java/ru/railbrake/calculator/core/LocomotiveProfileTest.kt"
           )
-          for rel in "${files[@]}"; do
+          for rel in "${mirror_files[@]}"; do
             if [ -f "app/$rel" ] && [ -f "patch/app/$rel" ]; then
               cmp "app/$rel" "patch/app/$rel" || {
                 echo "::error file=app/$rel::Root mirror differs from patch/app/$rel"
                 exit 1
               }
             fi
+          done
+
+          grep -Fq 'context.assets.open(asset).bufferedReader()' app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt
+          grep -Fq 'context.assets.open("$asset.gz")' app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt
+
+          technical_assets=(
+            ermak_diagnostics ermak_equipment ermak_knowledge ermak_links ermak_schemes ermak_system_map
+            vl80s_acceptance vl80s_diagnostics vl80s_electrical vl80s_electrical_variants vl80s_equipment
+            vl80s_pneumatic vl80s_pneumatic_variants vl80s_variants
+          )
+          for name in "${technical_assets[@]}"; do
+            root="app/src/main/assets/technical/${name}.json.gz"
+            overlay="patch/app/src/main/assets/technical/${name}.json.gz"
+            test -f "$root" || { echo "::error::Missing root technical asset $root"; exit 1; }
+            test -f "$overlay" || { echo "::error::Missing overlay technical asset $overlay"; exit 1; }
+            cmp "$root" "$overlay" || { echo "::error::Technical asset mirror mismatch: $name"; exit 1; }
           done
 
       - name: Upload current source archive snapshot
@@ -67,6 +87,7 @@ jobs:
       - name: Install Android SDK 34
         shell: bash
         run: |
+          set -euo pipefail
           yes | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
           "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-34' 'build-tools;34.0.0'
 
@@ -78,12 +99,14 @@ jobs:
       - name: Extract canonical project and overlay patch
         shell: bash
         run: |
+          set -euo pipefail
           rm -rf buildsrc
           mkdir buildsrc
           unzip -q RailBrakeCalculator.zip -d buildsrc
           test -f buildsrc/RailBrakeCalculator/settings.gradle.kts
           cp -a patch/. buildsrc/RailBrakeCalculator/
           test -f buildsrc/RailBrakeCalculator/app/src/main/java/ru/railbrake/calculator/core/BrakeCalculator.kt
+          cmp patch/app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt buildsrc/RailBrakeCalculator/app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt
 
       - name: Read expected app version
         id: version
@@ -103,22 +126,48 @@ jobs:
         working-directory: buildsrc/RailBrakeCalculator
         shell: bash
         run: |
-          set -o pipefail
-          gradle :app:testDebugUnitTest --stacktrace --console=plain 2>&1 | tee unit-tests.log
+          set -euo pipefail
+          timeout --signal=TERM 15m gradle :app:testDebugUnitTest --stacktrace --console=plain 2>&1 | tee unit-tests.log
 
       - name: Run Android lint
         working-directory: buildsrc/RailBrakeCalculator
         shell: bash
         run: |
-          set -o pipefail
-          gradle :app:lintDebug --stacktrace --console=plain 2>&1 | tee lint.log
+          set -euo pipefail
+          timeout --signal=TERM 15m gradle :app:lintDebug --stacktrace --console=plain 2>&1 | tee lint.log
 
       - name: Build debug APK
         working-directory: buildsrc/RailBrakeCalculator
         shell: bash
         run: |
-          set -o pipefail
-          gradle :app:assembleDebug --stacktrace --console=plain 2>&1 | tee build-apk.log
+          set -euo pipefail
+          timeout --signal=TERM 15m gradle :app:assembleDebug --stacktrace --console=plain 2>&1 | tee build-apk.log
+
+      - name: Verify all technical assets in debug APK
+        working-directory: buildsrc/RailBrakeCalculator
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=app/build/outputs/apk/debug/app-debug.apk
+          unzip -Z1 "$APK" > apk-files.txt
+          expected=(
+            ermak_diagnostics ermak_equipment ermak_knowledge ermak_links ermak_schemes ermak_system_map
+            vl80s_acceptance vl80s_diagnostics vl80s_electrical vl80s_electrical_variants vl80s_equipment
+            vl80s_pneumatic vl80s_pneumatic_variants vl80s_variants
+          )
+          for name in "${expected[@]}"; do
+            plain="assets/technical/${name}.json"
+            gz="assets/technical/${name}.json.gz"
+            if grep -Fxq "$plain" apk-files.txt; then
+              unzip -p "$APK" "$plain" | python3 -m json.tool >/dev/null
+            elif grep -Fxq "$gz" apk-files.txt; then
+              unzip -p "$APK" "$gz" | gzip -dc | python3 -m json.tool >/dev/null
+            else
+              echo "::error::Debug APK is missing $name (.json or .json.gz)"
+              exit 1
+            fi
+          done
+          echo "All 14 technical assets are present and parseable in debug APK."
 
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
@@ -128,46 +177,27 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-      - name: Android critical-path smoke
-        if: ${{ false }}
-        uses: reactivecircus/android-emulator-runner@v2
-        env:
-          APK: ${{ github.workspace }}/buildsrc/RailBrakeCalculator/app/build/outputs/apk/debug/app-debug.apk
-          QA_OUT: ${{ github.workspace }}/qa-evidence
-        with:
-          api-level: 29
-          arch: x86_64
-          profile: pixel_2
-          cores: 2
-          disable-animations: true
-          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -memory 2048
-          script: python3 "$GITHUB_WORKSPACE/qa/dev14_android_smoke.py"
-
-      - name: Upload Android QA evidence
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: dev14-android-qa-evidence
-          path: qa-evidence
-          if-no-files-found: warn
-          retention-days: 30
-
       - name: Build unsigned release APK
         if: env.RELEASE_KEYSTORE_B64 == ''
         working-directory: buildsrc/RailBrakeCalculator
         shell: bash
         run: |
-          set -o pipefail
-          gradle :app:assembleRelease --stacktrace --console=plain 2>&1 | tee build-release.log
+          set -euo pipefail
+          timeout --signal=TERM 15m gradle :app:assembleRelease --stacktrace --console=plain 2>&1 | tee build-release.log
 
-      - name: Verify unsigned release metadata
+      - name: Verify unsigned release metadata and technical assets
         if: env.RELEASE_KEYSTORE_B64 == ''
         working-directory: buildsrc/RailBrakeCalculator
         shell: bash
         run: |
+          set -euo pipefail
           APK=app/build/outputs/apk/release/app-release-unsigned.apk
           "$ANDROID_SDK_ROOT/build-tools/34.0.0/aapt" dump badging "$APK" | tee apk-badging.log
           grep -Fq "package: name='ru.railbrake.calculator' versionCode='${{ steps.version.outputs.version_code }}' versionName='${{ steps.version.outputs.version_name }}'" apk-badging.log
+          unzip -Z1 "$APK" > release-files.txt
+          for name in ermak_diagnostics ermak_equipment ermak_knowledge ermak_links ermak_schemes ermak_system_map vl80s_acceptance vl80s_diagnostics vl80s_electrical vl80s_electrical_variants vl80s_equipment vl80s_pneumatic vl80s_pneumatic_variants vl80s_variants; do
+            grep -Eq "^assets/technical/${name}\.json(\.gz)?$" release-files.txt || { echo "::error::Unsigned release missing $name"; exit 1; }
+          done
 
       - name: Upload unsigned release APK
         if: env.RELEASE_KEYSTORE_B64 == ''
@@ -182,7 +212,10 @@ jobs:
         if: env.RELEASE_KEYSTORE_B64 != ''
         working-directory: buildsrc/RailBrakeCalculator
         shell: bash
-        run: echo "$RELEASE_KEYSTORE_B64" | base64 --decode > release.keystore
+        run: |
+          set -euo pipefail
+          echo "$RELEASE_KEYSTORE_B64" | base64 --decode > release.keystore
+          test -s release.keystore
 
       - name: Build signed release APK
         if: env.RELEASE_KEYSTORE_B64 != ''
@@ -194,59 +227,47 @@ jobs:
           RAILBRAKE_KEY_ALIAS: ${{ secrets.RAILBRAKE_KEY_ALIAS }}
           RAILBRAKE_KEY_PASSWORD: ${{ secrets.RAILBRAKE_KEY_PASSWORD }}
         run: |
-          set -o pipefail
-          gradle :app:assembleRelease --stacktrace --console=plain 2>&1 | tee build-release.log
+          set -euo pipefail
+          timeout --signal=TERM 15m gradle :app:assembleRelease --stacktrace --console=plain 2>&1 | tee build-release.log
 
       - name: Verify signed release metadata and developer certificate
         if: env.RELEASE_KEYSTORE_B64 != ''
         working-directory: buildsrc/RailBrakeCalculator
         shell: bash
         run: |
+          set -euo pipefail
           APK=app/build/outputs/apk/release/app-release.apk
           "$ANDROID_SDK_ROOT/build-tools/34.0.0/aapt" dump badging "$APK" | tee apk-badging.log
           grep -Fq "package: name='ru.railbrake.calculator' versionCode='${{ steps.version.outputs.version_code }}' versionName='${{ steps.version.outputs.version_name }}'" apk-badging.log
           "$ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner" verify --verbose --print-certs "$APK" | tee signed-apksigner.log
           grep -qi "Signer #1 certificate SHA-256 digest: $EXPECTED_SIGNING_CERT_SHA256" signed-apksigner.log
 
-      - name: Build immutable dev13 signed release for upgrade check
-        if: ${{ false }}
+      - name: Verify all technical assets in signed release APK
+        if: env.RELEASE_KEYSTORE_B64 != ''
+        working-directory: buildsrc/RailBrakeCalculator
         shell: bash
-        env:
-          RAILBRAKE_KEYSTORE_PATH: ${{ github.workspace }}/buildsrc/RailBrakeCalculator/release.keystore
-          RAILBRAKE_STORE_PASSWORD: ${{ secrets.RAILBRAKE_STORE_PASSWORD }}
-          RAILBRAKE_KEY_ALIAS: ${{ secrets.RAILBRAKE_KEY_ALIAS }}
-          RAILBRAKE_KEY_PASSWORD: ${{ secrets.RAILBRAKE_KEY_PASSWORD }}
         run: |
           set -euo pipefail
-          mkdir -p dev13src
-          unzip -q RailBrakeCalculator.zip -d dev13src
-          gradle -p dev13src/RailBrakeCalculator :app:assembleRelease --stacktrace --console=plain
-          "$ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner" verify --print-certs dev13src/RailBrakeCalculator/app/build/outputs/apk/release/app-release.apk | grep -qi "Signer #1 certificate SHA-256 digest: $EXPECTED_SIGNING_CERT_SHA256"
-
-      - name: Verify in-place upgrade dev13 to dev14
-        if: ${{ false }}
-        uses: reactivecircus/android-emulator-runner@v2
-        env:
-          LEGACY_APK: ${{ github.workspace }}/dev13src/RailBrakeCalculator/app/build/outputs/apk/release/app-release.apk
-          DEV14_APK: ${{ github.workspace }}/buildsrc/RailBrakeCalculator/app/build/outputs/apk/release/app-release.apk
-          QA_OUT: ${{ github.workspace }}/qa-upgrade-evidence
-        with:
-          api-level: 29
-          arch: x86_64
-          profile: pixel_2
-          cores: 2
-          disable-animations: true
-          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -memory 2048
-          script: bash "$GITHUB_WORKSPACE/qa/dev14_upgrade_smoke.sh"
-
-      - name: Upload upgrade QA evidence
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: dev14-upgrade-qa-evidence
-          path: qa-upgrade-evidence
-          if-no-files-found: warn
-          retention-days: 30
+          APK=app/build/outputs/apk/release/app-release.apk
+          unzip -Z1 "$APK" > release-files.txt
+          expected=(
+            ermak_diagnostics ermak_equipment ermak_knowledge ermak_links ermak_schemes ermak_system_map
+            vl80s_acceptance vl80s_diagnostics vl80s_electrical vl80s_electrical_variants vl80s_equipment
+            vl80s_pneumatic vl80s_pneumatic_variants vl80s_variants
+          )
+          for name in "${expected[@]}"; do
+            plain="assets/technical/${name}.json"
+            gz="assets/technical/${name}.json.gz"
+            if grep -Fxq "$plain" release-files.txt; then
+              unzip -p "$APK" "$plain" | python3 -m json.tool >/dev/null
+            elif grep -Fxq "$gz" release-files.txt; then
+              unzip -p "$APK" "$gz" | gzip -dc | python3 -m json.tool >/dev/null
+            else
+              echo "::error::Signed release APK is missing $name (.json or .json.gz)"
+              exit 1
+            fi
+          done
+          echo "All 14 technical assets are present and parseable in signed release APK."
 
       - name: Upload signed release APK
         if: env.RELEASE_KEYSTORE_B64 != ''
@@ -280,6 +301,8 @@ jobs:
             buildsrc/RailBrakeCalculator/build-release.log
             buildsrc/RailBrakeCalculator/unit-tests.log
             buildsrc/RailBrakeCalculator/lint.log
+            buildsrc/RailBrakeCalculator/apk-files.txt
+            buildsrc/RailBrakeCalculator/release-files.txt
             buildsrc/RailBrakeCalculator/apk-badging.log
             buildsrc/RailBrakeCalculator/signed-apksigner.log
             buildsrc/RailBrakeCalculator/app/build/reports/lint-results-debug.html
