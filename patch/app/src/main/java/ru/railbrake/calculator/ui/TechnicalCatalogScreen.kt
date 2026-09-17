@@ -214,8 +214,10 @@ private fun TechnicalEntryDetail(
                 RailStatusPill(status, accent = accent)
             }
         }
-        if (entry.sequence.isNotEmpty()) {
+        if (entry.section == TechnicalSection.ACCEPTANCE && entry.sequence.isNotEmpty()) {
             item { TechnicalSequence(entry, repository, onOpen) }
+        } else if (entry.sequence.isNotEmpty()) {
+            item { TechnicalSequenceLinks(entry, repository, onOpen) }
         }
         items(entry.blocks, key = { it.title }) { block ->
             val displayLines = repository.displayLines(block.lines)
@@ -252,6 +254,22 @@ private fun TechnicalEntryDetail(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("${technicalEntryTitle(target)} →")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun TechnicalSequenceLinks(entry: TechnicalEntry, repository: TechnicalDataRepository, onOpen: (TechnicalEntry) -> Unit) {
+    val targets = entry.sequence.mapNotNull(repository::entry).distinctBy { it.id }
+    if (targets.isEmpty()) return
+    Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(18.dp)) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text("Состав и переходы", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+            targets.forEach { target ->
+                OutlinedButton(onClick = { onOpen(target) }, modifier = Modifier.fillMaxWidth()) {
+                    Text(technicalEntryTitle(target))
                 }
             }
         }
