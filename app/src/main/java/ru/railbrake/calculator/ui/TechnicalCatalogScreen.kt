@@ -260,7 +260,8 @@ private fun TechnicalEntryDetail(
 
 @Composable
 private fun TechnicalSequence(entry: TechnicalEntry, repository: TechnicalDataRepository, onOpen: (TechnicalEntry) -> Unit) {
-    val acceptanceRepository = remember { AcceptanceStateRepository(LocalContext.current.applicationContext) }
+    val context = LocalContext.current
+    val acceptanceRepository = remember(context) { AcceptanceStateRepository(context.applicationContext) }
     var step by rememberSaveable(entry.id) { mutableIntStateOf(0) }
     var stateVersion by rememberSaveable(entry.id) { mutableIntStateOf(0) }
     val currentId=entry.sequence[step.coerceIn(entry.sequence.indices)]
