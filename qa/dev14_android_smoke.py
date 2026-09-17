@@ -7,12 +7,19 @@ import time
 import xml.etree.ElementTree as ET
 
 PACKAGE = "ru.railbrake.calculator"
+OUT = os.environ.get("QA_OUT", "qa-evidence")
+os.makedirs(OUT, exist_ok=True)
+snapshot_number = 0
 
 def adb(*args):
     return subprocess.check_output(["adb", *args])
 
 def tree():
+    global snapshot_number
     data = adb("exec-out", "uiautomator", "dump", "/dev/tty")
+    snapshot_number += 1
+    with open(os.path.join(OUT, f"ui-{snapshot_number:02d}.xml"), "wb") as output:
+        output.write(data)
     return ET.fromstring(data)
 
 def text(node):
@@ -46,6 +53,10 @@ def tap(value):
 def open_screen(title):
     tap("☰")
     wait_for(title)
+
+def screenshot(name):
+    with open(os.path.join(OUT, f"{name}.png"), "wb") as output:
+        subprocess.run(["adb", "exec-out", "screencap", "-p"], check=True, stdout=output)
     tap(title)
     wait_for(title)
 
@@ -63,6 +74,7 @@ wait_for("Пошаговая приёмка")
 wait_for("Перед переходом выберите результат проверки этого пункта")
 tap("Проверено")
 wait_for("Состояние: Проверено")
+screenshot("acceptance-checked")
 
 open_screen("Диагностика")
 wait_for("Диагностика ВЛ80С")
@@ -70,8 +82,11 @@ tap("Ермак")
 wait_for("Техническая база Ермак")
 tap("ВЛ80С")
 wait_for("Диагностика ВЛ80С")
+screenshot("diagnostics-family-roundtrip")
 
 log = adb("logcat", "-d").decode("utf-8", "replace")
+with open(os.path.join(OUT, "logcat.txt"), "w", encoding="utf-8") as output:
+    output.write(log)
 if "FATAL EXCEPTION" in log:
     raise AssertionError("Android crash in logcat")
 print("PASS dev14 acceptance state and family switching")

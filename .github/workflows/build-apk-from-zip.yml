@@ -131,6 +131,7 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         env:
           APK: ${{ github.workspace }}/buildsrc/RailBrakeCalculator/app/build/outputs/apk/debug/app-debug.apk
+          QA_OUT: ${{ github.workspace }}/qa-evidence
         with:
           api-level: 29
           arch: x86_64
@@ -139,6 +140,15 @@ jobs:
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -memory 1536
           script: python3 "$GITHUB_WORKSPACE/qa/dev14_android_smoke.py"
+
+      - name: Upload Android QA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dev14-android-qa-evidence
+          path: qa-evidence
+          if-no-files-found: warn
+          retention-days: 30
 
       - name: Build unsigned release APK
         if: env.RELEASE_KEYSTORE_B64 == ''
