@@ -55,16 +55,17 @@ def tap(value):
         raise AssertionError(f"No clickable ancestor: {value}")
     nums = [int(n) for n in re.findall(r"\d+", node.get("bounds", ""))]
     adb("shell", "input", "tap", str((nums[0] + nums[2]) // 2), str((nums[1] + nums[3]) // 2))
+    time.sleep(.6)
 
 def open_screen(title):
     tap("☰")
     wait_for(title)
+    time.sleep(.8)
+    tap(title)
 
 def screenshot(name):
     with open(os.path.join(OUT, f"{name}.png"), "wb") as output:
         subprocess.run(["adb", "exec-out", "screencap", "-p"], check=True, stdout=output)
-    tap(title)
-    wait_for(title)
 
 apk = os.environ["APK"]
 subprocess.run(["adb", "install", "-r", apk], check=True)
