@@ -1298,7 +1298,7 @@ private fun LocomotiveReferenceScreen(
         verticalArrangement = Arrangement.spacedBy(7.dp)
     ) {
         RailSectionHeader(
-            "Локомотив / атлас",
+            "Локомотивы / атлас",
             "Выберите серию и тип материала"
         )
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -1329,14 +1329,13 @@ private fun LocomotiveReferenceScreen(
                 add("Интерактивный атлас" to onOpenInteractiveVl80s)
             }
         }
-        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            materials.chunked(2).forEach { rowItems ->
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    rowItems.forEach { (label, action) ->
-                        OutlinedButton(onClick = action, modifier = Modifier.weight(1f)) { Text(label) }
-                    }
-                    if (rowItems.size == 1) Spacer(Modifier.weight(1f))
-                }
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            items(materials, key = { it.first }) { (label, action) ->
+                FilterChip(
+                    selected = false,
+                    onClick = action,
+                    label = { Text(label) }
+                )
             }
         }
         if (!seriesExpanded) Spacer(Modifier.weight(1f))

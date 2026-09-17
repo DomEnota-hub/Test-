@@ -92,7 +92,7 @@ class TechnicalDataRepository(private val context: Context) {
         line.split(" • ")
             .mapNotNull { part ->
                 part.takeUnless { entry(it) != null || isInternalTechnicalReference(it) }
-                    ?.let(::userFacingTechnicalText)
+                    ?.let(::technicalPresentationLine)
                     ?.takeIf(String::isNotBlank)
             }
             .distinct()
@@ -420,8 +420,7 @@ class TechnicalDataRepository(private val context: Context) {
             blocks.forEach { block ->
                 add(block.title)
                 addAll(block.lines.flatMap { it.split(" • ") }
-                    .filterNot(::isInternalTechnicalReference)
-                    .map(::userFacingTechnicalText))
+                    .mapNotNull(::technicalPresentationLine))
             }
         }.joinToString(" ").lowercase()
         return TechnicalEntry(

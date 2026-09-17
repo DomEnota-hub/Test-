@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -30,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -37,6 +37,10 @@ import ru.railbrake.calculator.core.TechnicalDataRepository
 import ru.railbrake.calculator.core.TechnicalEntry
 import ru.railbrake.calculator.core.TechnicalFamily
 import ru.railbrake.calculator.core.TechnicalSection
+import ru.railbrake.calculator.core.technicalEntrySubtitle
+import ru.railbrake.calculator.core.technicalEntryTitle
+import ru.railbrake.calculator.core.technicalPresentationLine
+import ru.railbrake.calculator.core.technicalStatusPresentation
 
 @Composable
 fun TechnicalCatalogScreen(
@@ -102,10 +106,16 @@ fun TechnicalCatalogScreen(
         item {
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(availableSections) { option ->
+                    val accent = technicalSectionAccent(option, "")
                     FilterChip(
                         selected = selectedSection == option,
                         onClick = { sectionName = option.name; query = "" },
-                        label = { Text("${option.title} · ${repository.count(family, option)}") }
+                        label = {
+                            Text(
+                                "${option.title} · ${repository.count(family, option)}",
+                                color = if (selectedSection == option) accent else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                     )
                 }
             }
@@ -124,7 +134,7 @@ fun TechnicalCatalogScreen(
             Text(
                 "${selectedSection.title}: ${visible.size}",
                 style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary,
+                color = technicalSectionAccent(selectedSection, ""),
                 fontWeight = FontWeight.Bold
             )
         }
@@ -138,27 +148,23 @@ fun TechnicalCatalogScreen(
             }
         }
         items(visible, key = { it.id }) { entry ->
-            val borderColor = if (entry.status.equals("STOP_AND_REPORT", true) || entry.status.equals("RESTRICT_OPERATION", true)) {
-                MaterialTheme.colorScheme.error.copy(alpha = 0.55f)
-            } else {
-                MaterialTheme.colorScheme.primary.copy(alpha = 0.42f)
-            }
+            val accent = technicalSectionAccent(entry.section, entry.status)
             Card(
                 onClick = { selectedId = entry.id },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(18.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                border = BorderStroke(1.dp, borderColor)
+                border = BorderStroke(1.dp, accent.copy(alpha = 0.52f))
             ) {
                 Column(Modifier.padding(15.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     technicalStatusLabel(entry.status)?.let { status ->
-                        Text(status, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
+                        Text(status, style = MaterialTheme.typography.labelSmall, color = accent)
                     }
-                    Text(entry.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
-                    if (entry.subtitle.isNotBlank()) {
-                        Text(entry.subtitle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(technicalEntryTitle(entry), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                    technicalEntrySubtitle(entry)?.let { subtitle ->
+                        Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
-                    Text("Открыть карточку →", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                    Text("Открыть карточку →", color = accent, fontWeight = FontWeight.Bold)
                 }
             }
         }
@@ -172,23 +178,29 @@ private fun TechnicalEntryDetail(
     onBack: () -> Unit,
     onOpen: (TechnicalEntry) -> Unit
 ) {
+    val accent = technicalSectionAccent(entry.section, entry.status)
+    val referencedIds = entry.blocks
+        .flatMap { repository.referencedEntries(it.lines) }
+        .map { it.id }
+        .toSet()
+    val relatedEntries = entry.relatedIds
+        .distinct()
+        .mapNotNull(repository::entry)
+        .filterNot { it.id in referencedIds }
+        .take(40)
+
     LazyColumn(
         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
             ChildBackButton(entry.section.title, onBack)
-            Text(entry.title, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
-            if (entry.subtitle.isNotBlank()) {
-                Text(entry.subtitle, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(technicalEntryTitle(entry), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
+            technicalEntrySubtitle(entry)?.let { subtitle ->
+                Text(subtitle, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             technicalStatusLabel(entry.status)?.let { status ->
-                RailStatusPill(
-                    status,
-                    accent = if (entry.status.equals("STOP_AND_REPORT", true) || entry.status.equals("RESTRICT_OPERATION", true)) {
-                        MaterialTheme.colorScheme.error
-                    } else null
-                )
+                RailStatusPill(status, accent = accent)
             }
         }
         if (entry.sequence.isNotEmpty()) {
@@ -196,12 +208,14 @@ private fun TechnicalEntryDetail(
         }
         items(entry.blocks, key = { it.title }) { block ->
             val displayLines = repository.displayLines(block.lines)
+                .mapNotNull(::technicalPresentationLine)
+                .distinct()
             val references = repository.referencedEntries(block.lines)
             if (displayLines.isEmpty() && references.isEmpty()) return@items
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.34f)),
+                border = BorderStroke(1.dp, accent.copy(alpha = 0.38f)),
                 shape = RoundedCornerShape(18.dp)
             ) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(7.dp)) {
@@ -211,24 +225,22 @@ private fun TechnicalEntryDetail(
                         OutlinedButton(
                             onClick = { onOpen(target) },
                             modifier = Modifier.fillMaxWidth()
-                        ) { Text("${target.title} →") }
+                        ) { Text("${technicalEntryTitle(target)} →") }
                     }
                 }
             }
         }
-        if (entry.relatedIds.isNotEmpty()) {
+        if (relatedEntries.isNotEmpty()) {
             item {
                 HorizontalDivider()
                 Text("Связанные материалы", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
             }
-            item {
-                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(entry.relatedIds.distinct().mapNotNull(repository::entry).take(40), key = { it.id }) { target ->
-                        AssistChip(
-                            onClick = { onOpen(target) },
-                            label = { Text(target.title) }
-                        )
-                    }
+            items(relatedEntries, key = { "related-${it.id}" }) { target ->
+                OutlinedButton(
+                    onClick = { onOpen(target) },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("${technicalEntryTitle(target)} →")
                 }
             }
         }
@@ -244,16 +256,17 @@ private fun TechnicalSequence(
     var step by rememberSaveable(entry.id) { mutableIntStateOf(0) }
     val currentId = entry.sequence[step.coerceIn(entry.sequence.indices)]
     val target = repository.entry(currentId)
+    val accent = technicalSectionAccent(entry.section, entry.status)
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.42f)),
+        border = BorderStroke(1.dp, accent.copy(alpha = 0.45f)),
         shape = RoundedCornerShape(18.dp)
     ) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(9.dp)) {
             Text("Пошаговая цепь", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
-            Text("Шаг ${step + 1} из ${entry.sequence.size}", color = MaterialTheme.colorScheme.primary)
-            Text(target?.title ?: "Элемент цепи", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+            Text("Шаг ${step + 1} из ${entry.sequence.size}", color = accent)
+            Text(target?.let(::technicalEntryTitle) ?: "Элемент цепи", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedButton(onClick = { if (step > 0) step-- }, enabled = step > 0) { Text("Назад") }
                 Button(onClick = { if (step < entry.sequence.lastIndex) step++ }, enabled = step < entry.sequence.lastIndex) { Text("Далее") }
@@ -265,13 +278,21 @@ private fun TechnicalSequence(
     }
 }
 
-internal fun technicalStatusLabel(status: String): String? = when (status.trim().uppercase()) {
-    "INFORMATION" -> "Справочно"
-    "ATTENTION" -> "Внимание"
-    "RESTRICT_OPERATION" -> "Ограничить эксплуатацию"
-    "STOP_AND_REPORT" -> "Остановиться и доложить"
-    "REQUIRED" -> "Обязательный параметр"
-    "PROFILE_REQUIRED" -> "Требуется выбрать исполнение"
-    "CONFLICT" -> "Требует уточнения"
-    else -> null
+@Composable
+private fun technicalSectionAccent(section: TechnicalSection, status: String): Color {
+    if (status.equals("STOP_AND_REPORT", true) || status.equals("RESTRICT_OPERATION", true)) {
+        return MaterialTheme.colorScheme.error
+    }
+    return when (section) {
+        TechnicalSection.PROFILES -> MaterialTheme.colorScheme.tertiary
+        TechnicalSection.SYSTEMS -> MaterialTheme.colorScheme.secondary
+        TechnicalSection.EQUIPMENT -> MaterialTheme.colorScheme.primary
+        TechnicalSection.KNOWLEDGE -> MaterialTheme.colorScheme.tertiary
+        TechnicalSection.DIAGNOSTICS -> MaterialTheme.colorScheme.secondary
+        TechnicalSection.ELECTRICAL -> MaterialTheme.colorScheme.tertiary
+        TechnicalSection.PNEUMATIC -> MaterialTheme.colorScheme.primary
+        TechnicalSection.ACCEPTANCE -> MaterialTheme.colorScheme.primary
+    }
 }
+
+internal fun technicalStatusLabel(status: String): String? = technicalStatusPresentation(status)
