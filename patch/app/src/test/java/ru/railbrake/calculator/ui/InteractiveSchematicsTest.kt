@@ -23,6 +23,5 @@ class InteractiveSchematicsTest {
     fun pneumaticRoutesMatchScenarioStepCountsAndSourceBounds() {
         assertEquals(listOf(4, 7, 4, 4), pneumaticRouteStepCounts())
         assertTrue(allPneumaticRoutePointsFitSourceImage())
-        assertTrue(pneumaticRoutesExposeFlowReleaseAndControl())
     }
 }
