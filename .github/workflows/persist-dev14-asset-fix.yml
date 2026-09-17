@@ -29,10 +29,6 @@ jobs:
           from pathlib import Path
           import re
 
-          repo_paths = [
-              Path('app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt'),
-              Path('patch/app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt'),
-          ]
           replacement = '''    private fun json(asset: String): JSONObject {
               return try {
                   context.assets.open(asset).bufferedReader().use { reader -> JSONObject(reader.readText()) }
@@ -44,14 +40,16 @@ jobs:
           }
 
           '''
-          for path in repo_paths:
+          for path in [
+              Path('app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt'),
+              Path('patch/app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt'),
+          ]:
               text = path.read_text(encoding='utf-8')
               start = text.find('    private fun json(asset: String): JSONObject')
               end = text.find('    private fun loadVl80sProfiles()', start if start >= 0 else 0)
               if start < 0 or end <= start:
                   raise SystemExit(f'Cannot locate json() loader in {path}')
-              text = text[:start] + replacement + text[end:]
-              path.write_text(text, encoding='utf-8')
+              path.write_text(text[:start] + replacement + text[end:], encoding='utf-8')
 
           for path in [Path('app/build.gradle.kts'), Path('patch/app/build.gradle.kts')]:
               text = path.read_text(encoding='utf-8')
@@ -68,16 +66,14 @@ jobs:
           mirror_line = '            "src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt"\n'
           if mirror_line not in text:
               if mirror_anchor not in text:
-                  raise SystemExit('Mirror-list anchor missing in canonical workflow')
+                  raise SystemExit('Mirror-list anchor missing')
               text = text.replace(mirror_anchor, mirror_anchor + mirror_line, 1)
 
-          # Remove the emulator smoke/evidence block. Device QA remains a separate, explicitly-run concern.
           start = text.find('      - name: Android critical-path smoke\n')
           end = text.find('      - name: Build unsigned release APK\n', start if start >= 0 else 0)
           if start >= 0 and end > start:
               text = text[:start] + text[end:]
 
-          # Remove the legacy dev13 rebuild/upgrade gate that previously failed after a valid signed dev14 build.
           start = text.find('      - name: Build immutable dev13 signed release for upgrade check\n')
           end = text.find('      - name: Upload signed release APK\n', start if start >= 0 else 0)
           if start >= 0 and end > start:
@@ -89,9 +85,7 @@ jobs:
 
           debug_marker = '      - name: Upload debug APK\n'
           if '      - name: Verify all technical assets in debug APK\n' not in text:
-              if debug_marker not in text:
-                  raise SystemExit('Debug upload marker missing')
-              debug_block = f'''      - name: Verify all technical assets in debug APK
+              debug_block = '''      - name: Verify all technical assets in debug APK
         working-directory: buildsrc/RailBrakeCalculator
         shell: bash
         run: |
@@ -99,11 +93,11 @@ jobs:
           APK=app/build/outputs/apk/debug/app-debug.apk
           unzip -Z1 "$APK" > apk-files.txt
           expected=(
-{assets}
+__ASSETS__
           )
-          for name in "${{expected[@]}}"; do
-            plain="assets/technical/${{name}}.json"
-            gz="assets/technical/${{name}}.json.gz"
+          for name in "${expected[@]}"; do
+            plain="assets/technical/${name}.json"
+            gz="assets/technical/${name}.json.gz"
             if grep -Fxq "$plain" apk-files.txt; then
               unzip -p "$APK" "$plain" | python3 -m json.tool >/dev/null
             elif grep -Fxq "$gz" apk-files.txt; then
@@ -114,14 +108,14 @@ jobs:
             fi
           done
 
-'''
+'''.replace('__ASSETS__', assets)
+              if debug_marker not in text:
+                  raise SystemExit('Debug upload marker missing')
               text = text.replace(debug_marker, debug_block + debug_marker, 1)
 
           release_marker = '      - name: Upload signed release APK\n'
           if '      - name: Verify signed release technical assets\n' not in text:
-              if release_marker not in text:
-                  raise SystemExit('Signed release upload marker missing')
-              release_block = f'''      - name: Verify signed release technical assets
+              release_block = '''      - name: Verify signed release technical assets
         if: env.RELEASE_KEYSTORE_B64 != ''
         working-directory: buildsrc/RailBrakeCalculator
         shell: bash
@@ -130,11 +124,11 @@ jobs:
           APK=app/build/outputs/apk/release/app-release.apk
           unzip -Z1 "$APK" > release-files.txt
           expected=(
-{assets}
+__ASSETS__
           )
-          for name in "${{expected[@]}}"; do
-            plain="assets/technical/${{name}}.json"
-            gz="assets/technical/${{name}}.json.gz"
+          for name in "${expected[@]}"; do
+            plain="assets/technical/${name}.json"
+            gz="assets/technical/${name}.json.gz"
             if grep -Fxq "$plain" release-files.txt; then
               unzip -p "$APK" "$plain" | python3 -m json.tool >/dev/null
             elif grep -Fxq "$gz" release-files.txt; then
@@ -145,18 +139,18 @@ jobs:
             fi
           done
 
-'''
+'''.replace('__ASSETS__', assets)
+              if release_marker not in text:
+                  raise SystemExit('Release upload marker missing')
               text = text.replace(release_marker, release_block + release_marker, 1)
 
-          # Bound the expensive Gradle steps so a broken runner cannot spin indefinitely.
-          text = text.replace('          gradle :app:testDebugUnitTest --stacktrace --console=plain 2>&1 | tee unit-tests.log',
-                              '          timeout --signal=TERM 15m gradle :app:testDebugUnitTest --stacktrace --console=plain 2>&1 | tee unit-tests.log')
-          text = text.replace('          gradle :app:lintDebug --stacktrace --console=plain 2>&1 | tee lint.log',
-                              '          timeout --signal=TERM 15m gradle :app:lintDebug --stacktrace --console=plain 2>&1 | tee lint.log')
-          text = text.replace('          gradle :app:assembleDebug --stacktrace --console=plain 2>&1 | tee build-apk.log',
-                              '          timeout --signal=TERM 15m gradle :app:assembleDebug --stacktrace --console=plain 2>&1 | tee build-apk.log')
-          text = text.replace('          gradle :app:assembleRelease --stacktrace --console=plain 2>&1 | tee build-release.log',
-                              '          timeout --signal=TERM 15m gradle :app:assembleRelease --stacktrace --console=plain 2>&1 | tee build-release.log')
+          for old, new in [
+              ('gradle :app:testDebugUnitTest --stacktrace --console=plain 2>&1 | tee unit-tests.log', 'timeout --signal=TERM 15m gradle :app:testDebugUnitTest --stacktrace --console=plain 2>&1 | tee unit-tests.log'),
+              ('gradle :app:lintDebug --stacktrace --console=plain 2>&1 | tee lint.log', 'timeout --signal=TERM 15m gradle :app:lintDebug --stacktrace --console=plain 2>&1 | tee lint.log'),
+              ('gradle :app:assembleDebug --stacktrace --console=plain 2>&1 | tee build-apk.log', 'timeout --signal=TERM 15m gradle :app:assembleDebug --stacktrace --console=plain 2>&1 | tee build-apk.log'),
+              ('gradle :app:assembleRelease --stacktrace --console=plain 2>&1 | tee build-release.log', 'timeout --signal=TERM 15m gradle :app:assembleRelease --stacktrace --console=plain 2>&1 | tee build-release.log'),
+          ]:
+              text = text.replace(old, new)
 
           wf.write_text(text, encoding='utf-8')
           PY
