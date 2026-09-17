@@ -1,6 +1,7 @@
 package ru.railbrake.calculator.core
 
 import android.content.Context
+import java.util.zip.GZIPInputStream
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -145,7 +146,9 @@ class TechnicalDataRepository(private val context: Context) {
     }
 
     private fun json(asset: String): JSONObject =
-        context.assets.open(asset).bufferedReader().use { JSONObject(it.readText()) }
+        context.assets.open("$asset.gz").use { input ->
+            GZIPInputStream(input).bufferedReader().use { reader -> JSONObject(reader.readText()) }
+        }
 
     private fun loadVl80sProfiles(): List<TechnicalEntry> {
         val root = json("technical/vl80s_variants.json")
@@ -158,8 +161,6 @@ class TechnicalDataRepository(private val context: Context) {
                 blocks = listOfNotEmpty(
                     block("Диапазон", item.optString("range")),
                     block("Особенности", item.array("features").strings()),
-                    block("Правила", item.array("rules").strings()),
-                    block("Исключения", item.array("exceptions").strings()),
                     block("Опорные источники", item.array("sourceTags").strings())
                 )
             )
@@ -177,10 +178,7 @@ class TechnicalDataRepository(private val context: Context) {
                 subtitle = item.array("values").strings().joinToString(" • "),
                 status = if (item.optBoolean("required")) "REQUIRED" else "PROFILE_REQUIRED",
                 blocks = listOfNotEmpty(
-                    block("Доступные значения", item.array("values").strings()),
-                    block("Условие", item.obj("requiredWhen").summary()),
-                    block("Общее правило", selector.optString("rule")),
-                    block("Жёсткие ограничения", selector.array("hardRules").strings())
+                    block("Доступные значения", item.array("values").strings())
                 )
             )
         }
