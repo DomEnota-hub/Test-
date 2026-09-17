@@ -156,14 +156,14 @@ class TechnicalDataRepository(private val context: Context) {
     }
 
     private fun json(asset: String): JSONObject {
-        return try {
-            context.assets.open(asset).bufferedReader().use { reader -> JSONObject(reader.readText()) }
-        } catch (plainMissing: java.io.FileNotFoundException) {
-            context.assets.open("$asset.gz").use { input ->
-                GZIPInputStream(input).bufferedReader().use { reader -> JSONObject(reader.readText()) }
-            }
+    return try {
+        context.assets.open(asset).bufferedReader().use { reader -> JSONObject(reader.readText()) }
+    } catch (plainMissing: java.io.FileNotFoundException) {
+        context.assets.open("$asset.gz").use { input ->
+            GZIPInputStream(input).bufferedReader().use { reader -> JSONObject(reader.readText()) }
         }
     }
+}
 
     private fun loadVl80sProfiles(): List<TechnicalEntry> {
         val root = json("technical/vl80s_variants.json")
