@@ -4,7 +4,7 @@ name: Build Android APK from ZIP
 on:
   workflow_dispatch:
   push:
-    branches: [ main, master, vl80s-qa-dev5, dev8-design ]
+    branches: [ main, master, vl80s-qa-dev5, dev8-design, dev14-integration ]
     paths:
       - 'RailBrakeCalculator.zip'
       - 'patch/**'
