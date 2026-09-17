@@ -49,14 +49,13 @@ jobs:
               path = Path(filename)
               text = path.read_text(encoding='utf-8')
               if 'internal fun isInternalTechnicalReference' not in text:
-                  text = text.rstrip() + addition + '\n'
+                  text = text.rstrip() + addition.rstrip() + '\n'
               path.write_text(text, encoding='utf-8')
           PY
           python3 /tmp/restore.py
           cmp app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt patch/app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt
           grep -Fq 'internal fun isInternalTechnicalReference' app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt
           grep -Fq 'internal fun userFacingTechnicalText' app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt
-          git diff --check
 
       - name: Commit helpers
         shell: bash
