@@ -127,6 +127,19 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
+      - name: Android critical-path smoke
+        uses: reactivecircus/android-emulator-runner@v2
+        env:
+          APK: ${{ github.workspace }}/buildsrc/RailBrakeCalculator/app/build/outputs/apk/debug/app-debug.apk
+        with:
+          api-level: 29
+          arch: x86_64
+          profile: pixel_2
+          cores: 2
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -memory 1536
+          script: python3 "$GITHUB_WORKSPACE/qa/dev14_android_smoke.py"
+
       - name: Build unsigned release APK
         if: env.RELEASE_KEYSTORE_B64 == ''
         working-directory: buildsrc/RailBrakeCalculator
