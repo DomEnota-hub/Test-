@@ -562,3 +562,15 @@ private fun block(title: String, lines: List<String>): TechnicalBlock? =
     lines.filter(String::isNotBlank).distinct().takeIf { it.isNotEmpty() }?.let { TechnicalBlock(title, it) }
 
 private fun listOfNotEmpty(vararg blocks: TechnicalBlock?): List<TechnicalBlock> = blocks.filterNotNull()
+
+internal fun isInternalTechnicalReference(value: String): Boolean =
+    value.trim().matches(Regex("^(?:VL80|VL|ER)-[A-Z0-9][A-Z0-9_-]*$", RegexOption.IGNORE_CASE))
+
+internal fun userFacingTechnicalText(value: String): String = value
+    .replace(Regex("variant-profile", RegexOption.IGNORE_CASE), "профиль исполнения")
+    .replace(Regex("ER-EQ/KB\\s+карточки", RegexOption.IGNORE_CASE), "карточки оборудования и справочные материалы")
+    .replace(Regex("ER-EQ/KB", RegexOption.IGNORE_CASE), "карточки оборудования и справочные материалы")
+    .replace(Regex("\\b(?:VL80|VL|ER)-[A-Z0-9][A-Z0-9_-]*\\b", RegexOption.IGNORE_CASE), "")
+    .replace(Regex("\\s{2,}"), " ")
+    .replace(Regex("(?:\\s*•\\s*){2,}"), " • ")
+    .trim(' ', '•')
