@@ -76,6 +76,7 @@ import ru.railbrake.calculator.core.MassSupplementResult
 import ru.railbrake.calculator.core.ProfileMode
 import ru.railbrake.calculator.core.TenTonsChoice
 import ru.railbrake.calculator.core.TechnicalFamily
+import ru.railbrake.calculator.core.TechnicalDataRepository
 import ru.railbrake.calculator.core.TechnicalSection
 import ru.railbrake.calculator.data.HistoryRecord
 import ru.railbrake.calculator.data.HistoryRepository
