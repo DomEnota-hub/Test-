@@ -1,0 +1,193 @@
+name: Repair technical UI dev17
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/repair-ui-dev17.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      RELEASE_KEYSTORE_B64: ${{ secrets.RAILBRAKE_KEYSTORE_BASE64 }}
+      EXPECTED_SIGNING_CERT_SHA256: ea9fe9341a6ba72b585bd7ff82ce29c8fc5b7b59e76b8b134df203eaab8e2788
+
+    steps:
+      - name: Checkout guarded source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Apply guarded presentation repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .github/repair-ui-dev17.py
+          git diff --check
+          echo '===== changed files ====='
+          git status --short
+
+      - name: Verify repaired mirrors
+        shell: bash
+        run: |
+          set -euo pipefail
+          files=(
+            "build.gradle.kts"
+            "src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt"
+            "src/main/java/ru/railbrake/calculator/core/TechnicalPresentation.kt"
+            "src/main/java/ru/railbrake/calculator/ui/TechnicalCatalogScreen.kt"
+            "src/main/java/ru/railbrake/calculator/ui/BrakeCalculatorApp.kt"
+            "src/test/java/ru/railbrake/calculator/core/TechnicalPresentationTest.kt"
+          )
+          for rel in "${files[@]}"; do
+            cmp "app/$rel" "patch/app/$rel"
+          done
+          grep -Fq 'versionCode = 145' patch/app/build.gradle.kts
+          grep -Fq 'versionName = "1.2.2-dev17"' patch/app/build.gradle.kts
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install Android SDK 34
+        shell: bash
+        run: |
+          yes | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
+          "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-34' 'build-tools;34.0.0'
+
+      - name: Set up Gradle 8.7
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+
+      - name: Extract canonical project and overlay repaired patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf buildsrc
+          mkdir buildsrc
+          unzip -q RailBrakeCalculator.zip -d buildsrc
+          test -f buildsrc/RailBrakeCalculator/settings.gradle.kts
+          cp -a patch/. buildsrc/RailBrakeCalculator/
+          grep -Fq 'versionName = "1.2.2-dev17"' buildsrc/RailBrakeCalculator/app/build.gradle.kts
+
+      - name: Run unit tests
+        working-directory: buildsrc/RailBrakeCalculator
+        shell: bash
+        run: |
+          set -o pipefail
+          gradle :app:testDebugUnitTest --stacktrace --console=plain 2>&1 | tee unit-tests.log
+
+      - name: Run Android lint
+        working-directory: buildsrc/RailBrakeCalculator
+        shell: bash
+        run: |
+          set -o pipefail
+          gradle :app:lintDebug --stacktrace --console=plain 2>&1 | tee lint.log
+
+      - name: Build debug APK
+        working-directory: buildsrc/RailBrakeCalculator
+        shell: bash
+        run: |
+          set -o pipefail
+          gradle :app:assembleDebug --stacktrace --console=plain 2>&1 | tee build-debug.log
+
+      - name: Verify debug package and technical assets
+        working-directory: buildsrc/RailBrakeCalculator
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=app/build/outputs/apk/debug/app-debug.apk
+          "$ANDROID_SDK_ROOT/build-tools/34.0.0/aapt" dump badging "$APK" | tee debug-badging.log
+          grep -Fq "package: name='ru.railbrake.calculator' versionCode='145' versionName='1.2.2-dev17'" debug-badging.log
+          assets=(
+            ermak_diagnostics.json ermak_equipment.json ermak_knowledge.json ermak_links.json ermak_schemes.json ermak_system_map.json
+            vl80s_acceptance.json vl80s_diagnostics.json vl80s_electrical.json vl80s_electrical_variants.json vl80s_equipment.json
+            vl80s_pneumatic.json vl80s_pneumatic_variants.json vl80s_variants.json
+          )
+          for asset in "${assets[@]}"; do
+            unzip -p "$APK" "assets/technical/$asset" | python3 -m json.tool >/dev/null
+          done
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: RailBrakeCalculator-1.2.2-dev17-debug
+          path: buildsrc/RailBrakeCalculator/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Decode release signing key
+        if: env.RELEASE_KEYSTORE_B64 != ''
+        working-directory: buildsrc/RailBrakeCalculator
+        shell: bash
+        run: echo "$RELEASE_KEYSTORE_B64" | base64 --decode > release.keystore
+
+      - name: Build signed release APK
+        if: env.RELEASE_KEYSTORE_B64 != ''
+        working-directory: buildsrc/RailBrakeCalculator
+        shell: bash
+        env:
+          RAILBRAKE_KEYSTORE_PATH: ${{ github.workspace }}/buildsrc/RailBrakeCalculator/release.keystore
+          RAILBRAKE_STORE_PASSWORD: ${{ secrets.RAILBRAKE_STORE_PASSWORD }}
+          RAILBRAKE_KEY_ALIAS: ${{ secrets.RAILBRAKE_KEY_ALIAS }}
+          RAILBRAKE_KEY_PASSWORD: ${{ secrets.RAILBRAKE_KEY_PASSWORD }}
+        run: |
+          set -o pipefail
+          gradle :app:assembleRelease --stacktrace --console=plain 2>&1 | tee build-release.log
+
+      - name: Verify signed release
+        if: env.RELEASE_KEYSTORE_B64 != ''
+        working-directory: buildsrc/RailBrakeCalculator
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=app/build/outputs/apk/release/app-release.apk
+          "$ANDROID_SDK_ROOT/build-tools/34.0.0/aapt" dump badging "$APK" | tee release-badging.log
+          grep -Fq "package: name='ru.railbrake.calculator' versionCode='145' versionName='1.2.2-dev17'" release-badging.log
+          "$ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner" verify --verbose --print-certs "$APK" | tee release-apksigner.log
+          grep -qi "Signer #1 certificate SHA-256 digest: $EXPECTED_SIGNING_CERT_SHA256" release-apksigner.log
+
+      - name: Upload signed release APK
+        if: env.RELEASE_KEYSTORE_B64 != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: RailBrakeCalculator-1.2.2-dev17-release-signed
+          path: buildsrc/RailBrakeCalculator/app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Commit repaired source only after validation
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/repair-ui-dev17.py .github/workflows/repair-ui-dev17.yml
+          git add -A
+          git diff --cached --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Repair technical catalog presentation in dev17'
+          git push origin HEAD:main
+
+      - name: Upload validation logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dev17-ui-repair-validation-logs
+          path: |
+            buildsrc/RailBrakeCalculator/unit-tests.log
+            buildsrc/RailBrakeCalculator/lint.log
+            buildsrc/RailBrakeCalculator/build-debug.log
+            buildsrc/RailBrakeCalculator/build-release.log
+            buildsrc/RailBrakeCalculator/debug-badging.log
+            buildsrc/RailBrakeCalculator/release-badging.log
+            buildsrc/RailBrakeCalculator/release-apksigner.log
+          if-no-files-found: ignore
+          retention-days: 7
