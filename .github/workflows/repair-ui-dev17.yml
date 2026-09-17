@@ -27,6 +27,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          sed -i 's/"BLOK_2ES5K"/"blok_2es5k"/' .github/repair-ui-dev17.py
           python3 .github/repair-ui-dev17.py
           git diff --check
           echo '===== changed files ====='
