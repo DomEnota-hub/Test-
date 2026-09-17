@@ -44,6 +44,15 @@ class TechnicalDataRepository(private val context: Context) {
         private val sharedSectionCache = mutableMapOf<Pair<TechnicalFamily, TechnicalSection>, List<TechnicalEntry>>()
     }
 
+    private val legacyEquipmentIds by lazy {
+        json("technical/vl80s_equipment.json").array("records").objects()
+            .mapNotNull { item ->
+                item.optString("legacyId").takeIf(String::isNotBlank)?.let { legacy ->
+                    "vl80-eq-$legacy" to item.optString("id")
+                }
+            }.toMap()
+    }
+
     val entries: List<TechnicalEntry>
         get() = TechnicalFamily.entries.flatMap { family ->
             sections(family).flatMap { section -> sectionEntries(family, section) }
@@ -75,11 +84,12 @@ class TechnicalDataRepository(private val context: Context) {
     }
 
     fun entry(id: String): TechnicalEntry? {
+        val canonicalId = legacyEquipmentIds[id.lowercase()] ?: id
         synchronized(sharedSectionCache) {
-            sharedSectionCache.values.asSequence().flatten().firstOrNull { it.id == id }?.let { return it }
+            sharedSectionCache.values.asSequence().flatten().firstOrNull { it.id == canonicalId }?.let { return it }
         }
-        candidateSections(id).forEach { (family, section) ->
-            sectionEntries(family, section).firstOrNull { it.id == id }?.let { return it }
+        candidateSections(canonicalId).forEach { (family, section) ->
+            sectionEntries(family, section).firstOrNull { it.id == canonicalId }?.let { return it }
         }
         return null
     }

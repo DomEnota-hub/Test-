@@ -46,6 +46,8 @@ import ru.railbrake.calculator.core.technicalEntrySubtitle
 import ru.railbrake.calculator.core.technicalEntryTitle
 import ru.railbrake.calculator.core.technicalPresentationLine
 import ru.railbrake.calculator.core.technicalStatusPresentation
+import ru.railbrake.calculator.data.AcceptanceCheckState
+import ru.railbrake.calculator.data.AcceptanceStateRepository
 
 @Composable
 fun TechnicalCatalogScreen(
@@ -258,13 +260,13 @@ private fun TechnicalEntryDetail(
 
 @Composable
 private fun TechnicalSequence(entry: TechnicalEntry, repository: TechnicalDataRepository, onOpen: (TechnicalEntry) -> Unit) {
+    val acceptanceRepository = remember { AcceptanceStateRepository(LocalContext.current.applicationContext) }
     var step by rememberSaveable(entry.id) { mutableIntStateOf(0) }
-    var checkedIds by rememberSaveable(entry.id) { mutableStateOf("") }
-    var noteIds by rememberSaveable("${entry.id}-notes") { mutableStateOf("") }
+    var stateVersion by rememberSaveable(entry.id) { mutableIntStateOf(0) }
     val currentId=entry.sequence[step.coerceIn(entry.sequence.indices)]
     val target=repository.entry(currentId)
     val accent=technicalSectionAccent(entry.section,entry.status)
-    val checked=checkedIds.split('|').filter(String::isNotBlank).toSet(); val noted=noteIds.split('|').filter(String::isNotBlank).toSet()
+    val currentState = stateVersion.let { acceptanceRepository.state(currentId) }
     Card(modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer),border=BorderStroke(1.dp,accent.copy(alpha=.45f)),shape=RoundedCornerShape(18.dp)) {
         Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(10.dp)) {
             Text("Пошаговая приёмка",style=MaterialTheme.typography.titleMedium,fontWeight=FontWeight.Black)
@@ -278,13 +280,15 @@ private fun TechnicalSequence(entry: TechnicalEntry, repository: TechnicalDataRe
                         Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(5.dp)) { Text(block.title,fontWeight=FontWeight.Black); lines.forEach { Text("• $it") } }
                     }
                 }
-                Text(when { currentId in noted->"Есть замечание"; currentId in checked->"Проверено"; else->"Не отмечено" },color=accent,fontWeight=FontWeight.Bold)
-                Row(horizontalArrangement=Arrangement.spacedBy(8.dp)) {
-                    OutlinedButton(onClick={ checkedIds=(checked+currentId).joinToString("|"); noteIds=(noted-currentId).joinToString("|") }) { Text("Проверено") }
-                    OutlinedButton(onClick={ noteIds=(noted+currentId).joinToString("|"); checkedIds=(checked-currentId).joinToString("|") }) { Text("Замечание") }
+                Text("Состояние: ${currentState.label}",color=accent,fontWeight=FontWeight.Bold)
+                Text("Перед переходом выберите результат проверки этого пункта", style=MaterialTheme.typography.bodySmall, color=MaterialTheme.colorScheme.onSurfaceVariant)
+                LazyRow(horizontalArrangement=Arrangement.spacedBy(8.dp)) {
+                    items(AcceptanceCheckState.entries) { option ->
+                        FilterChip(selected=currentState==option,onClick={ acceptanceRepository.setState(currentId, option); stateVersion++ },label={Text(option.label)})
+                    }
                 }
             }
-            Row(horizontalArrangement=Arrangement.spacedBy(8.dp)) { OutlinedButton(onClick={if(step>0)step--},enabled=step>0){Text("Назад")}; Button(onClick={if(step<entry.sequence.lastIndex)step++},enabled=step<entry.sequence.lastIndex){Text("Далее")} }
+            Row(horizontalArrangement=Arrangement.spacedBy(8.dp)) { OutlinedButton(onClick={if(step>0)step--},enabled=step>0){Text("Назад")}; Button(onClick={if(step<entry.sequence.lastIndex)step++},enabled=step<entry.sequence.lastIndex && currentState != AcceptanceCheckState.NOT_CHECKED){Text("Далее")} }
             if(target!=null) OutlinedButton(onClick={onOpen(target)},modifier=Modifier.fillMaxWidth()){Text("Открыть полную карточку")}
         }
     }
