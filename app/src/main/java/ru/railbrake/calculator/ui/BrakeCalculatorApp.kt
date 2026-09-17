@@ -103,7 +103,7 @@ private enum class AppScreen(val title: String) {
     APPENDIX("ИДП №12"),
     HISTORY("История"),
     EXAM_QUESTIONS("Вопросы и ответы"),
-    SETTINGS("Настройки")
+    SETTINGS("Палитра")
 }
 
 private enum class OutputMode(val title: String) {
@@ -248,7 +248,7 @@ fun BrakeCalculatorApp(
                 }
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                 NavigationDrawerItem(
-                    label = { Text("Настройки и палитра") },
+                    label = { Text("Палитра") },
                     selected = screen == AppScreen.SETTINGS,
                     onClick = { screenName = AppScreen.SETTINGS.name; drawerScope.launch { drawerState.close() } },
                     modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
@@ -369,11 +369,13 @@ fun BrakeCalculatorApp(
                         initialFamily = TechnicalFamily.VL80S,
                         initialSection = TechnicalSection.ACCEPTANCE,
                         sectionBackLabel = "Главная",
-                        onSectionBack = { screenName = AppScreen.HOME.name }
+                        onSectionBack = { screenName = AppScreen.HOME.name },
+                        lockFamily = true,
+                        lockSection = true
                     )
                 }
                 AppScreen.DIAGNOSTICS -> key(diagnosticRootVersion) {
-                    DiagnosticScreen(
+                    LocomotiveDiagnosticsScreen(
                         initialScenarioId = diagnosticStartScenarioId,
                         initialEquipmentId = diagnosticStartEquipmentId
                     )

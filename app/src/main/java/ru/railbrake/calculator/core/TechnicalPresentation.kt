@@ -15,6 +15,15 @@ private val hiddenMetadata = setOf(
 
 private val exactLabels = mapOf(
     "local_procedure" to "Действовать по местной инструкции и установленному технологическому процессу",
+    "stop_and_report" to "Остановить проверку и доложить установленным порядком",
+    "authorized_only" to "Только при установленном допуске и безопасной подготовке",
+    "visual_safe" to "Только безопасный визуальный осмотр",
+    "cab_only" to "Проверка выполняется из кабины в установленном порядке",
+    "external_inspection_complete" to "Наружный осмотр завершён",
+    "brake_area_clear" to "Зона тормозной передачи свободна от людей",
+    "brakes_confirmed" to "Работоспособность тормозов подтверждена установленным порядком",
+    "all_base_variants_verify_actual_section" to "Для всех базовых исполнений с обязательной проверкой фактической секции",
+    "actual_section_scheme_required" to "Требуется схема фактической секции",
     "section-aware applicability" to "Применимость определяется по фактическому исполнению секции",
     "unknown" to "Не определено",
     "head" to "Головная секция",

@@ -39,24 +39,14 @@ data class TechnicalEntry(
 )
 
 class TechnicalDataRepository(private val context: Context) {
-    val entries: List<TechnicalEntry> by lazy {
-        buildList {
-            addAll(loadVl80sProfiles())
-            addAll(loadVl80sEquipment())
-            addAll(loadVl80sAcceptance())
-            addAll(loadVl80sElectrical())
-            addAll(loadVl80sPneumatic())
-            addAll(loadVl80sDiagnostics())
-            addAll(loadErmakProfiles())
-            addAll(loadErmakSystems())
-            addAll(loadErmakEquipment())
-            addAll(loadErmakKnowledge())
-            addAll(loadErmakDiagnostics())
-            addAll(loadErmakSchemes())
-        }
+    companion object {
+        private val sharedSectionCache = mutableMapOf<Pair<TechnicalFamily, TechnicalSection>, List<TechnicalEntry>>()
     }
 
-    private val byId by lazy { entries.associateBy(TechnicalEntry::id) }
+    val entries: List<TechnicalEntry>
+        get() = TechnicalFamily.entries.flatMap { family ->
+            sections(family).flatMap { section -> sectionEntries(family, section) }
+        }
 
     fun sections(family: TechnicalFamily): List<TechnicalSection> = when (family) {
         TechnicalFamily.VL80S -> listOf(
@@ -80,31 +70,79 @@ class TechnicalDataRepository(private val context: Context) {
 
     fun entries(family: TechnicalFamily, section: TechnicalSection, query: String = ""): List<TechnicalEntry> {
         val needle = query.trim().lowercase()
-        return entries.filter { entry ->
-            entry.family == family && entry.section == section &&
-                (needle.isBlank() || needle in entry.searchText)
-        }
+        return sectionEntries(family, section).filter { needle.isBlank() || needle in it.searchText }
     }
 
-    fun entry(id: String): TechnicalEntry? = byId[id]
+    fun entry(id: String): TechnicalEntry? {
+        synchronized(sharedSectionCache) {
+            sharedSectionCache.values.asSequence().flatten().firstOrNull { it.id == id }?.let { return it }
+        }
+        candidateSections(id).forEach { (family, section) ->
+            sectionEntries(family, section).firstOrNull { it.id == id }?.let { return it }
+        }
+        return null
+    }
 
     fun displayLines(lines: List<String>): List<String> = lines.mapNotNull { line ->
         line.split(" • ")
             .mapNotNull { part ->
-                part.takeUnless { entry(it) != null || isInternalTechnicalReference(it) }
-                    ?.let(::technicalPresentationLine)
-                    ?.takeIf(String::isNotBlank)
-            }
-            .distinct()
-            .joinToString(" • ")
-            .takeIf(String::isNotBlank)
+                part.takeUnless { looksLikeEntryId(it) && entry(it) != null || isInternalTechnicalReference(it) }
+                    ?.let(::technicalPresentationLine)?.takeIf(String::isNotBlank)
+            }.distinct().joinToString(" • ").takeIf(String::isNotBlank)
     }
 
     fun referencedEntries(lines: List<String>): List<TechnicalEntry> =
-        lines.flatMap { it.split(" • ") }.mapNotNull(::entry).distinctBy(TechnicalEntry::id)
+        lines.flatMap { it.split(" • ") }.filter(::looksLikeEntryId).mapNotNull(::entry).distinctBy(TechnicalEntry::id)
 
-    fun count(family: TechnicalFamily, section: TechnicalSection): Int =
-        entries.count { it.family == family && it.section == section }
+    fun count(family: TechnicalFamily, section: TechnicalSection): Int = sectionEntries(family, section).size
+
+    private fun sectionEntries(family: TechnicalFamily, section: TechnicalSection): List<TechnicalEntry> {
+        val key = family to section
+        synchronized(sharedSectionCache) { sharedSectionCache[key]?.let { return it } }
+        val loaded = loadSection(family, section)
+        synchronized(sharedSectionCache) { return sharedSectionCache.getOrPut(key) { loaded } }
+    }
+
+    private fun loadSection(family: TechnicalFamily, section: TechnicalSection): List<TechnicalEntry> = when (family) {
+        TechnicalFamily.VL80S -> when (section) {
+            TechnicalSection.PROFILES -> loadVl80sProfiles()
+            TechnicalSection.EQUIPMENT -> loadVl80sEquipment()
+            TechnicalSection.DIAGNOSTICS -> loadVl80sDiagnostics()
+            TechnicalSection.ELECTRICAL -> loadVl80sElectrical()
+            TechnicalSection.PNEUMATIC -> loadVl80sPneumatic()
+            TechnicalSection.ACCEPTANCE -> loadVl80sAcceptance()
+            TechnicalSection.KNOWLEDGE, TechnicalSection.SYSTEMS -> emptyList()
+        }
+        TechnicalFamily.ERMAK -> when (section) {
+            TechnicalSection.PROFILES -> loadErmakProfiles()
+            TechnicalSection.SYSTEMS -> loadErmakSystems()
+            TechnicalSection.EQUIPMENT -> loadErmakEquipment()
+            TechnicalSection.KNOWLEDGE -> loadErmakKnowledge()
+            TechnicalSection.DIAGNOSTICS -> loadErmakDiagnostics()
+            TechnicalSection.ELECTRICAL -> loadErmakSchemes().filter { it.section == TechnicalSection.ELECTRICAL }
+            TechnicalSection.PNEUMATIC -> loadErmakSchemes().filter { it.section == TechnicalSection.PNEUMATIC }
+            TechnicalSection.ACCEPTANCE -> emptyList()
+        }
+    }
+
+    private fun candidateSections(id: String): List<Pair<TechnicalFamily, TechnicalSection>> = when {
+        id.startsWith("VL80-ACC-") || id.startsWith("VL80-ROUTE-") || id.startsWith("route_") -> listOf(TechnicalFamily.VL80S to TechnicalSection.ACCEPTANCE)
+        id.startsWith("VL-EQ-") -> listOf(TechnicalFamily.VL80S to TechnicalSection.EQUIPMENT)
+        id.startsWith("VL-SCH-") -> listOf(TechnicalFamily.VL80S to TechnicalSection.ELECTRICAL, TechnicalFamily.VL80S to TechnicalSection.PNEUMATIC)
+        id.startsWith("ER-VARIANT-") -> listOf(TechnicalFamily.ERMAK to TechnicalSection.PROFILES)
+        id.startsWith("SYS-") -> listOf(TechnicalFamily.ERMAK to TechnicalSection.SYSTEMS)
+        id.startsWith("ER-EQ-") -> listOf(TechnicalFamily.ERMAK to TechnicalSection.EQUIPMENT)
+        id.startsWith("ER-KB-") -> listOf(TechnicalFamily.ERMAK to TechnicalSection.KNOWLEDGE)
+        id.startsWith("ER-DIAG-") -> listOf(TechnicalFamily.ERMAK to TechnicalSection.DIAGNOSTICS)
+        id.startsWith("ER-SCH-") -> listOf(TechnicalFamily.ERMAK to TechnicalSection.ELECTRICAL, TechnicalFamily.ERMAK to TechnicalSection.PNEUMATIC)
+        id.matches(Regex("^[a-z][a-z0-9]+(?:-[a-z0-9]+)+$")) -> listOf(TechnicalFamily.VL80S to TechnicalSection.DIAGNOSTICS)
+        else -> emptyList()
+    }
+
+    private fun looksLikeEntryId(value: String): Boolean {
+        val id=value.trim()
+        return id.startsWith("VL-") || id.startsWith("VL80-") || id.startsWith("ER-") || id.startsWith("SYS-") || id.startsWith("route_") || id.matches(Regex("^[a-z][a-z0-9]+(?:-[a-z0-9]+)+$"))
+    }
 
     private fun json(asset: String): JSONObject =
         context.assets.open(asset).bufferedReader().use { JSONObject(it.readText()) }
@@ -171,13 +209,12 @@ class TechnicalDataRepository(private val context: Context) {
             )
         }
 
-    private fun loadVl80sAcceptance(): List<TechnicalEntry> =
-        json("technical/vl80s_acceptance.json").array("items").objects().map { item ->
+    private fun loadVl80sAcceptance(): List<TechnicalEntry> {
+        val root = json("technical/vl80s_acceptance.json")
+        val items = root.array("items").objects().map { item ->
             entry(
                 item, TechnicalFamily.VL80S, TechnicalSection.ACCEPTANCE,
-                title = item.optString("title"),
-                subtitle = item.optString("check"),
-                status = item.optString("phase"),
+                title = item.optString("title"), subtitle = item.optString("check"), status = item.optString("phase"),
                 blocks = listOfNotEmpty(
                     block("Проверка", item.optString("check")),
                     block("Нормальные признаки", item.array("normalSigns").strings()),
@@ -192,13 +229,27 @@ class TechnicalDataRepository(private val context: Context) {
                 relatedIds = buildList {
                     item.optString("equipmentId").takeIf(String::isNotBlank)?.let(::add)
                     addAll(item.array("relatedEquipmentIds").strings())
-                    addAll(item.array("diagnosticHints").objects().mapNotNull { hint ->
-                        hint.optString("scenarioId").takeIf(String::isNotBlank)
-                            ?: hint.optString("id").takeIf(String::isNotBlank)
-                    })
+                    addAll(item.array("diagnosticHints").objects().mapNotNull { hint -> hint.optString("scenarioId").takeIf(String::isNotBlank) ?: hint.optString("id").takeIf(String::isNotBlank) })
                 }.distinct()
             )
         }
+        val routes = root.array("routes").objects().map { route ->
+            val ids=route.array("itemIds").strings()
+            val mode=when(route.optString("mode")){"step_by_step"->"пошагово";"checklist"->"контрольный список";"route"->"маршрут";"area"->"по зоне";else->"маршрут"}
+            TechnicalEntry(
+                id="VL80-ROUTE-${route.optString("id")}", family=TechnicalFamily.VL80S, section=TechnicalSection.ACCEPTANCE,
+                title=route.optString("title"), subtitle="${ids.size} пунктов • $mode", status="ROUTE",
+                blocks=listOf(TechnicalBlock("Режим",listOf("Последовательное прохождение пунктов приёмки с отметками «проверено» и «замечание»."))),
+                sequence=ids, searchText=(route.optString("title")+" "+mode).lowercase()
+            )
+        }
+        val effectiveRoutes=if(routes.isNotEmpty()) routes else listOf(TechnicalEntry(
+            id="VL80-ROUTE-fallback", family=TechnicalFamily.VL80S, section=TechnicalSection.ACCEPTANCE,
+            title="Полная приёмка", subtitle="${items.size} пунктов • пошагово", status="ROUTE", blocks=emptyList(),
+            sequence=items.map(TechnicalEntry::id), searchText="полная приёмка пошагово"
+        ))
+        return effectiveRoutes + items
+    }
 
     private fun loadVl80sElectrical(): List<TechnicalEntry> =
         json("technical/vl80s_electrical.json").array("baseSchemes").objects().map { item ->
