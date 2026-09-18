@@ -33,6 +33,7 @@ jobs:
           set -euo pipefail
           cmp app/build.gradle.kts patch/app/build.gradle.kts
           cmp app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt patch/app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt
+          cmp app/src/main/java/ru/railbrake/calculator/core/TechnicalAssetReader.kt patch/app/src/main/java/ru/railbrake/calculator/core/TechnicalAssetReader.kt
           expected=(
             ermak_diagnostics ermak_equipment ermak_knowledge ermak_links ermak_schemes ermak_system_map
             vl80s_acceptance vl80s_diagnostics vl80s_electrical vl80s_electrical_variants vl80s_equipment
@@ -43,8 +44,8 @@ jobs:
             test -f "patch/app/src/main/assets/technical/${name}.json.gz"
             cmp "app/src/main/assets/technical/${name}.json.gz" "patch/app/src/main/assets/technical/${name}.json.gz"
           done
-          grep -Fq 'context.assets.open(asset).bufferedReader()' app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt
-          grep -Fq 'context.assets.open("$asset.gz")' app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt
+          grep -Fq 'val candidates = listOf(logicalName, "$logicalName.gz")' app/src/main/java/ru/railbrake/calculator/core/TechnicalAssetReader.kt
+          grep -Fq 'firstByte == 0x1f && secondByte == 0x8b' app/src/main/java/ru/railbrake/calculator/core/TechnicalAssetReader.kt
           python3 qa/verify_runtime_asset_paths.py app/src/main/java app/src/main/assets | tee runtime-assets-source.log
           python3 -m py_compile qa/verify_runtime_asset_paths.py qa/verify_technical_assets_in_apk.py
 
@@ -83,8 +84,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          grep -Fq 'versionCode = 143' buildsrc/RailBrakeCalculator/app/build.gradle.kts
-          grep -Fq 'versionName = "1.2.2-dev14-hotfix1"' buildsrc/RailBrakeCalculator/app/build.gradle.kts
+          grep -Fq 'versionCode = 144' buildsrc/RailBrakeCalculator/app/build.gradle.kts
+          grep -Fq 'versionName = "1.2.2-dev14-hotfix2"' buildsrc/RailBrakeCalculator/app/build.gradle.kts
 
       - name: Run unit tests
         working-directory: buildsrc/RailBrakeCalculator
@@ -142,7 +143,7 @@ jobs:
           set -euo pipefail
           APK=buildsrc/RailBrakeCalculator/app/build/outputs/apk/release/app-release.apk
           "$ANDROID_SDK_ROOT/build-tools/34.0.0/aapt" dump badging "$APK" | tee apk-badging.log
-          grep -Fq "package: name='ru.railbrake.calculator' versionCode='143' versionName='1.2.2-dev14-hotfix1'" apk-badging.log
+          grep -Fq "package: name='ru.railbrake.calculator' versionCode='144' versionName='1.2.2-dev14-hotfix2'" apk-badging.log
           "$ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner" verify --verbose --print-certs "$APK" | tee signed-apksigner.log
           grep -qi "Signer #1 certificate SHA-256 digest: $EXPECTED_SIGNING_CERT_SHA256" signed-apksigner.log
           python3 qa/verify_technical_assets_in_apk.py "$APK" | tee technical-assets-release.log
@@ -151,7 +152,7 @@ jobs:
       - name: Upload signed release APK
         uses: actions/upload-artifact@v4
         with:
-          name: RailBrakeCalculator-1.2.2-dev14-hotfix1-release-signed
+          name: RailBrakeCalculator-1.2.2-dev14-hotfix2-release-signed
           path: buildsrc/RailBrakeCalculator/app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
           retention-days: 30

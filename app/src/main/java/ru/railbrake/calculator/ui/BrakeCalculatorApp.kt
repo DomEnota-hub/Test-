@@ -76,7 +76,6 @@ import ru.railbrake.calculator.core.MassSupplementResult
 import ru.railbrake.calculator.core.ProfileMode
 import ru.railbrake.calculator.core.TenTonsChoice
 import ru.railbrake.calculator.core.TechnicalFamily
-import ru.railbrake.calculator.core.TechnicalDataRepository
 import ru.railbrake.calculator.core.TechnicalSection
 import ru.railbrake.calculator.data.HistoryRecord
 import ru.railbrake.calculator.data.HistoryRepository
@@ -1288,8 +1287,6 @@ private fun LocomotiveReferenceScreen(
     onOpenTechnical: (TechnicalFamily, TechnicalSection) -> Unit,
     onOpenInteractiveVl80s: () -> Unit
 ) {
-    val context = LocalContext.current
-    val technicalRepository = remember { TechnicalDataRepository(context.applicationContext) }
     var query by rememberSaveable { mutableStateOf("") }
     var seriesExpanded by rememberSaveable { mutableStateOf(false) }
     var ermakSelected by rememberSaveable { mutableStateOf(false) }
@@ -1323,11 +1320,9 @@ private fun LocomotiveReferenceScreen(
                 add("Системы" to { onOpenTechnical(family, TechnicalSection.SYSTEMS) })
                 add("Статьи" to { onOpenTechnical(family, TechnicalSection.KNOWLEDGE) })
             }
-            add("Диагностика" to { onOpenTechnical(family, TechnicalSection.DIAGNOSTICS) })
-            add("Электросхемы · ${technicalRepository.count(family, TechnicalSection.ELECTRICAL)}" to { onOpenTechnical(family, TechnicalSection.ELECTRICAL) })
-            add("Пневмосхемы · ${technicalRepository.count(family, TechnicalSection.PNEUMATIC)}" to { onOpenTechnical(family, TechnicalSection.PNEUMATIC) })
+            add("Электросхемы" to { onOpenTechnical(family, TechnicalSection.ELECTRICAL) })
+            add("Пневмосхемы" to { onOpenTechnical(family, TechnicalSection.PNEUMATIC) })
             if (family == TechnicalFamily.VL80S) {
-                add("Приёмка" to { onOpenTechnical(family, TechnicalSection.ACCEPTANCE) })
                 add("Интерактивный атлас" to onOpenInteractiveVl80s)
             }
         }

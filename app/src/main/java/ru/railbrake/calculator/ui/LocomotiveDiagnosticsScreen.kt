@@ -8,7 +8,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ru.railbrake.calculator.core.TechnicalFamily
-import ru.railbrake.calculator.core.TechnicalSection
 
 @Composable
 fun LocomotiveDiagnosticsScreen(initialScenarioId:String?=null,initialEquipmentId:String?=null){
@@ -23,11 +22,9 @@ fun LocomotiveDiagnosticsScreen(initialScenarioId:String?=null,initialEquipmentI
         }
         Box(Modifier.fillMaxWidth().weight(1f)){
             if(family==TechnicalFamily.VL80S) DiagnosticScreen(initialScenarioId?.takeUnless{it.startsWith("ER-")},initialEquipmentId?.takeUnless{it.startsWith("ER-")})
-            else TechnicalCatalogScreen(
-                initialFamily=TechnicalFamily.ERMAK,initialSection=TechnicalSection.DIAGNOSTICS,
-                sectionBackLabel="Диагностика ВЛ80С",onSectionBack={familyName=TechnicalFamily.VL80S.name},
-                lockFamily=true,lockSection=true,
-                initialEntryId=initialScenarioId?.takeIf{it.startsWith("ER-DIAG-")}?:initialEquipmentId?.takeIf{it.startsWith("ER-EQ-")}
+            else ErmakDiagnosticsScreen(
+                initialScenarioId=initialScenarioId?.takeIf{it.startsWith("ER-DIAG-")},
+                initialEquipmentId=initialEquipmentId?.takeIf{it.startsWith("ER-EQ-")}
             )
         }
     }

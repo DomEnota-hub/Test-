@@ -1,7 +1,6 @@
 package ru.railbrake.calculator.core
 
 import android.content.Context
-import java.util.zip.GZIPInputStream
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -62,17 +61,14 @@ class TechnicalDataRepository(private val context: Context) {
         TechnicalFamily.VL80S -> listOf(
             TechnicalSection.PROFILES,
             TechnicalSection.EQUIPMENT,
-            TechnicalSection.DIAGNOSTICS,
             TechnicalSection.ELECTRICAL,
-            TechnicalSection.PNEUMATIC,
-            TechnicalSection.ACCEPTANCE
+            TechnicalSection.PNEUMATIC
         )
         TechnicalFamily.ERMAK -> listOf(
             TechnicalSection.PROFILES,
             TechnicalSection.SYSTEMS,
             TechnicalSection.EQUIPMENT,
             TechnicalSection.KNOWLEDGE,
-            TechnicalSection.DIAGNOSTICS,
             TechnicalSection.ELECTRICAL,
             TechnicalSection.PNEUMATIC
         )
@@ -155,15 +151,7 @@ class TechnicalDataRepository(private val context: Context) {
         return id.startsWith("VL-") || id.startsWith("VL80-") || id.startsWith("ER-") || id.startsWith("SYS-") || id.startsWith("route_") || id.matches(Regex("^[a-z][a-z0-9]+(?:-[a-z0-9]+)+$"))
     }
 
-    private fun json(asset: String): JSONObject {
-    return try {
-        context.assets.open(asset).bufferedReader().use { reader -> JSONObject(reader.readText()) }
-    } catch (plainMissing: java.io.FileNotFoundException) {
-        context.assets.open("$asset.gz").use { input ->
-            GZIPInputStream(input).bufferedReader().use { reader -> JSONObject(reader.readText()) }
-        }
-    }
-}
+    private fun json(asset: String): JSONObject = TechnicalAssetReader.json(context, asset)
 
     private fun loadVl80sProfiles(): List<TechnicalEntry> {
         val root = json("technical/vl80s_variants.json")
@@ -301,26 +289,40 @@ class TechnicalDataRepository(private val context: Context) {
             )
         }
 
-    private fun loadErmakSystems(): List<TechnicalEntry> =
-        json("technical/ermak_system_map.json").array("systems").objects().map { item ->
+    private fun loadErmakSystems(): List<TechnicalEntry> {
+        val equipmentBySystem = json("technical/ermak_equipment.json").array("records").objects()
+            .flatMap { equipment -> equipment.array("systemIds").strings().map { it to equipment } }
+            .groupBy({ it.first }, { it.second })
+        val articlesBySystem = json("technical/ermak_knowledge.json").array("articles").objects()
+            .flatMap { article -> article.array("relatedSystems").strings().map { it to article } }
+            .groupBy({ it.first }, { it.second })
+        return json("technical/ermak_system_map.json").array("systems").objects().map { item ->
+            val systemId = item.optString("id")
+            val equipment = equipmentBySystem[systemId].orEmpty()
+            val articles = articlesBySystem[systemId].orEmpty()
             entry(
                 item, TechnicalFamily.ERMAK, TechnicalSection.SYSTEMS,
                 title = item.optString("name").ifBlank { item.optString("title") },
-                subtitle = item.optString("purpose").ifBlank { item.optString("description") },
+                subtitle = "Оборудование: ${equipment.size} • Материалы: ${articles.size}",
                 status = item.optString("evidenceStatus").ifBlank { item.optString("status") },
                 blocks = listOfNotEmpty(
                     block("Назначение", item.optString("purpose").ifBlank { item.optString("description") }),
-                    block("Состав", item.array("components").strings() + item.array("equipmentRefs").strings()),
-                    block("Входы", item.array("inputs").strings()),
-                    block("Выходы", item.array("outputs").strings()),
-                    block("Защиты", item.array("protections").strings()),
-                    block("Связи", item.array("relations").stringsOrSummaries()),
+                    block("Оборудование системы", equipment.mapNotNull { record ->
+                        record.optString("name").takeIf(String::isNotBlank)
+                    }),
+                    block("Справочные материалы", articles.mapNotNull { article ->
+                        article.optString("title").takeIf(String::isNotBlank)
+                    }),
                     block("Источники", item.array("sourceRefs").stringsOrSummaries())
                 ),
-                relatedIds = item.array("equipmentRefs").strings() +
-                    item.array("relations").objects().mapNotNull { it.optString("targetId").takeIf(String::isNotBlank) }
+                relatedIds = buildList {
+                    addAll(equipment.mapNotNull { it.optString("id").takeIf(String::isNotBlank) })
+                    addAll(articles.mapNotNull { it.optString("id").takeIf(String::isNotBlank) })
+                    addAll(item.array("relations").objects().mapNotNull { it.optString("targetId").takeIf(String::isNotBlank) })
+                }
             )
         }
+    }
 
     private fun loadErmakEquipment(): List<TechnicalEntry> =
         json("technical/ermak_equipment.json").array("records").objects().map { item ->

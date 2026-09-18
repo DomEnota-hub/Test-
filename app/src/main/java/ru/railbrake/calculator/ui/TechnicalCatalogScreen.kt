@@ -65,13 +65,24 @@ fun TechnicalCatalogScreen(
     var sectionName by rememberSaveable { mutableStateOf(initialSection.name) }
     var query by rememberSaveable { mutableStateOf("") }
     var selectedId by rememberSaveable(initialEntryId) { mutableStateOf(initialEntryId) }
+    var acceptanceStartChoice by rememberSaveable { mutableStateOf(false) }
     val family = runCatching { TechnicalFamily.valueOf(familyName) }.getOrDefault(TechnicalFamily.VL80S)
     val availableSections = remember(family, lockSection, initialSection) { if (lockSection) listOf(initialSection) else repository.sections(family) }
     val selectedSection = runCatching { TechnicalSection.valueOf(sectionName) }.getOrNull()?.takeIf(availableSections::contains)
         ?: availableSections.first()
     val selected = selectedId?.let(repository::entry)
 
-    BackHandler(enabled = selected != null) { selectedId = null }
+    BackHandler(enabled = selected != null || acceptanceStartChoice) {
+        if (selected != null) selectedId = null else acceptanceStartChoice = false
+    }
+
+    if (acceptanceStartChoice) {
+        AcceptanceStartChoice(
+            onBack = { acceptanceStartChoice = false },
+            onSelect = { selectedId = it; acceptanceStartChoice = false }
+        )
+        return
+    }
 
     if (selected != null) {
         TechnicalEntryDetail(
@@ -161,7 +172,10 @@ fun TechnicalCatalogScreen(
         items(visible.orEmpty(), key = { it.id }) { entry ->
             val accent = technicalSectionAccent(entry.section, entry.status)
             Card(
-                onClick = { selectedId = entry.id },
+                onClick = {
+                    if (entry.id == "VL80-ROUTE-route_canonical") acceptanceStartChoice = true
+                    else selectedId = entry.id
+                },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(18.dp),
                 colors = CardDefaults.cardColors(containerColor = technicalSectionContainer(entry.section)),
@@ -177,6 +191,39 @@ fun TechnicalCatalogScreen(
                     }
                     Text("Открыть карточку →", color = accent, fontWeight = FontWeight.Bold)
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun AcceptanceStartChoice(onBack: () -> Unit, onSelect: (String) -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        ChildBackButton("Приёмка", onBack)
+        RailSectionHeader("Полная приёмка", "Выберите точку начала маршрута")
+        Card(
+            onClick = { onSelect("VL80-ROUTE-route_from_outside") },
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+            shape = RoundedCornerShape(18.dp)
+        ) {
+            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
+                Text("Начать снаружи", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+                Text("Последовательный маршрут от наружного осмотра к кабине.")
+            }
+        }
+        Card(
+            onClick = { onSelect("VL80-ROUTE-route_from_cab") },
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
+            shape = RoundedCornerShape(18.dp)
+        ) {
+            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
+                Text("Начать из кабины", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+                Text("Последовательный маршрут от органов управления к наружным зонам.")
             }
         }
     }

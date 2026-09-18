@@ -7,7 +7,7 @@ mkdir -p "$out"
 adb install "$LEGACY_APK"
 adb install -r "$DEV14_APK"
 adb shell dumpsys package ru.railbrake.calculator > "$out/package.txt"
-grep -Fq 'versionCode=142' "$out/package.txt"
+grep -Fq 'versionCode=144' "$out/package.txt"
 
 adb logcat -c
 adb shell am force-stop ru.railbrake.calculator

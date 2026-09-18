@@ -23,10 +23,15 @@ def values(value):
 
 
 def main(root: Path) -> None:
-    files = sorted(root.glob("*.json.gz"))
+    files = sorted(root.glob("*.json")) or sorted(root.glob("*.json.gz"))
     if len(files) != 14:
         raise SystemExit(f"Expected 14 canonical packages, found {len(files)} in {root}")
-    packages = {p.name: json.loads(gzip.open(p, "rt", encoding="utf-8").read()) for p in files}
+    packages = {
+        p.name: json.loads(
+            (gzip.open(p, "rt", encoding="utf-8") if p.suffix == ".gz" else p.open("rt", encoding="utf-8")).read()
+        )
+        for p in files
+    }
     primary_collections = {
         "records", "articles", "scenarios", "items", "routes", "zones", "baseSchemes",
         "modeOverlays", "variantOverlays", "schemes", "views", "states",
