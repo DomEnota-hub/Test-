@@ -24,7 +24,12 @@ data class ErmakDiagnosticScenario(
     val equipmentIds: Set<String>,
     val startNodeId: String,
     val nodes: Map<String, ErmakDiagnosticNode>,
-    val reportFields: List<String>
+    val reportFields: List<String>,
+    val immediateActions: List<String>,
+    val dangerSigns: List<String>,
+    val probableCauses: List<String>,
+    val safeChecks: List<String>,
+    val prohibited: List<String>
 )
 
 class ErmakDiagnosticRepository(private val context: Context) {
@@ -56,6 +61,7 @@ class ErmakDiagnosticRepository(private val context: Context) {
             }.toMap()
             val start = graph.optString("startNodeId")
             if (start.isBlank() || start !in nodes) return@mapNotNull null
+            val projection = scenario.obj("vl80sUiProjection")
             ErmakDiagnosticScenario(
                 id = scenario.optString("id"),
                 title = scenario.optString("title"),
@@ -65,7 +71,15 @@ class ErmakDiagnosticRepository(private val context: Context) {
                 equipmentIds = scenario.array("equipmentRefs").strings().toSet(),
                 startNodeId = start,
                 nodes = nodes,
-                reportFields = scenario.obj("vl80sUiProjection").array("reportFields").strings()
+                reportFields = projection.array("reportFields").strings(),
+                immediateActions = projection.array("immediateActions").strings(),
+                dangerSigns = projection.array("dangerSigns").strings(),
+                probableCauses = projection.array("probableCauses").strings(),
+                safeChecks = projection.array("checks").objects().map { check ->
+                    listOf(check.optString("title"), check.optString("action"), check.optString("expected"))
+                        .filter(String::isNotBlank).joinToString(": ")
+                },
+                prohibited = projection.array("prohibited").strings()
             )
         }
     }

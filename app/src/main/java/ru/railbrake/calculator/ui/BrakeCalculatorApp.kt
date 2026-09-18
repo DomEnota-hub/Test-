@@ -1314,12 +1314,9 @@ private fun LocomotiveReferenceScreen(
         }
         Text(family.subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         val materials = buildList<Pair<String, () -> Unit>> {
-            add("Исполнения" to { onOpenTechnical(family, TechnicalSection.PROFILES) })
             add("Оборудование" to { onOpenTechnical(family, TechnicalSection.EQUIPMENT) })
-            if (family == TechnicalFamily.ERMAK) {
-                add("Системы" to { onOpenTechnical(family, TechnicalSection.SYSTEMS) })
-                add("Статьи" to { onOpenTechnical(family, TechnicalSection.KNOWLEDGE) })
-            }
+            add("Системы" to { onOpenTechnical(family, TechnicalSection.SYSTEMS) })
+            add("Статьи" to { onOpenTechnical(family, TechnicalSection.KNOWLEDGE) })
             add("Электросхемы" to { onOpenTechnical(family, TechnicalSection.ELECTRICAL) })
             add("Пневмосхемы" to { onOpenTechnical(family, TechnicalSection.PNEUMATIC) })
             if (family == TechnicalFamily.VL80S) {

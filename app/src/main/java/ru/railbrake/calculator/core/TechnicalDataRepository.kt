@@ -5,7 +5,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 enum class TechnicalFamily(val title: String, val subtitle: String) {
-    VL80S("ВЛ80С", "Секционный профиль с учётом исполнений"),
+    VL80S("ВЛ80С", "Техническая база локомотива"),
     ERMAK("Ермак", "2ЭС5К / 3ЭС5К")
 }
 
@@ -59,13 +59,13 @@ class TechnicalDataRepository(private val context: Context) {
 
     fun sections(family: TechnicalFamily): List<TechnicalSection> = when (family) {
         TechnicalFamily.VL80S -> listOf(
-            TechnicalSection.PROFILES,
             TechnicalSection.EQUIPMENT,
+            TechnicalSection.SYSTEMS,
+            TechnicalSection.KNOWLEDGE,
             TechnicalSection.ELECTRICAL,
             TechnicalSection.PNEUMATIC
         )
         TechnicalFamily.ERMAK -> listOf(
-            TechnicalSection.PROFILES,
             TechnicalSection.SYSTEMS,
             TechnicalSection.EQUIPMENT,
             TechnicalSection.KNOWLEDGE,
@@ -118,7 +118,8 @@ class TechnicalDataRepository(private val context: Context) {
             TechnicalSection.ELECTRICAL -> loadVl80sElectrical()
             TechnicalSection.PNEUMATIC -> loadVl80sPneumatic()
             TechnicalSection.ACCEPTANCE -> loadVl80sAcceptance()
-            TechnicalSection.KNOWLEDGE, TechnicalSection.SYSTEMS -> emptyList()
+            TechnicalSection.KNOWLEDGE -> loadVl80sKnowledge()
+            TechnicalSection.SYSTEMS -> loadVl80sSystems()
         }
         TechnicalFamily.ERMAK -> when (section) {
             TechnicalSection.PROFILES -> loadErmakProfiles()
@@ -135,6 +136,8 @@ class TechnicalDataRepository(private val context: Context) {
     private fun candidateSections(id: String): List<Pair<TechnicalFamily, TechnicalSection>> = when {
         id.startsWith("VL80-ACC-") || id.startsWith("VL80-ROUTE-") || id.startsWith("route_") -> listOf(TechnicalFamily.VL80S to TechnicalSection.ACCEPTANCE)
         id.startsWith("VL-EQ-") -> listOf(TechnicalFamily.VL80S to TechnicalSection.EQUIPMENT)
+        id.startsWith("VL-SYS-") -> listOf(TechnicalFamily.VL80S to TechnicalSection.SYSTEMS)
+        id.startsWith("vl80-") -> listOf(TechnicalFamily.VL80S to TechnicalSection.KNOWLEDGE)
         id.startsWith("VL-SCH-") -> listOf(TechnicalFamily.VL80S to TechnicalSection.ELECTRICAL, TechnicalFamily.VL80S to TechnicalSection.PNEUMATIC)
         id.startsWith("ER-VARIANT-") -> listOf(TechnicalFamily.ERMAK to TechnicalSection.PROFILES)
         id.startsWith("SYS-") -> listOf(TechnicalFamily.ERMAK to TechnicalSection.SYSTEMS)
@@ -207,6 +210,68 @@ class TechnicalDataRepository(private val context: Context) {
                     block("Источники", item.array("sourceRefs").stringsOrSummaries())
                 ),
                 relatedIds = related
+            )
+        }
+
+    private fun loadVl80sSystems(): List<TechnicalEntry> {
+        val equipment = json("technical/vl80s_equipment.json").array("records").objects()
+        val diagnostics = json("technical/vl80s_diagnostics.json").array("scenarios").objects()
+        val systemIds = (equipment.flatMap { it.array("systemIds").strings() } +
+            diagnostics.flatMap { it.array("systemIds").strings() }).distinct().sorted()
+        return systemIds.map { systemId ->
+            val systemEquipment = equipment.filter { systemId in it.array("systemIds").strings() }
+            val systemDiagnostics = diagnostics.filter { systemId in it.array("systemIds").strings() }
+            val title = mapOf(
+                "VL-SYS-AU" to "Автоматическое управление",
+                "VL-SYS-BR" to "Тормозное оборудование",
+                "VL-SYS-CB" to "Цепи управления и блокировки",
+                "VL-SYS-CT" to "Контроль и сигнализация",
+                "VL-SYS-FR" to "Фазорасщепитель и вспомогательные машины",
+                "VL-SYS-HV" to "Высоковольтные цепи",
+                "VL-SYS-MC" to "Тяговые двигатели и силовые цепи",
+                "VL-SYS-PN" to "Пневматическая система",
+                "VL-SYS-PR" to "Защита и релейная аппаратура",
+                "VL-SYS-SF" to "Безопасность движения",
+                "VL-SYS-TR" to "Тяговое регулирование"
+            )[systemId] ?: "Система ВЛ80С"
+            TechnicalEntry(
+                id = systemId,
+                family = TechnicalFamily.VL80S,
+                section = TechnicalSection.SYSTEMS,
+                title = title,
+                subtitle = "Оборудование: ${systemEquipment.size} • Диагностические сценарии: ${systemDiagnostics.size}",
+                status = "INFORMATION",
+                blocks = listOfNotEmpty(
+                    block("Оборудование системы", systemEquipment.map { it.optString("name") }),
+                    block("Связанные неисправности", systemDiagnostics.map { it.optString("title") })
+                ),
+                relatedIds = systemEquipment.map { it.optString("id") } + systemDiagnostics.map { it.optString("id") },
+                searchText = (title + " " + systemEquipment.joinToString(" ") { it.optString("name") } + " " +
+                    systemDiagnostics.joinToString(" ") { it.optString("title") }).lowercase()
+            )
+        }
+    }
+
+    private fun loadVl80sKnowledge(): List<TechnicalEntry> =
+        KnowledgeRepository.allArticles.filter { article ->
+            article.category.contains("ВЛ80", ignoreCase = true) ||
+                article.tags.any { it.contains("ВЛ80", ignoreCase = true) }
+        }.map { article ->
+            TechnicalEntry(
+                id = article.id,
+                family = TechnicalFamily.VL80S,
+                section = TechnicalSection.KNOWLEDGE,
+                title = article.title,
+                subtitle = article.summary,
+                status = article.status,
+                blocks = listOfNotEmpty(
+                    block("Материал", article.body),
+                    block("Темы", article.tags),
+                    block("Источник", listOfNotNull(article.source.title, article.source.note))
+                ),
+                relatedIds = article.relatedArticleIds,
+                searchText = listOf(article.title, article.summary, article.body.joinToString(" "), article.tags.joinToString(" "))
+                    .joinToString(" ").lowercase()
             )
         }
 

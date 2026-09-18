@@ -179,7 +179,6 @@ private fun DiagnosticCatalog(
                 )
                 }
                 item { FilterChip(catalogMode == "training", { catalogMode = "training" }, label = { Text("Тренажёр") }) }
-                item { FilterChip(catalogMode == "profile", { catalogMode = "profile" }, label = { Text("Исполнение") }) }
                 item { FilterChip(catalogMode == "history", { catalogMode = "history" }, label = { Text("Журнал") }) }
             }
         }
@@ -204,36 +203,7 @@ private fun DiagnosticCatalog(
                 }
             }
         }
-        if (catalogMode == "profile") {
-            item {
-                InfoCard(
-                    "Профиль ВЛ80С",
-                    listOf(
-                        LocomotiveProfiles.vl80s.description,
-                        "Выбранное исполнение фильтрует диагностические сценарии. Общий профиль остаётся базовым слоем для всех исполнений.",
-                        LocomotiveProfiles.vl80s.sourcePolicy
-                    ),
-                    MaterialTheme.colorScheme.secondaryContainer
-                )
-            }
-            items(LocomotiveProfiles.vl80s.variants, key = { it.id }) { variant ->
-                Card(
-                    onClick = {
-                        selectedVariantId = variant.id
-                        profileRepository.select(LocomotiveProfiles.VL80S_ID, variant.id)
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    border = if (selectedVariantId == variant.id) BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null,
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-                ) {
-                    Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                        Text(variant.title, fontWeight = FontWeight.Black)
-                        Text(variant.applicability)
-                        Text("${variant.confidence.title}: ${variant.note}", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                }
-            }
-        } else if (catalogMode == "history") {
+        if (catalogMode == "history") {
             item {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text("Локальный журнал", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)

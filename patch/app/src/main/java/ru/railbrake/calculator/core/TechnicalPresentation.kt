@@ -117,12 +117,64 @@ private fun technicalPresentationAtom(value: String): String? {
     if (key in hiddenMetadata) return null
     exactLabels[key]?.let { return it }
     englishRules[key]?.let { return it }
+    translateQuantity(key)?.let { return it }
     sourcePoint.matchEntire(raw)?.let { return "п. ${it.groupValues[1]}" }
     if (vlProfileSubtitle.matches(raw)) return "Профиль исполнения секции ВЛ80С"
     if (looksLikeInternalEnglishRule(raw)) return "Ограничение применяется по выбранному исполнению."
     if (legacyIdentifier.matches(raw)) return null
     if (raw.contains('_') && raw.all { it.isLetterOrDigit() || it == '_' || it == '-' || it == ' ' }) return null
     return raw
+}
+
+private fun translateQuantity(value: String): String? {
+    val replacements = mapOf(
+        "profile dependent" to "Зависит от комплектации",
+        "profile dependent per section" to "Количество на секцию зависит от комплектации",
+        "distributed set per section" to "Распределённый комплект на секцию",
+        "multiple per section" to "Несколько на секцию",
+        "1 continuous line" to "Одна непрерывная магистраль",
+        "1 logical link across consist" to "Один логический канал по составу"
+    )
+    replacements[value]?.let { return it }
+    val patterns = listOf(
+        Regex("^(\\d+) per section$") to { m: MatchResult -> "${m.groupValues[1]} на секцию" },
+        Regex("^(\\d+) per cab$") to { m: MatchResult -> "${m.groupValues[1]} на кабину" },
+        Regex("^(\\d+) per cab/profile$") to { m: MatchResult -> "${m.groupValues[1]} на кабину, зависит от комплектации" },
+        Regex("^(\\d+) per section/profile$") to { m: MatchResult -> "${m.groupValues[1]} на секцию, зависит от комплектации" },
+        Regex("^(\\d+) sets? per section$") to { m: MatchResult -> "${m.groupValues[1]} комплект на секцию" },
+        Regex("^(\\d+) sets? per cab$") to { m: MatchResult -> "${m.groupValues[1]} комплект на кабину" },
+        Regex("^(\\d+) sets? per locomotive$") to { m: MatchResult -> "${m.groupValues[1]} комплект на локомотив" },
+        Regex("^(\\d+) assemblies per section$") to { m: MatchResult -> "${m.groupValues[1]} узла на секцию" },
+        Regex("^(\\d+) channels? per section$") to { m: MatchResult -> "${m.groupValues[1]} канала на секцию" },
+        Regex("^(\\d+) reservoirs? per section$") to { m: MatchResult -> "${m.groupValues[1]} резервуара на секцию" },
+        Regex("^(\\d+) functional positions per section$") to { m: MatchResult -> "${m.groupValues[1]} функциональные позиции на секцию" },
+        Regex("^(\\d+) branches? per section$") to { m: MatchResult -> "${m.groupValues[1]} ветвь на секцию" },
+        Regex("^(\\d+) per section in base (?:diagram|scheme)$") to { m: MatchResult -> "${m.groupValues[1]} на секцию в базовой схеме" },
+        Regex("^(\\d+) systems? per bogie$") to { m: MatchResult -> "${m.groupValues[1]} система на тележку" },
+        Regex("^(\\d+) sets? per bogie$") to { m: MatchResult -> "${m.groupValues[1]} комплект на тележку" }
+    )
+    patterns.forEach { (pattern, render) -> pattern.matchEntire(value)?.let { return render(it) } }
+    if (value.contains(" per ") || value.contains(" when fitted")) {
+        return value
+            .replace(" per equipped head section/profile", " на оборудованную головную секцию, зависит от комплектации")
+            .replace(" per active cab/section", " на активную кабину/секцию")
+            .replace(" per active cab/profile", " на активную кабину, зависит от комплектации")
+            .replace(" per traction motor/profile", " на тяговый двигатель, зависит от комплектации")
+            .replace(" per head section", " на головную секцию")
+            .replace(" per locomotive/profile", " на локомотив, зависит от комплектации")
+            .replace(" per cab/profile", " на кабину, зависит от комплектации")
+            .replace(" per section/profile", " на секцию, зависит от комплектации")
+            .replace(" per section", " на секцию")
+            .replace(" per cab", " на кабину")
+            .replace(" per locomotive", " на локомотив")
+            .replace(" when fitted", " при наличии")
+            .replace("set", "комплект")
+            .replace("channel", "канал")
+            .replace("function", "функция")
+            .replace("bearing positions", "подшипниковые узлы")
+            .replaceFirstChar { it.uppercase() }
+    }
+    return null
 }
 
 private fun looksLikeInternalEnglishRule(value: String): Boolean {

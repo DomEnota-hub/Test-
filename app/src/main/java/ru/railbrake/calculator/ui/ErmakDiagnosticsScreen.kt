@@ -19,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -64,6 +65,7 @@ fun ErmakDiagnosticsScreen(initialScenarioId: String? = null, initialEquipmentId
     ) {
         item {
             RailSectionHeader("Диагностика Ермак", "Выберите неисправность или наблюдаемый симптом")
+            SafetyNotice()
             OutlinedTextField(
                 value = query,
                 onValueChange = { query = it },
@@ -106,6 +108,7 @@ private fun ErmakDiagnosticRoute(scenario: ErmakDiagnosticScenario, onBack: () -
     var history by rememberSaveable(scenario.id) { mutableStateOf(emptyList<String>()) }
     var observations by rememberSaveable(scenario.id) { mutableStateOf("") }
     var report by rememberSaveable(scenario.id) { mutableStateOf("") }
+    var uncertain by rememberSaveable(scenario.id) { mutableStateOf(false) }
     val node = scenario.nodes[nodeId]
 
     LazyColumn(
@@ -117,7 +120,24 @@ private fun ErmakDiagnosticRoute(scenario: ErmakDiagnosticScenario, onBack: () -
             Text(scenario.title, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
             Text(scenario.symptom, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        if (node == null) {
+        item {
+            InfoCard("Сначала", scenario.immediateActions.ifEmpty { listOf("Зафиксируйте наблюдаемые признаки до дальнейшей проверки.") }, MaterialTheme.colorScheme.tertiaryContainer)
+        }
+        if (scenario.dangerSigns.isNotEmpty()) item {
+            InfoCard("Опасные признаки", scenario.dangerSigns, MaterialTheme.colorScheme.errorContainer)
+        }
+        if (uncertain) {
+            item {
+                InfoCard(
+                    "Недостаточно данных",
+                    listOf(
+                        "Причина не подтверждена. Не выполняйте действия, основанные на предположении.",
+                        "Зафиксируйте доступные показания и доложите установленным порядком."
+                    ),
+                    MaterialTheme.colorScheme.primaryContainer
+                )
+            }
+        } else if (node == null) {
             item { InfoCard("Ошибка сценария", listOf("Узел маршрута не найден. Вернитесь к выбору неисправности."), MaterialTheme.colorScheme.errorContainer) }
         } else {
             item {
@@ -150,6 +170,18 @@ private fun ErmakDiagnosticRoute(scenario: ErmakDiagnosticScenario, onBack: () -
                                 modifier = Modifier.fillMaxWidth()
                             ) { Text(choice.label) }
                         }
+                        if (node.type == "question" && node.choices.none { choice ->
+                                choice.label.contains("не уверен", true) || choice.label.contains("не знаю", true) ||
+                                    choice.label.contains("недостаточно", true)
+                            }) {
+                            TextButton(
+                                onClick = {
+                                    history = history + "${node.text} — Не уверен"
+                                    uncertain = true
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) { Text("Не уверен — записать и завершить") }
+                        }
                         if (node.choices.isEmpty() && node.nextNodeId != null) {
                             Button(
                                 onClick = {
@@ -179,7 +211,7 @@ private fun ErmakDiagnosticRoute(scenario: ErmakDiagnosticScenario, onBack: () -
                 minLines = 3
             )
         }
-        if (node?.type == "terminal") {
+        if (node?.type == "terminal" || uncertain) {
             item {
                 Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(18.dp)) {
                     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(7.dp)) {
@@ -190,10 +222,20 @@ private fun ErmakDiagnosticRoute(scenario: ErmakDiagnosticScenario, onBack: () -
                         scenario.reportFields.forEach { Text("• $it", color = MaterialTheme.colorScheme.onSurfaceVariant) }
                     }
                 }
+                if (scenario.probableCauses.isNotEmpty()) {
+                    InfoCard("Возможные причины", scenario.probableCauses, MaterialTheme.colorScheme.secondaryContainer)
+                }
+                if (scenario.safeChecks.isNotEmpty()) {
+                    InfoCard("Безопасные проверки", scenario.safeChecks, MaterialTheme.colorScheme.tertiaryContainer)
+                }
+                if (scenario.prohibited.isNotEmpty()) {
+                    InfoCard("Запрещено", scenario.prohibited, MaterialTheme.colorScheme.errorContainer)
+                }
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                     OutlinedButton(onClick = {
                         nodeId = scenario.startNodeId
                         history = emptyList()
+                        uncertain = false
                     }) { Text("Начать заново") }
                     Button(onClick = onBack) { Text("К списку неисправностей") }
                 }
