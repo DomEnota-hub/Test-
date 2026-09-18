@@ -65,7 +65,14 @@ fun ErmakDiagnosticsScreen(initialScenarioId: String? = null, initialEquipmentId
     ) {
         item {
             RailSectionHeader("Диагностика Ермак", "Выберите неисправность или наблюдаемый симптом")
-            SafetyNotice()
+            InfoCard(
+                "Важно: это не допуск к работам",
+                listOf(
+                    "Диагностика помогает локализовать отказ и подготовить доклад.",
+                    "Она не заменяет местную инструкцию, установленный допуск и требования безопасности."
+                ),
+                MaterialTheme.colorScheme.errorContainer
+            )
             OutlinedTextField(
                 value = query,
                 onValueChange = { query = it },
