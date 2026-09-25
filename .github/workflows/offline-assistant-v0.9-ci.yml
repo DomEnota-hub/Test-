@@ -1,0 +1,202 @@
+name: Offline Assistant v0.13 CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feature/offline-assistant-v0.9
+    paths:
+      - app/src/main/java/ru/railbrake/calculator/core/assistant/**
+      - patch/app/src/main/java/ru/railbrake/calculator/core/assistant/**
+      - app/src/main/java/ru/railbrake/calculator/ui/AssistantHomePanel.kt
+      - patch/app/src/main/java/ru/railbrake/calculator/ui/AssistantHomePanel.kt
+      - app/src/main/java/ru/railbrake/calculator/ui/AssistantResultActivity.kt
+      - patch/app/src/main/java/ru/railbrake/calculator/ui/AssistantResultActivity.kt
+      - app/src/main/java/ru/railbrake/calculator/ui/HomeScreen.kt
+      - patch/app/src/main/java/ru/railbrake/calculator/ui/HomeScreen.kt
+      - patch/app/src/main/AndroidManifest.xml
+      - app/src/test/java/ru/railbrake/calculator/core/assistant/**
+      - patch/app/src/test/java/ru/railbrake/calculator/core/assistant/**
+      - .github/workflows/offline-assistant-v0.9-ci.yml
+  pull_request:
+    branches:
+      - dev14-integration
+    paths:
+      - app/src/main/java/ru/railbrake/calculator/core/assistant/**
+      - patch/app/src/main/java/ru/railbrake/calculator/core/assistant/**
+      - app/src/main/java/ru/railbrake/calculator/ui/AssistantHomePanel.kt
+      - patch/app/src/main/java/ru/railbrake/calculator/ui/AssistantHomePanel.kt
+      - app/src/main/java/ru/railbrake/calculator/ui/AssistantResultActivity.kt
+      - patch/app/src/main/java/ru/railbrake/calculator/ui/AssistantResultActivity.kt
+      - app/src/main/java/ru/railbrake/calculator/ui/HomeScreen.kt
+      - patch/app/src/main/java/ru/railbrake/calculator/ui/HomeScreen.kt
+      - patch/app/src/main/AndroidManifest.xml
+      - app/src/test/java/ru/railbrake/calculator/core/assistant/**
+      - patch/app/src/test/java/ru/railbrake/calculator/core/assistant/**
+      - .github/workflows/offline-assistant-v0.9-ci.yml
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify assistant source mirrors
+        shell: bash
+        run: |
+          set -euo pipefail
+          for file in \
+            AssistantModels.kt \
+            AssistantAdapters.kt \
+            AssistantContentLoader.kt \
+            AssistantIndex.kt \
+            AssistantQueryModels.kt \
+            AssistantQueryParser.kt \
+            AssistantEngine.kt \
+            AssistantRuntime.kt; do
+            cmp "app/src/main/java/ru/railbrake/calculator/core/assistant/$file" \
+                "patch/app/src/main/java/ru/railbrake/calculator/core/assistant/$file"
+          done
+          for file in AssistantHomePanel.kt AssistantResultActivity.kt HomeScreen.kt; do
+            cmp "app/src/main/java/ru/railbrake/calculator/ui/$file" \
+                "patch/app/src/main/java/ru/railbrake/calculator/ui/$file"
+          done
+          for testfile in \
+            AssistantIndexTest.kt \
+            AssistantEngineTest.kt \
+            AssistantClarificationResolutionTest.kt; do
+            cmp \
+              "app/src/test/java/ru/railbrake/calculator/core/assistant/$testfile" \
+              "patch/app/src/test/java/ru/railbrake/calculator/core/assistant/$testfile"
+          done
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install Android SDK 34
+        shell: bash
+        run: |
+          set -euo pipefail
+          yes | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
+          "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-34' 'build-tools;34.0.0'
+
+      - name: Set up Gradle 8.7
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+
+      - name: Extract dev13 base and overlay dev14 plus assistant
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf buildsrc
+          mkdir buildsrc
+          unzip -q RailBrakeCalculator.zip -d buildsrc
+          test -f buildsrc/RailBrakeCalculator/settings.gradle.kts
+          cp -a patch/. buildsrc/RailBrakeCalculator/
+          for file in \
+            AssistantModels.kt \
+            AssistantAdapters.kt \
+            AssistantContentLoader.kt \
+            AssistantIndex.kt \
+            AssistantQueryModels.kt \
+            AssistantQueryParser.kt \
+            AssistantEngine.kt \
+            AssistantRuntime.kt; do
+            test -f "buildsrc/RailBrakeCalculator/app/src/main/java/ru/railbrake/calculator/core/assistant/$file"
+          done
+          test -f buildsrc/RailBrakeCalculator/app/src/main/java/ru/railbrake/calculator/ui/AssistantHomePanel.kt
+          test -f buildsrc/RailBrakeCalculator/app/src/main/java/ru/railbrake/calculator/ui/AssistantResultActivity.kt
+          test -f buildsrc/RailBrakeCalculator/app/src/main/java/ru/railbrake/calculator/ui/HomeScreen.kt
+          grep -q 'AssistantResultActivity' buildsrc/RailBrakeCalculator/app/src/main/AndroidManifest.xml
+          for testfile in AssistantIndexTest.kt AssistantEngineTest.kt AssistantClarificationResolutionTest.kt; do
+            test -f "buildsrc/RailBrakeCalculator/app/src/test/java/ru/railbrake/calculator/core/assistant/$testfile"
+          done
+
+      - name: Prepare side-by-side Test application
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          project = Path('buildsrc/RailBrakeCalculator')
+          gradle = project / 'app/build.gradle.kts'
+          text = gradle.read_text(encoding='utf-8')
+
+          text, app_id_count = re.subn(
+              r'applicationId\s*=\s*"ru\.railbrake\.calculator"',
+              'applicationId = "ru.railbrake.calculator.assistanttest"',
+              text,
+              count=1,
+          )
+          if app_id_count != 1:
+              raise SystemExit('Expected applicationId was not found exactly once')
+
+          def version_replacement(match):
+              return f'versionName = "{match.group(1)}-assistant-v0.13"'
+
+          text, version_count = re.subn(
+              r'versionName\s*=\s*"([^"]+)"',
+              version_replacement,
+              text,
+              count=1,
+          )
+          if version_count != 1:
+              raise SystemExit('Expected versionName was not found exactly once')
+
+          gradle.write_text(text, encoding='utf-8')
+
+          strings = project / 'app/src/main/res/values/strings.xml'
+          strings_text = strings.read_text(encoding='utf-8')
+          marker = '<string name="app_name">ЖД Помощник</string>'
+          if marker not in strings_text:
+              raise SystemExit('Expected app_name was not found')
+          strings.write_text(
+              strings_text.replace(
+                  marker,
+                  '<string name="app_name">ЖД Помощник Test</string>',
+                  1,
+              ),
+              encoding='utf-8',
+          )
+          PY
+
+      - name: Compile and test debug sources
+        working-directory: buildsrc/RailBrakeCalculator
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout --signal=TERM 15m gradle :app:testDebugUnitTest --stacktrace --console=plain
+
+      - name: Android lint
+        working-directory: buildsrc/RailBrakeCalculator
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout --signal=TERM 15m gradle :app:lintDebug --stacktrace --console=plain
+
+      - name: Build debug APK
+        working-directory: buildsrc/RailBrakeCalculator
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout --signal=TERM 15m gradle :app:assembleDebug --stacktrace --console=plain
+
+      - name: Upload side-by-side debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: railbrake-assistant-test-v0.13-apk
+          path: buildsrc/RailBrakeCalculator/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 7
