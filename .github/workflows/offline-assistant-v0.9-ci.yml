@@ -52,7 +52,8 @@ jobs:
             AssistantIndex.kt \
             AssistantQueryModels.kt \
             AssistantQueryParser.kt \
-            AssistantEngine.kt; do
+            AssistantEngine.kt \
+            AssistantRuntime.kt; do
             cmp "app/src/main/java/ru/railbrake/calculator/core/assistant/$file" \
                 "patch/app/src/main/java/ru/railbrake/calculator/core/assistant/$file"
           done
@@ -103,7 +104,8 @@ jobs:
             AssistantIndex.kt \
             AssistantQueryModels.kt \
             AssistantQueryParser.kt \
-            AssistantEngine.kt; do
+            AssistantEngine.kt \
+            AssistantRuntime.kt; do
             test -f "buildsrc/RailBrakeCalculator/app/src/main/java/ru/railbrake/calculator/core/assistant/$file"
           done
           test -f buildsrc/RailBrakeCalculator/app/src/main/java/ru/railbrake/calculator/ui/AssistantHomePanel.kt
@@ -132,3 +134,11 @@ jobs:
         run: |
           set -euo pipefail
           timeout --signal=TERM 15m gradle :app:assembleDebug --stacktrace --console=plain
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: offline-assistant-v0.11-debug-apk
+          path: buildsrc/RailBrakeCalculator/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 7
