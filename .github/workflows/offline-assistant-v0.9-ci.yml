@@ -1,4 +1,4 @@
-name: Offline Assistant v0.11 CI
+name: Offline Assistant v0.12 CI
 
 on:
   workflow_dispatch:
@@ -10,8 +10,11 @@ on:
       - patch/app/src/main/java/ru/railbrake/calculator/core/assistant/**
       - app/src/main/java/ru/railbrake/calculator/ui/AssistantHomePanel.kt
       - patch/app/src/main/java/ru/railbrake/calculator/ui/AssistantHomePanel.kt
+      - app/src/main/java/ru/railbrake/calculator/ui/AssistantResultActivity.kt
+      - patch/app/src/main/java/ru/railbrake/calculator/ui/AssistantResultActivity.kt
       - app/src/main/java/ru/railbrake/calculator/ui/HomeScreen.kt
       - patch/app/src/main/java/ru/railbrake/calculator/ui/HomeScreen.kt
+      - patch/app/src/main/AndroidManifest.xml
       - app/src/test/java/ru/railbrake/calculator/core/assistant/**
       - patch/app/src/test/java/ru/railbrake/calculator/core/assistant/**
       - .github/workflows/offline-assistant-v0.9-ci.yml
@@ -23,8 +26,11 @@ on:
       - patch/app/src/main/java/ru/railbrake/calculator/core/assistant/**
       - app/src/main/java/ru/railbrake/calculator/ui/AssistantHomePanel.kt
       - patch/app/src/main/java/ru/railbrake/calculator/ui/AssistantHomePanel.kt
+      - app/src/main/java/ru/railbrake/calculator/ui/AssistantResultActivity.kt
+      - patch/app/src/main/java/ru/railbrake/calculator/ui/AssistantResultActivity.kt
       - app/src/main/java/ru/railbrake/calculator/ui/HomeScreen.kt
       - patch/app/src/main/java/ru/railbrake/calculator/ui/HomeScreen.kt
+      - patch/app/src/main/AndroidManifest.xml
       - app/src/test/java/ru/railbrake/calculator/core/assistant/**
       - patch/app/src/test/java/ru/railbrake/calculator/core/assistant/**
       - .github/workflows/offline-assistant-v0.9-ci.yml
@@ -57,7 +63,7 @@ jobs:
             cmp "app/src/main/java/ru/railbrake/calculator/core/assistant/$file" \
                 "patch/app/src/main/java/ru/railbrake/calculator/core/assistant/$file"
           done
-          for file in AssistantHomePanel.kt HomeScreen.kt; do
+          for file in AssistantHomePanel.kt AssistantResultActivity.kt HomeScreen.kt; do
             cmp "app/src/main/java/ru/railbrake/calculator/ui/$file" \
                 "patch/app/src/main/java/ru/railbrake/calculator/ui/$file"
           done
@@ -109,7 +115,9 @@ jobs:
             test -f "buildsrc/RailBrakeCalculator/app/src/main/java/ru/railbrake/calculator/core/assistant/$file"
           done
           test -f buildsrc/RailBrakeCalculator/app/src/main/java/ru/railbrake/calculator/ui/AssistantHomePanel.kt
+          test -f buildsrc/RailBrakeCalculator/app/src/main/java/ru/railbrake/calculator/ui/AssistantResultActivity.kt
           test -f buildsrc/RailBrakeCalculator/app/src/main/java/ru/railbrake/calculator/ui/HomeScreen.kt
+          grep -q 'AssistantResultActivity' buildsrc/RailBrakeCalculator/app/src/main/AndroidManifest.xml
           for testfile in AssistantIndexTest.kt AssistantEngineTest.kt AssistantClarificationResolutionTest.kt; do
             test -f "buildsrc/RailBrakeCalculator/app/src/test/java/ru/railbrake/calculator/core/assistant/$testfile"
           done
@@ -136,7 +144,7 @@ jobs:
               raise SystemExit('Expected applicationId was not found exactly once')
 
           def version_replacement(match):
-              return f'versionName = "{match.group(1)}-assistant-v0.11"'
+              return f'versionName = "{match.group(1)}-assistant-v0.12"'
 
           text, version_count = re.subn(
               r'versionName\s*=\s*"([^"]+)"',
@@ -188,7 +196,7 @@ jobs:
       - name: Upload side-by-side debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: railbrake-assistant-test-v0.11-apk
+          name: railbrake-assistant-test-v0.12-apk
           path: buildsrc/RailBrakeCalculator/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 7
