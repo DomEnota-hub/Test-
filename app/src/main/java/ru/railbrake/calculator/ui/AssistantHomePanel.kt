@@ -1,5 +1,6 @@
 package ru.railbrake.calculator.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -42,7 +43,8 @@ import ru.railbrake.calculator.core.assistant.AssistantRuntime
 
 @Composable
 internal fun AssistantHomePanel() {
-    val appContext = LocalContext.current.applicationContext
+    val context = LocalContext.current
+    val appContext = context.applicationContext
     val engineState by produceState<Result<AssistantEngine>?>(initialValue = null, appContext) {
         value = withContext(Dispatchers.IO) {
             runCatching { AssistantRuntime.getOrCreate(appContext) }
@@ -152,7 +154,18 @@ internal fun AssistantHomePanel() {
                             fontWeight = FontWeight.Bold
                         )
                         current.hits.forEachIndexed { index, hit ->
-                            Card(modifier = Modifier.fillMaxWidth()) {
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        context.startActivity(
+                                            AssistantResultActivity.intent(
+                                                context = context,
+                                                target = hit.document.target
+                                            )
+                                        )
+                                    }
+                            ) {
                                 Column(
                                     modifier = Modifier.padding(12.dp),
                                     verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -181,6 +194,12 @@ internal fun AssistantHomePanel() {
                                             color = MaterialTheme.colorScheme.error
                                         )
                                     }
+                                    Text(
+                                        "Открыть →",
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = MaterialTheme.colorScheme.primary,
+                                        fontWeight = FontWeight.Bold
+                                    )
                                 }
                             }
                         }
