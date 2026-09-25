@@ -21,7 +21,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Replace Test tree with validated Beta snapshot
+      - name: Sync validated application source from Beta
         shell: bash
         env:
           EXPECTED_BETA_SHA: 612ffe4d43bb50d62df57755d8a1a2e2f1f17956
@@ -30,11 +30,13 @@ jobs:
           git remote add beta https://github.com/DomEnota-hub/Beta.git
           git fetch --no-tags beta dev14-integration
           test "$(git rev-parse beta/dev14-integration)" = "$EXPECTED_BETA_SHA"
-          git read-tree --reset -u beta/dev14-integration
-          test "$(git write-tree)" = "$(git rev-parse beta/dev14-integration^{tree})"
+
+          git checkout beta/dev14-integration -- app patch qa
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "sync: validated Beta dev14 snapshot 612ffe4d"
+
+          git diff --cached --quiet && { echo "Application source already synchronized"; exit 0; }
+          git commit -m "sync: validated Beta application snapshot 612ffe4d"
           git push origin HEAD:dev14-integration
 
       - name: Dispatch Test safe build v2
