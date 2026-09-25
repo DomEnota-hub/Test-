@@ -5,6 +5,8 @@ import ru.railbrake.calculator.core.DiagnosticRepository
 import ru.railbrake.calculator.core.ErmakDiagnosticRepository
 import ru.railbrake.calculator.core.KnowledgeRepository
 import ru.railbrake.calculator.core.TechnicalDataRepository
+import ru.railbrake.calculator.core.TechnicalFamily
+import ru.railbrake.calculator.core.TechnicalSection
 
 /**
  * Read-only projection of the existing application repositories.
@@ -15,10 +17,19 @@ class AssistantContentLoader(
 ) {
     fun load(): List<AssistantDocument> {
         val appContext = context.applicationContext
+        val technicalRepository = TechnicalDataRepository(appContext)
 
-        val technical = TechnicalDataRepository(appContext)
-            .entries
-            .map(TechnicalEntryAssistantAdapter::adapt)
+        // TechnicalDataRepository.entries intentionally exposes only catalog sections.
+        // Assistant search also needs acceptance and safety, while diagnostics are
+        // projected by their dedicated adapters to avoid duplicate diagnostic cards.
+        val indexedTechnicalSections = TechnicalSection.entries.filterNot { section ->
+            section == TechnicalSection.DIAGNOSTICS || section == TechnicalSection.PROFILES
+        }
+        val technical = TechnicalFamily.entries.flatMap { family ->
+            indexedTechnicalSections.flatMap { section ->
+                technicalRepository.entries(family, section)
+            }
+        }.map(TechnicalEntryAssistantAdapter::adapt)
 
         val vl80Diagnostics = DiagnosticRepository.scenarios
             .map(Vl80DiagnosticAssistantAdapter::adapt)
