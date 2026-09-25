@@ -16,7 +16,55 @@ object AssistantQueryParser {
         "гэ вэ" to "гв",
         "гэ-вэ" to "гв",
         "гэвэ" to "гв",
-        "главник" to "главный выключатель"
+        "главник" to "главный выключатель",
+        "э ка гэ" to "экг",
+        "э-ка-гэ" to "экг",
+        "тэ дэ" to "тэд",
+        "тэ-дэ" to "тэд",
+        "вэ у" to "ву",
+        "вэ-у" to "ву",
+        "э пэ ка" to "эпк",
+        "э-пэ-ка" to "эпк",
+        "ка эм триста девяносто пять" to "км 395",
+        "ка-эм триста девяносто пять" to "км 395",
+        "тэ эм" to "тм",
+        "тэ-эм" to "тм",
+        "гэ эр" to "гр",
+        "гэ-эр" to "гр",
+        "мотор вентилятор" to "мотор-вентилятор",
+        "токо приемник" to "токоприемник",
+        "пантограф" to "токоприемник"
+    )
+
+    private data class ComponentVocabulary(
+        val key: String,
+        val aliases: List<String>,
+        val enrichment: String
+    )
+
+    /**
+     * Небольшой детерминированный словарь железнодорожных узлов. Он нужен не
+     * для подмены данных приложения, а для сведения разговорных и ASR-форм к
+     * словам, которые уже встречаются в карточках и диагностических сценариях.
+     */
+    private val componentVocabulary = listOf(
+        ComponentVocabulary("MAIN_BREAKER", listOf("главный выключатель", "гв"), "главный выключатель гв"),
+        ComponentVocabulary("COMPRESSOR", listOf("компрессор", "мк"), "компрессор мотор-компрессор мк"),
+        ComponentVocabulary("TRANSFORMER", listOf("тяговый трансформатор", "трансформатор"), "тяговый трансформатор"),
+        ComponentVocabulary("PANTOGRAPH", listOf("токоприемник"), "токоприемник пантограф"),
+        ComponentVocabulary("EKG", listOf("экг", "групповой переключатель"), "экг групповой переключатель"),
+        ComponentVocabulary("TRACTION_MOTOR", listOf("тяговый двигатель", "тяговые двигатели", "тэд"), "тэд тяговый электродвигатель тяговые двигатели"),
+        ComponentVocabulary("RECTIFIER", listOf("выпрямительная установка", "выпрямитель", "ву"), "ву выпрямительная установка выпрямитель"),
+        ComponentVocabulary("MOTOR_FAN", listOf("мотор-вентилятор", "мотор вентилятор"), "мотор-вентилятор вентилятор охлаждения"),
+        ComponentVocabulary("PHASE_SPLITTER", listOf("фазорасщепитель", "расщепитель фаз"), "фазорасщепитель расщепитель фаз"),
+        ComponentVocabulary("BRAKE_PIPE", listOf("тормозная магистраль", "тм"), "тм тормозная магистраль"),
+        ComponentVocabulary("MAIN_RESERVOIR", listOf("главный резервуар", "главные резервуары", "гр"), "гр главные резервуары главный резервуар"),
+        ComponentVocabulary("BRAKE_CYLINDER", listOf("тормозной цилиндр", "тормозные цилиндры", "тц"), "тц тормозные цилиндры тормозной цилиндр"),
+        ComponentVocabulary("AIR_DISTRIBUTOR", listOf("воздухораспределитель", "вр 483", "вр483"), "воздухораспределитель вр 483"),
+        ComponentVocabulary("DRIVER_BRAKE_VALVE", listOf("кран машиниста", "км 395", "км395"), "кран машиниста км 395"),
+        ComponentVocabulary("EPK", listOf("эпк", "эпк 150", "эпк150"), "эпк 150 электропневматический клапан"),
+        ComponentVocabulary("BATTERY", listOf("аккумуляторная батарея", "акб", "батарея"), "акб аккумуляторная батарея"),
+        ComponentVocabulary("CONTACTOR", listOf("линейный контактор", "контактор"), "линейный контактор контактор")
     )
 
     /**
@@ -28,12 +76,14 @@ object AssistantQueryParser {
         "диагност",
         "не включ", "не выключ", "не держ", "не срабаты", "не запуска", "не старт",
         "не кач", "не набира", "не сбрасы", "не поднима", "не опуска", "не тян",
+        "не тормоз", "не отпуска", "не заряжа", "не разряжа", "не горит", "не светится",
         "не работает", "не работа",
         "отпада", "отключ", "выбива", "заклин", "застрял", "застряла", "застряло",
-        "ошиб", "авари", "отказ", "неисправ",
+        "ошиб", "авари", "отказ", "неисправ", "пробой", "обрыв", "короткое замыкание",
         "тяги нет", "тяга пропала", "тягу не берет", "не берет тягу",
         "давление не", "нет давления", "молчит", "воздуха не дает",
-        "дым", "искрит", "перегрев", "греется", "стучит", "шумит", "утеч", "теч"
+        "дым", "искрит", "перегрев", "греется", "стучит", "шумит", "утеч", "теч",
+        "самопроизвольно", "сам включ", "сам выключ", "мигает", "моргает", "горит постоянно"
     )
 
     fun parse(rawText: String): AssistantParsedQuery {
@@ -44,13 +94,9 @@ object AssistantQueryParser {
             else -> null
         }
 
-        val componentKey = when {
-            "главный выключатель" in normalized || Regex("(^| )гв( |$)").containsMatchIn(normalized) -> "MAIN_BREAKER"
-            "компрессор" in normalized -> "COMPRESSOR"
-            "трансформатор" in normalized -> "TRANSFORMER"
-            "токоприемник" in normalized -> "PANTOGRAPH"
-            else -> null
-        }
+        val componentKey = componentVocabulary.firstOrNull { component ->
+            component.aliases.any { alias -> containsTerm(normalized, alias) }
+        }?.key
 
         val ambiguity = ambiguity(normalized, componentKey)
 
@@ -113,13 +159,27 @@ object AssistantQueryParser {
 
     private fun enrichSearchText(normalized: String, componentKey: String?): String = buildString {
         append(normalized)
-        when (componentKey) {
-            "MAIN_BREAKER" -> append(" главный выключатель гв")
-            "COMPRESSOR" -> append(" компрессор")
-            "TRANSFORMER" -> append(" трансформатор")
-            "PANTOGRAPH" -> append(" токоприемник")
+        componentVocabulary.firstOrNull { it.key == componentKey }?.let { component ->
+            append(' ').append(component.enrichment)
         }
     }.normalizeAssistantText()
+
+    private fun containsTerm(text: String, term: String): Boolean {
+        if (term.length <= 3 && term.all { it.isLetterOrDigit() || it == ' ' }) {
+            return Regex("(^| )${Regex.escape(term)}( |$)").containsMatchIn(text)
+        }
+        if (term in text) return true
+
+        // Для словарных названий достаточно совпадения устойчивых начал слов:
+        // «главный выключатель» ↔ «главного выключателя»,
+        // «аккумуляторная батарея» ↔ «аккумуляторную батарею».
+        val textWords = text.split(' ').filter(String::isNotBlank)
+        val termWords = term.split(' ').filter(String::isNotBlank)
+        return termWords.all { pattern ->
+            val stem = pattern.take(if (pattern.length >= 7) 5 else pattern.length)
+            textWords.any { word -> word.startsWith(stem) }
+        }
+    }
 
     private fun ambiguity(normalized: String, componentKey: String?): AssistantAmbiguity? = when {
         normalized in setOf("гв", "главный выключатель") -> AssistantAmbiguity.TOPIC_SCOPE
@@ -144,7 +204,10 @@ object AssistantQueryParser {
         listOf("схема", "схеме", "электросх", "пневмосх", "покажи где", "где находится").any(text::contains)
 
     private fun hasProcedureCue(text: String): Boolean =
-        listOf("проба тормоз", "минутная готовность", "порядок", "как выполня", "как проводится", "когда нужна", "процедура").any(text::contains)
+        listOf(
+            "проба тормоз", "минутная готовность", "порядок", "как выполня", "как проводится",
+            "как проверить", "как осмотреть", "проверка", "когда нужна", "процедура"
+        ).any(text::contains)
 
     private fun hasDefinitionCue(text: String): Boolean =
         listOf("что такое", "для чего", "зачем нужен", "зачем нужна", "назначение", "что делает", "расскажи про", "описание").any(text::contains)

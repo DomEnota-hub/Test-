@@ -93,6 +93,49 @@ class AssistantEngineTest {
     }
 
     @Test
+    fun recognizesCommonRailwayComponentsAndAsrForms() {
+        val cases = mapOf(
+            "э ка гэ застрял на позиции" to "EKG",
+            "на тэ дэ искрение" to "TRACTION_MOTOR",
+            "вэ у греется" to "RECTIFIER",
+            "тэ эм не заряжается" to "BRAKE_PIPE",
+            "э пэ ка срабатывает самопроизвольно" to "EPK",
+            "пантограф не поднимается" to "PANTOGRAPH",
+            "ка эм триста девяносто пять не держит давление" to "DRIVER_BRAKE_VALVE"
+        )
+
+        cases.forEach { (query, componentKey) ->
+            val parsed = AssistantQueryParser.parse(query)
+            assertEquals("Wrong component for: $query", componentKey, parsed.componentKey)
+            assertEquals("Wrong intent for: $query", AssistantIntent.TROUBLESHOOT, parsed.intent)
+        }
+    }
+
+    @Test
+    fun proceduralWordingIsNotMistakenForFault() {
+        val parsed = AssistantQueryParser.parse("как проверить аккумуляторную батарею")
+
+        assertEquals("BATTERY", parsed.componentKey)
+        assertEquals(AssistantIntent.PROCEDURE, parsed.intent)
+        assertEquals(TechnicalSection.KNOWLEDGE, parsed.preferredSection)
+    }
+
+    @Test
+    fun recognizesInflectedComponentNames() {
+        val cases = mapOf(
+            "не включается главный выключатель" to "MAIN_BREAKER",
+            "проверка главного выключателя" to "MAIN_BREAKER",
+            "неисправность тягового трансформатора" to "TRANSFORMER",
+            "осмотр аккумуляторной батареи" to "BATTERY",
+            "нет давления в тормозной магистрали" to "BRAKE_PIPE"
+        )
+
+        cases.forEach { (query, componentKey) ->
+            assertEquals("Wrong component for: $query", componentKey, AssistantQueryParser.parse(query).componentKey)
+        }
+    }
+
+    @Test
     fun failureLanguagePrioritizesDiagnosticOverReferenceForSameComponent() {
         val engine = engine()
         val queries = listOf(

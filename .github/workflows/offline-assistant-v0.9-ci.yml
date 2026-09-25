@@ -1,4 +1,4 @@
-name: Offline Assistant v0.12 CI
+name: Offline Assistant v0.13 CI
 
 on:
   workflow_dispatch:
@@ -144,7 +144,7 @@ jobs:
               raise SystemExit('Expected applicationId was not found exactly once')
 
           def version_replacement(match):
-              return f'versionName = "{match.group(1)}-assistant-v0.12"'
+              return f'versionName = "{match.group(1)}-assistant-v0.13"'
 
           text, version_count = re.subn(
               r'versionName\s*=\s*"([^"]+)"',
@@ -196,7 +196,7 @@ jobs:
       - name: Upload side-by-side debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: railbrake-assistant-test-v0.12-apk
+          name: railbrake-assistant-test-v0.13-apk
           path: buildsrc/RailBrakeCalculator/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 7
