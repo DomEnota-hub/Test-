@@ -114,6 +114,56 @@ jobs:
             test -f "buildsrc/RailBrakeCalculator/app/src/test/java/ru/railbrake/calculator/core/assistant/$testfile"
           done
 
+      - name: Prepare side-by-side Test application
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          project = Path('buildsrc/RailBrakeCalculator')
+          gradle = project / 'app/build.gradle.kts'
+          text = gradle.read_text(encoding='utf-8')
+
+          text, app_id_count = re.subn(
+              r'applicationId\s*=\s*"ru\.railbrake\.calculator"',
+              'applicationId = "ru.railbrake.calculator.assistanttest"',
+              text,
+              count=1,
+          )
+          if app_id_count != 1:
+              raise SystemExit('Expected applicationId was not found exactly once')
+
+          def version_replacement(match):
+              return f'versionName = "{match.group(1)}-assistant-v0.11"'
+
+          text, version_count = re.subn(
+              r'versionName\s*=\s*"([^"]+)"',
+              version_replacement,
+              text,
+              count=1,
+          )
+          if version_count != 1:
+              raise SystemExit('Expected versionName was not found exactly once')
+
+          gradle.write_text(text, encoding='utf-8')
+
+          strings = project / 'app/src/main/res/values/strings.xml'
+          strings_text = strings.read_text(encoding='utf-8')
+          marker = '<string name="app_name">ЖД Помощник</string>'
+          if marker not in strings_text:
+              raise SystemExit('Expected app_name was not found')
+          strings.write_text(
+              strings_text.replace(
+                  marker,
+                  '<string name="app_name">ЖД Помощник Test</string>',
+                  1,
+              ),
+              encoding='utf-8',
+          )
+          PY
+
       - name: Compile and test debug sources
         working-directory: buildsrc/RailBrakeCalculator
         shell: bash
@@ -135,10 +185,10 @@ jobs:
           set -euo pipefail
           timeout --signal=TERM 15m gradle :app:assembleDebug --stacktrace --console=plain
 
-      - name: Upload debug APK
+      - name: Upload side-by-side debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: offline-assistant-v0.11-debug-apk
+          name: railbrake-assistant-test-v0.11-apk
           path: buildsrc/RailBrakeCalculator/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 7
