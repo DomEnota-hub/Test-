@@ -1,4 +1,4 @@
-name: Offline Assistant v0.10 CI
+name: Offline Assistant v0.11 CI
 
 on:
   workflow_dispatch:
@@ -8,6 +8,10 @@ on:
     paths:
       - app/src/main/java/ru/railbrake/calculator/core/assistant/**
       - patch/app/src/main/java/ru/railbrake/calculator/core/assistant/**
+      - app/src/main/java/ru/railbrake/calculator/ui/AssistantHomePanel.kt
+      - patch/app/src/main/java/ru/railbrake/calculator/ui/AssistantHomePanel.kt
+      - app/src/main/java/ru/railbrake/calculator/ui/HomeScreen.kt
+      - patch/app/src/main/java/ru/railbrake/calculator/ui/HomeScreen.kt
       - app/src/test/java/ru/railbrake/calculator/core/assistant/**
       - patch/app/src/test/java/ru/railbrake/calculator/core/assistant/**
       - .github/workflows/offline-assistant-v0.9-ci.yml
@@ -17,6 +21,10 @@ on:
     paths:
       - app/src/main/java/ru/railbrake/calculator/core/assistant/**
       - patch/app/src/main/java/ru/railbrake/calculator/core/assistant/**
+      - app/src/main/java/ru/railbrake/calculator/ui/AssistantHomePanel.kt
+      - patch/app/src/main/java/ru/railbrake/calculator/ui/AssistantHomePanel.kt
+      - app/src/main/java/ru/railbrake/calculator/ui/HomeScreen.kt
+      - patch/app/src/main/java/ru/railbrake/calculator/ui/HomeScreen.kt
       - app/src/test/java/ru/railbrake/calculator/core/assistant/**
       - patch/app/src/test/java/ru/railbrake/calculator/core/assistant/**
       - .github/workflows/offline-assistant-v0.9-ci.yml
@@ -48,7 +56,14 @@ jobs:
             cmp "app/src/main/java/ru/railbrake/calculator/core/assistant/$file" \
                 "patch/app/src/main/java/ru/railbrake/calculator/core/assistant/$file"
           done
-          for testfile in AssistantIndexTest.kt AssistantEngineTest.kt; do
+          for file in AssistantHomePanel.kt HomeScreen.kt; do
+            cmp "app/src/main/java/ru/railbrake/calculator/ui/$file" \
+                "patch/app/src/main/java/ru/railbrake/calculator/ui/$file"
+          done
+          for testfile in \
+            AssistantIndexTest.kt \
+            AssistantEngineTest.kt \
+            AssistantClarificationResolutionTest.kt; do
             cmp \
               "app/src/test/java/ru/railbrake/calculator/core/assistant/$testfile" \
               "patch/app/src/test/java/ru/railbrake/calculator/core/assistant/$testfile"
@@ -91,8 +106,11 @@ jobs:
             AssistantEngine.kt; do
             test -f "buildsrc/RailBrakeCalculator/app/src/main/java/ru/railbrake/calculator/core/assistant/$file"
           done
-          test -f buildsrc/RailBrakeCalculator/app/src/test/java/ru/railbrake/calculator/core/assistant/AssistantIndexTest.kt
-          test -f buildsrc/RailBrakeCalculator/app/src/test/java/ru/railbrake/calculator/core/assistant/AssistantEngineTest.kt
+          test -f buildsrc/RailBrakeCalculator/app/src/main/java/ru/railbrake/calculator/ui/AssistantHomePanel.kt
+          test -f buildsrc/RailBrakeCalculator/app/src/main/java/ru/railbrake/calculator/ui/HomeScreen.kt
+          for testfile in AssistantIndexTest.kt AssistantEngineTest.kt AssistantClarificationResolutionTest.kt; do
+            test -f "buildsrc/RailBrakeCalculator/app/src/test/java/ru/railbrake/calculator/core/assistant/$testfile"
+          done
 
       - name: Compile and test debug sources
         working-directory: buildsrc/RailBrakeCalculator

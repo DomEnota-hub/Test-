@@ -20,7 +20,7 @@ object AssistantQueryParser {
     )
 
     private val troubleshootCues = listOf(
-        "не включ", "не держ", "не срабаты", "отпада", "отключ", "выбива",
+        "диагност", "не включ", "не держ", "не срабаты", "отпада", "отключ", "выбива",
         "не тян", "тяги нет", "тяга пропала", "тягу не берет", "не берет тягу",
         "не запуска", "не кач", "давление не раст", "молчит", "воздуха не дает",
         "не работает", "отказ", "неисправ"
@@ -122,7 +122,7 @@ object AssistantQueryParser {
 
     private fun isGenericBrakeTest(text: String): Boolean =
         "проба" in text && "тормоз" in text &&
-            listOf("полная", "сокращ", "технолог").none(text::contains)
+            listOf("полная", "сокращ", "технолог").none { marker -> marker in text }
 
     private fun hasSafetyCue(text: String): Boolean =
         listOf("охрана труда", "безопасность", "переохлаж", "обморож", "первая помощь").any(text::contains)
@@ -134,8 +134,8 @@ object AssistantQueryParser {
         listOf("схема", "схеме", "электросх", "пневмосх", "покажи где", "где находится").any(text::contains)
 
     private fun hasProcedureCue(text: String): Boolean =
-        listOf("проба тормоз", "минутная готовность", "порядок", "как выполня", "как проводится", "когда нужна").any(text::contains)
+        listOf("проба тормоз", "минутная готовность", "порядок", "как выполня", "как проводится", "когда нужна", "процедура").any(text::contains)
 
     private fun hasDefinitionCue(text: String): Boolean =
-        listOf("что такое", "для чего", "зачем нужен", "зачем нужна", "назначение", "что делает", "расскажи про").any(text::contains)
+        listOf("что такое", "для чего", "зачем нужен", "зачем нужна", "назначение", "что делает", "расскажи про", "описание").any(text::contains)
 }
