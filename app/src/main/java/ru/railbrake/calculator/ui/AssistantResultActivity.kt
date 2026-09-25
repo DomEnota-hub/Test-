@@ -106,7 +106,7 @@ class AssistantResultActivity : ComponentActivity() {
                     onSectionBack = { finish() },
                     initialEntryId = id,
                     onOpenLegacyArticle = { articleId ->
-                        startActivity(intent(this, AssistantTarget.Knowledge(articleId)))
+                        startActivity(createIntent(this, AssistantTarget.Knowledge(articleId)))
                     },
                     onOpenDiagnosticScenario = { scenarioId, _, _ ->
                         val target = if (
@@ -116,7 +116,7 @@ class AssistantResultActivity : ComponentActivity() {
                         } else {
                             AssistantTarget.Vl80Diagnostic(scenarioId)
                         }
-                        startActivity(intent(this, target))
+                        startActivity(createIntent(this, target))
                     }
                 )
             }
@@ -158,7 +158,7 @@ class AssistantResultActivity : ComponentActivity() {
         private const val KIND_ERMAK_DIAGNOSTIC = "ermak_diagnostic"
         private const val KIND_KNOWLEDGE = "knowledge"
 
-        fun intent(context: Context, target: AssistantTarget): Intent =
+        fun createIntent(context: Context, target: AssistantTarget): Intent =
             Intent(context, AssistantResultActivity::class.java).apply {
                 when (target) {
                     is AssistantTarget.Technical -> {
