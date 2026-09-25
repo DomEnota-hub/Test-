@@ -12,6 +12,10 @@
         android:theme="@style/Theme.RailBrakeCalculator">
 
         <activity
+            android:name=".ui.AssistantResultActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
