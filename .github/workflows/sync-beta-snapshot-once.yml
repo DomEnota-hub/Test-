@@ -1,0 +1,46 @@
+name: Sync validated Beta snapshot once
+
+on:
+  push:
+    branches:
+      - dev14-integration
+    paths:
+      - .github/workflows/sync-beta-snapshot-once.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Test dev14
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Replace Test tree with validated Beta snapshot
+        shell: bash
+        env:
+          EXPECTED_BETA_SHA: 612ffe4d43bb50d62df57755d8a1a2e2f1f17956
+        run: |
+          set -euo pipefail
+          git remote add beta https://github.com/DomEnota-hub/Beta.git
+          git fetch --no-tags beta dev14-integration
+          test "$(git rev-parse beta/dev14-integration)" = "$EXPECTED_BETA_SHA"
+          git read-tree --reset -u beta/dev14-integration
+          test "$(git write-tree)" = "$(git rev-parse beta/dev14-integration^{tree})"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "sync: validated Beta dev14 snapshot 612ffe4d"
+          git push origin HEAD:dev14-integration
+
+      - name: Dispatch Test safe build v2
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh workflow run dev14-safe-build-v2.yml --repo DomEnota-hub/Test- --ref dev14-integration
