@@ -92,6 +92,38 @@ class AssistantEngineTest {
         assertTrue("гв" in parsed.normalizedText)
     }
 
+    @Test
+    fun failureLanguagePrioritizesDiagnosticOverReferenceForSameComponent() {
+        val engine = engine()
+        val queries = listOf(
+            "компрессор не выключается",
+            "компрессор не работает",
+            "ошибка компрессора",
+            "отказ компрессора",
+            "компрессор неисправен"
+        )
+
+        queries.forEach { query ->
+            val result = engine.query(query)
+            assertTrue("Expected matches for: $query", result is AssistantEngineResult.Matches)
+            result as AssistantEngineResult.Matches
+            assertEquals("Wrong intent for: $query", AssistantIntent.TROUBLESHOOT, result.parsedQuery.intent)
+            assertEquals("Wrong section for: $query", TechnicalSection.DIAGNOSTICS, result.parsedQuery.preferredSection)
+            assertEquals("Wrong top hit for: $query", "vl80-compressor-fault", result.hits.first().document.canonicalId)
+        }
+    }
+
+    @Test
+    fun definitionLanguageStillPrefersReferenceForComponent() {
+        val result = engine().query("что такое компрессор")
+
+        assertTrue(result is AssistantEngineResult.Matches)
+        result as AssistantEngineResult.Matches
+        assertEquals(AssistantIntent.DEFINE_TERM, result.parsedQuery.intent)
+        assertEquals(TechnicalSection.EQUIPMENT, result.parsedQuery.preferredSection)
+        assertEquals("vl80-compressor-reference", result.hits.first().document.canonicalId)
+    }
+
     private fun engine(): AssistantEngine = AssistantEngine(
         InMemoryAssistantIndex(
             listOf(
@@ -135,6 +167,27 @@ class AssistantEngineTest {
                         TechnicalFamily.ERMAK,
                         TechnicalSection.ELECTRICAL,
                         "ermak-gv-scheme"
+                    )
+                ),
+                document(
+                    id = "vl80-compressor-fault",
+                    family = TechnicalFamily.VL80S,
+                    section = TechnicalSection.DIAGNOSTICS,
+                    title = "Компрессор не запускается и не создаёт давление",
+                    aliases = setOf("компрессор", "компрессор не работает", "ошибка компрессора", "отказ компрессора"),
+                    critical = true,
+                    target = AssistantTarget.Vl80Diagnostic("vl80-compressor-fault")
+                ),
+                document(
+                    id = "vl80-compressor-reference",
+                    family = TechnicalFamily.VL80S,
+                    section = TechnicalSection.EQUIPMENT,
+                    title = "Компрессор",
+                    aliases = setOf("компрессор", "компрессор не выключается"),
+                    target = AssistantTarget.Technical(
+                        TechnicalFamily.VL80S,
+                        TechnicalSection.EQUIPMENT,
+                        "vl80-compressor-reference"
                     )
                 ),
                 document(
