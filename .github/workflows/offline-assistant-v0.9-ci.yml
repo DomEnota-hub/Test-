@@ -8,6 +8,8 @@ on:
     paths:
       - app/src/main/java/ru/railbrake/calculator/core/assistant/**
       - patch/app/src/main/java/ru/railbrake/calculator/core/assistant/**
+      - app/src/test/java/ru/railbrake/calculator/core/assistant/**
+      - patch/app/src/test/java/ru/railbrake/calculator/core/assistant/**
       - .github/workflows/offline-assistant-v0.9-ci.yml
   pull_request:
     branches:
@@ -15,6 +17,8 @@ on:
     paths:
       - app/src/main/java/ru/railbrake/calculator/core/assistant/**
       - patch/app/src/main/java/ru/railbrake/calculator/core/assistant/**
+      - app/src/test/java/ru/railbrake/calculator/core/assistant/**
+      - patch/app/src/test/java/ru/railbrake/calculator/core/assistant/**
       - .github/workflows/offline-assistant-v0.9-ci.yml
 
 permissions:
@@ -37,6 +41,9 @@ jobs:
             cmp "app/src/main/java/ru/railbrake/calculator/core/assistant/$file" \
                 "patch/app/src/main/java/ru/railbrake/calculator/core/assistant/$file"
           done
+          cmp \
+            app/src/test/java/ru/railbrake/calculator/core/assistant/AssistantIndexTest.kt \
+            patch/app/src/test/java/ru/railbrake/calculator/core/assistant/AssistantIndexTest.kt
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -68,6 +75,7 @@ jobs:
           for file in AssistantModels.kt AssistantAdapters.kt AssistantContentLoader.kt AssistantIndex.kt; do
             test -f "buildsrc/RailBrakeCalculator/app/src/main/java/ru/railbrake/calculator/core/assistant/$file"
           done
+          test -f buildsrc/RailBrakeCalculator/app/src/test/java/ru/railbrake/calculator/core/assistant/AssistantIndexTest.kt
 
       - name: Compile and test debug sources
         working-directory: buildsrc/RailBrakeCalculator
