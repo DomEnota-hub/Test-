@@ -1,4 +1,4 @@
-name: Offline Assistant v0.9 CI
+name: Offline Assistant v0.10 CI
 
 on:
   workflow_dispatch:
@@ -37,13 +37,22 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for file in AssistantModels.kt AssistantAdapters.kt AssistantContentLoader.kt AssistantIndex.kt; do
+          for file in \
+            AssistantModels.kt \
+            AssistantAdapters.kt \
+            AssistantContentLoader.kt \
+            AssistantIndex.kt \
+            AssistantQueryModels.kt \
+            AssistantQueryParser.kt \
+            AssistantEngine.kt; do
             cmp "app/src/main/java/ru/railbrake/calculator/core/assistant/$file" \
                 "patch/app/src/main/java/ru/railbrake/calculator/core/assistant/$file"
           done
-          cmp \
-            app/src/test/java/ru/railbrake/calculator/core/assistant/AssistantIndexTest.kt \
-            patch/app/src/test/java/ru/railbrake/calculator/core/assistant/AssistantIndexTest.kt
+          for testfile in AssistantIndexTest.kt AssistantEngineTest.kt; do
+            cmp \
+              "app/src/test/java/ru/railbrake/calculator/core/assistant/$testfile" \
+              "patch/app/src/test/java/ru/railbrake/calculator/core/assistant/$testfile"
+          done
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -72,10 +81,18 @@ jobs:
           unzip -q RailBrakeCalculator.zip -d buildsrc
           test -f buildsrc/RailBrakeCalculator/settings.gradle.kts
           cp -a patch/. buildsrc/RailBrakeCalculator/
-          for file in AssistantModels.kt AssistantAdapters.kt AssistantContentLoader.kt AssistantIndex.kt; do
+          for file in \
+            AssistantModels.kt \
+            AssistantAdapters.kt \
+            AssistantContentLoader.kt \
+            AssistantIndex.kt \
+            AssistantQueryModels.kt \
+            AssistantQueryParser.kt \
+            AssistantEngine.kt; do
             test -f "buildsrc/RailBrakeCalculator/app/src/main/java/ru/railbrake/calculator/core/assistant/$file"
           done
           test -f buildsrc/RailBrakeCalculator/app/src/test/java/ru/railbrake/calculator/core/assistant/AssistantIndexTest.kt
+          test -f buildsrc/RailBrakeCalculator/app/src/test/java/ru/railbrake/calculator/core/assistant/AssistantEngineTest.kt
 
       - name: Compile and test debug sources
         working-directory: buildsrc/RailBrakeCalculator
