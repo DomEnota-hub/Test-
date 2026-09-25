@@ -28,7 +28,7 @@ class TechnicalDataAssetTest {
         assertEquals(66, asset("vl80s_acceptance.json").getJSONArray("items").length())
         assertEquals(8, asset("vl80s_electrical.json").getJSONArray("baseSchemes").length())
         assertEquals(8, asset("vl80s_pneumatic.json").getJSONArray("views").length())
-        assertEquals(94, asset("vl80s_diagnostics.json").getJSONArray("scenarios").length())
+        assertEquals(95, asset("vl80s_diagnostics.json").getJSONArray("scenarios").length())
     }
 
     @Test

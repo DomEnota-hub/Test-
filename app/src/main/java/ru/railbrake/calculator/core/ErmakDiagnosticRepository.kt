@@ -4,7 +4,10 @@ import android.content.Context
 import org.json.JSONArray
 import org.json.JSONObject
 
-data class ErmakDiagnosticChoice(val label: String, val nextNodeId: String)
+data class ErmakDiagnosticChoice(
+    val label: String,
+    val nextNodeId: String
+)
 
 data class ErmakDiagnosticNode(
     val id: String,
@@ -12,8 +15,12 @@ data class ErmakDiagnosticNode(
     val text: String,
     val choices: List<ErmakDiagnosticChoice>,
     val nextNodeId: String?,
-    val terminalStatus: String?
+    val terminalStatus: String?,
+    val actionMetadata: DiagnosticActionMetadata = DiagnosticActionMetadata()
 )
+
+fun ErmakDiagnosticNode.requiresPolicyEvaluation(): Boolean =
+    type == "source_action" || type == "emergency_action"
 
 data class ErmakDiagnosticScenario(
     val id: String,
@@ -29,71 +36,187 @@ data class ErmakDiagnosticScenario(
     val dangerSigns: List<String>,
     val probableCauses: List<String>,
     val safeChecks: List<String>,
-    val prohibited: List<String>
+    val prohibited: List<String>,
+    val applicability: DiagnosticApplicability = DiagnosticApplicability(),
+    val informationConfidence: String = "",
+    val sourceAgeNote: String = "",
+    val sourceRefs: List<DiagnosticSourceReference> = emptyList()
 )
 
-class ErmakDiagnosticRepository(private val context: Context) {
-    fun scenarios(): List<ErmakDiagnosticScenario> = synchronized(cache) {
-        if (cache.isEmpty()) cache.addAll(load())
-        cache.toList()
-    }
+class ErmakDiagnosticRepository(context: Context) {
+    private val appContext = context.applicationContext
 
-    private fun load(): List<ErmakDiagnosticScenario> {
-        val root = TechnicalAssetReader.json(context, "technical/ermak_diagnostics.json")
-        return root.array("scenarios").objects().mapNotNull { scenario ->
-            val graph = scenario.obj("graph")
-            val nodes = graph.array("nodes").objects().mapNotNull { node ->
-                val id = node.optString("id").takeIf(String::isNotBlank) ?: return@mapNotNull null
-                val text = sequenceOf("prompt", "text", "result")
-                    .map(node::optString).firstOrNull(String::isNotBlank).orEmpty()
-                id to ErmakDiagnosticNode(
+    fun scenarios(): List<ErmakDiagnosticScenario> {
+        val root = TechnicalAssetReader.json(appContext, "technical/ermak_diagnostics.json")
+        return parseErmakDiagnostics(root)
+    }
+}
+
+internal fun parseErmakDiagnostics(root: JSONObject): List<ErmakDiagnosticScenario> {
+    val source = root.optJSONArray("scenarios") ?: JSONArray()
+    return buildList {
+        for (index in 0 until source.length()) {
+            val item = source.optJSONObject(index) ?: continue
+            val graph = item.optJSONObject("graph") ?: JSONObject()
+            val nodes = linkedMapOf<String, ErmakDiagnosticNode>()
+            val nodeArray = graph.optJSONArray("nodes") ?: JSONArray()
+
+            for (nodeIndex in 0 until nodeArray.length()) {
+                val node = nodeArray.optJSONObject(nodeIndex) ?: continue
+                val id = node.optString("id").trim()
+                if (id.isBlank()) continue
+                val choices = node.optJSONArray("choices").stringChoices()
+                val rawPolicy = node.optString("userFacingPolicy").trim()
+                nodes[id] = ErmakDiagnosticNode(
                     id = id,
-                    type = node.optString("type"),
-                    text = text,
-                    choices = node.array("choices").objects().mapNotNull { choice ->
-                        val label = choice.optString("label")
-                        val next = choice.optString("nextNodeId")
-                        if (label.isBlank() || next.isBlank()) null else ErmakDiagnosticChoice(label, next)
-                    },
-                    nextNodeId = node.optString("nextNodeId").takeIf(String::isNotBlank),
-                    terminalStatus = node.optString("terminalStatus").takeIf(String::isNotBlank)
+                    type = node.optString("type").trim(),
+                    text = firstNonBlank(
+                        node.optString("prompt"),
+                        node.optString("text"),
+                        node.optString("result")
+                    ),
+                    choices = choices,
+                    nextNodeId = node.optString("nextNodeId").trim().takeIf(String::isNotBlank),
+                    terminalStatus = node.optString("terminalStatus").trim().takeIf(String::isNotBlank),
+                    actionMetadata = DiagnosticActionMetadata(
+                        riskClass = node.optString("riskClass").trim(),
+                        userFacingPolicy = DiagnosticUserFacingPolicy.parse(rawPolicy),
+                        rawUserFacingPolicy = rawPolicy,
+                        sourceBound = node.optBoolean("sourceBound", false)
+                    )
                 )
-            }.toMap()
-            val start = graph.optString("startNodeId")
-            if (start.isBlank() || start !in nodes) return@mapNotNull null
-            val projection = scenario.obj("vl80sUiProjection")
-            ErmakDiagnosticScenario(
-                id = scenario.optString("id"),
-                title = scenario.optString("title"),
-                symptom = scenario.optString("symptom"),
-                severity = scenario.optString("severity"),
-                category = scenario.optString("category"),
-                equipmentIds = scenario.array("equipmentRefs").strings().toSet(),
-                startNodeId = start,
-                nodes = nodes,
-                reportFields = projection.array("reportFields").strings(),
-                immediateActions = projection.array("immediateActions").strings(),
-                dangerSigns = projection.array("dangerSigns").strings(),
-                probableCauses = projection.array("probableCauses").strings(),
-                safeChecks = projection.array("checks").objects().map { check ->
-                    listOf(check.optString("title"), check.optString("action"), check.optString("expected"))
-                        .filter(String::isNotBlank).joinToString(": ")
-                },
-                prohibited = projection.array("prohibited").strings()
+            }
+
+            val projection = item.optJSONObject("vl80sUiProjection") ?: JSONObject()
+            val applicabilityJson = item.optJSONObject("applicability") ?: JSONObject()
+
+            val startNode = firstNonBlank(
+                graph.optString("startNodeId"),
+                projection.optString("startNodeId")
+            ).ifBlank { nodes.keys.firstOrNull().orEmpty() }
+
+            val applicability = DiagnosticApplicability(
+                families = applicabilityJson.optJSONArray("families").stringSet(),
+                profiles = applicabilityJson.optJSONArray("profiles").stringSet(),
+                variantSelectionRequired = applicabilityJson.optBoolean("variantSelectionRequired", false),
+                lateProfiles = applicabilityJson.optString("lateProfiles").trim()
+            )
+
+            add(
+                ErmakDiagnosticScenario(
+                    id = item.optString("id"),
+                    title = item.optString("title"),
+                    symptom = item.optString("symptom"),
+                    severity = projection.optString("severity").ifBlank { item.optString("severity") },
+                    category = item.optString("category"),
+                    equipmentIds = projection.optJSONArray("relatedEquipment").stringSet()
+                        .ifEmpty { item.optJSONArray("equipmentRefs").stringSet() },
+                    startNodeId = startNode,
+                    nodes = nodes,
+                    reportFields = projection.optJSONArray("reportFields").stringList(),
+                    immediateActions = projection.optJSONArray("immediateActions").stringList(),
+                    dangerSigns = projection.optJSONArray("dangerSigns").stringList(),
+                    probableCauses = projection.optJSONArray("probableCauses").stringList(),
+                    safeChecks = projection.optJSONArray("safeChecks").stringList(),
+                    prohibited = projection.optJSONArray("prohibited").stringList(),
+                    applicability = applicability,
+                    informationConfidence = firstNonBlank(
+                        projection.optString("informationConfidence"),
+                        item.optString("informationConfidence")
+                    ),
+                    sourceAgeNote = item.optString("sourceAgeNote").trim(),
+                    sourceRefs = item.optJSONArray("sourceRefs").sourceReferences()
+                )
             )
         }
     }
+}
 
-    private companion object {
-        val cache = mutableListOf<ErmakDiagnosticScenario>()
+private fun JSONArray?.stringList(): List<String> {
+    if (this == null) return emptyList()
+    return buildList {
+        for (index in 0 until length()) {
+            optString(index).trim().takeIf(String::isNotBlank)?.let(::add)
+        }
     }
 }
 
-private fun JSONObject.array(key: String): JSONArray = optJSONArray(key) ?: JSONArray()
-private fun JSONObject.obj(key: String): JSONObject = optJSONObject(key) ?: JSONObject()
-private fun JSONArray.objects(): List<JSONObject> = buildList {
-    for (index in 0 until length()) optJSONObject(index)?.let(::add)
+private fun JSONArray?.stringSet(): Set<String> = stringList().toSet()
+
+private fun JSONArray?.stringChoices(): List<ErmakDiagnosticChoice> {
+    if (this == null) return emptyList()
+    return buildList {
+        for (index in 0 until length()) {
+            val item = optJSONObject(index) ?: continue
+            val label = firstNonBlank(item.optString("label"), item.optString("text"))
+            val next = firstNonBlank(item.optString("nextNodeId"), item.optString("next"))
+            if (label.isNotBlank() && next.isNotBlank()) {
+                add(ErmakDiagnosticChoice(label, next))
+            }
+        }
+    }
 }
-private fun JSONArray.strings(): List<String> = buildList {
-    for (index in 0 until length()) optString(index).takeIf(String::isNotBlank)?.let(::add)
+
+private fun JSONArray?.sourceReferences(): List<DiagnosticSourceReference> {
+    if (this == null) return emptyList()
+    return buildList {
+        for (index in 0 until length()) {
+            val item = optJSONObject(index) ?: continue
+            add(
+                DiagnosticSourceReference(
+                    sourceId = item.optString("sourceId").trim(),
+                    document = item.optString("document").trim(),
+                    locator = item.optString("locator").trim(),
+                    role = item.optString("role").trim(),
+                    kind = DiagnosticSourceKind.parse(
+                        firstNonBlank(
+                            item.stringValue("sourceKind"),
+                            item.stringValue("kind")
+                        )
+                    ),
+                    version = item.sourceVersion()
+                )
+            )
+        }
+    }
 }
+
+private fun JSONObject.sourceVersion(): DiagnosticSourceVersion {
+    val nested = optJSONObject("version")
+    return DiagnosticSourceVersion(
+        versionLabel = firstNonBlank(
+            nested?.stringValue("label").orEmpty(),
+            nested?.stringValue("versionLabel").orEmpty(),
+            stringValue("versionLabel"),
+            stringValue("version")
+        ),
+        revision = firstNonBlank(
+            nested?.stringValue("revision").orEmpty(),
+            stringValue("revision")
+        ),
+        effectiveFrom = firstNonBlank(
+            nested?.stringValue("effectiveFrom").orEmpty(),
+            stringValue("effectiveFrom")
+        ),
+        effectiveTo = firstNonBlank(
+            nested?.stringValue("effectiveTo").orEmpty(),
+            stringValue("effectiveTo")
+        ),
+        verifiedAt = firstNonBlank(
+            nested?.stringValue("verifiedAt").orEmpty(),
+            stringValue("verifiedAt")
+        ),
+        status = DiagnosticSourceVersionStatus.parse(
+            firstNonBlank(
+                nested?.stringValue("status").orEmpty(),
+                stringValue("versionStatus")
+            )
+        )
+    )
+}
+
+private fun JSONObject.stringValue(key: String): String =
+    (opt(key) as? String).orEmpty().trim()
+
+private fun firstNonBlank(vararg values: String): String =
+    values.firstOrNull { it.isNotBlank() }.orEmpty().trim()

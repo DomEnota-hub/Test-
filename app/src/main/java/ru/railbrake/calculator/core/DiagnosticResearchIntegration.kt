@@ -36,5 +36,5 @@ internal object DiagnosticResearchIntegration {
             feedbackPrompts = listOf("Какая секция отстаёт?", "Что показывают токи?", "Есть ли ходовая позиция и защитные сообщения?"),
             relatedScenarioIds = listOf("ekg-position-mismatch", "ekg-slow-transition", "ekg-stuck", "section-control-loss", "traction-current-imbalance", "traction-one-section-low", "traction-no-assemble")
         )
-    )
+    ) + DiagnosticCanonicalPromotion.vl80sScenarios
 }
