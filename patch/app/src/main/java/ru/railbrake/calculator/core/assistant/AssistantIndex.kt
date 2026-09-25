@@ -30,6 +30,7 @@ class InMemoryAssistantIndex(
             .split(' ')
             .filter { it.length > 1 && it !in stopWords }
             .toSet()
+        val diagnosticsFirst = request.preferredSection == TechnicalSection.DIAGNOSTICS
 
         return documents.mapNotNull { document ->
             var score = 0
@@ -63,10 +64,11 @@ class InMemoryAssistantIndex(
 
             request.preferredSection?.let { section ->
                 if (document.section == section) {
-                    score += 35
-                    reasons += "section"
+                    score += if (diagnosticsFirst) 70 else 35
+                    reasons += if (diagnosticsFirst) "diagnostics-priority" else "section"
                 } else {
-                    score -= 8
+                    score -= if (diagnosticsFirst) 35 else 8
+                    if (diagnosticsFirst) reasons += "non-diagnostic-penalty"
                 }
             }
 
