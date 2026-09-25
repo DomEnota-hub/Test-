@@ -184,5 +184,8 @@ class AssistantResultActivity : ComponentActivity() {
                     }
                 }
             }
+
+        fun intent(context: Context, target: AssistantTarget): Intent =
+            createIntent(context, target)
     }
 }
