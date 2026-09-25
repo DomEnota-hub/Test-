@@ -19,11 +19,21 @@ object AssistantQueryParser {
         "главник" to "главный выключатель"
     )
 
+    /**
+     * Формулировки, которые описывают отказ/аномалию, а не справочный интерес.
+     * Используются как domain signal: при наличии такого признака поиск должен
+     * сначала смотреть диагностику конкретного узла, а уже затем справочник.
+     */
     private val troubleshootCues = listOf(
-        "диагност", "не включ", "не держ", "не срабаты", "отпада", "отключ", "выбива",
-        "не тян", "тяги нет", "тяга пропала", "тягу не берет", "не берет тягу",
-        "не запуска", "не кач", "давление не раст", "молчит", "воздуха не дает",
-        "не работает", "отказ", "неисправ"
+        "диагност",
+        "не включ", "не выключ", "не держ", "не срабаты", "не запуска", "не старт",
+        "не кач", "не набира", "не сбрасы", "не поднима", "не опуска", "не тян",
+        "не работает", "не работа",
+        "отпада", "отключ", "выбива", "заклин", "застрял", "застряла", "застряло",
+        "ошиб", "авари", "отказ", "неисправ",
+        "тяги нет", "тяга пропала", "тягу не берет", "не берет тягу",
+        "давление не", "нет давления", "молчит", "воздуха не дает",
+        "дым", "искрит", "перегрев", "греется", "стучит", "шумит", "утеч", "теч"
     )
 
     fun parse(rawText: String): AssistantParsedQuery {
@@ -114,7 +124,7 @@ object AssistantQueryParser {
     private fun ambiguity(normalized: String, componentKey: String?): AssistantAmbiguity? = when {
         normalized in setOf("гв", "главный выключатель") -> AssistantAmbiguity.TOPIC_SCOPE
         normalized in setOf("схема", "электросхема", "пневмосхема") -> AssistantAmbiguity.SERIES_REQUIRED
-        normalized in setOf("не работает", "не включается", "не запускается") && componentKey == null -> AssistantAmbiguity.COMPONENT_REQUIRED
+        normalized in setOf("не работает", "не включается", "не выключается", "не запускается", "ошибка") && componentKey == null -> AssistantAmbiguity.COMPONENT_REQUIRED
         isGenericBrakeTest(normalized) -> AssistantAmbiguity.PROCEDURE_TYPE_REQUIRED
         normalized == "тормоза" -> AssistantAmbiguity.TOPIC_SCOPE
         else -> null
