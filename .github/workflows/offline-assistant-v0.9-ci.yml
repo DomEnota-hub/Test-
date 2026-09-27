@@ -197,8 +197,16 @@ jobs:
         working-directory: buildsrc/RailBrakeCalculator
         shell: bash
         run: |
-          set -euo pipefail
+          set +e
           timeout --signal=KILL 15m gradle :app:testDebugUnitTest --stacktrace --console=plain
+          status=$?
+          if [ "$status" -ne 0 ]; then
+            echo '===== ASSISTANT CORPUS FAILURE REPORTS ====='
+            find app/build/test-results/testDebugUnitTest -type f \
+              \( -name 'TEST-*AssistantHumanQueryCorpusTest*.xml' -o -name 'TEST-*AssistantDiagnosticCorpusTest*.xml' \) \
+              -print -exec cat {} \; || true
+          fi
+          exit "$status"
 
       - name: Android lint
         working-directory: buildsrc/RailBrakeCalculator
