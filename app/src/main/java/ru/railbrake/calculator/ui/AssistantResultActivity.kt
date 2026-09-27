@@ -78,6 +78,13 @@ class AssistantResultActivity : ComponentActivity() {
                 LocomotiveDiagnosticsScreen(initialScenarioId = id)
             }
 
+            KIND_FIRST_AID -> {
+                FirstAidScreen(
+                    onBack = { finish() },
+                    initialTopicId = id
+                )
+            }
+
             KIND_KNOWLEDGE -> {
                 KnowledgeBaseScreen(
                     initialArticleId = id,
@@ -157,6 +164,7 @@ class AssistantResultActivity : ComponentActivity() {
         private const val KIND_VL80_DIAGNOSTIC = "vl80_diagnostic"
         private const val KIND_ERMAK_DIAGNOSTIC = "ermak_diagnostic"
         private const val KIND_KNOWLEDGE = "knowledge"
+        private const val KIND_FIRST_AID = "first_aid"
 
         fun createIntent(context: Context, target: AssistantTarget): Intent =
             Intent(context, AssistantResultActivity::class.java).apply {
@@ -181,6 +189,11 @@ class AssistantResultActivity : ComponentActivity() {
                     is AssistantTarget.Knowledge -> {
                         putExtra(EXTRA_KIND, KIND_KNOWLEDGE)
                         putExtra(EXTRA_ID, target.articleId)
+                    }
+
+                    is AssistantTarget.FirstAid -> {
+                        putExtra(EXTRA_KIND, KIND_FIRST_AID)
+                        putExtra(EXTRA_ID, target.topicId)
                     }
                 }
             }

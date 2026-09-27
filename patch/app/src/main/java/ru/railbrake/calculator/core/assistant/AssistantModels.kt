@@ -7,7 +7,8 @@ enum class AssistantDocumentKind {
     TECHNICAL_ENTRY,
     VL80_DIAGNOSTIC,
     ERMAK_DIAGNOSTIC,
-    KNOWLEDGE_ARTICLE
+    KNOWLEDGE_ARTICLE,
+    FIRST_AID
 }
 
 sealed interface AssistantTarget {
@@ -27,6 +28,10 @@ sealed interface AssistantTarget {
 
     data class Knowledge(
         val articleId: String
+    ) : AssistantTarget
+
+    data class FirstAid(
+        val topicId: String
     ) : AssistantTarget
 }
 
@@ -49,6 +54,10 @@ data class AssistantDocument(
     val nativeSearchText: String = ""
 ) {
     val searchText: String = buildString {
+        append(canonicalId)
+        append(' ')
+        append(key)
+        append(' ')
         append(title)
         append(' ')
         append(summary)
@@ -62,6 +71,8 @@ data class AssistantDocument(
         append(symptomTerms.joinToString(" "))
         append(' ')
         append(tags.joinToString(" "))
+        append(' ')
+        append(relatedIds.joinToString(" "))
         append(' ')
         append(nativeSearchText)
     }.normalizeAssistantText()

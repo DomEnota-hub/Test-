@@ -7,6 +7,8 @@ import ru.railbrake.calculator.core.KnowledgeArticle
 import ru.railbrake.calculator.core.TechnicalEntry
 import ru.railbrake.calculator.core.TechnicalFamily
 import ru.railbrake.calculator.core.TechnicalSection
+import ru.railbrake.calculator.ui.FirstAidTopic
+import ru.railbrake.calculator.ui.firstAidSearchKeywords
 
 object TechnicalEntryAssistantAdapter {
     fun adapt(entry: TechnicalEntry): AssistantDocument {
@@ -177,4 +179,35 @@ object KnowledgeArticleAssistantAdapter {
             else -> null
         }
     }
+}
+
+object FirstAidAssistantAdapter {
+    fun adapt(topic: FirstAidTopic): AssistantDocument = AssistantDocument(
+        key = "first-aid:${topic.id}",
+        canonicalId = topic.id,
+        kind = AssistantDocumentKind.FIRST_AID,
+        family = null,
+        section = TechnicalSection.SAFETY,
+        title = topic.title,
+        summary = topic.whenToUse.firstOrNull().orEmpty(),
+        body = buildList {
+            addAll(topic.whenToUse)
+            addAll(topic.actions)
+            addAll(topic.dont)
+            topic.note?.let(::add)
+            add(topic.source)
+        }.joinToString(" "),
+        aliases = buildSet {
+            add(topic.title)
+            addAll(topic.whenToUse)
+            addAll(firstAidSearchKeywords[topic.id].orEmpty())
+        },
+        componentIds = emptySet(),
+        symptomTerms = topic.whenToUse.toSet(),
+        tags = setOf("первая помощь", "оказание первой помощи", "опп"),
+        relatedIds = emptySet(),
+        safetyCritical = true,
+        target = AssistantTarget.FirstAid(topic.id),
+        nativeSearchText = firstAidSearchKeywords[topic.id].orEmpty().joinToString(" ")
+    )
 }

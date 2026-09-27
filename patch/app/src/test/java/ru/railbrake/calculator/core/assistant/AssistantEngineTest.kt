@@ -167,6 +167,47 @@ class AssistantEngineTest {
         assertEquals("vl80-compressor-reference", result.hits.first().document.canonicalId)
     }
 
+
+    @Test
+    fun directCanonicalIdReferenceWinsEvenWithConversationalWrapper() {
+        val result = engine().query("открой ID vl80-gv-fault")
+
+        assertTrue(result is AssistantEngineResult.Matches)
+        result as AssistantEngineResult.Matches
+        assertEquals("vl80-gv-fault", result.hits.first().document.canonicalId)
+        assertTrue("canonical-id" in result.hits.first().reasons)
+    }
+
+    @Test
+    fun conversationalRailwaySlangNormalizesToFaultIntent() {
+        val cases = mapOf(
+            "групповик залип" to "EKG",
+            "фазник не пашет" to "PHASE_SPLITTER",
+            "кран 395 травит" to "DRIVER_BRAKE_VALVE",
+            "мотор компрессор сифонит" to "COMPRESSOR"
+        )
+
+        cases.forEach { (query, component) ->
+            val parsed = AssistantQueryParser.parse(query)
+            assertEquals("Wrong component for: $query", component, parsed.componentKey)
+            assertEquals("Wrong intent for: $query", AssistantIntent.TROUBLESHOOT, parsed.intent)
+        }
+    }
+
+    @Test
+    fun firstAidWordingIsRecognizedAsSafetyIntent() {
+        val queries = listOf(
+            "человека ударило током",
+            "что делать если подавился",
+            "нужна слр",
+            "обморозил пальцы",
+            "что должно быть в аптечке"
+        )
+        queries.forEach { query ->
+            assertEquals("Wrong intent for: $query", AssistantIntent.SAFETY, AssistantQueryParser.parse(query).intent)
+        }
+    }
+
     private fun engine(): AssistantEngine = AssistantEngine(
         InMemoryAssistantIndex(
             listOf(

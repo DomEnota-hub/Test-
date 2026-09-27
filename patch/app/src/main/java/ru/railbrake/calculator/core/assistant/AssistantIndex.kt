@@ -37,6 +37,30 @@ class InMemoryAssistantIndex(
             var hasContentEvidence = false
             val reasons = mutableListOf<String>()
 
+            val canonicalId = document.canonicalId.normalizeAssistantText()
+            val directCanonicalId = canonicalId.isNotBlank() &&
+                (query == canonicalId || query.split(' ').contains(canonicalId) ||
+                    (canonicalId.length >= 5 && query.contains(canonicalId)))
+            if (directCanonicalId) {
+                score += 180
+                hasContentEvidence = true
+                reasons += "canonical-id"
+            }
+
+            val linkedId = (document.relatedIds + document.componentIds)
+                .asSequence()
+                .map(String::normalizeAssistantText)
+                .filter(String::isNotBlank)
+                .firstOrNull { candidate ->
+                    query == candidate || query.split(' ').contains(candidate) ||
+                        (candidate.length >= 5 && query.contains(candidate))
+                }
+            if (linkedId != null) {
+                score += 90
+                hasContentEvidence = true
+                reasons += "linked-id"
+            }
+
             if (query.isNotBlank() && query in document.searchText) {
                 score += 45
                 hasContentEvidence = true
@@ -95,7 +119,8 @@ class InMemoryAssistantIndex(
     private companion object {
         val stopWords = setOf(
             "на", "не", "и", "или", "в", "во", "по", "для", "что", "как",
-            "где", "покажи", "найди", "открой", "про", "при", "это", "он", "она"
+            "где", "покажи", "найди", "открой", "про", "при", "это", "он", "она",
+            "id", "ид", "айди", "карточка", "карточку", "сценарий", "сценария"
         )
     }
 }

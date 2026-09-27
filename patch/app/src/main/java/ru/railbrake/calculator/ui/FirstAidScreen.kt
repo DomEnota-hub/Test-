@@ -313,7 +313,7 @@ internal val firstAidTopics = listOf(
     )
 )
 
-private val firstAidSearchKeywords = mapOf(
+internal val firstAidSearchKeywords = mapOf(
     "unconscious" to listOf("обморок", "без сознания", "не отвечает", "потерял сознание"),
     "cpr" to listOf("слр", "cpr", "реанимация", "остановка сердца", "нет дыхания", "редкие вдохи"),
     "bleeding" to listOf("кровь", "порез", "рана", "кровопотеря", "жгут", "давящая повязка"),
@@ -385,7 +385,7 @@ internal fun firstAidKitMatches(query: String): Boolean {
     return tokens.all(searchable::contains)
 }
 
-private val workerKitLines = listOf(
+internal val workerKitLines = listOf(
     "2 одноразовые медицинские маски и не менее 2 пар медицинских перчаток.",
     "2 устройства для искусственного дыхания «Рот-Устройство-Рот».",
     "1 кровоостанавливающий жгут для верхней/нижней конечности.",
@@ -399,9 +399,15 @@ private val workerKitLines = listOf(
 )
 
 @Composable
-fun FirstAidScreen(onBack: () -> Unit) {
+fun FirstAidScreen(onBack: () -> Unit, initialTopicId: String? = null) {
     val context = LocalContext.current
-    var selectedId by rememberSaveable { mutableStateOf("unconscious") }
+    var selectedId by rememberSaveable(initialTopicId) {
+        mutableStateOf(
+            initialTopicId?.takeIf { candidate ->
+                candidate == "kit" || firstAidTopics.any { it.id == candidate }
+            } ?: "unconscious"
+        )
+    }
     var query by rememberSaveable { mutableStateOf("") }
     val visibleTopics = firstAidTopics
         .filter { firstAidTopicMatches(it, query) }

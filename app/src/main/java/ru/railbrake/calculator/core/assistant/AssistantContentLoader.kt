@@ -7,6 +7,8 @@ import ru.railbrake.calculator.core.KnowledgeRepository
 import ru.railbrake.calculator.core.TechnicalDataRepository
 import ru.railbrake.calculator.core.TechnicalFamily
 import ru.railbrake.calculator.core.TechnicalSection
+import ru.railbrake.calculator.ui.firstAidTopics
+import ru.railbrake.calculator.ui.workerKitLines
 
 /**
  * Read-only projection of the existing application repositories.
@@ -41,7 +43,26 @@ class AssistantContentLoader(
         val knowledge = KnowledgeRepository.articles
             .map(KnowledgeArticleAssistantAdapter::adapt)
 
-        return (technical + vl80Diagnostics + ermakDiagnostics + knowledge)
+        val firstAid = firstAidTopics.map(FirstAidAssistantAdapter::adapt)
+        val firstAidKit = AssistantDocument(
+            key = "first-aid:kit",
+            canonicalId = "kit",
+            kind = AssistantDocumentKind.FIRST_AID,
+            family = null,
+            section = TechnicalSection.SAFETY,
+            title = "Аптечка работника",
+            summary = "Состав аптечки и средства первой помощи",
+            body = workerKitLines.joinToString(" "),
+            aliases = setOf("аптечка", "аптечка работника", "жгут", "бинт", "перчатки", "салфетки"),
+            componentIds = emptySet(),
+            symptomTerms = emptySet(),
+            tags = setOf("первая помощь", "оказание первой помощи", "опп"),
+            relatedIds = emptySet(),
+            safetyCritical = true,
+            target = AssistantTarget.FirstAid("kit")
+        )
+
+        return (technical + vl80Diagnostics + ermakDiagnostics + knowledge + firstAid + firstAidKit)
             .distinctBy(AssistantDocument::key)
     }
 }
