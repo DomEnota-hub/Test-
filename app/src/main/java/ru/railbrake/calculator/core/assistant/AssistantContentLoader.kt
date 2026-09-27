@@ -12,26 +12,17 @@ import ru.railbrake.calculator.ui.workerKitLines
 
 /**
  * Read-only projection of the existing application repositories.
- * Call from a background dispatcher when wiring it into UI/runtime code.
+ *
+ * Loading is deliberately split in two stages. Diagnostics, OPP and the small
+ * built-in knowledge base form the core index and become usable first. The much
+ * larger technical catalog is loaded afterwards so it cannot block access to
+ * the assistant for tens of seconds on slower phones.
  */
 class AssistantContentLoader(
     private val context: Context
 ) {
-    fun load(): List<AssistantDocument> {
+    fun loadCore(): List<AssistantDocument> {
         val appContext = context.applicationContext
-        val technicalRepository = TechnicalDataRepository(appContext)
-
-        // TechnicalDataRepository.entries intentionally exposes only catalog sections.
-        // Assistant search also needs acceptance and safety, while diagnostics are
-        // projected by their dedicated adapters to avoid duplicate diagnostic cards.
-        val indexedTechnicalSections = TechnicalSection.entries.filterNot { section ->
-            section == TechnicalSection.DIAGNOSTICS || section == TechnicalSection.PROFILES
-        }
-        val technical = TechnicalFamily.entries.flatMap { family ->
-            indexedTechnicalSections.flatMap { section ->
-                technicalRepository.entries(family, section)
-            }
-        }.map(TechnicalEntryAssistantAdapter::adapt)
 
         val vl80Diagnostics = DiagnosticRepository.scenarios
             .map(Vl80DiagnosticAssistantAdapter::adapt)
@@ -62,7 +53,27 @@ class AssistantContentLoader(
             target = AssistantTarget.FirstAid("kit")
         )
 
-        return (technical + vl80Diagnostics + ermakDiagnostics + knowledge + firstAid + firstAidKit)
+        return (vl80Diagnostics + ermakDiagnostics + knowledge + firstAid + firstAidKit)
             .distinctBy(AssistantDocument::key)
     }
+
+    fun loadAdditionalCatalog(): List<AssistantDocument> {
+        val appContext = context.applicationContext
+        val technicalRepository = TechnicalDataRepository(appContext)
+
+        // Diagnostics are already represented by dedicated adapters. Profiles
+        // remain intentionally outside assistant search.
+        val indexedTechnicalSections = TechnicalSection.entries.filterNot { section ->
+            section == TechnicalSection.DIAGNOSTICS || section == TechnicalSection.PROFILES
+        }
+        return TechnicalFamily.entries.flatMap { family ->
+            indexedTechnicalSections.flatMap { section ->
+                technicalRepository.entries(family, section)
+            }
+        }.map(TechnicalEntryAssistantAdapter::adapt)
+            .distinctBy(AssistantDocument::key)
+    }
+
+    fun load(): List<AssistantDocument> =
+        (loadCore() + loadAdditionalCatalog()).distinctBy(AssistantDocument::key)
 }
