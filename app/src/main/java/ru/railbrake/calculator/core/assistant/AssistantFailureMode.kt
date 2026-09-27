@@ -46,12 +46,14 @@ object AssistantFailureModeDetector {
         if (noSwitchOn) modes += AssistantFailureMode.NO_SWITCH_ON
         if (noSwitchOff) modes += AssistantFailureMode.NO_SWITCH_OFF
 
-        // Plain "отключился/отпадает/выбивает" is a different event from
-        // "не отключается". Do not let the shared stem collapse them.
+        // Plain "отключился/отключается/отпадает/выбивает" is a different event
+        // from "не отключается". The negative form is checked first so the
+        // shared stem cannot collapse opposite failures.
         if (!noSwitchOff && containsAny(
                 normalized,
                 "самопроизвольно отключ", "сам выключ", "сам отключ",
-                "отключился", "отключилась", "отключилось", "отключается сразу",
+                "отключился", "отключилась", "отключилось", "отключается",
+                "выключился", "выключилась", "выключилось", "выключается",
                 "отпада", "отпал", "отвали", "выбива", "сбрасывает защит"
             )
         ) {
