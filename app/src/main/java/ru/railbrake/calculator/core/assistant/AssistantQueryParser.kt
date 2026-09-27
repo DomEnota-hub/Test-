@@ -171,7 +171,9 @@ object AssistantQueryParser {
         val normalized = normalize(rawText)
         // Crews also say "в тормозной" with "магистрали" omitted. Limit that
         // interpretation to a trailing phrase so "тормозной цилиндр" stays distinct.
-        if (Regex("(^| )в тормозной$").containsMatchIn(normalized)) return "BRAKE_PIPE"
+        if (Regex("(^| )в тормозной( (вл80с|вл80|ермак|2эс5к|3эс5к))?$").containsMatchIn(normalized)) {
+            return "BRAKE_PIPE"
+        }
         return componentVocabulary.firstOrNull { component ->
             component.aliases.any { alias -> containsTerm(normalized, alias) }
         }?.key

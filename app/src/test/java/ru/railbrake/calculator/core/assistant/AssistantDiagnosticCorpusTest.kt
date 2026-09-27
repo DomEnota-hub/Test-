@@ -36,7 +36,10 @@ class AssistantDiagnosticCorpusTest {
         val vl = AssistantConversation.submit(engine, "ВЛ", AssistantConversation.submit(engine, "утечка в тормозной").pending)
         assertTrue(vl.result is AssistantEngineResult.Matches)
         assertEquals(TechnicalFamily.VL80S, (vl.result as AssistantEngineResult.Matches).hits.first().document.family)
-        assertTrue((vl.result as AssistantEngineResult.Matches).hits.first().document.title.contains("тормозн", ignoreCase = true))
+        assertTrue(
+            "VL80S hits: ${(vl.result as AssistantEngineResult.Matches).hits.joinToString { "${it.document.canonicalId} ${it.score} ${it.reasons}" }}",
+            (vl.result as AssistantEngineResult.Matches).hits.first().document.title.contains("тормозн", ignoreCase = true)
+        )
 
         val ermak = AssistantConversation.submit(engine, "Ермак", AssistantConversation.submit(engine, "утечка в тормозной").pending)
         assertTrue(ermak.result is AssistantEngineResult.Matches)
