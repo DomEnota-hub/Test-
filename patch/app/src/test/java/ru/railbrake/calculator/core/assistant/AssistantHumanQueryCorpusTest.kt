@@ -78,6 +78,7 @@ class AssistantHumanQueryCorpusTest {
             ParserCase("ВЛ80С тормоза не отпускают", AssistantIntent.TROUBLESHOOT, TechnicalFamily.VL80S, modes = setOf(AssistantFailureMode.NO_RELEASE)),
             ParserCase("ВЛ80С не тормозит", AssistantIntent.TROUBLESHOOT, TechnicalFamily.VL80S, modes = setOf(AssistantFailureMode.NO_BRAKE)),
 
+            // Common misspellings should still resolve by technical stems.
             ParserCase("ВЛ80С компресор не работает", AssistantIntent.TROUBLESHOOT, TechnicalFamily.VL80S, "COMPRESSOR", setOf(AssistantFailureMode.GENERAL_FAILURE)),
             ParserCase("ВЛ80С фазорасщипитель не работает", AssistantIntent.TROUBLESHOOT, TechnicalFamily.VL80S, "PHASE_SPLITTER", setOf(AssistantFailureMode.GENERAL_FAILURE)),
             ParserCase("ВЛ80С токоприемнек не поднимается", AssistantIntent.TROUBLESHOOT, TechnicalFamily.VL80S, "PANTOGRAPH", setOf(AssistantFailureMode.NO_RISE)),
@@ -94,17 +95,21 @@ class AssistantHumanQueryCorpusTest {
             ParserCase("где ГВ на схеме 2эс5к", AssistantIntent.OPEN_SCHEME, TechnicalFamily.ERMAK, "MAIN_BREAKER", section = TechnicalSection.ELECTRICAL),
             ParserCase("электросхема Ермака", AssistantIntent.OPEN_SCHEME, TechnicalFamily.ERMAK, section = TechnicalSection.ELECTRICAL),
             ParserCase("пневмосхема ВЛ80С тормозная магистраль", AssistantIntent.OPEN_SCHEME, TechnicalFamily.VL80S, "BRAKE_PIPE", section = TechnicalSection.PNEUMATIC),
+
             ParserCase("что такое компрессор", AssistantIntent.DEFINE_TERM, component = "COMPRESSOR", section = TechnicalSection.EQUIPMENT),
             ParserCase("для чего нужен главный выключатель", AssistantIntent.DEFINE_TERM, component = "MAIN_BREAKER", section = TechnicalSection.EQUIPMENT),
             ParserCase("назначение фазорасщепителя", AssistantIntent.DEFINE_TERM, component = "PHASE_SPLITTER", section = TechnicalSection.EQUIPMENT),
+
             ParserCase("как проверить аккумуляторную батарею", AssistantIntent.PROCEDURE, component = "BATTERY", section = TechnicalSection.KNOWLEDGE),
             ParserCase("порядок полной пробы тормозов", AssistantIntent.PROCEDURE, section = TechnicalSection.KNOWLEDGE),
             ParserCase("сокращенная проба тормозов", AssistantIntent.PROCEDURE, section = TechnicalSection.KNOWLEDGE),
             ParserCase("технологическая проба тормозов", AssistantIntent.PROCEDURE, section = TechnicalSection.KNOWLEDGE),
+
             ParserCase("приемка ВЛ80С снаружи", AssistantIntent.ACCEPTANCE, TechnicalFamily.VL80S, section = TechnicalSection.ACCEPTANCE),
             ParserCase("как принимать локомотив", AssistantIntent.ACCEPTANCE, section = TechnicalSection.ACCEPTANCE),
             ParserCase("начать осмотр снаружи", AssistantIntent.ACCEPTANCE, section = TechnicalSection.ACCEPTANCE),
             ParserCase("начать из кабины", AssistantIntent.ACCEPTANCE, section = TechnicalSection.ACCEPTANCE),
+
             ParserCase("человека ударило током", AssistantIntent.SAFETY, section = TechnicalSection.SAFETY),
             ParserCase("шарахнуло током что делать", AssistantIntent.SAFETY, section = TechnicalSection.SAFETY),
             ParserCase("человек без сознания", AssistantIntent.SAFETY, section = TechnicalSection.SAFETY),
@@ -122,6 +127,7 @@ class AssistantHumanQueryCorpusTest {
             ParserCase("обморозил пальцы", AssistantIntent.SAFETY, section = TechnicalSection.SAFETY),
             ParserCase("что должно быть в аптечке", AssistantIntent.SAFETY, section = TechnicalSection.SAFETY)
         )
+
         assertParserCases(cases)
     }
 
@@ -138,6 +144,7 @@ class AssistantHumanQueryCorpusTest {
             ParserCase("воздух уходит", AssistantIntent.TROUBLESHOOT, modes = setOf(AssistantFailureMode.PRESSURE_LEAK), ambiguity = AssistantAmbiguity.COMPONENT_REQUIRED),
             ParserCase("не работает на Ермаке", AssistantIntent.TROUBLESHOOT, TechnicalFamily.ERMAK, ambiguity = AssistantAmbiguity.COMPONENT_REQUIRED)
         )
+
         assertParserCases(cases)
     }
 
@@ -157,6 +164,7 @@ class AssistantHumanQueryCorpusTest {
             AssistantFailureMode.NO_SWITCH_OFF to listOf("гв не выключается", "главник не отключается", "гэ вэ не размыкается"),
             AssistantFailureMode.SPONTANEOUS_OFF to listOf("гв отключился", "главник отпал", "гв вырубило", "главник выбило")
         )
+
         groups.forEach { (expected, queries) ->
             queries.forEach { query ->
                 val modes = AssistantQueryParser.parse(query).failureModes
@@ -181,6 +189,7 @@ class AssistantHumanQueryCorpusTest {
             if (case.section != null && actual.preferredSection != case.section) problems += "section=${actual.preferredSection} expected=${case.section}"
             if (problems.isNotEmpty()) misses += "${case.query} :: ${problems.joinToString()}"
         }
+
         assertTrue(
             buildString {
                 append("Human-query corpus misses: ").append(misses.size).append('/').append(cases.size)
