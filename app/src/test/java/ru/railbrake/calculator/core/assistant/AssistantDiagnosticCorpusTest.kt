@@ -14,6 +14,9 @@ import ru.railbrake.calculator.core.parseErmakDiagnostics
  * Regression audit over the real diagnostic catalogs, not a hand-picked list.
  * Any new scenario added to either locomotive automatically becomes part of
  * this corpus on the next unit-test run.
+ *
+ * The assistant UI exposes Top-3, so recovery outside the first three results
+ * is considered a failure rather than a technical success hidden from the user.
  */
 class AssistantDiagnosticCorpusTest {
 
@@ -73,7 +76,7 @@ class AssistantDiagnosticCorpusTest {
                     family = family,
                     preferredSection = TechnicalSection.DIAGNOSTICS,
                     failureModes = parsed.failureModes,
-                    limit = 10
+                    limit = 3
                 )
             )
             if (hits.none { it.document.canonicalId == expectedId }) {
@@ -83,7 +86,7 @@ class AssistantDiagnosticCorpusTest {
 
         assertTrue(
             buildString {
-                append("Assistant diagnostic corpus misses for ").append(family).append(':')
+                append("Assistant diagnostic Top-3 corpus misses for ").append(family).append(':')
                 misses.take(30).forEach { append("\n - ").append(it) }
                 if (misses.size > 30) append("\n ... and ").append(misses.size - 30).append(" more")
             },
