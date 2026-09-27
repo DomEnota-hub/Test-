@@ -150,10 +150,10 @@ internal fun AssistantHomePanel() {
                 OutlinedButton(onClick = {}, enabled = false) {
                     Text("Голос — позже")
                 }
-                if (pending != null) {
-                    OutlinedButton(onClick = { submit("отмена") }) {
-                        Text("Отмена")
-                    }
+            }
+            if (pending != null) {
+                OutlinedButton(onClick = { submit("отмена") }) {
+                    Text("Отмена")
                 }
             }
 
