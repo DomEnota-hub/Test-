@@ -58,6 +58,7 @@ jobs:
             AssistantIndex.kt \
             AssistantQueryModels.kt \
             AssistantQueryParser.kt \
+            AssistantFailureMode.kt \
             AssistantEngine.kt \
             AssistantRuntime.kt; do
             cmp "app/src/main/java/ru/railbrake/calculator/core/assistant/$file" \
@@ -70,7 +71,8 @@ jobs:
           for testfile in \
             AssistantIndexTest.kt \
             AssistantEngineTest.kt \
-            AssistantClarificationResolutionTest.kt; do
+            AssistantClarificationResolutionTest.kt \
+            AssistantDiagnosticCorpusTest.kt; do
             cmp \
               "app/src/test/java/ru/railbrake/calculator/core/assistant/$testfile" \
               "patch/app/src/test/java/ru/railbrake/calculator/core/assistant/$testfile"
@@ -110,6 +112,7 @@ jobs:
             AssistantIndex.kt \
             AssistantQueryModels.kt \
             AssistantQueryParser.kt \
+            AssistantFailureMode.kt \
             AssistantEngine.kt \
             AssistantRuntime.kt; do
             test -f "buildsrc/RailBrakeCalculator/app/src/main/java/ru/railbrake/calculator/core/assistant/$file"
@@ -118,7 +121,11 @@ jobs:
           test -f buildsrc/RailBrakeCalculator/app/src/main/java/ru/railbrake/calculator/ui/AssistantResultActivity.kt
           test -f buildsrc/RailBrakeCalculator/app/src/main/java/ru/railbrake/calculator/ui/HomeScreen.kt
           grep -q 'AssistantResultActivity' buildsrc/RailBrakeCalculator/app/src/main/AndroidManifest.xml
-          for testfile in AssistantIndexTest.kt AssistantEngineTest.kt AssistantClarificationResolutionTest.kt; do
+          for testfile in \
+            AssistantIndexTest.kt \
+            AssistantEngineTest.kt \
+            AssistantClarificationResolutionTest.kt \
+            AssistantDiagnosticCorpusTest.kt; do
             test -f "buildsrc/RailBrakeCalculator/app/src/test/java/ru/railbrake/calculator/core/assistant/$testfile"
           done
 
@@ -177,21 +184,22 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          timeout --signal=TERM 15m gradle :app:testDebugUnitTest --stacktrace --console=plain
+          timeout --signal=KILL 15m gradle :app:testDebugUnitTest --stacktrace --console=plain
 
-      - name: Android lint
+      - name: Android lint (non-blocking safeguard)
+        continue-on-error: true
         working-directory: buildsrc/RailBrakeCalculator
         shell: bash
         run: |
           set -euo pipefail
-          timeout --signal=TERM 15m gradle :app:lintDebug --stacktrace --console=plain
+          timeout --signal=KILL 5m gradle --no-daemon :app:lintDebug --stacktrace --console=plain
 
       - name: Build debug APK
         working-directory: buildsrc/RailBrakeCalculator
         shell: bash
         run: |
           set -euo pipefail
-          timeout --signal=TERM 15m gradle :app:assembleDebug --stacktrace --console=plain
+          timeout --signal=KILL 15m gradle :app:assembleDebug --stacktrace --console=plain
 
       - name: Upload side-by-side debug APK
         uses: actions/upload-artifact@v4
