@@ -9,6 +9,7 @@ object AssistantQueryParser {
         "вээл восемьдесят с" to "вл80с",
         "вээл 80 эс" to "вл80с",
         "вл 80 с" to "вл80с",
+        "восемьдесят эс" to "вл80с",
         "двух эс пять ка" to "2эс5к",
         "два эс пять ка" to "2эс5к",
         "трех эс пять ка" to "3эс5к",
@@ -156,6 +157,27 @@ object AssistantQueryParser {
             ambiguity = ambiguity
         )
     }
+
+    fun familyFromAnswer(rawText: String): TechnicalFamily? {
+        val normalized = normalize(rawText)
+        return when {
+            normalized in setOf("вл", "вл80", "вл80с", "80с") ||
+                "вл80с" in normalized || "вл80" in normalized -> TechnicalFamily.VL80S
+            normalized in setOf("ермак", "2эс5к", "3эс5к") ||
+                "ермак" in normalized || "2эс5к" in normalized || "3эс5к" in normalized -> TechnicalFamily.ERMAK
+            else -> null
+        }
+    }
+
+    fun componentFromAnswer(rawText: String): String? {
+        val normalized = normalize(rawText)
+        return componentVocabulary.firstOrNull { component ->
+            component.aliases.any { alias -> containsTerm(normalized, alias) }
+        }?.key
+    }
+
+    fun componentSearchText(componentKey: String): String? =
+        componentVocabulary.firstOrNull { it.key == componentKey }?.enrichment
 
     fun normalize(text: String): String {
         var result = text

@@ -44,6 +44,37 @@ data class AssistantClarification(
     val options: List<AssistantClarificationOption>
 )
 
+/** Structured state for one unresolved assistant request. */
+data class AssistantQueryContext(
+    val family: TechnicalFamily? = null,
+    val componentKey: String? = null,
+    val intent: AssistantIntent? = null,
+    val failureModes: Set<AssistantFailureMode> = emptySet(),
+    val section: TechnicalSection? = null,
+    val procedureType: AssistantProcedureType? = null,
+    val topicScope: AssistantTopicScope? = null
+)
+
+enum class AssistantProcedureType { FULL, SHORT, TECHNOLOGICAL }
+
+enum class AssistantTopicScope { DIAGNOSTICS, REFERENCE, SCHEME, PROCEDURE }
+
+data class AssistantPendingClarification(
+    val originalQuery: String,
+    val normalizedQuery: String,
+    val context: AssistantQueryContext,
+    val missingParameter: AssistantAmbiguity,
+    val allowedOptions: List<AssistantClarificationOption>,
+    val candidateIds: List<String> = emptyList()
+)
+
+data class AssistantConversationTurn(
+    val result: AssistantEngineResult?,
+    val pending: AssistantPendingClarification?,
+    val continuedFromPending: Boolean = false,
+    val cancelled: Boolean = false
+)
+
 sealed interface AssistantEngineResult {
     val parsedQuery: AssistantParsedQuery
 

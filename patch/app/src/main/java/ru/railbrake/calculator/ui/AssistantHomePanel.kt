@@ -34,10 +34,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ru.railbrake.calculator.core.TechnicalFamily
 import ru.railbrake.calculator.core.TechnicalSection
-import ru.railbrake.calculator.core.assistant.AssistantClarificationOption
+import ru.railbrake.calculator.core.assistant.AssistantConversation
 import ru.railbrake.calculator.core.assistant.AssistantEngine
 import ru.railbrake.calculator.core.assistant.AssistantEngineResult
 import ru.railbrake.calculator.core.assistant.AssistantIntent
+import ru.railbrake.calculator.core.assistant.AssistantPendingClarification
 import ru.railbrake.calculator.core.assistant.AssistantParsedQuery
 import ru.railbrake.calculator.core.assistant.AssistantRuntime
 
@@ -87,13 +88,16 @@ internal fun AssistantHomePanel() {
 
     var query by rememberSaveable { mutableStateOf("") }
     var result by remember { mutableStateOf<AssistantEngineResult?>(null) }
+    var pending by remember { mutableStateOf<AssistantPendingClarification?>(null) }
 
     fun submit(text: String = query) {
         val currentEngine = engine ?: return
         val prepared = text.trim()
         if (prepared.isBlank()) return
-        query = prepared
-        result = currentEngine.query(prepared)
+        val turn = AssistantConversation.submit(currentEngine, prepared, pending)
+        result = turn.result
+        pending = turn.pending
+        query = if (turn.pending != null) "" else prepared
     }
 
     Card(
@@ -145,6 +149,11 @@ internal fun AssistantHomePanel() {
                 }
                 OutlinedButton(onClick = {}, enabled = false) {
                     Text("Голос — позже")
+                }
+                if (pending != null) {
+                    OutlinedButton(onClick = { submit("отмена") }) {
+                        Text("Отмена")
+                    }
                 }
             }
 
@@ -254,12 +263,10 @@ internal fun AssistantHomePanel() {
                         current.clarification.options.forEach { option ->
                             AssistChip(
                                 onClick = {
-                                    val next = clarificationQuery(current.parsedQuery, option)
-                                    if (next != null) {
-                                        submit(next)
+                                    if (option.id == "OTHER") {
+                                        query = ""
                                     } else {
-                                        query = "${current.parsedQuery.rawText.trim()} "
-                                        result = null
+                                        submit(option.label)
                                     }
                                 },
                                 label = { Text(option.label) }
@@ -294,24 +301,6 @@ private fun ParsedQuerySummary(parsed: AssistantParsedQuery) {
         style = MaterialTheme.typography.labelMedium,
         color = MaterialTheme.colorScheme.primary
     )
-}
-
-private fun clarificationQuery(
-    parsed: AssistantParsedQuery,
-    option: AssistantClarificationOption
-): String? = when (option.id) {
-    "VL80S" -> "${parsed.rawText} ВЛ80С"
-    "ERMAK" -> "${parsed.rawText} Ермак"
-    "diagnostics" -> "диагностика ${parsed.rawText}"
-    "reference" -> "описание ${parsed.rawText}"
-    "scheme" -> "${parsed.rawText} на схеме"
-    "procedure" -> "порядок ${parsed.rawText}"
-    "FULL" -> "полная проба тормозов"
-    "SHORT" -> "сокращенная проба тормозов"
-    "TECH" -> "технологическая проба тормозов"
-    "MAIN_BREAKER" -> "${parsed.rawText} главный выключатель"
-    "COMPRESSOR" -> "${parsed.rawText} компрессор"
-    else -> null
 }
 
 private fun intentLabel(intent: AssistantIntent): String = when (intent) {

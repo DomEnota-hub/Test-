@@ -1,4 +1,4 @@
-name: Offline Assistant v0.15 CI
+name: Offline Assistant v0.16 CI
 
 on:
   workflow_dispatch:
@@ -63,6 +63,7 @@ jobs:
             AssistantQueryParser.kt \
             AssistantFailureMode.kt \
             AssistantEngine.kt \
+            AssistantConversation.kt \
             AssistantRuntime.kt; do
             cmp "app/src/main/java/ru/railbrake/calculator/core/assistant/$file" \
                 "patch/app/src/main/java/ru/railbrake/calculator/core/assistant/$file"
@@ -118,6 +119,7 @@ jobs:
             AssistantQueryParser.kt \
             AssistantFailureMode.kt \
             AssistantEngine.kt \
+            AssistantConversation.kt \
             AssistantRuntime.kt; do
             test -f "buildsrc/RailBrakeCalculator/app/src/main/java/ru/railbrake/calculator/core/assistant/$file"
           done
@@ -157,7 +159,7 @@ jobs:
 
           text, code_count = re.subn(
               r'versionCode\s*=\s*\d+',
-              'versionCode = 202',
+              'versionCode = 203',
               text,
               count=1,
           )
@@ -165,7 +167,7 @@ jobs:
               raise SystemExit('Expected versionCode was not found exactly once')
 
           def version_replacement(match):
-              return f'versionName = "{match.group(1)}-assistant-v0.15"'
+              return f'versionName = "{match.group(1)}-assistant-v0.16"'
 
           text, version_count = re.subn(
               r'versionName\s*=\s*"([^"]+)"',
@@ -242,14 +244,14 @@ jobs:
           set -euo pipefail
           APK=buildsrc/RailBrakeCalculator/app/build/outputs/apk/release/app-release.apk
           "$ANDROID_SDK_ROOT/build-tools/34.0.0/aapt" dump badging "$APK" | tee assistant-test-badging.log
-          grep -Fq "package: name='ru.railbrake.calculator.assistanttest' versionCode='202' versionName='1.2.2-dev14-beta52-assistant-v0.15'" assistant-test-badging.log
+          grep -Fq "package: name='ru.railbrake.calculator.assistanttest' versionCode='203' versionName='1.2.2-dev14-beta52-assistant-v0.16'" assistant-test-badging.log
           "$ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner" verify --verbose --print-certs "$APK" | tee assistant-test-apksigner.log
           grep -qi "Signer #1 certificate SHA-256 digest: $EXPECTED_SIGNING_CERT_SHA256" assistant-test-apksigner.log
 
       - name: Upload updatable signed Test APK
         uses: actions/upload-artifact@v4
         with:
-          name: railbrake-assistant-test-v0.15-signed-apk
+          name: railbrake-assistant-test-v0.16-signed-apk
           path: buildsrc/RailBrakeCalculator/app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
           retention-days: 7

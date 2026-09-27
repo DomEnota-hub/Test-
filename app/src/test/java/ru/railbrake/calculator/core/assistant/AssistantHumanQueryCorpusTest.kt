@@ -18,6 +18,12 @@ import ru.railbrake.calculator.core.TechnicalSection
  */
 class AssistantHumanQueryCorpusTest {
 
+    private data class FaultPhrase(
+        val text: String,
+        val component: String,
+        val mode: AssistantFailureMode
+    )
+
     private data class ParserCase(
         val query: String,
         val intent: AssistantIntent,
@@ -174,6 +180,56 @@ class AssistantHumanQueryCorpusTest {
                 }
             }
         }
+    }
+
+    @Test
+    fun expandedSeriesAndFaultSpeechCorpusRemainsStable() {
+        val series = listOf(
+            "ВЛ80С" to TechnicalFamily.VL80S,
+            "вл80" to TechnicalFamily.VL80S,
+            "на ВЛ80С" to TechnicalFamily.VL80S,
+            "вээл восемьдесят эс" to TechnicalFamily.VL80S,
+            "вл 80 с" to TechnicalFamily.VL80S,
+            "восемьдесят эс" to TechnicalFamily.VL80S,
+            "Ермак" to TechnicalFamily.ERMAK,
+            "на Ермаке" to TechnicalFamily.ERMAK,
+            "2ЭС5К" to TechnicalFamily.ERMAK,
+            "3ЭС5К" to TechnicalFamily.ERMAK,
+            "два эс пять ка" to TechnicalFamily.ERMAK,
+            "три эс пять ка" to TechnicalFamily.ERMAK
+        )
+        val faults = listOf(
+            FaultPhrase("ГВ не включается", "MAIN_BREAKER", AssistantFailureMode.NO_SWITCH_ON),
+            FaultPhrase("главник не выключается", "MAIN_BREAKER", AssistantFailureMode.NO_SWITCH_OFF),
+            FaultPhrase("ГВ выключился", "MAIN_BREAKER", AssistantFailureMode.SPONTANEOUS_OFF),
+            FaultPhrase("компрессор не запускается", "COMPRESSOR", AssistantFailureMode.NO_START),
+            FaultPhrase("компрессор не останавливается", "COMPRESSOR", AssistantFailureMode.NO_STOP),
+            FaultPhrase("компрессор не набирает давление", "COMPRESSOR", AssistantFailureMode.NO_BUILD_PRESSURE),
+            FaultPhrase("токоприемник не поднимается", "PANTOGRAPH", AssistantFailureMode.NO_RISE),
+            FaultPhrase("токоприемник не опускается", "PANTOGRAPH", AssistantFailureMode.NO_LOWER),
+            FaultPhrase("ЭКГ застрял", "EKG", AssistantFailureMode.JAMMED),
+            FaultPhrase("ТЭД искрит", "TRACTION_MOTOR", AssistantFailureMode.SPARK_OR_ARC),
+            FaultPhrase("ВУ греется", "RECTIFIER", AssistantFailureMode.OVERHEAT),
+            FaultPhrase("КМ 395 не держит давление", "DRIVER_BRAKE_VALVE", AssistantFailureMode.PRESSURE_LEAK)
+        )
+
+        val cases = series.flatMap { (seriesText, family) ->
+            faults.map { fault ->
+                ParserCase(
+                    query = "$seriesText ${fault.text}",
+                    intent = AssistantIntent.TROUBLESHOOT,
+                    family = family,
+                    component = fault.component,
+                    modes = setOf(fault.mode),
+                    section = TechnicalSection.DIAGNOSTICS
+                )
+            }
+        }
+
+        // 84 hand-written cases above + 144 systematic speech/series variants.
+        assertEquals(144, cases.size)
+        assertTrue(84 + cases.size in 200..300)
+        assertParserCases(cases)
     }
 
     private fun assertParserCases(cases: List<ParserCase>) {

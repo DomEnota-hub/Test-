@@ -7,6 +7,10 @@ class AssistantEngine(
 ) {
     fun query(rawText: String, limit: Int = 3): AssistantEngineResult {
         val parsed = AssistantQueryParser.parse(rawText)
+        return query(parsed, limit)
+    }
+
+    internal fun query(parsed: AssistantParsedQuery, limit: Int = 3): AssistantEngineResult {
 
         parsed.ambiguity?.let { ambiguity ->
             return AssistantEngineResult.Clarify(
@@ -28,7 +32,7 @@ class AssistantEngine(
         // whichever family happens to have denser text in the index. Ask first.
         if (
             parsed.family == null &&
-            parsed.intent == AssistantIntent.TROUBLESHOOT &&
+            parsed.intent in setOf(AssistantIntent.TROUBLESHOOT, AssistantIntent.OPEN_SCHEME) &&
             parsed.componentKey != null &&
             hits.none { "canonical-id" in it.reasons }
         ) {
