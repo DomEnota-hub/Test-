@@ -75,7 +75,8 @@ jobs:
             AssistantIndexTest.kt \
             AssistantEngineTest.kt \
             AssistantClarificationResolutionTest.kt \
-            AssistantDiagnosticCorpusTest.kt; do
+            AssistantDiagnosticCorpusTest.kt \
+            AssistantHumanQueryCorpusTest.kt; do
             cmp \
               "app/src/test/java/ru/railbrake/calculator/core/assistant/$testfile" \
               "patch/app/src/test/java/ru/railbrake/calculator/core/assistant/$testfile"
@@ -128,7 +129,8 @@ jobs:
             AssistantIndexTest.kt \
             AssistantEngineTest.kt \
             AssistantClarificationResolutionTest.kt \
-            AssistantDiagnosticCorpusTest.kt; do
+            AssistantDiagnosticCorpusTest.kt \
+            AssistantHumanQueryCorpusTest.kt; do
             test -f "buildsrc/RailBrakeCalculator/app/src/test/java/ru/railbrake/calculator/core/assistant/$testfile"
           done
 
