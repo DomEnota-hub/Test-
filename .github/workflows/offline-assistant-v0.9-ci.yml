@@ -1,4 +1,4 @@
-name: Offline Assistant v0.13 CI
+name: Offline Assistant v0.15 CI
 
 on:
   workflow_dispatch:
@@ -42,6 +42,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      RELEASE_KEYSTORE_B64: ${{ secrets.RAILBRAKE_KEYSTORE_BASE64 }}
+      EXPECTED_SIGNING_CERT_SHA256: ea9fe9341a6ba72b585bd7ff82ce29c8fc5b7b59e76b8b134df203eaab8e2788
 
     steps:
       - name: Checkout
@@ -129,7 +132,7 @@ jobs:
             test -f "buildsrc/RailBrakeCalculator/app/src/test/java/ru/railbrake/calculator/core/assistant/$testfile"
           done
 
-      - name: Prepare side-by-side Test application
+      - name: Prepare updatable Test application
         shell: bash
         run: |
           set -euo pipefail
@@ -150,8 +153,17 @@ jobs:
           if app_id_count != 1:
               raise SystemExit('Expected applicationId was not found exactly once')
 
+          text, code_count = re.subn(
+              r'versionCode\s*=\s*\d+',
+              'versionCode = 202',
+              text,
+              count=1,
+          )
+          if code_count != 1:
+              raise SystemExit('Expected versionCode was not found exactly once')
+
           def version_replacement(match):
-              return f'versionName = "{match.group(1)}-assistant-v0.13"'
+              return f'versionName = "{match.group(1)}-assistant-v0.15"'
 
           text, version_count = re.subn(
               r'versionName\s*=\s*"([^"]+)"',
@@ -186,25 +198,48 @@ jobs:
           set -euo pipefail
           timeout --signal=KILL 15m gradle :app:testDebugUnitTest --stacktrace --console=plain
 
-      - name: Android lint (non-blocking safeguard)
-        continue-on-error: true
+      - name: Android lint
         working-directory: buildsrc/RailBrakeCalculator
         shell: bash
         run: |
           set -euo pipefail
           timeout --signal=KILL 5m gradle --no-daemon :app:lintDebug --stacktrace --console=plain
 
-      - name: Build debug APK
+      - name: Decode stable signing key
         working-directory: buildsrc/RailBrakeCalculator
         shell: bash
         run: |
           set -euo pipefail
-          timeout --signal=KILL 15m gradle :app:assembleDebug --stacktrace --console=plain
+          test -n "$RELEASE_KEYSTORE_B64"
+          echo "$RELEASE_KEYSTORE_B64" | base64 --decode > release.keystore
+          test -s release.keystore
 
-      - name: Upload side-by-side debug APK
+      - name: Build signed Test APK
+        working-directory: buildsrc/RailBrakeCalculator
+        shell: bash
+        env:
+          RAILBRAKE_KEYSTORE_PATH: ${{ github.workspace }}/buildsrc/RailBrakeCalculator/release.keystore
+          RAILBRAKE_STORE_PASSWORD: ${{ secrets.RAILBRAKE_STORE_PASSWORD }}
+          RAILBRAKE_KEY_ALIAS: ${{ secrets.RAILBRAKE_KEY_ALIAS }}
+          RAILBRAKE_KEY_PASSWORD: ${{ secrets.RAILBRAKE_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          timeout --signal=KILL 15m gradle :app:assembleRelease --stacktrace --console=plain
+
+      - name: Verify signed Test APK identity and signature
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=buildsrc/RailBrakeCalculator/app/build/outputs/apk/release/app-release.apk
+          "$ANDROID_SDK_ROOT/build-tools/34.0.0/aapt" dump badging "$APK" | tee assistant-test-badging.log
+          grep -Fq "package: name='ru.railbrake.calculator.assistanttest' versionCode='202' versionName='1.2.2-dev14-beta52-assistant-v0.15'" assistant-test-badging.log
+          "$ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner" verify --verbose --print-certs "$APK" | tee assistant-test-apksigner.log
+          grep -qi "Signer #1 certificate SHA-256 digest: $EXPECTED_SIGNING_CERT_SHA256" assistant-test-apksigner.log
+
+      - name: Upload updatable signed Test APK
         uses: actions/upload-artifact@v4
         with:
-          name: railbrake-assistant-test-v0.13-apk
-          path: buildsrc/RailBrakeCalculator/app/build/outputs/apk/debug/app-debug.apk
+          name: railbrake-assistant-test-v0.15-signed-apk
+          path: buildsrc/RailBrakeCalculator/app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
           retention-days: 7
