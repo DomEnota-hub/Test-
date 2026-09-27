@@ -22,6 +22,17 @@ jobs:
       - name: Apply patch
         run: python3 tools/apply_assistant_v014_coverage.py
 
+      - name: Normalize text endings
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          for path in [
+              Path('app/src/main/java/ru/railbrake/calculator/core/assistant/AssistantAdapters.kt'),
+              Path('patch/app/src/main/java/ru/railbrake/calculator/core/assistant/AssistantAdapters.kt'),
+          ]:
+              path.write_text(path.read_text(encoding='utf-8').rstrip() + '\n', encoding='utf-8')
+          PY
+
       - name: Commit changes
         run: |
           set -euo pipefail
