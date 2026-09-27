@@ -116,6 +116,11 @@ internal fun AssistantHomePanel() {
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+            Text(
+                "Например: «ВЛ80С ГВ не включается», «Ермак компрессор не качает», «обморожение», «ID ER-DIAG-069».",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
 
             OutlinedTextField(
                 value = query,
