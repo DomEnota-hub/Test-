@@ -66,6 +66,32 @@ class AssistantDiagnosticCorpusTest {
     }
 
     @Test
+    fun explicitlyNamedSeriesScopesTheMixedDiagnosticCatalog() {
+        val vl = DiagnosticRepository.scenarios.map(Vl80DiagnosticAssistantAdapter::adapt)
+        val ermak = loadErmakScenarios().map(ErmakDiagnosticAssistantAdapter::adapt)
+        val index = InMemoryAssistantIndex(vl + ermak)
+        listOf(
+            TechnicalFamily.VL80S to vl,
+            TechnicalFamily.ERMAK to ermak
+        ).forEach { (family, documents) ->
+            documents.forEach { document ->
+                val hits = index.search(
+                    AssistantSearchRequest(
+                        query = document.title,
+                        family = family,
+                        preferredSection = TechnicalSection.DIAGNOSTICS,
+                        limit = 5
+                    )
+                )
+                assertTrue(
+                    "${document.canonicalId}: ${hits.joinToString { "${it.document.canonicalId}:${it.document.family}" }}",
+                    hits.all { it.document.family == family }
+                )
+            }
+        }
+    }
+
+    @Test
     fun everyVl80ScenarioCanBeRecoveredFromItsTitleAndSummary() {
         val scenarios = DiagnosticRepository.scenarios
         val documents = scenarios.map(Vl80DiagnosticAssistantAdapter::adapt)

@@ -61,6 +61,32 @@ class AssistantIndexTest {
     }
 
     @Test
+    fun explicitSeriesNeverReturnsOtherLocomotiveEvenForExactTitle() {
+        val ermak = ErmakDiagnosticAssistantAdapter.adapt(ermakDiagnostic())
+        val vl = Vl80DiagnosticAssistantAdapter.adapt(vl80Diagnostic())
+        val index = InMemoryAssistantIndex(listOf(ermak, vl))
+
+        val vlHits = index.search(
+            AssistantSearchRequest(
+                query = ermak.title,
+                family = TechnicalFamily.VL80S,
+                preferredSection = TechnicalSection.DIAGNOSTICS
+            )
+        )
+        assertTrue(vlHits.isNotEmpty())
+        assertTrue(vlHits.all { it.document.family == TechnicalFamily.VL80S })
+
+        val ermakOnly = InMemoryAssistantIndex(listOf(ermak)).search(
+            AssistantSearchRequest(
+                query = ermak.title,
+                family = TechnicalFamily.VL80S,
+                preferredSection = TechnicalSection.DIAGNOSTICS
+            )
+        )
+        assertTrue(ermakOnly.isEmpty())
+    }
+
+    @Test
     fun ermakDiagnosticUsesCanonicalEquipmentIdForReranking() {
         val diagnostic = ErmakDiagnosticAssistantAdapter.adapt(ermakDiagnostic())
         val reference = TechnicalEntryAssistantAdapter.adapt(

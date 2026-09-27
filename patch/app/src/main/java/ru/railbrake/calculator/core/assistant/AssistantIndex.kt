@@ -83,6 +83,11 @@ class InMemoryAssistantIndex(
 
         return documents.mapNotNull { indexed ->
             val document = indexed.document
+            // A named locomotive is a hard scope for operational material.
+            // A very strong text match must never surface another series.
+            if (request.family != null && document.family != null && document.family != request.family) {
+                return@mapNotNull null
+            }
             var score = 0
             var hasContentEvidence = false
             val reasons = mutableListOf<String>()
@@ -181,14 +186,9 @@ class InMemoryAssistantIndex(
                 }
             }
 
-            request.family?.let { family ->
-                if (document.family == family || document.family == null) {
-                    score += 40
-                    reasons += "family"
-                } else {
-                    score -= 80
-                    reasons += "family-conflict"
-                }
+            request.family?.let {
+                score += 40
+                reasons += "family"
             }
 
             request.preferredSection?.let { section ->
