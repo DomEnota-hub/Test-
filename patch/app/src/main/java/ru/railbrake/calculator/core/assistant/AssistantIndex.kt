@@ -5,6 +5,7 @@ import ru.railbrake.calculator.core.TechnicalSection
 
 data class AssistantSearchRequest(
     val query: String,
+    val literalQuery: String? = null,
     val family: TechnicalFamily? = null,
     val preferredSection: TechnicalSection? = null,
     val componentId: String? = null,
@@ -73,6 +74,7 @@ class InMemoryAssistantIndex(
 
     fun search(request: AssistantSearchRequest): List<AssistantSearchHit> {
         val query = request.query.normalizeAssistantText()
+        val literalQuery = (request.literalQuery ?: request.query).normalizeAssistantText()
         val queryParts = query.split(' ')
         val tokens = queryParts
             .filter { it.length > 1 && it !in stopWords }
@@ -120,7 +122,7 @@ class InMemoryAssistantIndex(
             // containment rather than equality and give this signal enough
             // weight to beat broad cards that share only generic words.
             val primaryPhraseMatched = indexed.primaryPhrases.any { phrase ->
-                phrase in query || (query.length >= 8 && query in phrase)
+                phrase in literalQuery || (literalQuery.length >= 8 && literalQuery in phrase)
             }
             if (primaryPhraseMatched) {
                 score += 260
@@ -129,7 +131,7 @@ class InMemoryAssistantIndex(
             }
 
             val aliasPhraseMatched = indexed.aliasPhrases.any { phrase ->
-                phrase in query || (query.length >= 8 && query in phrase)
+                phrase in literalQuery || (literalQuery.length >= 8 && literalQuery in phrase)
             }
             if (aliasPhraseMatched) {
                 score += 65
@@ -141,7 +143,7 @@ class InMemoryAssistantIndex(
                 .asSequence()
                 .map(String::normalizeAssistantText)
                 .filter { it.length >= 4 }
-                .any { symptom -> symptom in query || query in symptom }
+                .any { symptom -> symptom in literalQuery || literalQuery in symptom }
             if (symptomPhraseMatched) {
                 score += 55
                 hasContentEvidence = true

@@ -8,8 +8,23 @@ object AssistantQueryParser {
         "вээл восемьдесят эс" to "вл80с",
         "вээл восемьдесят с" to "вл80с",
         "вээл 80 эс" to "вл80с",
+        "вээл 80 с" to "вл80с",
+        "в эл восемьдесят эс" to "вл80с",
+        "в эл 80 с" to "вл80с",
+        "вэл восемьдесят эс" to "вл80с",
+        "вл восемьдесят эс" to "вл80с",
         "вл 80 с" to "вл80с",
+        "вл 80 эс" to "вл80с",
+        "вл восемьдесят с" to "вл80с",
         "восемьдесят эс" to "вл80с",
+        "два э с пять ка" to "2эс5к",
+        "три э с пять ка" to "3эс5к",
+        "два эс пять к" to "2эс5к",
+        "три эс пять к" to "3эс5к",
+        "2 эс 5 к" to "2эс5к",
+        "3 эс 5 к" to "3эс5к",
+        "2 эс 5 ка" to "2эс5к",
+        "3 эс 5 ка" to "3эс5к",
         "двух эс пять ка" to "2эс5к",
         "два эс пять ка" to "2эс5к",
         "трех эс пять ка" to "3эс5к",
@@ -45,12 +60,24 @@ object AssistantQueryParser {
         "ка-эм триста девяносто пять" to "км 395",
         "тэ эм" to "тм",
         "тэ-эм" to "тм",
+        "пэ эм" to "пм",
+        "пэ-эм" to "пм",
+        "тэ цэ" to "тц",
+        "тэ-цэ" to "тц",
+        "вэ эр четыреста восемьдесят три" to "вр 483",
+        "вэ эр 483" to "вр 483",
+        "ка эм 395" to "км 395",
+        "мэ ка" to "мк",
+        "а ка бэ" to "акб",
         "гэ эр" to "гр",
         "гэ-эр" to "гр",
         "мотор вентилятор" to "мотор-вентилятор",
         "токо приемник" to "токоприемник",
         "пантограф" to "токоприемник"
     )
+    private val replacementPatterns = replacements.map { (from, to) ->
+        Regex("(?<![\\p{L}\\p{N}])${Regex.escape(from)}(?![\\p{L}\\p{N}])") to to
+    }
 
     private data class ComponentVocabulary(
         val key: String,
@@ -74,6 +101,7 @@ object AssistantQueryParser {
         ComponentVocabulary("MOTOR_FAN", listOf("мотор-вентилятор", "мотор вентилятор"), "мотор-вентилятор вентилятор охлаждения"),
         ComponentVocabulary("PHASE_SPLITTER", listOf("фазорасщепитель", "расщепитель фаз", "фазник"), "фазорасщепитель расщепитель фаз фазник"),
         ComponentVocabulary("BRAKE_PIPE", listOf("тормозная магистраль", "тм"), "тм тормозная магистраль"),
+        ComponentVocabulary("FEED_PIPE", listOf("питательная магистраль", "пм"), "пм питательная магистраль"),
         ComponentVocabulary("MAIN_RESERVOIR", listOf("главный резервуар", "главные резервуары", "гр"), "гр главные резервуары главный резервуар"),
         ComponentVocabulary("BRAKE_CYLINDER", listOf("тормозной цилиндр", "тормозные цилиндры", "тц"), "тц тормозные цилиндры тормозной цилиндр"),
         ComponentVocabulary("AIR_DISTRIBUTOR", listOf("воздухораспределитель", "вр 483", "вр483", "вр"), "воздухораспределитель вр 483"),
@@ -175,14 +203,14 @@ object AssistantQueryParser {
             return "BRAKE_PIPE"
         }
         return componentVocabulary.firstOrNull { component ->
-            component.aliases.any { alias -> containsTerm(normalized, alias) }
+            component.aliases.any { alias -> containsComponentTerm(normalized, alias) }
         }?.key
     }
 
     fun componentKeysInDescription(text: String): Set<String> {
         val normalized = normalize(text)
         return componentVocabulary.asSequence()
-            .filter { component -> component.aliases.any { alias -> containsTerm(normalized, alias) } }
+            .filter { component -> component.aliases.any { alias -> containsComponentTerm(normalized, alias) } }
             .map(ComponentVocabulary::key)
             .toSet()
     }
@@ -198,8 +226,8 @@ object AssistantQueryParser {
             .replace(Regex("\\s+"), " ")
             .trim()
 
-        replacements.forEach { (from, to) ->
-            result = result.replace(from, to)
+        replacementPatterns.forEach { (pattern, to) ->
+            result = result.replace(pattern, to)
         }
         return result.replace(Regex("\\s+"), " ").trim()
     }
@@ -228,6 +256,16 @@ object AssistantQueryParser {
             val stem = pattern.take(stemLength)
             textWords.any { word -> word.startsWith(stem) }
         }
+    }
+
+    private fun containsComponentTerm(text: String, term: String): Boolean {
+        // Short abbreviations shared with everyday language (гр, пм) need
+        // railway context unless the entire request is that abbreviation.
+        if (term in setOf("гр", "пм") && text != term &&
+            listOf("вл80", "ермак", "2эс5к", "3эс5к", "магистрал", "давлен", "резервуар",
+                "тормоз", "утеч", "трав", "сифон", "схем", "компрессор", "поезд").none(text::contains)
+        ) return false
+        return containsTerm(text, term)
     }
 
     private fun ambiguity(
@@ -292,5 +330,5 @@ object AssistantQueryParser {
         ).any(text::contains)
 
     private fun hasDefinitionCue(text: String): Boolean =
-        listOf("что такое", "для чего", "зачем нужен", "зачем нужна", "назначение", "что делает", "расскажи про", "описание").any(text::contains)
+        listOf("что такое", "для чего", "зачем нужен", "зачем нужна", "назначение", "что делает", "расскажи про", "описание", "как устроен").any(text::contains)
 }

@@ -156,11 +156,67 @@ class AssistantHumanQueryCorpusTest {
 
     @Test
     fun numericAliasesDoNotHijackUnrelatedNumbers() {
-        val unrelated = listOf("395 рублей", "подожди 395 секунд", "страница 483", "483 человека")
+        val unrelated = listOf("395 рублей", "подожди 395 секунд", "страница 483", "483 человека", "150 человек", "100 гр сахара", "пм это после полудня")
         unrelated.forEach { query ->
             val parsed = AssistantQueryParser.parse(query)
             assertFalse("Numeric alias hijacked unrelated query: $query -> ${parsed.componentKey}", parsed.componentKey == "DRIVER_BRAKE_VALVE" || parsed.componentKey == "AIR_DISTRIBUTOR")
         }
+        assertNull(AssistantQueryParser.parse("100 гр сахара").componentKey)
+        assertNull(AssistantQueryParser.parse("пм это после полудня").componentKey)
+        assertEquals(AssistantIntent.SAFETY, AssistantQueryParser.parse("человек отравится газом").intent)
+    }
+
+    @Test
+    fun spokenRailwayAbbreviationsAndBrakeCircuitNamesStayDistinct() {
+        val cases = listOf(
+            ParserCase("в эл восемьдесят эс гэ вэ не включается", AssistantIntent.TROUBLESHOOT, TechnicalFamily.VL80S, "MAIN_BREAKER", setOf(AssistantFailureMode.NO_SWITCH_ON)),
+            ParserCase("вэл восемьдесят эс главный выключатель не отключается", AssistantIntent.TROUBLESHOOT, TechnicalFamily.VL80S, "MAIN_BREAKER", setOf(AssistantFailureMode.NO_SWITCH_OFF)),
+            ParserCase("вл 80 эс тэ эм давление падает", AssistantIntent.TROUBLESHOOT, TechnicalFamily.VL80S, "BRAKE_PIPE", setOf(AssistantFailureMode.PRESSURE_LEAK)),
+            ParserCase("вээл 80 с ка эм 395 травит", AssistantIntent.TROUBLESHOOT, TechnicalFamily.VL80S, "DRIVER_BRAKE_VALVE", setOf(AssistantFailureMode.PRESSURE_LEAK)),
+            ParserCase("вл восемьдесят с вэ эр 483 травит", AssistantIntent.TROUBLESHOOT, TechnicalFamily.VL80S, "AIR_DISTRIBUTOR", setOf(AssistantFailureMode.PRESSURE_LEAK)),
+            ParserCase("два э с пять ка утечка пэ эм", AssistantIntent.TROUBLESHOOT, TechnicalFamily.ERMAK, "FEED_PIPE", setOf(AssistantFailureMode.PRESSURE_LEAK)),
+            ParserCase("три э с пять ка тэ цэ нет давления", AssistantIntent.TROUBLESHOOT, TechnicalFamily.ERMAK, "BRAKE_CYLINDER", setOf(AssistantFailureMode.NO_BUILD_PRESSURE)),
+            ParserCase("2 эс 5 ка мэ ка не запускается", AssistantIntent.TROUBLESHOOT, TechnicalFamily.ERMAK, "COMPRESSOR", setOf(AssistantFailureMode.NO_START)),
+            ParserCase("3 эс 5 к а ка бэ не заряжается", AssistantIntent.TROUBLESHOOT, TechnicalFamily.ERMAK, "BATTERY"),
+            ParserCase("тэ эм давление падает", AssistantIntent.TROUBLESHOOT, component = "BRAKE_PIPE", modes = setOf(AssistantFailureMode.PRESSURE_LEAK)),
+            ParserCase("пэ эм давление падает", AssistantIntent.TROUBLESHOOT, component = "FEED_PIPE", modes = setOf(AssistantFailureMode.PRESSURE_LEAK)),
+            ParserCase("тэ цэ не отпускают", AssistantIntent.TROUBLESHOOT, component = "BRAKE_CYLINDER", modes = setOf(AssistantFailureMode.NO_RELEASE)),
+            ParserCase("питательная магистраль травит", AssistantIntent.TROUBLESHOOT, component = "FEED_PIPE", modes = setOf(AssistantFailureMode.PRESSURE_LEAK)),
+            ParserCase("утечка в тормозной", AssistantIntent.TROUBLESHOOT, component = "BRAKE_PIPE", modes = setOf(AssistantFailureMode.PRESSURE_LEAK)),
+            ParserCase("утечка в тормозной Ермак", AssistantIntent.TROUBLESHOOT, TechnicalFamily.ERMAK, "BRAKE_PIPE", setOf(AssistantFailureMode.PRESSURE_LEAK)),
+            ParserCase("давление в тормозной магистрали падает", AssistantIntent.TROUBLESHOOT, component = "BRAKE_PIPE", modes = setOf(AssistantFailureMode.PRESSURE_LEAK)),
+            ParserCase("тормозной цилиндр не отпускает", AssistantIntent.TROUBLESHOOT, component = "BRAKE_CYLINDER", modes = setOf(AssistantFailureMode.NO_RELEASE)),
+            ParserCase("ермак компрессор не включается", AssistantIntent.TROUBLESHOOT, TechnicalFamily.ERMAK, "COMPRESSOR", setOf(AssistantFailureMode.NO_START)),
+            ParserCase("ермак компрессор не отключается", AssistantIntent.TROUBLESHOOT, TechnicalFamily.ERMAK, "COMPRESSOR", setOf(AssistantFailureMode.NO_STOP)),
+            ParserCase("ермак гв не отключается", AssistantIntent.TROUBLESHOOT, TechnicalFamily.ERMAK, "MAIN_BREAKER", setOf(AssistantFailureMode.NO_SWITCH_OFF)),
+            ParserCase("вл компрессор не набирает давление", AssistantIntent.TROUBLESHOOT, component = "COMPRESSOR", modes = setOf(AssistantFailureMode.NO_BUILD_PRESSURE)),
+            ParserCase("неисправность тормозной магистрали", AssistantIntent.TROUBLESHOOT, component = "BRAKE_PIPE", modes = setOf(AssistantFailureMode.GENERAL_FAILURE)),
+            ParserCase("покажи пневмосхему питательной магистрали", AssistantIntent.OPEN_SCHEME, component = "FEED_PIPE", section = TechnicalSection.PNEUMATIC),
+            ParserCase("как устроен кран машиниста", AssistantIntent.DEFINE_TERM, component = "DRIVER_BRAKE_VALVE", section = TechnicalSection.EQUIPMENT)
+        )
+        assertParserCases(cases)
+
+        val negatives = listOf(
+            "пэ эм давление падает" to "BRAKE_PIPE",
+            "тэ эм давление падает" to "FEED_PIPE",
+            "тэ цэ нет давления" to "BRAKE_PIPE",
+            "тормозной цилиндр не отпускает" to "BRAKE_PIPE",
+            "отравился человек" to "FEED_PIPE"
+        )
+        negatives.forEach { (query, wrongComponent) ->
+            assertFalse("$query was mistaken for $wrongComponent", AssistantQueryParser.parse(query).componentKey == wrongComponent)
+        }
+        assertEquals(24, cases.size)
+    }
+
+    @Test
+    fun compressorSwitchWordsDoNotCollapseIntoBreakerStates() {
+        val compressorOn = AssistantQueryParser.parse("компрессор не включается").failureModes
+        val compressorOff = AssistantQueryParser.parse("компрессор не отключается").failureModes
+        val breakerOff = AssistantQueryParser.parse("гв не отключается").failureModes
+        assertEquals(setOf(AssistantFailureMode.NO_START), compressorOn)
+        assertEquals(setOf(AssistantFailureMode.NO_STOP), compressorOff)
+        assertEquals(setOf(AssistantFailureMode.NO_SWITCH_OFF), breakerOff)
     }
 
     @Test

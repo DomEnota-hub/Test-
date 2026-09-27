@@ -34,15 +34,18 @@ object AssistantFailureModeDetector {
 
         val modes = linkedSetOf<AssistantFailureMode>()
 
+        val compressorContext = Regex("(^| )(компрессор|мотор-компрессор|мк)( |$)").containsMatchIn(normalized) &&
+            !Regex("(^| )(гв|главный выключатель)( |$)").containsMatchIn(normalized)
+
         val noSwitchOn = containsAny(
             normalized,
             "не включ", "не хочет включ", "не замыка", "не принимает команд",
             "не срабатывает на включ", "не срабатыва"
-        )
+        ) && !compressorContext
         val noSwitchOff = containsAny(
             normalized,
             "не выключ", "не отключ", "не размыка"
-        )
+        ) && !compressorContext
 
         if (noSwitchOn) modes += AssistantFailureMode.NO_SWITCH_ON
         if (noSwitchOff) modes += AssistantFailureMode.NO_SWITCH_OFF
@@ -61,10 +64,12 @@ object AssistantFailureModeDetector {
             modes += AssistantFailureMode.SPONTANEOUS_OFF
         }
 
-        if (containsAny(normalized, "не запуска", "не старт", "не вращ", "не пуска", "молчит")) {
+        if (containsAny(normalized, "не запуска", "не старт", "не вращ", "не пуска", "молчит") ||
+            (compressorContext && containsAny(normalized, "не включ", "не хочет включ"))) {
             modes += AssistantFailureMode.NO_START
         }
-        if (containsAny(normalized, "не останавлива", "не стопорится")) {
+        if (containsAny(normalized, "не останавлива", "не стопорится") ||
+            (compressorContext && containsAny(normalized, "не отключ", "не выключ"))) {
             modes += AssistantFailureMode.NO_STOP
         }
         if (containsAny(normalized, "не поднима")) modes += AssistantFailureMode.NO_RISE

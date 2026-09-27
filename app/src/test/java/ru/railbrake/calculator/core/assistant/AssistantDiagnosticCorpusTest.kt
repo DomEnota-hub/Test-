@@ -49,6 +49,23 @@ class AssistantDiagnosticCorpusTest {
     }
 
     @Test
+    fun ermakFeedAndBrakePipeFaultsDoNotSwap() {
+        val engine = AssistantEngine(
+            InMemoryAssistantIndex(loadErmakScenarios().map(ErmakDiagnosticAssistantAdapter::adapt))
+        )
+        val cases = mapOf(
+            "Ермак утечка в питательной магистрали" to "ER-DIAG-079",
+            "Ермак падение давления в тормозной магистрали" to "ER-DIAG-090"
+        )
+        cases.forEach { (query, expected) ->
+            val result = engine.query(query)
+            assertTrue("Expected matches for $query", result is AssistantEngineResult.Matches)
+            val hits = (result as AssistantEngineResult.Matches).hits
+            assertEquals("$query -> ${hits.joinToString { "${it.document.canonicalId}:${it.score}" }}", expected, hits.first().document.canonicalId)
+        }
+    }
+
+    @Test
     fun everyVl80ScenarioCanBeRecoveredFromItsTitleAndSummary() {
         val scenarios = DiagnosticRepository.scenarios
         val documents = scenarios.map(Vl80DiagnosticAssistantAdapter::adapt)

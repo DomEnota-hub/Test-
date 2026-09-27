@@ -21,6 +21,7 @@ class AssistantEngine(
 
         val request = AssistantSearchRequest(
             query = parsed.searchText,
+            literalQuery = parsed.normalizedText,
             family = parsed.family,
             preferredSection = parsed.preferredSection,
             componentId = parsed.componentKey,
