@@ -375,6 +375,8 @@ private fun DiagnosticDetails(
     var feedbackNote by rememberSaveable(scenario.id) { mutableStateOf("") }
     var candidateScores by remember(scenario.id) { mutableStateOf(emptyMap<String, Int>()) }
     var currentAssessment by rememberSaveable(scenario.id) { mutableStateOf("") }
+    var ordinaryRouteStopped by rememberSaveable(scenario.id) { mutableStateOf(false) }
+    var answerTrail by rememberSaveable(scenario.id) { mutableStateOf(emptyList<String>()) }
     val clipboard = LocalClipboardManager.current
     val context = LocalContext.current
     val sessionRepository = remember { DiagnosticSessionRepository(context) }
@@ -436,7 +438,15 @@ private fun DiagnosticDetails(
                     val question = scenario.questions.first { it.key == currentQuestionKey }
                     val meaning = DiagnosticRepository.meaning(question, response)
                     currentAssessment = meaning
+                    val explicitNext = when (response) {
+                        DiagnosticResponse.YES -> question.yesNextKey
+                        DiagnosticResponse.NO -> question.noNextKey
+                        DiagnosticResponse.UNKNOWN -> question.unknownNextKey
+                    }
+                    ordinaryRouteStopped = explicitNext == DiagnosticRepository.END_OF_FLOW &&
+                        (response == DiagnosticResponse.UNKNOWN || scenario.questions.lastOrNull()?.key != question.key)
                     answers = answers + "${question.text} — ${response.title}. $meaning"
+                    answerTrail = answerTrail + "${question.key}\t${response.name}"
                     candidateScores = candidateScores.toMutableMap().also { scores ->
                         DiagnosticRepository.candidateCauseIds(question, response).forEach { causeId ->
                             scores[causeId] = (scores[causeId] ?: 0) + 1
@@ -446,9 +456,43 @@ private fun DiagnosticDetails(
                 },
                 onReset = {
                     answers = emptyList()
+                    answerTrail = emptyList()
                     candidateScores = emptyMap()
                     currentAssessment = ""
+                    ordinaryRouteStopped = false
                     currentQuestionKey = scenario.questions.firstOrNull()?.key
+                },
+                onBackOne = {
+                    val removed = answerTrail.lastOrNull()
+                    if (removed != null) {
+                        val removedKey = removed.substringBefore('\t')
+                        answerTrail = answerTrail.dropLast(1)
+                        answers = answers.dropLast(1)
+                        currentQuestionKey = removedKey
+                        ordinaryRouteStopped = false
+                        candidateScores = buildMap {
+                            answerTrail.forEach { record ->
+                                val key = record.substringBefore('\t')
+                                val response = runCatching {
+                                    DiagnosticResponse.valueOf(record.substringAfter('\t'))
+                                }.getOrNull() ?: return@forEach
+                                val priorQuestion = scenario.questions.firstOrNull { it.key == key } ?: return@forEach
+                                DiagnosticRepository.candidateCauseIds(priorQuestion, response).forEach { causeId ->
+                                    put(causeId, (get(causeId) ?: 0) + 1)
+                                }
+                            }
+                        }
+                        currentAssessment = answerTrail.lastOrNull()?.let { record ->
+                            val key = record.substringBefore('\t')
+                            val response = runCatching {
+                                DiagnosticResponse.valueOf(record.substringAfter('\t'))
+                            }.getOrNull()
+                            val priorQuestion = scenario.questions.firstOrNull { it.key == key }
+                            if (response != null && priorQuestion != null) {
+                                DiagnosticRepository.meaning(priorQuestion, response)
+                            } else ""
+                        }.orEmpty()
+                    }
                 }
             )
         }
@@ -460,6 +504,7 @@ private fun DiagnosticDetails(
                     buildList {
                         add(currentAssessment)
                         if (nextQuestion != null) add("Следующее уточнение: ${nextQuestion.text}")
+                        else if (ordinaryRouteStopped) add("Доступных различающих вопросов больше нет. Помощь продолжается ниже: сохранены возможные причины, разрешённые проверки, ограничения и данные для доклада; неподтверждённый вариант не считать установленным.")
                         else add("Вопросы этого маршрута пройдены. Сопоставьте вывод с признаками, проверками и условиями прекращения диагностики ниже.")
                     },
                     MaterialTheme.colorScheme.primaryContainer
@@ -706,7 +751,8 @@ private fun TriageCard(
     currentQuestionKey: String?,
     answers: List<String>,
     onAnswer: (DiagnosticResponse) -> Unit,
-    onReset: () -> Unit
+    onReset: () -> Unit,
+    onBackOne: () -> Unit
 ) {
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
@@ -724,12 +770,17 @@ private fun TriageCard(
                     Button(onClick = { onAnswer(DiagnosticResponse.YES) }) { Text("Да") }
                     OutlinedButton(onClick = { onAnswer(DiagnosticResponse.NO) }) { Text("Нет") }
                 }
-                TextButton(onClick = { onAnswer(DiagnosticResponse.UNKNOWN) }) { Text("Не знаю — записать и идти дальше") }
+                TextButton(onClick = { onAnswer(DiagnosticResponse.UNKNOWN) }) { Text("Не знаю") }
             } else {
                 Text("Вопросы пройдены. Выводы включены в шаблон доклада.", fontWeight = FontWeight.Bold)
             }
             answers.forEach { Text("• $it", style = MaterialTheme.typography.bodySmall) }
-            if (answers.isNotEmpty()) TextButton(onClick = onReset) { Text("Начать заново") }
+            if (answers.isNotEmpty()) {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    TextButton(onClick = onBackOne) { Text("Назад на шаг") }
+                    TextButton(onClick = onReset) { Text("Начать заново") }
+                }
+            }
         }
     }
 }

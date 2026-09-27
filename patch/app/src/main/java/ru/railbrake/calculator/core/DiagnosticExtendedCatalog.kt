@@ -96,7 +96,9 @@ object DiagnosticExtendedCatalog {
                     yesMeaning = "Локальная причина вероятнее общей; точно указать место в докладе.",
                     noMeaning = "Проверять общую команду, питание, воздух или связанную систему без обхода защит.",
                     yesNextKey = "$prefix-repeat", noNextKey = "$prefix-repeat", unknownNextKey = "$prefix-repeat",
-                    yesCandidateCauseIds = listOf("$prefix-local"), noCandidateCauseIds = listOf("$prefix-common")
+                    unknownMeaning = "Не удалось установить, локален ли признак «${seed.title.lowercase()}». Одновременно остаются возможны неисправность ${seed.equipment} в одной секции/группе и общая причина питания, команды или связанной системы; различение продолжается по устойчивости и опасным проявлениям.",
+                    yesCandidateCauseIds = listOf("$prefix-local"), noCandidateCauseIds = listOf("$prefix-common"),
+                    unknownCandidateCauseIds = listOf("$prefix-local", "$prefix-common")
                 ),
                 DiagnosticQuestion(
                     key = "$prefix-repeat",
@@ -104,7 +106,9 @@ object DiagnosticExtendedCatalog {
                     yesMeaning = "Отказ считать устойчивым; повторные воздействия прекратить и готовить доклад.",
                     noMeaning = "Записать условия кратковременного появления; отсутствие повтора не доказывает исправность.",
                     yesNextKey = "$prefix-danger", noNextKey = "$prefix-danger", unknownNextKey = "$prefix-danger",
-                    yesCandidateCauseIds = listOf("$prefix-device"), noCandidateCauseIds = listOf("$prefix-intermittent")
+                    unknownMeaning = "Не удалось установить устойчивость признака «${seed.title.lowercase()}». Сохраняются варианты устойчивого отказа ${seed.equipment} и периодического нарушения контакта/условия; следующий вопрос проверяет опасное развитие без повторного провоцирования отказа.",
+                    yesCandidateCauseIds = listOf("$prefix-device"), noCandidateCauseIds = listOf("$prefix-intermittent"),
+                    unknownCandidateCauseIds = listOf("$prefix-device", "$prefix-intermittent")
                 ),
                 DiagnosticQuestion(
                     key = "$prefix-danger",
@@ -112,7 +116,9 @@ object DiagnosticExtendedCatalog {
                     yesMeaning = "Диагностические действия прекратить; обеспечить безопасное состояние и доложить.",
                     noMeaning = "Продолжать только разрешённые наблюдения по карточке и местной инструкции.",
                     yesNextKey = DiagnosticRepository.END_OF_FLOW, noNextKey = DiagnosticRepository.END_OF_FLOW, unknownNextKey = DiagnosticRepository.END_OF_FLOW,
-                    yesCandidateCauseIds = listOf("$prefix-dangerous"), unknownCandidateCauseIds = listOf("$prefix-device")
+                    unknownMeaning = "Опасное развитие для «${seed.title.lowercase()}» достоверно исключить не удалось: ${seed.danger}. До подтверждения сохраняются как отказ ${seed.equipment}, так и аварийный вариант; новые воздействия не выполнять, использовать перечисленные ниже безопасные проверки, ограничения и данные для доклада.",
+                    yesCandidateCauseIds = listOf("$prefix-dangerous"),
+                    unknownCandidateCauseIds = listOf("$prefix-device", "$prefix-dangerous")
                 )
             ),
             diagnosticCauses = listOf(

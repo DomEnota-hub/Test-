@@ -43,7 +43,10 @@ class LocomotiveProfileTest {
 
         assertEquals(1, result.state.answers.size)
         assertEquals(DiagnosticResponse.UNKNOWN, result.state.answers.single().response)
-        assertTrue(result.state.answers.single().conclusion.contains("Недостаточно данных"))
+        assertTrue(result.state.answers.single().conclusion.contains("не удалось подтвердить", ignoreCase = true))
+        assertNotNull(result.nextQuestion)
+        assertTrue(result.state.answers.single().conclusion.contains(scenario.questions.first().yesMeaning))
+        assertTrue(result.state.answers.single().conclusion.contains(scenario.questions.first().noMeaning))
     }
 
     @Test

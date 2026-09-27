@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -39,11 +40,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import ru.railbrake.calculator.core.DiagnosticPolicyEngine
+import ru.railbrake.calculator.core.DiagnosticProfileContext
 import ru.railbrake.calculator.core.DiagnosticRepository
+import ru.railbrake.calculator.core.ErmakDiagnosticChoice
 import ru.railbrake.calculator.core.ErmakDiagnosticRepository
 import ru.railbrake.calculator.core.ErmakDiagnosticScenario
+import ru.railbrake.calculator.core.requiresPolicyEvaluation
 import ru.railbrake.calculator.data.DiagnosticSessionRecord
 import ru.railbrake.calculator.data.DiagnosticSessionRepository
+import ru.railbrake.calculator.data.LocomotiveProfileRepository
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -348,6 +354,53 @@ private fun buildErmakDiagnosticReport(
     }
 }.trim()
 
+private fun ErmakDiagnosticScenario.resolveUnknownPresentationTarget(startNodeId: String): String {
+    var current = startNodeId
+    val visited = mutableSetOf<String>()
+    while (visited.add(current)) {
+        val candidate = nodes[current] ?: return current
+        if (!candidate.type.equals("uncertainty", ignoreCase = true)) return current
+        current = candidate.nextNodeId ?: return current
+    }
+    return startNodeId
+}
+
+@Composable
+private fun ErmakQuestionAnswers(
+    choices: List<ErmakDiagnosticChoice>,
+    onChoice: (ErmakDiagnosticChoice) -> Unit
+) {
+    if (choices.size == 2) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Button(
+                onClick = { onChoice(choices[0]) },
+                modifier = Modifier.weight(1f).heightIn(min = 48.dp)
+            ) { Text(choices[0].label) }
+            OutlinedButton(
+                onClick = { onChoice(choices[1]) },
+                modifier = Modifier.weight(1f).heightIn(min = 48.dp)
+            ) { Text(choices[1].label) }
+        }
+    } else {
+        choices.forEachIndexed { index, choice ->
+            if (index == 0) {
+                Button(
+                    onClick = { onChoice(choice) },
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)
+                ) { Text(choice.label) }
+            } else {
+                OutlinedButton(
+                    onClick = { onChoice(choice) },
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)
+                ) { Text(choice.label) }
+            }
+        }
+    }
+}
+
 @Composable
 private fun ErmakDiagnosticRoute(scenario: ErmakDiagnosticScenario, onBack: () -> Unit, onSaved: () -> Unit) {
     var nodeId by rememberSaveable(scenario.id) { mutableStateOf(scenario.startNodeId) }
@@ -357,9 +410,52 @@ private fun ErmakDiagnosticRoute(scenario: ErmakDiagnosticScenario, onBack: () -
     var uncertain by rememberSaveable(scenario.id) { mutableStateOf(false) }
     var questionNumber by rememberSaveable(scenario.id) { mutableIntStateOf(1) }
     var savedLocally by rememberSaveable(scenario.id) { mutableStateOf(false) }
+    var pathNodeIds by rememberSaveable(scenario.id) { mutableStateOf(emptyList<String>()) }
+    var pathHistorySizes by rememberSaveable(scenario.id) { mutableStateOf(emptyList<Int>()) }
+    var pathQuestionNumbers by rememberSaveable(scenario.id) { mutableStateOf(emptyList<Int>()) }
+    var pathUncertainStates by rememberSaveable(scenario.id) { mutableStateOf(emptyList<Boolean>()) }
     val context = LocalContext.current
     val sessionRepository = remember { DiagnosticSessionRepository(context) }
+    val profileRepository = remember { LocomotiveProfileRepository(context.applicationContext) }
+    var profileContext by remember(scenario.id) { mutableStateOf(profileRepository.diagnosticContext()) }
     val node = scenario.nodes[nodeId]
+    val policyDecision = node?.takeIf { it.requiresPolicyEvaluation() }?.let {
+        DiagnosticPolicyEngine.evaluate(
+            applicability = scenario.applicability,
+            action = it.actionMetadata,
+            context = profileContext.toPolicyContext(scenario.applicability),
+            sourceRefs = scenario.sourceRefs
+        )
+    }
+
+    fun navigate(nextNodeId: String, historyEntry: String, incrementsQuestion: Boolean) {
+        pathNodeIds = pathNodeIds + nodeId
+        pathHistorySizes = pathHistorySizes + history.size
+        pathQuestionNumbers = pathQuestionNumbers + questionNumber
+        pathUncertainStates = pathUncertainStates + uncertain
+        history = history + historyEntry
+        if (incrementsQuestion) questionNumber += 1
+        nodeId = nextNodeId
+        uncertain = false
+    }
+
+    fun navigateBack() {
+        if (pathNodeIds.isEmpty()) {
+            onBack()
+            return
+        }
+        nodeId = pathNodeIds.last()
+        history = history.take(pathHistorySizes.last())
+        questionNumber = pathQuestionNumbers.last()
+        uncertain = pathUncertainStates.last()
+        pathNodeIds = pathNodeIds.dropLast(1)
+        pathHistorySizes = pathHistorySizes.dropLast(1)
+        pathQuestionNumbers = pathQuestionNumbers.dropLast(1)
+        pathUncertainStates = pathUncertainStates.dropLast(1)
+        savedLocally = false
+    }
+
+    BackHandler { navigateBack() }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
@@ -373,16 +469,44 @@ private fun ErmakDiagnosticRoute(scenario: ErmakDiagnosticScenario, onBack: () -
         item {
             InfoCard("Сначала", scenario.immediateActions.ifEmpty { listOf("Зафиксируйте наблюдаемые признаки до дальнейшей проверки.") }, MaterialTheme.colorScheme.tertiaryContainer)
         }
+        item {
+            ErmakProfileContextCard(
+                profile = profileContext,
+                applicability = scenario.applicability,
+                onChange = { updated ->
+                    profileContext = updated
+                    profileRepository.saveDiagnosticContext(updated)
+                },
+                onConfirm = {
+                    if (profileContext.canConfirm()) {
+                        val confirmed = profileContext.copy(confirmed = true)
+                        profileContext = confirmed
+                        profileRepository.saveDiagnosticContext(confirmed)
+                    }
+                },
+                onReset = {
+                    profileRepository.clearDiagnosticContext()
+                    profileContext = DiagnosticProfileContext()
+                }
+            )
+        }
+        if (scenario.applicability.variantSelectionRequired && !profileContext.toPolicyContext(scenario.applicability).profileConfirmed) item {
+            InfoCard(
+                "Требуется подтверждение исполнения",
+                listOf("Сценарий зависит от профиля оборудования. Профильные и опасные действия скрыты до явного подтверждения совместимого исполнения."),
+                MaterialTheme.colorScheme.primaryContainer
+            )
+        }
         if (scenario.dangerSigns.isNotEmpty()) item {
             InfoCard("Опасные признаки", scenario.dangerSigns, MaterialTheme.colorScheme.errorContainer)
         }
         if (uncertain) {
             item {
                 InfoCard(
-                    "Недостаточно данных",
+                    "Безопасное продолжение без заблокированного действия",
                     listOf(
-                        "Причина не подтверждена. Не выполняйте действия, основанные на предположении.",
-                        "Зафиксируйте доступные показания и доложите установленным порядком."
+                        "В сценарии «${scenario.title}» действие, требующее неподтверждённого профиля, источника или допуска, не выполняется.",
+                        "Помощь продолжается по возможным причинам, разрешённым проверкам и данным для доклада ниже; неподтверждённый признак не считать установленным."
                     ),
                     MaterialTheme.colorScheme.primaryContainer
                 )
@@ -393,7 +517,7 @@ private fun ErmakDiagnosticRoute(scenario: ErmakDiagnosticScenario, onBack: () -
             item {
                 if (node.type == "question") {
                     val uncertaintyChoice = node.choices.firstOrNull { choice ->
-                        choice.label.contains("не уверен", true) ||
+                        choice.isUnknown || choice.label.contains("не уверен", true) ||
                             choice.label.contains("не знаю", true) ||
                             choice.label.contains("недостаточно", true)
                     }
@@ -409,63 +533,50 @@ private fun ErmakDiagnosticRoute(scenario: ErmakDiagnosticScenario, onBack: () -
                             Text("Шаг $questionNumber; дальнейший вопрос зависит от ответа")
                             Text(node.text, fontWeight = FontWeight.Bold)
                             if (answerChoices.isNotEmpty()) {
-                                val compactBinaryChoices = answerChoices.size == 2 &&
-                                    answerChoices.all { it.label.length <= 14 }
-                                if (compactBinaryChoices) {
-                                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                                        answerChoices.getOrNull(0)?.let { choice ->
-                                            Button(onClick = {
-                                                history = history + "${node.text} — ${choice.label}"
-                                                questionNumber += 1
-                                                nodeId = choice.nextNodeId
-                                            }) { Text(choice.label) }
-                                        }
-                                        answerChoices.getOrNull(1)?.let { choice ->
-                                            OutlinedButton(onClick = {
-                                                history = history + "${node.text} — ${choice.label}"
-                                                questionNumber += 1
-                                                nodeId = choice.nextNodeId
-                                            }) { Text(choice.label) }
-                                        }
-                                    }
-                                } else {
-                                    answerChoices.forEachIndexed { index, choice ->
-                                        if (index == 0) {
-                                            Button(
-                                                onClick = {
-                                                    history = history + "${node.text} — ${choice.label}"
-                                                    questionNumber += 1
-                                                    nodeId = choice.nextNodeId
-                                                },
-                                                modifier = Modifier.fillMaxWidth()
-                                            ) { Text(choice.label) }
-                                        } else {
-                                            OutlinedButton(
-                                                onClick = {
-                                                    history = history + "${node.text} — ${choice.label}"
-                                                    questionNumber += 1
-                                                    nodeId = choice.nextNodeId
-                                                },
-                                                modifier = Modifier.fillMaxWidth()
-                                            ) { Text(choice.label) }
-                                        }
-                                    }
+                                ErmakQuestionAnswers(answerChoices) { choice ->
+                                    navigate(
+                                        choice.nextNodeId,
+                                        "${node.text} — ${choice.label}",
+                                        incrementsQuestion = true
+                                    )
                                 }
                             }
                             TextButton(
                                 onClick = {
-                                    history = history + "${node.text} — ${uncertaintyChoice?.label ?: "Не уверен"}"
                                     if (uncertaintyChoice != null) {
-                                        questionNumber += 1
-                                        nodeId = uncertaintyChoice.nextNodeId
+                                        navigate(
+                                            scenario.resolveUnknownPresentationTarget(uncertaintyChoice.nextNodeId),
+                                            "${node.text} — Не знаю",
+                                            incrementsQuestion = true
+                                        )
                                     } else {
+                                        history = history + "${node.text} — Не знаю"
                                         uncertain = true
                                     }
                                 }
-                            ) { Text("Не уверен — записать и завершить") }
+                            ) { Text("Не знаю") }
                             history.filter { " — " in it }.forEach {
                                 Text("• $it", style = MaterialTheme.typography.bodySmall)
                             }
+                        }
+                    }
+                } else if (policyDecision?.allowed == false) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
+                        shape = RoundedCornerShape(18.dp)
+                    ) {
+                        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                            Text("Действие скрыто", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                            Text(policyDecision.message.ifBlank { "Действие требует дополнительного подтверждения безопасности." })
+                            Text("Текст заблокированного действия не показывается и не считается выполненным.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Button(
+                                onClick = {
+                                    history = history + "Действие заблокировано политикой безопасности"
+                                    uncertain = true
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) { Text("Перейти к безопасному итогу") }
                         }
                     }
                 } else {
@@ -480,7 +591,7 @@ private fun ErmakDiagnosticRoute(scenario: ErmakDiagnosticScenario, onBack: () -
                             Text(
                                 when (node.type) {
                                     "finding" -> "Выявленный признак"
-                                    "source_action" -> "Подтверждённое действие"
+                                    "source_action", "emergency_action" -> "Подтверждённое действие"
                                     "terminal" -> "Результат"
                                     else -> "Шаг диагностики"
                                 },
@@ -491,8 +602,11 @@ private fun ErmakDiagnosticRoute(scenario: ErmakDiagnosticScenario, onBack: () -
                             node.choices.forEach { choice ->
                                 Button(
                                     onClick = {
-                                        history = history + "${node.text} — ${choice.label}"
-                                        nodeId = choice.nextNodeId
+                                        navigate(
+                                            choice.nextNodeId,
+                                            "${node.text} — ${choice.label}",
+                                            incrementsQuestion = false
+                                        )
                                     },
                                     modifier = Modifier.fillMaxWidth()
                                 ) { Text(choice.label) }
@@ -500,8 +614,11 @@ private fun ErmakDiagnosticRoute(scenario: ErmakDiagnosticScenario, onBack: () -
                             if (node.choices.isEmpty() && node.nextNodeId != null) {
                                 Button(
                                     onClick = {
-                                        if (node.text.isNotBlank()) history = history + node.text
-                                        nodeId = node.nextNodeId
+                                        navigate(
+                                            node.nextNodeId,
+                                            node.text,
+                                            incrementsQuestion = false
+                                        )
                                     },
                                     modifier = Modifier.fillMaxWidth()
                                 ) { Text("Продолжить") }
@@ -577,13 +694,20 @@ private fun ErmakDiagnosticRoute(scenario: ErmakDiagnosticScenario, onBack: () -
                 if (savedLocally) {
                     Text("Сессия сохранена на устройстве.", color = MaterialTheme.colorScheme.primary)
                 }
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                    OutlinedButton(onClick = {
+                if (pathNodeIds.isNotEmpty()) {
+            TextButton(onClick = { navigateBack() }) { Text("Назад на шаг") }
+        }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+            OutlinedButton(onClick = {
                         nodeId = scenario.startNodeId
                         history = emptyList()
                         uncertain = false
                         questionNumber = 1
                         savedLocally = false
+                        pathNodeIds = emptyList()
+                        pathHistorySizes = emptyList()
+                        pathQuestionNumbers = emptyList()
+                        pathUncertainStates = emptyList()
                     }) { Text("Начать заново") }
                     Button(onClick = onBack) { Text("К списку неисправностей") }
                 }

@@ -1,0 +1,33 @@
+{
+  "batch": "diagnostic-unknown-routing-ermak-vl80s-r3",
+  "mode": "verify_only",
+  "transformers": [],
+  "qa": [
+    "qa/verify_ermak_final_content_block1.py",
+    "qa/verify_ermak_p0_cab_safety_batch12.py",
+    "qa/verify_ermak_p0_mechanics_batch11.py",
+    "qa/verify_ermak_p0_auxiliaries_batch10.py",
+    "qa/verify_ermak_p0_recuperation_batch9.py",
+    "qa/verify_ermak_p0_msud_batch8.py",
+    "qa/verify_ermak_p0_safety_batch7a.py",
+    "qa/verify_ermak_p0_brake_safety_batch7b.py",
+    "qa/verify_ermak_legacy_batchA_001_006_029.py",
+    "qa/verify_ermak_p0_deepening.py",
+    "qa/verify_ermak_p0_batch2.py",
+    "qa/verify_ermak_p0_roof_batch3.py",
+    "qa/verify_ermak_p0_protections_batch4.py",
+    "qa/verify_ermak_p0_pneumatics_batch5.py",
+    "qa/verify_ermak_p0_brakes_batch6.py",
+    "qa/verify_diagnostic_unknown_routes.py",
+    "qa/verify_diagnostic_graphs.py",
+    "qa/verify_ermak_atlas.py",
+    "qa/verify_ermak_final_acceptance.py"
+  ],
+  "allowed_changed": [
+    "app/src/main/assets/technical/ermak_diagnostics.json.gz",
+    "patch/app/src/main/assets/technical/ermak_diagnostics.json.gz"
+  ],
+  "max_generic": 0,
+  "run_android": true,
+  "commit_message": "feat: complete Ermak diagnostic content audit 136 of 136"
+}

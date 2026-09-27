@@ -1,0 +1,3 @@
+Manual safe-build trigger for dev14-integration.
+Target application HEAD before trigger: 6b5e361107dfd9865df8cdf855f56a9c815bbbfa
+Purpose: build signed release APK after Ermak UNKNOWN UX hotfix.
