@@ -41,16 +41,49 @@ import ru.railbrake.calculator.core.assistant.AssistantIntent
 import ru.railbrake.calculator.core.assistant.AssistantParsedQuery
 import ru.railbrake.calculator.core.assistant.AssistantRuntime
 
+private data class AssistantPanelEngineState(
+    val engine: AssistantEngine? = null,
+    val loadingFullCatalog: Boolean = false,
+    val coreFailed: Boolean = false,
+    val fullCatalogFailed: Boolean = false
+)
+
 @Composable
 internal fun AssistantHomePanel() {
     val context = LocalContext.current
     val appContext = context.applicationContext
-    val engineState by produceState<Result<AssistantEngine>?>(initialValue = null, appContext) {
-        value = withContext(Dispatchers.IO) {
-            runCatching { AssistantRuntime.getOrCreate(appContext) }
+    val engineState by produceState(
+        initialValue = AssistantPanelEngineState(),
+        key1 = appContext
+    ) {
+        val core = withContext(Dispatchers.IO) {
+            runCatching { AssistantRuntime.getOrCreateCore(appContext) }
         }
+        val coreEngine = core.getOrNull()
+        if (coreEngine == null) {
+            value = AssistantPanelEngineState(coreFailed = true)
+            return@produceState
+        }
+
+        value = AssistantPanelEngineState(
+            engine = coreEngine,
+            loadingFullCatalog = true
+        )
+
+        val full = withContext(Dispatchers.IO) {
+            runCatching { AssistantRuntime.getOrCreateFull(appContext) }
+        }
+        value = full.fold(
+            onSuccess = { fullEngine -> AssistantPanelEngineState(engine = fullEngine) },
+            onFailure = {
+                AssistantPanelEngineState(
+                    engine = coreEngine,
+                    fullCatalogFailed = true
+                )
+            }
+        )
     }
-    val engine = engineState?.getOrNull()
+    val engine = engineState.engine
 
     var query by rememberSaveable { mutableStateOf("") }
     var result by remember { mutableStateOf<AssistantEngineResult?>(null) }
@@ -93,7 +126,7 @@ internal fun AssistantHomePanel() {
                 minLines = 1,
                 maxLines = 3,
                 label = { Text("Спросить по приложению…") },
-                placeholder = { Text("Например: на ВЛ80С ГВ не включается") },
+                placeholder = { Text("Введите вопрос") },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions(onSearch = { submit() })
             )
@@ -111,17 +144,17 @@ internal fun AssistantHomePanel() {
             }
 
             when {
-                engineState == null -> {
+                engine == null && !engineState.coreFailed -> {
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         CircularProgressIndicator(modifier = Modifier.size(20.dp))
                         Text(
-                            "Подготавливаю локальный индекс…",
+                            "Подготавливаю диагностику и ОПП…",
                             style = MaterialTheme.typography.bodySmall
                         )
                     }
                 }
 
-                engineState?.isFailure == true -> {
+                engineState.coreFailed -> {
                     Text(
                         "Не удалось подготовить локальный индекс. Основные разделы приложения продолжают работать штатно.",
                         style = MaterialTheme.typography.bodySmall,
@@ -129,18 +162,20 @@ internal fun AssistantHomePanel() {
                     )
                 }
 
-                result == null -> {
-                    Text("Примеры", style = MaterialTheme.typography.labelLarge)
-                    listOf(
-                        "на ВЛ80С ГВ не включается",
-                        "покажи ГВ на схеме 3ЭС5К",
-                        "обморожение"
-                    ).forEach { example ->
-                        AssistChip(
-                            onClick = { submit(example) },
-                            label = { Text(example) }
-                        )
-                    }
+                engineState.loadingFullCatalog -> {
+                    Text(
+                        "Диагностика и ОПП уже доступны. Остальные разделы догружаются…",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
+                engineState.fullCatalogFailed -> {
+                    Text(
+                        "Диагностика и ОПП доступны. Полный справочник не удалось догрузить.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error
+                    )
                 }
             }
 
@@ -245,6 +280,9 @@ private fun ParsedQuerySummary(parsed: AssistantParsedQuery) {
     val parts = buildList {
         add(intentLabel(parsed.intent))
         parsed.family?.let { add(familyLabel(it)) }
+        if (parsed.failureModes.isNotEmpty()) {
+            add(parsed.failureModes.joinToString(" / ") { mode -> mode.label })
+        }
     }
     Text(
         "Распознано: ${parts.joinToString(" · ")}",
