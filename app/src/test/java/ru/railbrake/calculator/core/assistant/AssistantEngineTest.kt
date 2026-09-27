@@ -11,9 +11,7 @@ class AssistantEngineTest {
 
     @Test
     fun asrStyleVl80FaultQueryRoutesToVl80Diagnostic() {
-        val engine = engine()
-
-        val result = engine.query("на вээл восемьдесят эс гэ вэ не включается")
+        val result = engine().query("на вээл восемьдесят эс гэ вэ не включается")
 
         assertTrue(result is AssistantEngineResult.Matches)
         result as AssistantEngineResult.Matches
@@ -29,7 +27,45 @@ class AssistantEngineTest {
         assertTrue(result is AssistantEngineResult.Clarify)
         result as AssistantEngineResult.Clarify
         assertEquals(AssistantAmbiguity.SERIES_REQUIRED, result.clarification.reason)
+        assertEquals("На каком локомотиве это произошло?", result.clarification.question)
         assertTrue(result.provisionalHits.isNotEmpty())
+    }
+
+    @Test
+    fun mainBreakerFailureModesProduceDifferentDiagnosticRanking() {
+        val engine = engine()
+        val cases = mapOf(
+            "ВЛ80С ГВ не включается" to "vl80-gv-fault",
+            "ВЛ80С ГВ отключился" to "vl80-gv-trip",
+            "ВЛ80С ГВ не выключается" to "vl80-gv-no-open"
+        )
+
+        cases.forEach { (query, expectedId) ->
+            val result = engine.query(query)
+            assertTrue("Expected matches for: $query", result is AssistantEngineResult.Matches)
+            result as AssistantEngineResult.Matches
+            assertEquals("Wrong top hit for: $query", expectedId, result.hits.first().document.canonicalId)
+            assertTrue(
+                "Failure mode was not used for: $query",
+                result.hits.first().reasons.any { it.startsWith("failure-mode:") }
+            )
+        }
+    }
+
+    @Test
+    fun parserKeepsOppositeMainBreakerStatesSeparate() {
+        assertEquals(
+            setOf(AssistantFailureMode.NO_SWITCH_ON),
+            AssistantQueryParser.parse("ГВ не включается").failureModes
+        )
+        assertEquals(
+            setOf(AssistantFailureMode.SPONTANEOUS_OFF),
+            AssistantQueryParser.parse("ГВ отключился").failureModes
+        )
+        assertEquals(
+            setOf(AssistantFailureMode.NO_SWITCH_OFF),
+            AssistantQueryParser.parse("ГВ не выключается").failureModes
+        )
     }
 
     @Test
@@ -139,11 +175,10 @@ class AssistantEngineTest {
     fun failureLanguagePrioritizesDiagnosticOverReferenceForSameComponent() {
         val engine = engine()
         val queries = listOf(
-            "компрессор не выключается",
-            "компрессор не работает",
-            "ошибка компрессора",
-            "отказ компрессора",
-            "компрессор неисправен"
+            "ВЛ80С компрессор не работает",
+            "ВЛ80С ошибка компрессора",
+            "ВЛ80С отказ компрессора",
+            "ВЛ80С компрессор неисправен"
         )
 
         queries.forEach { query ->
@@ -166,7 +201,6 @@ class AssistantEngineTest {
         assertEquals(TechnicalSection.EQUIPMENT, result.parsedQuery.preferredSection)
         assertEquals("vl80-compressor-reference", result.hits.first().document.canonicalId)
     }
-
 
     @Test
     fun directCanonicalIdReferenceWinsEvenWithConversationalWrapper() {
@@ -221,6 +255,24 @@ class AssistantEngineTest {
                     target = AssistantTarget.Vl80Diagnostic("vl80-gv-fault")
                 ),
                 document(
+                    id = "vl80-gv-trip",
+                    family = TechnicalFamily.VL80S,
+                    section = TechnicalSection.DIAGNOSTICS,
+                    title = "Главный выключатель самопроизвольно отключается",
+                    aliases = setOf("ГВ отключился", "ГВ отпал", "ГВ выбило"),
+                    critical = true,
+                    target = AssistantTarget.Vl80Diagnostic("vl80-gv-trip")
+                ),
+                document(
+                    id = "vl80-gv-no-open",
+                    family = TechnicalFamily.VL80S,
+                    section = TechnicalSection.DIAGNOSTICS,
+                    title = "Главный выключатель не выключается",
+                    aliases = setOf("ГВ не выключается", "ГВ не отключается"),
+                    critical = true,
+                    target = AssistantTarget.Vl80Diagnostic("vl80-gv-no-open")
+                ),
+                document(
                     id = "ermak-gv-fault",
                     family = TechnicalFamily.ERMAK,
                     section = TechnicalSection.DIAGNOSTICS,
@@ -257,7 +309,7 @@ class AssistantEngineTest {
                     id = "vl80-compressor-fault",
                     family = TechnicalFamily.VL80S,
                     section = TechnicalSection.DIAGNOSTICS,
-                    title = "Компрессор не запускается и не создаёт давление",
+                    title = "Компрессор неисправен",
                     aliases = setOf("компрессор", "компрессор не работает", "ошибка компрессора", "отказ компрессора"),
                     critical = true,
                     target = AssistantTarget.Vl80Diagnostic("vl80-compressor-fault")
@@ -267,7 +319,7 @@ class AssistantEngineTest {
                     family = TechnicalFamily.VL80S,
                     section = TechnicalSection.EQUIPMENT,
                     title = "Компрессор",
-                    aliases = setOf("компрессор", "компрессор не выключается"),
+                    aliases = setOf("компрессор"),
                     target = AssistantTarget.Technical(
                         TechnicalFamily.VL80S,
                         TechnicalSection.EQUIPMENT,
@@ -310,7 +362,7 @@ class AssistantEngineTest {
         body = "",
         aliases = aliases,
         componentIds = emptySet(),
-        symptomTerms = emptySet(),
+        symptomTerms = aliases,
         tags = emptySet(),
         relatedIds = emptySet(),
         safetyCritical = critical,
