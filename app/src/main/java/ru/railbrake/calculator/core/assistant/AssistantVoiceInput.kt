@@ -101,6 +101,8 @@ internal class AssistantVoiceInput(private val context: Context) {
         vad: Vad,
         onPhase: suspend (AssistantVoicePhase) -> Unit
     ): FloatArray {
+        check(ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) ==
+            PackageManager.PERMISSION_GRANTED) { "Нет разрешения на микрофон" }
         val minBytes = AudioRecord.getMinBufferSize(
             AssistantVoicePolicy.SAMPLE_RATE,
             AudioFormat.CHANNEL_IN_MONO,

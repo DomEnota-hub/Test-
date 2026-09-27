@@ -171,6 +171,14 @@ jobs:
           done
           sha256sum "$base/libs/sherpa-onnx.aar" "$base/src/main/assets/assistant_voice/silero_vad.onnx" \
             "$base/src/main/assets/assistant_voice/$model/"* | tee offline-voice-sha256.txt
+          printf '%s  %s\n' \
+            633c24321e06b1fe79feafa03ea16cbc0f8a286641e2da3559bac91bdb13bd96 "$base/libs/sherpa-onnx.aar" \
+            9e2449e1087496d8d4caba907f23e0bd3f78d91fa552479bb9c23ac09cbb1fd6 "$base/src/main/assets/assistant_voice/silero_vad.onnx" \
+            dcbe1ffa0211e77ca6d3a80164df13fbda3ec00e47d12b9f449f89572df12136 "$base/src/main/assets/assistant_voice/$model/decoder.onnx" \
+            eb6c12fbad810d5bc3e427802e604604c69b5943a91feebc43424dd09d9ec407 "$base/src/main/assets/assistant_voice/$model/encoder.int8.onnx" \
+            93f2e1d12b78d53e7802f1606488c14bb3d764b15fadf5ef6c022f6ba1fa40f7 "$base/src/main/assets/assistant_voice/$model/joiner.int8.onnx" \
+            93bbbc0bae6b78c0bbb743d4aa9fded3bb5ff3aac5f0200e3a769a5a05e0fdf6 "$base/src/main/assets/assistant_voice/$model/tokens.txt" \
+            | sha256sum --check --status
           unzip -l "$base/libs/sherpa-onnx.aar" | grep -q 'jni/arm64-v8a/libsherpa-onnx-jni.so'
 
       - name: Prepare updatable Test application
@@ -284,6 +292,12 @@ jobs:
           grep -Fq "package: name='ru.railbrake.calculator.assistanttest' versionCode='205' versionName='1.2.2-dev14-beta52-assistant-v0.17'" assistant-test-badging.log
           "$ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner" verify --verbose --print-certs "$APK" | tee assistant-test-apksigner.log
           grep -qi "Signer #1 certificate SHA-256 digest: $EXPECTED_SIGNING_CERT_SHA256" assistant-test-apksigner.log
+          unzip -Z1 "$APK" > assistant-test-entries.txt
+          grep -Fxq 'assets/assistant_voice/silero_vad.onnx' assistant-test-entries.txt
+          for file in encoder.int8.onnx decoder.onnx joiner.int8.onnx tokens.txt; do
+            grep -Fxq "assets/assistant_voice/sherpa-onnx-zipformer-ru-int8-2025-04-20/$file" assistant-test-entries.txt
+          done
+          grep -Fxq 'lib/arm64-v8a/libsherpa-onnx-jni.so' assistant-test-entries.txt
 
       - name: Upload updatable signed Test APK
         uses: actions/upload-artifact@v4
