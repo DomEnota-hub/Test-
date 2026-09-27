@@ -57,13 +57,18 @@ object AssistantConversation {
     }
 
     private fun continuationText(answer: String, pending: AssistantPendingClarification): String? {
+        val parsedAnswer = AssistantQueryParser.parse(answer)
         return when (pending.missingParameter) {
-            AssistantAmbiguity.SERIES_REQUIRED -> when (AssistantQueryParser.familyFromAnswer(answer)) {
-                TechnicalFamily.VL80S -> "ВЛ80С"
-                TechnicalFamily.ERMAK -> "Ермак"
-                null -> null
+            AssistantAmbiguity.SERIES_REQUIRED -> {
+                if (parsedAnswer.componentKey != null || parsedAnswer.failureModes.isNotEmpty()) return null
+                when (AssistantQueryParser.familyFromAnswer(answer)) {
+                    TechnicalFamily.VL80S -> "ВЛ80С"
+                    TechnicalFamily.ERMAK -> "Ермак"
+                    null -> null
+                }
             }
             AssistantAmbiguity.COMPONENT_REQUIRED -> {
+                if (parsedAnswer.family != null || parsedAnswer.failureModes.isNotEmpty()) return null
                 val component = AssistantQueryParser.componentFromAnswer(answer) ?: return null
                 AssistantQueryParser.componentSearchText(component)
             }
