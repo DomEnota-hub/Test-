@@ -75,8 +75,8 @@ object AssistantQueryParser {
         ComponentVocabulary("BRAKE_PIPE", listOf("тормозная магистраль", "тм"), "тм тормозная магистраль"),
         ComponentVocabulary("MAIN_RESERVOIR", listOf("главный резервуар", "главные резервуары", "гр"), "гр главные резервуары главный резервуар"),
         ComponentVocabulary("BRAKE_CYLINDER", listOf("тормозной цилиндр", "тормозные цилиндры", "тц"), "тц тормозные цилиндры тормозной цилиндр"),
-        ComponentVocabulary("AIR_DISTRIBUTOR", listOf("воздухораспределитель", "вр 483", "вр483", "вр", "483"), "воздухораспределитель вр 483"),
-        ComponentVocabulary("DRIVER_BRAKE_VALVE", listOf("кран машиниста", "машинистский кран", "км 395", "км395", "395"), "кран машиниста км 395"),
+        ComponentVocabulary("AIR_DISTRIBUTOR", listOf("воздухораспределитель", "вр 483", "вр483", "вр"), "воздухораспределитель вр 483"),
+        ComponentVocabulary("DRIVER_BRAKE_VALVE", listOf("кран машиниста", "машинистский кран", "км 395", "км395"), "кран машиниста км 395"),
         ComponentVocabulary("EPK", listOf("эпк", "эпк 150", "эпк150"), "эпк 150 электропневматический клапан"),
         ComponentVocabulary("BATTERY", listOf("аккумуляторная батарея", "акб", "батарея"), "акб аккумуляторная батарея"),
         ComponentVocabulary("CONTACTOR", listOf("линейный контактор", "контактор"), "линейный контактор контактор")
@@ -94,7 +94,7 @@ object AssistantQueryParser {
         "давление не", "нет давления", "молчит", "воздуха не дает",
         "дым", "искрит", "искрен", "перегрев", "греется", "стучит", "шумит", "утеч", "теч",
         "самопроизвольно", "сам включ", "сам выключ", "мигает", "моргает", "горит постоянно",
-        "глюч", "косяч", "выруб", "отруб", "отвал", "залип", "трав", "сифон",
+        "глюч", "косяч", "чуд", "выруб", "отруб", "отвал", "залип", "трав", "сифон",
         "не останавлива", "пахнет гарью", "гарь", "трещит", "дребезжит", "воет", "свистит"
     )
 
@@ -109,22 +109,23 @@ object AssistantQueryParser {
         val componentKey = componentVocabulary.firstOrNull { component ->
             component.aliases.any { alias -> containsTerm(normalized, alias) }
         }?.key
-
-        val ambiguity = ambiguity(normalized, componentKey)
+        val failureModes = AssistantFailureModeDetector.detect(normalized)
 
         val intent = when {
             hasSafetyCue(normalized) -> AssistantIntent.SAFETY
             hasAcceptanceCue(normalized) -> AssistantIntent.ACCEPTANCE
             hasSchemeCue(normalized) -> AssistantIntent.OPEN_SCHEME
-            troubleshootCues.any(normalized::contains) -> AssistantIntent.TROUBLESHOOT
+            failureModes.isNotEmpty() || troubleshootCues.any(normalized::contains) -> AssistantIntent.TROUBLESHOOT
             hasProcedureCue(normalized) -> AssistantIntent.PROCEDURE
             hasDefinitionCue(normalized) -> AssistantIntent.DEFINE_TERM
             else -> AssistantIntent.FIND_TOPIC
         }
 
+        val ambiguity = ambiguity(normalized, componentKey, intent, failureModes)
+
         val preferredSection = when (intent) {
             AssistantIntent.TROUBLESHOOT -> TechnicalSection.DIAGNOSTICS
-            AssistantIntent.OPEN_SCHEME -> TechnicalSection.ELECTRICAL
+            AssistantIntent.OPEN_SCHEME -> if ("пневм" in normalized) TechnicalSection.PNEUMATIC else TechnicalSection.ELECTRICAL
             AssistantIntent.ACCEPTANCE -> TechnicalSection.ACCEPTANCE
             AssistantIntent.SAFETY -> TechnicalSection.SAFETY
             AssistantIntent.PROCEDURE -> TechnicalSection.KNOWLEDGE
@@ -151,7 +152,7 @@ object AssistantQueryParser {
             family = family,
             preferredSection = preferredSection,
             componentKey = componentKey,
-            failureModes = AssistantFailureModeDetector.detect(normalized),
+            failureModes = failureModes,
             ambiguity = ambiguity
         )
     }
@@ -191,13 +192,40 @@ object AssistantQueryParser {
         }
     }
 
-    private fun ambiguity(normalized: String, componentKey: String?): AssistantAmbiguity? = when {
-        normalized in setOf("гв", "главный выключатель") -> AssistantAmbiguity.TOPIC_SCOPE
-        normalized in setOf("схема", "электросхема", "пневмосхема") -> AssistantAmbiguity.SERIES_REQUIRED
-        normalized in setOf("не работает", "не включается", "не выключается", "не запускается", "ошибка") && componentKey == null -> AssistantAmbiguity.COMPONENT_REQUIRED
-        isGenericBrakeTest(normalized) -> AssistantAmbiguity.PROCEDURE_TYPE_REQUIRED
-        normalized == "тормоза" -> AssistantAmbiguity.TOPIC_SCOPE
-        else -> null
+    private fun ambiguity(
+        normalized: String,
+        componentKey: String?,
+        intent: AssistantIntent,
+        failureModes: Set<AssistantFailureMode>
+    ): AssistantAmbiguity? {
+        val scopeCore = stripSeriesContext(normalized)
+        return when {
+            normalized in setOf("гв", "главный выключатель") -> AssistantAmbiguity.TOPIC_SCOPE
+            normalized in setOf("схема", "электросхема", "пневмосхема") -> AssistantAmbiguity.SERIES_REQUIRED
+            isGenericBrakeTest(normalized) -> AssistantAmbiguity.PROCEDURE_TYPE_REQUIRED
+            normalized == "тормоза" -> AssistantAmbiguity.TOPIC_SCOPE
+            intent == AssistantIntent.TROUBLESHOOT && componentKey == null &&
+                "тормоз" in normalized && AssistantFailureMode.GENERAL_FAILURE in failureModes -> AssistantAmbiguity.TOPIC_SCOPE
+            intent == AssistantIntent.TROUBLESHOOT && componentKey == null && (
+                scopeCore in setOf("не работает", "не включается", "не выключается", "не запускается", "ошибка", "авария") ||
+                    AssistantFailureMode.GENERAL_FAILURE in failureModes ||
+                    (AssistantFailureMode.PRESSURE_LEAK in failureModes &&
+                        ("воздух" in normalized || "давление" in normalized))
+                ) -> AssistantAmbiguity.COMPONENT_REQUIRED
+            else -> null
+        }
+    }
+
+    private fun stripSeriesContext(text: String): String {
+        var result = text
+            .replace(Regex("\\bвл80с\\b|\\bвл80\\b|\\b2эс5к\\b|\\b3эс5к\\b|ермак[а-я]*"), " ")
+            .replace(Regex("\\s+"), " ")
+            .trim()
+        val prepositions = setOf("на", "у", "для", "по")
+        result = result.split(' ')
+            .filter { it.isNotBlank() && it !in prepositions }
+            .joinToString(" ")
+        return result
     }
 
     private fun isGenericBrakeTest(text: String): Boolean =
@@ -207,7 +235,8 @@ object AssistantQueryParser {
     private fun hasSafetyCue(text: String): Boolean =
         listOf(
             "охрана труда", "безопасность", "первая помощь", "опп", "переохлаж", "обморож",
-            "слр", "реанимац", "без сознания", "не дышит", "кровотеч", "подавил", "ожог",
+            "слр", "реанимац", "без сознания", "не дышит", "кровотеч", "кровь не останавли", "подавил", "ожог", "обжег", "обжог",
+            "сломал руку", "сломала руку", "сломал ногу", "сломала ногу", "сломана рука", "сломана нога",
             "удар током", "ударило ток", "ударил ток", "шарахнуло ток", "электроудар", "отрав", "перелом", "судорог", "укус", "тепловой удар",
             "замерз", "обмороз", "аптеч"
         ).any(text::contains)
@@ -216,7 +245,7 @@ object AssistantQueryParser {
         listOf("приемк", "принимать локомотив", "осмотр снаружи", "начать снаружи", "начать из кабины").any(text::contains)
 
     private fun hasSchemeCue(text: String): Boolean =
-        listOf("схема", "схеме", "электросх", "пневмосх", "покажи где", "где находится").any(text::contains)
+        listOf("схем", "электросх", "пневмосх", "покажи где", "где находится").any(text::contains)
 
     private fun hasProcedureCue(text: String): Boolean =
         listOf(
