@@ -132,6 +132,42 @@ class AssistantIndexTest {
         assertEquals("ermak-test", document.canonicalId)
     }
 
+
+    @Test
+    fun canonicalRelatedAndComponentIdsAreDirectlySearchable() {
+        val document = AssistantDocument(
+            key = "technical:ERMAK:EQUIPMENT:ER-EQ-GV",
+            canonicalId = "ER-EQ-GV",
+            kind = AssistantDocumentKind.TECHNICAL_ENTRY,
+            family = TechnicalFamily.ERMAK,
+            section = TechnicalSection.EQUIPMENT,
+            title = "Главный выключатель",
+            summary = "",
+            body = "",
+            aliases = setOf("ГВ"),
+            componentIds = setOf("MAIN_BREAKER"),
+            symptomTerms = emptySet(),
+            tags = emptySet(),
+            relatedIds = setOf("ER-DIAG-GV"),
+            safetyCritical = false,
+            target = AssistantTarget.Technical(
+                TechnicalFamily.ERMAK,
+                TechnicalSection.EQUIPMENT,
+                "ER-EQ-GV"
+            )
+        )
+        val index = InMemoryAssistantIndex(listOf(document))
+
+        val canonical = index.search(AssistantSearchRequest("открой ID ER-EQ-GV")).single()
+        assertTrue("canonical-id" in canonical.reasons)
+
+        val related = index.search(AssistantSearchRequest("сценарий ER-DIAG-GV")).single()
+        assertTrue("linked-id" in related.reasons)
+
+        val component = index.search(AssistantSearchRequest("узел MAIN_BREAKER")).single()
+        assertTrue("linked-id" in component.reasons)
+    }
+
     private fun technicalEntry(
         id: String,
         section: TechnicalSection,
