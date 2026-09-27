@@ -1,5 +1,10 @@
 package ru.railbrake.calculator.ui
 
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,10 +24,12 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -31,6 +38,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.railbrake.calculator.core.TechnicalFamily
 import ru.railbrake.calculator.core.TechnicalSection
@@ -41,6 +51,9 @@ import ru.railbrake.calculator.core.assistant.AssistantIntent
 import ru.railbrake.calculator.core.assistant.AssistantPendingClarification
 import ru.railbrake.calculator.core.assistant.AssistantParsedQuery
 import ru.railbrake.calculator.core.assistant.AssistantRuntime
+import ru.railbrake.calculator.core.assistant.AssistantVoiceInput
+import ru.railbrake.calculator.core.assistant.AssistantVoiceOutcome
+import ru.railbrake.calculator.core.assistant.AssistantVoicePhase
 
 private data class AssistantPanelEngineState(
     val engine: AssistantEngine? = null,
@@ -89,6 +102,44 @@ internal fun AssistantHomePanel() {
     var query by rememberSaveable { mutableStateOf("") }
     var result by remember { mutableStateOf<AssistantEngineResult?>(null) }
     var pending by remember { mutableStateOf<AssistantPendingClarification?>(null) }
+    val voiceInput = remember(appContext) { AssistantVoiceInput(appContext) }
+    val scope = rememberCoroutineScope()
+    var voiceJob by remember { mutableStateOf<Job?>(null) }
+    var voicePhase by remember { mutableStateOf<AssistantVoicePhase?>(null) }
+    var voiceMessage by remember { mutableStateOf<String?>(null) }
+    fun startVoice() {
+        if (voiceJob?.isActive == true || engine == null) return
+        voiceMessage = null
+        voiceJob = scope.launch {
+            try {
+                when (val outcome = voiceInput.capture { phase ->
+                    withContext(Dispatchers.Main) { voicePhase = phase }
+                }) {
+                    is AssistantVoiceOutcome.Transcript -> {
+                        query = outcome.text
+                        voiceMessage = "Проверьте распознанный текст и нажмите «Найти»."
+                    }
+                    AssistantVoiceOutcome.NoSpeech -> voiceMessage = "Речь не распознана. Повторите запись или введите вопрос."
+                }
+            } catch (_: CancellationException) {
+                // The panel was closed while recording.
+            } catch (_: Exception) {
+                voiceMessage = "Не удалось распознать речь. Повторите запись или введите вопрос."
+            } finally {
+                voicePhase = null
+                voiceJob = null
+            }
+        }
+    }
+    val microphonePermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        if (granted) startVoice() else voiceMessage = "Разрешите доступ к микрофону в настройках приложения или введите вопрос."
+    }
+    DisposableEffect(voiceInput) {
+        onDispose {
+            voiceInput.stop()
+            voiceJob?.cancel()
+        }
+    }
 
     fun submit(text: String = query) {
         val currentEngine = engine ?: return
@@ -116,7 +167,7 @@ internal fun AssistantHomePanel() {
                 fontWeight = FontWeight.Black
             )
             Text(
-                "Спросите по материалам приложения. Поиск работает локально и пока только в текстовом режиме.",
+                "Спросите по материалам приложения. Голосовой ввод и поиск работают без интернета.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -147,9 +198,31 @@ internal fun AssistantHomePanel() {
                 ) {
                     Text("Найти")
                 }
-                OutlinedButton(onClick = {}, enabled = false) {
-                    Text("Голос — позже")
+                OutlinedButton(
+                    onClick = {
+                        if (voiceJob?.isActive == true) {
+                            voiceInput.stop()
+                        } else if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+                            startVoice()
+                        } else {
+                            microphonePermission.launch(Manifest.permission.RECORD_AUDIO)
+                        }
+                    },
+                    enabled = engine != null
+                ) {
+                    Text(if (voiceJob?.isActive == true) "Завершить запись" else "Голос")
                 }
+            }
+            if (voicePhase != null || voiceMessage != null) {
+                Text(
+                    voiceMessage ?: when (voicePhase) {
+                        AssistantVoicePhase.PREPARING -> "Подготавливаю офлайн распознавание…"
+                        AssistantVoicePhase.LISTENING -> "Слушаю. Говорите коротко; запись завершится после паузы."
+                        AssistantVoicePhase.TRANSCRIBING -> "Распознаю речь на устройстве…"
+                        null -> ""
+                    },
+                    style = MaterialTheme.typography.bodySmall
+                )
             }
             if (pending != null) {
                 OutlinedButton(onClick = { submit("отмена") }) {
