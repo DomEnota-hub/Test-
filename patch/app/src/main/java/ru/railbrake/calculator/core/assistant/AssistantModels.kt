@@ -78,8 +78,14 @@ data class AssistantDocument(
     }.normalizeAssistantText()
 }
 
+/**
+ * One canonical normalizer for both indexed documents and parsed queries.
+ * Keep `_`, `:` and `-` because they are meaningful inside application IDs,
+ * but collapse ordinary punctuation so "A / B" and "A B" compare equally.
+ */
 internal fun String.normalizeAssistantText(): String =
     lowercase()
         .replace('ё', 'е')
+        .replace(Regex("[^\\p{L}\\p{N}\\s_:-]"), " ")
         .replace(Regex("\\s+"), " ")
         .trim()
