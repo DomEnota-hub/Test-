@@ -36,7 +36,8 @@ object AssistantFailureModeDetector {
 
         val noSwitchOn = containsAny(
             normalized,
-            "не включ", "не замыка", "не принимает команд", "не срабатывает на включ"
+            "не включ", "не хочет включ", "не замыка", "не принимает команд",
+            "не срабатывает на включ", "не срабатыва"
         )
         val noSwitchOff = containsAny(
             normalized,
@@ -54,7 +55,7 @@ object AssistantFailureModeDetector {
                 "самопроизвольно отключ", "сам выключ", "сам отключ",
                 "отключился", "отключилась", "отключилось", "отключается",
                 "выключился", "выключилась", "выключилось", "выключается",
-                "отпада", "отпал", "отвали", "выбива", "сбрасывает защит"
+                "отпада", "отпал", "отвали", "выбива", "выбил", "сбрасывает защит"
             )
         ) {
             modes += AssistantFailureMode.SPONTANEOUS_OFF
@@ -70,8 +71,9 @@ object AssistantFailureModeDetector {
         if (containsAny(normalized, "не опуска")) modes += AssistantFailureMode.NO_LOWER
         if (containsAny(
                 normalized,
-                "не кач", "не набира давление", "давление не набира", "нет давления",
-                "воздуха не дает", "воздух не дает", "не создает давление"
+                "не кач", "не набира давление", "не набирает давление", "давление не набира",
+                "давление не набирается", "нет давления", "воздуха не дает", "воздух не дает",
+                "не создает давление"
             )
         ) {
             modes += AssistantFailureMode.NO_BUILD_PRESSURE
@@ -79,7 +81,8 @@ object AssistantFailureModeDetector {
         if (containsAny(
                 normalized,
                 "утеч", "трав", "сифон", "падает давление", "давление пада",
-                "уходит воздух", "воздух уходит", "разгермет"
+                "уходит воздух", "воздух уходит", "не держит давление", "давление не держит",
+                "разгермет"
             )
         ) {
             modes += AssistantFailureMode.PRESSURE_LEAK
@@ -95,18 +98,20 @@ object AssistantFailureModeDetector {
         if (containsAny(normalized, "не тормоз")) modes += AssistantFailureMode.NO_BRAKE
         if (containsAny(normalized, "не отпуска")) modes += AssistantFailureMode.NO_RELEASE
         if (containsAny(normalized, "перегрев", "греется", "перегрел")) modes += AssistantFailureMode.OVERHEAT
-        if (containsAny(normalized, "искрит", "искрен", "дуга", "пробой")) modes += AssistantFailureMode.SPARK_OR_ARC
+        if (containsAny(normalized, "искрит", "искрен", "дуга", "пробой", "пробил")) modes += AssistantFailureMode.SPARK_OR_ARC
         if (containsAny(normalized, "дым", "пожар", "горит", "горение", "запах гари", "гарь")) {
             modes += AssistantFailureMode.SMOKE_OR_FIRE
         }
         if (containsAny(normalized, "стучит", "шумит", "трещит", "дребезжит", "воет", "свистит")) {
             modes += AssistantFailureMode.ABNORMAL_NOISE
         }
-        if (containsAny(normalized, "заклин", "застр", "залип")) modes += AssistantFailureMode.JAMMED
+        if (containsAny(normalized, "заклин", "застр", "залип", "встал на позиц", "стоит на позиц")) {
+            modes += AssistantFailureMode.JAMMED
+        }
 
         if (modes.isEmpty() && containsAny(
                 normalized,
-                "не работает", "не работа", "ошиб", "авари", "отказ", "неисправ", "глюч", "косяч"
+                "не работает", "не работа", "ошиб", "авари", "отказ", "неисправ", "глюч", "косяч", "чуд"
             )
         ) {
             modes += AssistantFailureMode.GENERAL_FAILURE
