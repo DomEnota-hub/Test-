@@ -1,4 +1,4 @@
-name: Assistant diagnostic audit debug
+name: Assistant diagnostic audit debug latest
 
 on:
   push:
