@@ -82,11 +82,6 @@ object AssistantQueryParser {
         ComponentVocabulary("CONTACTOR", listOf("линейный контактор", "контактор"), "линейный контактор контактор")
     )
 
-    /**
-     * Формулировки, которые описывают отказ/аномалию, а не справочный интерес.
-     * Используются как domain signal: при наличии такого признака поиск должен
-     * сначала смотреть диагностику конкретного узла, а уже затем справочник.
-     */
     private val troubleshootCues = listOf(
         "диагност",
         "не включ", "не выключ", "не держ", "не срабаты", "не запуска", "не старт",
@@ -156,6 +151,7 @@ object AssistantQueryParser {
             family = family,
             preferredSection = preferredSection,
             componentKey = componentKey,
+            failureModes = AssistantFailureModeDetector.detect(normalized),
             ambiguity = ambiguity
         )
     }
@@ -187,9 +183,6 @@ object AssistantQueryParser {
         }
         if (term in text) return true
 
-        // Для словарных названий достаточно совпадения устойчивых начал слов:
-        // «главный выключатель» ↔ «главного выключателя»,
-        // «аккумуляторная батарея» ↔ «аккумуляторную батарею».
         val textWords = text.split(' ').filter(String::isNotBlank)
         val termWords = term.split(' ').filter(String::isNotBlank)
         return termWords.all { pattern ->
