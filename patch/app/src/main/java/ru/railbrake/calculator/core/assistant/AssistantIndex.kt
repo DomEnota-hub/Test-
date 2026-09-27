@@ -24,7 +24,8 @@ class InMemoryAssistantIndex(
     private data class IndexedDocument(
         val document: AssistantDocument,
         val failureModes: Set<AssistantFailureMode>,
-        val strongPhrases: Set<String>
+        val primaryPhrases: Set<String>,
+        val aliasPhrases: Set<String>
     )
 
     private val documents = documents.map { document ->
@@ -37,12 +38,16 @@ class InMemoryAssistantIndex(
             append(' ')
             append(document.aliases.joinToString(" "))
         }
-        val strongPhrases = buildSet {
+        val primaryPhrases = buildSet {
             add(document.title)
             if (document.summary.isNotBlank()) add(document.summary)
-            addAll(document.aliases)
             addAll(document.symptomTerms)
         }
+            .asSequence()
+            .map(String::normalizeAssistantText)
+            .filter { phrase -> phrase.length >= 8 && phrase.count(Char::isLetterOrDigit) >= 6 }
+            .toSet()
+        val aliasPhrases = document.aliases
             .asSequence()
             .map(String::normalizeAssistantText)
             .filter { phrase -> phrase.length >= 8 && phrase.count(Char::isLetterOrDigit) >= 6 }
@@ -55,7 +60,8 @@ class InMemoryAssistantIndex(
             } else {
                 emptySet()
             },
-            strongPhrases = strongPhrases
+            primaryPhrases = primaryPhrases,
+            aliasPhrases = aliasPhrases
         )
     }
 
@@ -105,17 +111,26 @@ class InMemoryAssistantIndex(
                 reasons += "phrase"
             }
 
-            // Series/component enrichment is appended to the query, so equality
-            // with the raw title is often lost. Preserve an exact user-facing
-            // title/summary/symptom as a strong signal when it is contained in
-            // the enriched query instead of letting generic cards outrank it.
-            val strongPhraseMatched = indexed.strongPhrases.any { phrase ->
+            // The scenario's own title/summary/symptom is authoritative. Query
+            // enrichment appends family/component aliases, so compare by
+            // containment rather than equality and give this signal enough
+            // weight to beat broad cards that share only generic words.
+            val primaryPhraseMatched = indexed.primaryPhrases.any { phrase ->
                 phrase in query || (query.length >= 8 && query in phrase)
             }
-            if (strongPhraseMatched) {
-                score += 90
+            if (primaryPhraseMatched) {
+                score += 260
                 hasContentEvidence = true
-                reasons += "strong-phrase"
+                reasons += "primary-phrase"
+            }
+
+            val aliasPhraseMatched = indexed.aliasPhrases.any { phrase ->
+                phrase in query || (query.length >= 8 && query in phrase)
+            }
+            if (aliasPhraseMatched) {
+                score += 65
+                hasContentEvidence = true
+                reasons += "alias-phrase"
             }
 
             val symptomPhraseMatched = document.symptomTerms
