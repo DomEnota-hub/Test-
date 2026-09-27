@@ -65,7 +65,7 @@ object AssistantQueryParser {
     private val componentVocabulary = listOf(
         ComponentVocabulary("MAIN_BREAKER", listOf("главный выключатель", "гв"), "главный выключатель гв"),
         ComponentVocabulary("COMPRESSOR", listOf("компрессор", "мотор-компрессор", "мотор компрессор", "мк"), "компрессор мотор-компрессор мк"),
-        ComponentVocabulary("TRANSFORMER", listOf("тяговый трансформатор", "трансформатор"), "тяговый трансформатор"),
+        ComponentVocabulary("TRANSFORMER", listOf("тяговый трансформатор", "трансформатор", "трансфарматор"), "тяговый трансформатор"),
         ComponentVocabulary("PANTOGRAPH", listOf("токоприемник"), "токоприемник пантограф"),
         ComponentVocabulary("EKG", listOf("экг", "групповой переключатель", "групповик"), "экг групповой переключатель групповик"),
         ComponentVocabulary("TRACTION_MOTOR", listOf("тяговый двигатель", "тяговые двигатели", "тэд"), "тэд тяговый электродвигатель тяговые двигатели"),
@@ -187,7 +187,12 @@ object AssistantQueryParser {
         val textWords = text.split(' ').filter(String::isNotBlank)
         val termWords = term.split(' ').filter(String::isNotBlank)
         return termWords.all { pattern ->
-            val stem = pattern.take(if (pattern.length >= 7) 5 else pattern.length)
+            val stemLength = when {
+                pattern.length >= 12 -> 7
+                pattern.length >= 7 -> 5
+                else -> pattern.length
+            }
+            val stem = pattern.take(stemLength)
             textWords.any { word -> word.startsWith(stem) }
         }
     }
