@@ -23,6 +23,7 @@ class AssistantEngine(
             query = parsed.searchText,
             family = parsed.family,
             preferredSection = parsed.preferredSection,
+            componentId = parsed.componentKey,
             failureModes = parsed.failureModes,
             limit = limit.coerceIn(1, 5)
         )

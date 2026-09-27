@@ -107,9 +107,7 @@ object AssistantQueryParser {
             else -> null
         }
 
-        val componentKey = componentVocabulary.firstOrNull { component ->
-            component.aliases.any { alias -> containsTerm(normalized, alias) }
-        }?.key
+        val componentKey = componentFromAnswer(normalized)
         val failureModes = AssistantFailureModeDetector.detect(normalized)
 
         val intent = when {
@@ -171,9 +169,20 @@ object AssistantQueryParser {
 
     fun componentFromAnswer(rawText: String): String? {
         val normalized = normalize(rawText)
+        // Crews also say "в тормозной" with "магистрали" omitted. Limit that
+        // interpretation to a trailing phrase so "тормозной цилиндр" stays distinct.
+        if (Regex("(^| )в тормозной$").containsMatchIn(normalized)) return "BRAKE_PIPE"
         return componentVocabulary.firstOrNull { component ->
             component.aliases.any { alias -> containsTerm(normalized, alias) }
         }?.key
+    }
+
+    fun componentKeysInDescription(text: String): Set<String> {
+        val normalized = normalize(text)
+        return componentVocabulary.asSequence()
+            .filter { component -> component.aliases.any { alias -> containsTerm(normalized, alias) } }
+            .map(ComponentVocabulary::key)
+            .toSet()
     }
 
     fun componentSearchText(componentKey: String): String? =

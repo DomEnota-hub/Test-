@@ -4,6 +4,7 @@ import java.io.File
 import java.util.zip.GZIPInputStream
 import org.json.JSONObject
 import org.junit.Assert.assertTrue
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import ru.railbrake.calculator.core.DiagnosticRepository
 import ru.railbrake.calculator.core.TechnicalFamily
@@ -19,6 +20,30 @@ import ru.railbrake.calculator.core.parseErmakDiagnostics
  * is considered a failure rather than a technical success hidden from the user.
  */
 class AssistantDiagnosticCorpusTest {
+
+    @Test
+    fun brakePipeLeakAsksSeriesAndRoutesToEachRealCatalog() {
+        val documents = DiagnosticRepository.scenarios.map(Vl80DiagnosticAssistantAdapter::adapt) +
+            loadErmakScenarios().map(ErmakDiagnosticAssistantAdapter::adapt)
+        val engine = AssistantEngine(InMemoryAssistantIndex(documents))
+        val initial = engine.query("утечка в тормозной")
+        assertTrue(initial is AssistantEngineResult.Clarify)
+        assertEquals(
+            AssistantAmbiguity.SERIES_REQUIRED,
+            (initial as AssistantEngineResult.Clarify).clarification.reason
+        )
+
+        val vl = AssistantConversation.submit(engine, "ВЛ", AssistantConversation.submit(engine, "утечка в тормозной").pending)
+        assertTrue(vl.result is AssistantEngineResult.Matches)
+        assertEquals(TechnicalFamily.VL80S, (vl.result as AssistantEngineResult.Matches).hits.first().document.family)
+        assertTrue((vl.result as AssistantEngineResult.Matches).hits.first().document.title.contains("тормозн", ignoreCase = true))
+
+        val ermak = AssistantConversation.submit(engine, "Ермак", AssistantConversation.submit(engine, "утечка в тормозной").pending)
+        assertTrue(ermak.result is AssistantEngineResult.Matches)
+        val top = (ermak.result as AssistantEngineResult.Matches).hits.first().document
+        assertEquals(TechnicalFamily.ERMAK, top.family)
+        assertEquals("ER-DIAG-090", top.canonicalId)
+    }
 
     @Test
     fun everyVl80ScenarioCanBeRecoveredFromItsTitleAndSummary() {

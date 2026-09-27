@@ -137,7 +137,10 @@ internal fun AssistantHomePanel() {
     DisposableEffect(voiceInput) {
         onDispose {
             voiceInput.stop()
-            voiceJob?.cancel()
+            val activeJob = voiceJob
+            activeJob?.cancel()
+            if (activeJob == null) voiceInput.close()
+            else activeJob.invokeOnCompletion { voiceInput.close() }
         }
     }
 

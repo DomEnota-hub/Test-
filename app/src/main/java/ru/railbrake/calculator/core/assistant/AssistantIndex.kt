@@ -24,6 +24,7 @@ class InMemoryAssistantIndex(
     private data class IndexedDocument(
         val document: AssistantDocument,
         val failureModes: Set<AssistantFailureMode>,
+        val describedComponents: Set<String>,
         val primaryPhrases: Set<String>,
         val aliasPhrases: Set<String>
     )
@@ -60,6 +61,9 @@ class InMemoryAssistantIndex(
             } else {
                 emptySet()
             },
+            describedComponents = AssistantQueryParser.componentKeysInDescription(
+                "${document.title} ${document.summary} ${document.symptomTerms.joinToString(" ")}"
+            ),
             primaryPhrases = primaryPhrases,
             aliasPhrases = aliasPhrases
         )
@@ -196,10 +200,13 @@ class InMemoryAssistantIndex(
             }
 
             request.componentId?.takeIf(String::isNotBlank)?.let { componentId ->
-                if (componentId in document.componentIds) {
-                    score += 50
+                if (componentId in indexed.describedComponents || componentId in document.componentIds) {
+                    score += 110
                     hasContentEvidence = true
                     reasons += "component"
+                } else if (diagnosticsFirst && document.section == TechnicalSection.DIAGNOSTICS) {
+                    score -= 80
+                    reasons += "component-mismatch"
                 }
             }
 

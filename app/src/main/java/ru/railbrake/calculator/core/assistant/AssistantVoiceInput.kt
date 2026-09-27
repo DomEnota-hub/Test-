@@ -30,8 +30,16 @@ internal sealed interface AssistantVoiceOutcome {
 /** One foreground push-to-talk session. The model never receives network access or app data. */
 internal class AssistantVoiceInput(private val context: Context) {
     private val stopRequested = AtomicBoolean(false)
+    private var recognizer: OfflineRecognizer? = null
 
     fun stop() { stopRequested.set(true) }
+
+    /** Called only after the active capture job completes. */
+    fun close() {
+        stop()
+        recognizer?.release()
+        recognizer = null
+    }
 
     suspend fun capture(onPhase: suspend (AssistantVoicePhase) -> Unit): AssistantVoiceOutcome =
         withContext(Dispatchers.IO) {
@@ -39,9 +47,6 @@ internal class AssistantVoiceInput(private val context: Context) {
                 PackageManager.PERMISSION_GRANTED) { "Нет разрешения на микрофон" }
             stopRequested.set(false)
             onPhase(AssistantVoicePhase.PREPARING)
-            val asr = createRecognizer()
-            coroutineContext.ensureActive()
-            try {
             val vad = Vad(
                 assetManager = context.assets,
                 config = VadModelConfig(
@@ -61,6 +66,8 @@ internal class AssistantVoiceInput(private val context: Context) {
                 coroutineContext.ensureActive()
                 if (!AssistantVoicePolicy.usableSpeech(samples)) return@withContext AssistantVoiceOutcome.NoSpeech
                 onPhase(AssistantVoicePhase.TRANSCRIBING)
+                val asr = recognizer ?: createRecognizer().also { recognizer = it }
+                coroutineContext.ensureActive()
                 val stream = asr.createStream()
                 try {
                     stream.acceptWaveform(samples, AssistantVoicePolicy.SAMPLE_RATE)
@@ -72,9 +79,6 @@ internal class AssistantVoiceInput(private val context: Context) {
                 }
             } finally {
                 vad.release()
-            }
-            } finally {
-                asr.release()
             }
         }
 
