@@ -42,10 +42,11 @@ object AssistantFailureModeDetector {
             "не включ", "не хочет включ", "не замыка", "не принимает команд",
             "не срабатывает на включ", "не срабатыва"
         ) && !compressorContext
-        val noSwitchOff = containsAny(
+        val noSwitchOffPhrase = containsAny(
             normalized,
             "не выключ", "не отключ", "не размыка"
-        ) && !compressorContext
+        )
+        val noSwitchOff = noSwitchOffPhrase && !compressorContext
 
         if (noSwitchOn) modes += AssistantFailureMode.NO_SWITCH_ON
         if (noSwitchOff) modes += AssistantFailureMode.NO_SWITCH_OFF
@@ -53,7 +54,7 @@ object AssistantFailureModeDetector {
         // Plain "отключился/отключается/отпадает/выбивает" is a different event
         // from "не отключается". The negative form is checked first so the
         // shared stem cannot collapse opposite failures.
-        if (!noSwitchOff && containsAny(
+        if (!noSwitchOffPhrase && containsAny(
                 normalized,
                 "самопроизвольно отключ", "сам выключ", "сам отключ",
                 "отключился", "отключилась", "отключилось", "отключается",
@@ -83,9 +84,9 @@ object AssistantFailureModeDetector {
         ) {
             modes += AssistantFailureMode.NO_BUILD_PRESSURE
         }
-        if (containsAny(
-                normalized,
-                "утеч", "трав", "сифон", "падает давление", "давление пада",
+        if (Regex("давлени[ея] (?:\\S+ ){0,5}(?<!не )пада").containsMatchIn(normalized) || containsAny(
+            normalized,
+            "утеч", "трав", "сифон", "падает давление", "давление пада",
                 "уходит воздух", "воздух уходит", "не держит давление", "давление не держит",
                 "разгермет", "падение давления", "давление тм резко пада"
             )

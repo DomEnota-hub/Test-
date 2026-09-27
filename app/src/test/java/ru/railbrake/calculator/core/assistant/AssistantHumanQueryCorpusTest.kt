@@ -217,6 +217,7 @@ class AssistantHumanQueryCorpusTest {
         assertEquals(setOf(AssistantFailureMode.NO_START), compressorOn)
         assertEquals(setOf(AssistantFailureMode.NO_STOP), compressorOff)
         assertEquals(setOf(AssistantFailureMode.NO_SWITCH_OFF), breakerOff)
+        assertFalse(AssistantFailureMode.PRESSURE_LEAK in AssistantQueryParser.parse("давление в ТМ не падает").failureModes)
     }
 
     @Test
