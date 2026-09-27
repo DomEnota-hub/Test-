@@ -1,0 +1,103 @@
+name: Build Assistant v0.14 APK
+
+on:
+  push:
+    branches:
+      - feature/offline-assistant-v0.9
+    paths:
+      - .github/workflows/build-assistant-v014-temp.yml
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: feature/offline-assistant-v0.9
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install Android SDK 34
+        shell: bash
+        run: |
+          set -euo pipefail
+          yes | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
+          "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-34' 'build-tools;34.0.0'
+
+      - name: Set up Gradle 8.7
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+
+      - name: Prepare current Test application
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf buildsrc
+          mkdir buildsrc
+          unzip -q RailBrakeCalculator.zip -d buildsrc
+          test -f buildsrc/RailBrakeCalculator/settings.gradle.kts
+          cp -a patch/. buildsrc/RailBrakeCalculator/
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          project = Path('buildsrc/RailBrakeCalculator')
+          gradle = project / 'app/build.gradle.kts'
+          text = gradle.read_text(encoding='utf-8')
+          text, app_id_count = re.subn(
+              r'applicationId\s*=\s*"ru\.railbrake\.calculator"',
+              'applicationId = "ru.railbrake.calculator.assistanttest"',
+              text,
+              count=1,
+          )
+          if app_id_count != 1:
+              raise SystemExit('Expected applicationId was not found exactly once')
+
+          def version_replacement(match):
+              return f'versionName = "{match.group(1)}-assistant-v0.14"'
+
+          text, version_count = re.subn(
+              r'versionName\s*=\s*"([^"]+)"',
+              version_replacement,
+              text,
+              count=1,
+          )
+          if version_count != 1:
+              raise SystemExit('Expected versionName was not found exactly once')
+          gradle.write_text(text, encoding='utf-8')
+
+          strings = project / 'app/src/main/res/values/strings.xml'
+          strings_text = strings.read_text(encoding='utf-8')
+          marker = '<string name="app_name">ЖД Помощник</string>'
+          if marker not in strings_text:
+              raise SystemExit('Expected app_name was not found')
+          strings.write_text(
+              strings_text.replace(marker, '<string name="app_name">ЖД Помощник Test</string>', 1),
+              encoding='utf-8',
+          )
+          PY
+
+      - name: Build debug APK
+        working-directory: buildsrc/RailBrakeCalculator
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout --signal=TERM 15m gradle :app:assembleDebug --stacktrace --console=plain
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: railbrake-assistant-test-v0.14-apk
+          path: buildsrc/RailBrakeCalculator/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 7
