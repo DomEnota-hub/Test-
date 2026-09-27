@@ -23,7 +23,8 @@ class InMemoryAssistantIndex(
 ) {
     private data class IndexedDocument(
         val document: AssistantDocument,
-        val failureModes: Set<AssistantFailureMode>
+        val failureModes: Set<AssistantFailureMode>,
+        val strongPhrases: Set<String>
     )
 
     private val documents = documents.map { document ->
@@ -36,13 +37,25 @@ class InMemoryAssistantIndex(
             append(' ')
             append(document.aliases.joinToString(" "))
         }
+        val strongPhrases = buildSet {
+            add(document.title)
+            if (document.summary.isNotBlank()) add(document.summary)
+            addAll(document.aliases)
+            addAll(document.symptomTerms)
+        }
+            .asSequence()
+            .map(String::normalizeAssistantText)
+            .filter { phrase -> phrase.length >= 8 && phrase.count(Char::isLetterOrDigit) >= 6 }
+            .toSet()
+
         IndexedDocument(
             document = document,
             failureModes = if (document.section == TechnicalSection.DIAGNOSTICS) {
                 AssistantFailureModeDetector.detect(symptomProjection)
             } else {
                 emptySet()
-            }
+            },
+            strongPhrases = strongPhrases
         )
     }
 
@@ -90,6 +103,19 @@ class InMemoryAssistantIndex(
                 score += 45
                 hasContentEvidence = true
                 reasons += "phrase"
+            }
+
+            // Series/component enrichment is appended to the query, so equality
+            // with the raw title is often lost. Preserve an exact user-facing
+            // title/summary/symptom as a strong signal when it is contained in
+            // the enriched query instead of letting generic cards outrank it.
+            val strongPhraseMatched = indexed.strongPhrases.any { phrase ->
+                phrase in query || (query.length >= 8 && query in phrase)
+            }
+            if (strongPhraseMatched) {
+                score += 90
+                hasContentEvidence = true
+                reasons += "strong-phrase"
             }
 
             val symptomPhraseMatched = document.symptomTerms
