@@ -181,7 +181,7 @@ object KnowledgeArticleAssistantAdapter {
     }
 }
 
-object FirstAidAssistantAdapter {
+internal object FirstAidAssistantAdapter {
     fun adapt(topic: FirstAidTopic): AssistantDocument = AssistantDocument(
         key = "first-aid:${topic.id}",
         canonicalId = topic.id,
