@@ -15,14 +15,29 @@ class AssistantEngine(
             )
         }
 
-        val hits = index.search(
-            AssistantSearchRequest(
-                query = parsed.searchText,
-                family = parsed.family,
-                preferredSection = parsed.preferredSection,
-                limit = limit.coerceIn(1, 5)
-            )
+        val request = AssistantSearchRequest(
+            query = parsed.searchText,
+            family = parsed.family,
+            preferredSection = parsed.preferredSection,
+            failureModes = parsed.failureModes,
+            limit = limit.coerceIn(1, 5)
         )
+        val hits = index.search(request)
+
+        // A component fault without a named locomotive is not safe to resolve by
+        // whichever family happens to have denser text in the index. Ask first.
+        if (
+            parsed.family == null &&
+            parsed.intent == AssistantIntent.TROUBLESHOOT &&
+            parsed.componentKey != null &&
+            hits.none { "canonical-id" in it.reasons }
+        ) {
+            return AssistantEngineResult.Clarify(
+                parsedQuery = parsed,
+                clarification = clarificationFor(AssistantAmbiguity.SERIES_REQUIRED, parsed),
+                provisionalHits = hits
+            )
+        }
 
         if (hits.isEmpty()) {
             return AssistantEngineResult.NoResult(
@@ -112,7 +127,7 @@ class AssistantEngine(
         }
 
         AssistantAmbiguity.SERIES_REQUIRED -> AssistantClarification(
-            question = "Для какой серии открыть материал?",
+            question = "На каком локомотиве это произошло?",
             reason = ambiguity,
             options = listOf(
                 AssistantClarificationOption("VL80S", "ВЛ80С"),
