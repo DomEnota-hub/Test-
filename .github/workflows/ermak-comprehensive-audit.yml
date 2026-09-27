@@ -1,0 +1,136 @@
+name: Ermak Comprehensive Audit
+
+on:
+  push:
+    branches:
+      - ermak-comprehensive-audit
+      - ermak-diagnostic-rework
+      - dev14-integration
+    paths:
+      - 'qa/ermak_audit_job.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ermak-comprehensive-audit-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Checkout requested audit job
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Read and validate audit manifest
+        id: audit_job
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/run_ermak_audit_job.py info
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          from pathlib import Path
+          d=json.loads(Path('qa/ermak_audit_job.json').read_text(encoding='utf-8'))
+          print('mode='+d['mode'])
+          print('run_android='+('true' if d.get('run_android', True) else 'false'))
+          print('batch='+d['batch'])
+          PY
+
+      - name: Apply declared diagnostic transformers
+        run: python3 tools/run_ermak_audit_job.py apply
+
+      - name: Run declared and regression QA
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/run_ermak_audit_job.py verify
+          python3 qa/verify_runtime_asset_paths.py app/src/main/java app/src/main/assets
+          git diff --check
+
+      - name: Set up JDK 17
+        if: steps.audit_job.outputs.run_android == 'true'
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install Android SDK 34
+        if: steps.audit_job.outputs.run_android == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          yes | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
+          "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-34' 'build-tools;34.0.0'
+
+      - name: Set up Gradle 8.7
+        if: steps.audit_job.outputs.run_android == 'true'
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+
+      - name: Extract base and overlay candidate source
+        if: steps.audit_job.outputs.run_android == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf buildsrc
+          mkdir buildsrc
+          unzip -q RailBrakeCalculator.zip -d buildsrc
+          test -f buildsrc/RailBrakeCalculator/settings.gradle.kts
+          cp -a patch/. buildsrc/RailBrakeCalculator/
+
+      - name: Run full Android unit tests
+        if: steps.audit_job.outputs.run_android == 'true'
+        working-directory: buildsrc/RailBrakeCalculator
+        run: timeout --signal=TERM 15m gradle :app:testDebugUnitTest --stacktrace --console=plain
+
+      - name: Run Android lint
+        if: steps.audit_job.outputs.run_android == 'true'
+        working-directory: buildsrc/RailBrakeCalculator
+        run: timeout --signal=TERM 15m gradle :app:lintDebug --stacktrace --console=plain
+
+      - name: Assemble Android debug APK
+        if: steps.audit_job.outputs.run_android == 'true'
+        working-directory: buildsrc/RailBrakeCalculator
+        run: timeout --signal=TERM 15m gradle :app:assembleDebug --stacktrace --console=plain
+
+      - name: Guard branch before asset commit
+        if: steps.audit_job.outputs.mode == 'apply_and_commit'
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf buildsrc
+          git fetch origin "$GITHUB_REF_NAME"
+          test "$(git rev-parse origin/$GITHUB_REF_NAME)" = "$GITHUB_SHA"
+
+      - name: Commit only audited diagnostic assets
+        if: steps.audit_job.outputs.mode == 'apply_and_commit'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/run_ermak_audit_job.py stage
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -F .git/ERMAK_AUDIT_COMMIT_MESSAGE
+          git push origin "HEAD:$GITHUB_REF_NAME"
+
+      - name: Publish compact audit summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## Ermak audit"
+            echo "- Batch: ${{ steps.audit_job.outputs.batch }}"
+            echo "- Mode: ${{ steps.audit_job.outputs.mode }}"
+            echo "- Source SHA: $GITHUB_SHA"
+            echo "- Android checks requested: ${{ steps.audit_job.outputs.run_android }}"
+            echo "- Job result: ${{ job.status }}"
+          } >> "$GITHUB_STEP_SUMMARY"

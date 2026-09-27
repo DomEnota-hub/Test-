@@ -1,0 +1,92 @@
+name: Ermak unknown UX hotfix
+
+on:
+  push:
+    branches:
+      - dev14-integration
+    paths:
+      - .github/workflows/ermak-unknown-ux-hotfix.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: dev14-integration
+
+      - name: Apply targeted Ermak UNKNOWN presentation fix
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          paths = [
+              Path('app/src/main/java/ru/railbrake/calculator/ui/ErmakDiagnosticsScreen.kt'),
+              Path('patch/app/src/main/java/ru/railbrake/calculator/ui/ErmakDiagnosticsScreen.kt'),
+          ]
+
+          helper_marker = '@Composable\nprivate fun ErmakQuestionAnswers('
+          helper_replacement = '''private fun ErmakDiagnosticScenario.resolveUnknownPresentationTarget(startNodeId: String): String {
+              var current = startNodeId
+              val visited = mutableSetOf<String>()
+              while (visited.add(current)) {
+                  val candidate = nodes[current] ?: return current
+                  if (!candidate.type.equals("uncertainty", ignoreCase = true)) return current
+                  current = candidate.nextNodeId ?: return current
+              }
+              return startNodeId
+          }
+
+          @Composable
+          private fun ErmakQuestionAnswers('''
+
+          unknown_marker = 'uncertaintyChoice.nextNodeId,'
+          unknown_replacement = 'scenario.resolveUnknownPresentationTarget(uncertaintyChoice.nextNodeId),'
+
+          result_row_marker = '                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {\n                    OutlinedButton(onClick = {'
+          result_row_replacement = '''                if (pathNodeIds.isNotEmpty()) {
+                      TextButton(onClick = { navigateBack() }) { Text("Назад на шаг") }
+                  }
+                  Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                      OutlinedButton(onClick = {'''
+
+          for path in paths:
+              text = path.read_text(encoding='utf-8')
+              if text.count(helper_marker) != 1:
+                  raise SystemExit(f'{path}: helper marker count={text.count(helper_marker)}')
+              text = text.replace(helper_marker, helper_replacement, 1)
+              if text.count(unknown_marker) != 1:
+                  raise SystemExit(f'{path}: UNKNOWN marker count={text.count(unknown_marker)}')
+              text = text.replace(unknown_marker, unknown_replacement, 1)
+              if text.count(result_row_marker) != 1:
+                  raise SystemExit(f'{path}: result row marker count={text.count(result_row_marker)}')
+              text = text.replace(result_row_marker, result_row_replacement, 1)
+              path.write_text(text, encoding='utf-8')
+
+          if paths[0].read_bytes() != paths[1].read_bytes():
+              raise SystemExit('ErmakDiagnosticsScreen mirrors differ after patch')
+          print('Ermak UNKNOWN UX hotfix applied to app and patch mirrors')
+          PY
+          git diff --check
+          grep -Fq 'resolveUnknownPresentationTarget' app/src/main/java/ru/railbrake/calculator/ui/ErmakDiagnosticsScreen.kt
+          grep -Fq 'scenario.resolveUnknownPresentationTarget(uncertaintyChoice.nextNodeId)' app/src/main/java/ru/railbrake/calculator/ui/ErmakDiagnosticsScreen.kt
+          grep -Fq 'Text("Назад на шаг")' app/src/main/java/ru/railbrake/calculator/ui/ErmakDiagnosticsScreen.kt
+          cmp app/src/main/java/ru/railbrake/calculator/ui/ErmakDiagnosticsScreen.kt patch/app/src/main/java/ru/railbrake/calculator/ui/ErmakDiagnosticsScreen.kt
+
+      - name: Commit hotfix
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app/src/main/java/ru/railbrake/calculator/ui/ErmakDiagnosticsScreen.kt patch/app/src/main/java/ru/railbrake/calculator/ui/ErmakDiagnosticsScreen.kt
+          git diff --cached --quiet && { echo 'No changes to commit'; exit 0; }
+          git commit -m 'fix: align Ermak unknown routing UX with VL80S'
+          git push origin HEAD:dev14-integration

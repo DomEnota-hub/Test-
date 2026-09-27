@@ -49,6 +49,9 @@ jobs:
           cmp app/src/main/java/ru/railbrake/calculator/core/DiagnosticResearchIntegration.kt patch/app/src/main/java/ru/railbrake/calculator/core/DiagnosticResearchIntegration.kt
           cmp app/src/main/java/ru/railbrake/calculator/core/TechnicalAssetReader.kt patch/app/src/main/java/ru/railbrake/calculator/core/TechnicalAssetReader.kt
           cmp app/src/main/java/ru/railbrake/calculator/core/DiagnosticCompletionCatalog.kt patch/app/src/main/java/ru/railbrake/calculator/core/DiagnosticCompletionCatalog.kt
+          cmp app/src/main/java/ru/railbrake/calculator/core/DiagnosticUnknownRouting.kt patch/app/src/main/java/ru/railbrake/calculator/core/DiagnosticUnknownRouting.kt
+          cmp app/src/main/java/ru/railbrake/calculator/core/DiagnosticPolicyEngine.kt patch/app/src/main/java/ru/railbrake/calculator/core/DiagnosticPolicyEngine.kt
+          cmp app/src/main/java/ru/railbrake/calculator/core/ErmakDiagnosticRepository.kt patch/app/src/main/java/ru/railbrake/calculator/core/ErmakDiagnosticRepository.kt
           cmp app/src/main/java/ru/railbrake/calculator/core/TechnicalPresentation.kt patch/app/src/main/java/ru/railbrake/calculator/core/TechnicalPresentation.kt
           cmp app/src/main/java/ru/railbrake/calculator/data/DiagnosticSessionRepository.kt patch/app/src/main/java/ru/railbrake/calculator/data/DiagnosticSessionRepository.kt
           cmp app/src/main/java/ru/railbrake/calculator/data/AcceptanceStateRepository.kt patch/app/src/main/java/ru/railbrake/calculator/data/AcceptanceStateRepository.kt
@@ -66,6 +69,9 @@ jobs:
           cmp app/src/main/java/ru/railbrake/calculator/ui/TechnicalCatalogScreen.kt patch/app/src/main/java/ru/railbrake/calculator/ui/TechnicalCatalogScreen.kt
           cmp app/src/test/java/ru/railbrake/calculator/data/AcceptanceSummaryTest.kt patch/app/src/test/java/ru/railbrake/calculator/data/AcceptanceSummaryTest.kt
           cmp app/src/test/java/ru/railbrake/calculator/core/TechnicalPresentationTest.kt patch/app/src/test/java/ru/railbrake/calculator/core/TechnicalPresentationTest.kt
+          cmp app/src/test/java/ru/railbrake/calculator/core/DiagnosticPolicyEngineTest.kt patch/app/src/test/java/ru/railbrake/calculator/core/DiagnosticPolicyEngineTest.kt
+          cmp app/src/test/java/ru/railbrake/calculator/core/ErmakDiagnosticRuntimeContractTest.kt patch/app/src/test/java/ru/railbrake/calculator/core/ErmakDiagnosticRuntimeContractTest.kt
+          cmp app/src/test/java/ru/railbrake/calculator/core/DiagnosticUnknownRoutingTest.kt patch/app/src/test/java/ru/railbrake/calculator/core/DiagnosticUnknownRoutingTest.kt
           cmp app/src/test/java/ru/railbrake/calculator/data/TechnicalRecentRepositoryTest.kt patch/app/src/test/java/ru/railbrake/calculator/data/TechnicalRecentRepositoryTest.kt
           cmp app/src/test/java/ru/railbrake/calculator/ui/ExamQuestionReadingModeTest.kt patch/app/src/test/java/ru/railbrake/calculator/ui/ExamQuestionReadingModeTest.kt
           cmp app/src/test/java/ru/railbrake/calculator/ui/FirstAidContentTest.kt patch/app/src/test/java/ru/railbrake/calculator/ui/FirstAidContentTest.kt
@@ -84,7 +90,9 @@ jobs:
           grep -Fq 'QuickRouteItem("Масляный насос трансформатора"' app/src/main/java/ru/railbrake/calculator/ui/DiagnosticScreen.kt
           ! grep -Fq 'label = { Text("Тренажёр") }' app/src/main/java/ru/railbrake/calculator/ui/DiagnosticScreen.kt
           grep -Fq 'Text("Уточнение симптома"' app/src/main/java/ru/railbrake/calculator/ui/ErmakDiagnosticsScreen.kt
-          grep -Fq 'val compactBinaryChoices = answerChoices.size == 2' app/src/main/java/ru/railbrake/calculator/ui/ErmakDiagnosticsScreen.kt
+          grep -Fq 'private fun ErmakQuestionAnswers(' app/src/main/java/ru/railbrake/calculator/ui/ErmakDiagnosticsScreen.kt
+          grep -Fq 'choice.isUnknown' app/src/main/java/ru/railbrake/calculator/ui/ErmakDiagnosticsScreen.kt
+          grep -Fq ') { Text("Не знаю") }' app/src/main/java/ru/railbrake/calculator/ui/ErmakDiagnosticsScreen.kt
           grep -Fq 'Text("Пользовательский профиль"' app/src/main/java/ru/railbrake/calculator/ui/BrakeCalculatorApp.kt
           grep -Fq 'BLUE("Холодный синий", Color(0xFF82A9FF), Color(0xFF182947))' app/src/main/java/ru/railbrake/calculator/ui/theme/Theme.kt
           grep -Fq 'AMBER("Янтарный", RailAmber, RailAmberSoft)' app/src/main/java/ru/railbrake/calculator/ui/theme/Theme.kt
@@ -127,6 +135,7 @@ jobs:
           grep -Fq 'Расширенный маршрут систематизирует карточки оборудования' app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt
           grep -Fq 'reportContainsSessionSummaryAndNotes' app/src/test/java/ru/railbrake/calculator/data/AcceptanceSummaryTest.kt
           python3 qa/verify_runtime_asset_paths.py app/src/main/java app/src/main/assets
+          python3 qa/verify_diagnostic_unknown_routes.py
           python3 qa/verify_diagnostic_graphs.py app/src/main/assets
           python3 qa/verify_ermak_atlas.py app/src/main/assets
 
