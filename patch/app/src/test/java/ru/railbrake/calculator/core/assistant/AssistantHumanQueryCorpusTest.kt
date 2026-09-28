@@ -235,6 +235,10 @@ class AssistantHumanQueryCorpusTest {
         assertEquals(setOf(AssistantFailureMode.NO_SWITCH_ON), AssistantQueryParser.parse("главный выключатель не срабатывает").failureModes)
         assertFalse(AssistantFailureMode.SMOKE_OR_FIRE in AssistantQueryParser.parse("экран КЛУБ У не горит").failureModes)
         assertFalse(AssistantFailureMode.SMOKE_OR_FIRE in AssistantQueryParser.parse("пожарная сигнализация неисправна но дыма нет").failureModes)
+        assertEquals(setOf(AssistantFailureMode.SLOW_RISE), AssistantQueryParser.parse("токоприемник поднимается медленно").failureModes)
+        assertEquals(setOf(AssistantFailureMode.SELECTION_MISMATCH), AssistantQueryParser.parse("поднимается не тот токоприемник что выбрал").failureModes)
+        assertTrue(AssistantFailureMode.SPONTANEOUS_BRAKE in AssistantQueryParser.parse("тормоз сам срабатывает без команды").failureModes)
+        assertTrue(AssistantFailureMode.NO_TRACTION in AssistantQueryParser.parse("одна секция теряет нагрузку").failureModes)
     }
 
     @Test

@@ -13,11 +13,14 @@ enum class AssistantFailureMode(val label: String) {
     NO_START("не запускается"),
     NO_STOP("не останавливается"),
     NO_RISE("не поднимается"),
+    SLOW_RISE("медленный подъём"),
+    SELECTION_MISMATCH("выбран другой аппарат"),
     NO_LOWER("не опускается"),
     NO_BUILD_PRESSURE("не набирает давление"),
     PRESSURE_LEAK("утечка / падение давления"),
     NO_TRACTION("нет тяги"),
     NO_BRAKE("не тормозит"),
+    SPONTANEOUS_BRAKE("самопроизвольное торможение"),
     NO_RELEASE("не отпускает"),
     OVERHEAT("перегрев"),
     SPARK_OR_ARC("искрение / дуга"),
@@ -76,6 +79,12 @@ object AssistantFailureModeDetector {
             modes += AssistantFailureMode.NO_STOP
         }
         if (containsAny(normalized, "не поднима")) modes += AssistantFailureMode.NO_RISE
+        if (containsAny(normalized, "поднимается медленно", "медленно поднимается", "замедленный подъем", "подъем затянут")) {
+            modes += AssistantFailureMode.SLOW_RISE
+        }
+        if (containsAny(normalized, "не соответствует выбор", "не выбранный", "не тот что выбрал", "не тот токоприемник", "выбран другой")) {
+            modes += AssistantFailureMode.SELECTION_MISMATCH
+        }
         if (containsAny(normalized, "не опуска")) modes += AssistantFailureMode.NO_LOWER
         if (containsAny(
                 normalized,
@@ -98,13 +107,16 @@ object AssistantFailureModeDetector {
         if (containsAny(
                 normalized,
                 "тяги нет", "нет тяги", "не тян", "тяга пропала", "пропала тяга",
-                "не берет тягу", "тягу не берет"
+                "не берет тягу", "тягу не берет", "снятие нагрузки", "теряет нагрузку"
             )
         ) {
             modes += AssistantFailureMode.NO_TRACTION
         }
         if (containsAny(normalized, "не тормоз") ||
             (brakeContext && containsAny(normalized, "не срабатыва", "не действует"))) modes += AssistantFailureMode.NO_BRAKE
+        if (brakeContext && containsAny(normalized, "самопроизвольн", "сам срабатыва", "без команды")) {
+            modes += AssistantFailureMode.SPONTANEOUS_BRAKE
+        }
         if (containsAny(normalized, "не отпуска")) modes += AssistantFailureMode.NO_RELEASE
         if (containsAny(normalized, "перегрев", "греется", "перегрел")) modes += AssistantFailureMode.OVERHEAT
         if (containsAny(normalized, "искрит", "искрен", "дуга", "пробой", "пробил")) modes += AssistantFailureMode.SPARK_OR_ARC
