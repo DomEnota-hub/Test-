@@ -110,11 +110,12 @@ class InMemoryAssistantIndex(
         // sparse content, ambiguous speech and ID commands need the full index.
         val hasDirectIdentifier = queryParts.any(indexedIdentifiers::contains)
         val preferred = if (hasDirectIdentifier) null else request.preferredSection?.let(sectionDocuments::get)
-        if (safetyTopics.isNotEmpty() && !hasDirectIdentifier) {
+        val matchedFirstAid = documents.filter { it.document.kind == AssistantDocumentKind.FIRST_AID &&
+            it.document.canonicalId in safetyTopics }
+        if (matchedFirstAid.isNotEmpty() && !hasDirectIdentifier) {
             // A symptom must never become an arbitrary other first-aid card
             // just because its instructions also mention a person or cold.
-            return score(documents.filter { it.document.kind == AssistantDocumentKind.FIRST_AID &&
-                it.document.canonicalId in safetyTopics }, request, query, literalQuery,
+            return score(matchedFirstAid, request, query, literalQuery,
                 queryParts, tokens, queryHeadingStems, diagnosticsFirst)
         }
         if (preferred != null && preferred.size < documents.size) {
@@ -290,7 +291,7 @@ class InMemoryAssistantIndex(
             }
 
             val insufficientAnchor = queryHeadingStems.size >= 2 &&
-                anchorOverlap < if (queryHeadingStems.size >= 3) 2 else 1 &&
+                anchorOverlap < (if (queryHeadingStems.size >= 3) 2 else 1) &&
                 !directCanonicalId && linkedId == null && request.componentId == null &&
                 !primaryPhraseMatched && !aliasPhraseMatched
             if (!hasContentEvidence || score <= 0 || insufficientAnchor) null
