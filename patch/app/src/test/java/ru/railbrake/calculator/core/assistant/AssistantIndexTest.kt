@@ -61,6 +61,24 @@ class AssistantIndexTest {
     }
 
     @Test
+    fun sectionPartitionKeepsStrongFaultFocusedButFallsBackAndHonorsIds() {
+        val diagnostic = Vl80DiagnosticAssistantAdapter.adapt(vl80Diagnostic())
+        val reference = TechnicalEntryAssistantAdapter.adapt(
+            technicalEntry("VL-EQ-GV", TechnicalSection.EQUIPMENT, "Главный выключатель", "ГВ устройство выключателя")
+        )
+        val index = InMemoryAssistantIndex(listOf(reference, diagnostic))
+        val fault = index.search(AssistantSearchRequest("ГВ не включается", preferredSection = TechnicalSection.DIAGNOSTICS))
+        assertEquals(listOf("gv-no-close"), fault.map { it.document.canonicalId })
+
+        val fallback = index.search(AssistantSearchRequest("устройство выключателя", preferredSection = TechnicalSection.ACCEPTANCE))
+        assertEquals("VL-EQ-GV", fallback.first().document.canonicalId)
+
+        val id = index.search(AssistantSearchRequest("открой VL-EQ-GV", preferredSection = TechnicalSection.DIAGNOSTICS))
+        assertEquals("VL-EQ-GV", id.first().document.canonicalId)
+        assertTrue("canonical-id" in id.first().reasons)
+    }
+
+    @Test
     fun explicitSeriesNeverReturnsOtherLocomotiveEvenForExactTitle() {
         val ermak = ErmakDiagnosticAssistantAdapter.adapt(ermakDiagnostic())
         val vl = Vl80DiagnosticAssistantAdapter.adapt(vl80Diagnostic())

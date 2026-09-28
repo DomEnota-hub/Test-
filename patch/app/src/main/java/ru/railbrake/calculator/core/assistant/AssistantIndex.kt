@@ -76,6 +76,11 @@ class InMemoryAssistantIndex(
             canonicalId = document.canonicalId.normalizeAssistantText()
         )
     }
+    private val sectionDocuments = this.documents.groupBy { it.document.section }
+    private val indexedIdentifiers = this.documents.asSequence()
+        .flatMap { sequenceOf(it.canonicalId) + it.linkedIds.asSequence() }
+        .filter { it.length >= 4 }
+        .toSet()
 
     fun size(): Int = documents.size
 
@@ -88,7 +93,30 @@ class InMemoryAssistantIndex(
             .toSet()
         val diagnosticsFirst = request.preferredSection == TechnicalSection.DIAGNOSTICS
 
-        return documents.mapNotNull { indexed ->
+        // The parser supplies a likely section before ranking. Search that
+        // already-indexed partition first; do not make it an exclusive gate:
+        // sparse content, ambiguous speech and ID commands need the full index.
+        val hasDirectIdentifier = queryParts.any(indexedIdentifiers::contains)
+        val preferred = if (hasDirectIdentifier) null else request.preferredSection?.let(sectionDocuments::get)
+        if (preferred != null && preferred.size < documents.size) {
+            val focused = score(preferred, request, query, literalQuery, queryParts, tokens, diagnosticsFirst)
+            if (focused.firstOrNull()?.let { hit ->
+                    hit.score >= 115 && hit.reasons.any { reason ->
+                        reason in setOf("primary-phrase", "alias-phrase", "symptom-phrase", "component", "safety-topic", "canonical-id") ||
+                            reason.startsWith("failure-mode:")
+                    }
+                } == true) return focused
+        }
+        return score(documents, request, query, literalQuery, queryParts, tokens, diagnosticsFirst)
+    }
+
+    private fun score(
+        candidates: List<IndexedDocument>, request: AssistantSearchRequest,
+        query: String, literalQuery: String, queryParts: List<String>,
+        tokens: Set<String>, diagnosticsFirst: Boolean
+    ): List<AssistantSearchHit> {
+
+        return candidates.mapNotNull { indexed ->
             val document = indexed.document
             // A named locomotive is a hard scope for operational material.
             // A very strong text match must never surface another series.
