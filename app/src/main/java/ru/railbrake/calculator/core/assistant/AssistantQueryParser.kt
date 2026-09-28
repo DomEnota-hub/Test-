@@ -146,10 +146,12 @@ object AssistantQueryParser {
         val componentKey = componentFromAnswer(normalized)
         val failureModes = AssistantFailureModeDetector.detect(normalized)
         val safetyTopicIds = AssistantSafetyTopics.resolve(normalized, electricalInjury.containsMatchIn(normalized))
-        val safetyTopicId = safetyTopicIds.firstOrNull()
+        // Preserve the original electric-injury compatibility field. The
+        // general topic set carries all other first-aid classifications.
+        val safetyTopicId = if ("electric" in safetyTopicIds) "electric" else null
 
         val intent = when {
-            safetyTopicId != null || hasSafetyCue(normalized) -> AssistantIntent.SAFETY
+            safetyTopicIds.isNotEmpty() || hasSafetyCue(normalized) -> AssistantIntent.SAFETY
             hasAcceptanceCue(normalized) -> AssistantIntent.ACCEPTANCE
             hasSchemeCue(normalized) -> AssistantIntent.OPEN_SCHEME
             failureModes.isNotEmpty() || troubleshootCues.any(normalized::contains) -> AssistantIntent.TROUBLESHOOT

@@ -236,10 +236,11 @@ class InMemoryAssistantIndex(
 
             // A high-confidence first-aid topic beats unrelated engineering
             // cards sharing "удар" or "ток", while preserving other results.
+            val primarySafetyTopic = request.safetyTopicId ?: request.safetyTopicIds.firstOrNull()
             val safetyMatch = document.kind == AssistantDocumentKind.FIRST_AID &&
                 (document.canonicalId == request.safetyTopicId || document.canonicalId in request.safetyTopicIds)
             if (safetyMatch) {
-                score += if (document.canonicalId == request.safetyTopicId) 500 else 350
+                score += if (document.canonicalId == primarySafetyTopic) 500 else 350
                 hasContentEvidence = true
                 reasons += "safety-topic"
             }
