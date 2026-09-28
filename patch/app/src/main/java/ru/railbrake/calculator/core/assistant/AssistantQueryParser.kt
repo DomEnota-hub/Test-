@@ -40,6 +40,8 @@ object AssistantQueryParser {
         "кран 395" to "км 395",
         "не пашет" to "не работает",
         "не фурычит" to "не работает",
+        "не горит экран" to "нет индикации",
+        "экран не горит" to "нет индикации",
         "вырубился" to "самопроизвольно отключился",
         "вырубило" to "самопроизвольно отключило",
         "отрубился" to "самопроизвольно отключился",
@@ -290,7 +292,7 @@ object AssistantQueryParser {
             isGenericBrakeTest(normalized) -> AssistantAmbiguity.PROCEDURE_TYPE_REQUIRED
             normalized == "тормоза" -> AssistantAmbiguity.TOPIC_SCOPE
             intent == AssistantIntent.TROUBLESHOOT && componentKey == null &&
-                "тормоз" in normalized && AssistantFailureMode.GENERAL_FAILURE in failureModes -> AssistantAmbiguity.TOPIC_SCOPE
+                scopeCore in setOf("тормоза чудят", "тормоза не работают", "тормоза неисправны") -> AssistantAmbiguity.TOPIC_SCOPE
             intent == AssistantIntent.TROUBLESHOOT && componentKey == null && (
                 scopeCore in setOf("не работает", "не включается", "не выключается", "не запускается", "ошибка", "авария") ||
                     (AssistantFailureMode.PRESSURE_LEAK in failureModes &&

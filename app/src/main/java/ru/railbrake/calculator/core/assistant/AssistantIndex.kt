@@ -30,6 +30,7 @@ class InMemoryAssistantIndex(
         val primaryPhrases: Set<String>,
         val aliasPhrases: Set<String>,
         val symptomPhrases: Set<String>,
+        val headingStems: Set<String>,
         val linkedIds: Set<String>,
         val canonicalId: String
     )
@@ -72,6 +73,7 @@ class InMemoryAssistantIndex(
             primaryPhrases = primaryPhrases,
             aliasPhrases = aliasPhrases,
             symptomPhrases = document.symptomTerms.map(String::normalizeAssistantText).filter { it.length >= 4 }.toSet(),
+            headingStems = headingStems("${document.title} ${document.summary}"),
             linkedIds = (document.relatedIds + document.componentIds).map(String::normalizeAssistantText).filter(String::isNotBlank).toSet(),
             canonicalId = document.canonicalId.normalizeAssistantText()
         )
@@ -91,6 +93,7 @@ class InMemoryAssistantIndex(
         val tokens = queryParts
             .filter { it.length > 1 && it !in stopWords }
             .toSet()
+        val queryHeadingStems = headingStems(literalQuery)
         val diagnosticsFirst = request.preferredSection == TechnicalSection.DIAGNOSTICS
 
         // The parser supplies a likely section before ranking. Search that
@@ -99,21 +102,22 @@ class InMemoryAssistantIndex(
         val hasDirectIdentifier = queryParts.any(indexedIdentifiers::contains)
         val preferred = if (hasDirectIdentifier) null else request.preferredSection?.let(sectionDocuments::get)
         if (preferred != null && preferred.size < documents.size) {
-            val focused = score(preferred, request, query, literalQuery, queryParts, tokens, diagnosticsFirst)
+            val focused = score(preferred, request, query, literalQuery, queryParts, tokens, queryHeadingStems, diagnosticsFirst)
             if (focused.firstOrNull()?.let { hit ->
                     hit.score >= 115 && hit.reasons.any { reason ->
                         reason in setOf("primary-phrase", "alias-phrase", "symptom-phrase", "component", "safety-topic", "canonical-id") ||
-                            reason.startsWith("failure-mode:")
+                            reason.startsWith("failure-mode:") ||
+                            (reason.startsWith("heading-terms:") && reason.substringAfter(':').toInt() >= 2)
                     }
                 } == true) return focused
         }
-        return score(documents, request, query, literalQuery, queryParts, tokens, diagnosticsFirst)
+        return score(documents, request, query, literalQuery, queryParts, tokens, queryHeadingStems, diagnosticsFirst)
     }
 
     private fun score(
         candidates: List<IndexedDocument>, request: AssistantSearchRequest,
         query: String, literalQuery: String, queryParts: List<String>,
-        tokens: Set<String>, diagnosticsFirst: Boolean
+        tokens: Set<String>, queryHeadingStems: Set<String>, diagnosticsFirst: Boolean
     ): List<AssistantSearchHit> {
 
         return candidates.mapNotNull { indexed ->
@@ -195,6 +199,13 @@ class InMemoryAssistantIndex(
                 }
             }
 
+            val headingOverlap = queryHeadingStems.count(indexed.headingStems::contains)
+            if (headingOverlap > 0) {
+                score += 24 * headingOverlap
+                hasContentEvidence = true
+                reasons += "heading-terms:$headingOverlap"
+            }
+
             // A high-confidence first-aid topic beats unrelated engineering
             // cards sharing "удар" or "ток", while preserving other results.
             if (request.safetyTopicId != null && document.kind == AssistantDocumentKind.FIRST_AID &&
@@ -263,6 +274,20 @@ class InMemoryAssistantIndex(
     }
 
     private companion object {
+        fun headingStems(text: String): Set<String> = text.normalizeAssistantText()
+            .split(' ')
+            .asSequence()
+            .filter { it.length >= 4 && it !in headingStopWords }
+            .map { word ->
+                word.take(when {
+                    word.length >= 9 -> 7
+                    word.length >= 6 -> 5
+                    else -> 4
+                })
+            }
+            .toSet()
+
+        val headingStopWords = setOf("неисправность", "локомотива", "локомотив", "вл80с", "ермак", "при", "после")
         val stopWords = setOf(
             "на", "не", "и", "или", "в", "во", "по", "для", "что", "как",
             "где", "покажи", "найди", "открой", "про", "при", "это", "он", "она",

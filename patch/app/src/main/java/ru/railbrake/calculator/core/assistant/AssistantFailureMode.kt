@@ -36,12 +36,14 @@ object AssistantFailureModeDetector {
 
         val compressorContext = Regex("(^| )(компрессор|мотор-компрессор|мк)( |$)").containsMatchIn(normalized) &&
             !Regex("(^| )(гв|главный выключатель)( |$)").containsMatchIn(normalized)
+        val brakeContext = "тормоз" in normalized &&
+            listOf("тормозной сигнал", "тормозной огонь").none(normalized::contains)
 
         val noSwitchOn = containsAny(
             normalized,
             "не включ", "не хочет включ", "не замыка", "не принимает команд",
             "не срабатывает на включ", "не срабатыва"
-        ) && !compressorContext
+        ) && !compressorContext && !(brakeContext && "не срабатыва" in normalized)
         val noSwitchOffPhrase = containsAny(
             normalized,
             "не выключ", "не отключ", "не размыка"
@@ -101,11 +103,19 @@ object AssistantFailureModeDetector {
         ) {
             modes += AssistantFailureMode.NO_TRACTION
         }
-        if (containsAny(normalized, "не тормоз")) modes += AssistantFailureMode.NO_BRAKE
+        if (containsAny(normalized, "не тормоз") ||
+            (brakeContext && containsAny(normalized, "не срабатыва", "не действует"))) modes += AssistantFailureMode.NO_BRAKE
         if (containsAny(normalized, "не отпуска")) modes += AssistantFailureMode.NO_RELEASE
         if (containsAny(normalized, "перегрев", "греется", "перегрел")) modes += AssistantFailureMode.OVERHEAT
         if (containsAny(normalized, "искрит", "искрен", "дуга", "пробой", "пробил")) modes += AssistantFailureMode.SPARK_OR_ARC
-        if (containsAny(normalized, "дым", "пожар", "горит", "горение", "запах гари", "гарь")) {
+        val smokeIsAffirmative = "дым" in normalized &&
+            listOf("дыма нет", "без дыма", "нет дыма").none(normalized::contains)
+        val fireIsAffirmative = Regex("(^| )пожар( |$|[аеуыом])").containsMatchIn(normalized) &&
+            listOf("пожара нет", "нет пожара", "без пожара").none(normalized::contains)
+        val burningEquipment = "горит" in normalized &&
+            listOf("не горит", "лампа", "индикатор", "экран", "дисплей", "зб", "сигнал").none(normalized::contains)
+        if (smokeIsAffirmative || fireIsAffirmative || burningEquipment ||
+            containsAny(normalized, "горение", "запах гари", "гарь")) {
             modes += AssistantFailureMode.SMOKE_OR_FIRE
         }
         if (containsAny(normalized, "стучит", "шумит", "трещит", "дребезжит", "воет", "свистит")) {

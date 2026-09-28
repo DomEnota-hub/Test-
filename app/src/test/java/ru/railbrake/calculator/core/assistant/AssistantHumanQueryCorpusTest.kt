@@ -231,6 +231,10 @@ class AssistantHumanQueryCorpusTest {
         assertEquals(setOf(AssistantFailureMode.NO_STOP), compressorOff)
         assertEquals(setOf(AssistantFailureMode.NO_SWITCH_OFF), breakerOff)
         assertFalse(AssistantFailureMode.PRESSURE_LEAK in AssistantQueryParser.parse("давление в ТМ не падает").failureModes)
+        assertEquals(setOf(AssistantFailureMode.NO_BRAKE), AssistantQueryParser.parse("автоматический тормоз не срабатывает").failureModes)
+        assertEquals(setOf(AssistantFailureMode.NO_SWITCH_ON), AssistantQueryParser.parse("главный выключатель не срабатывает").failureModes)
+        assertFalse(AssistantFailureMode.SMOKE_OR_FIRE in AssistantQueryParser.parse("экран КЛУБ У не горит").failureModes)
+        assertFalse(AssistantFailureMode.SMOKE_OR_FIRE in AssistantQueryParser.parse("пожарная сигнализация неисправна но дыма нет").failureModes)
     }
 
     @Test
