@@ -162,6 +162,9 @@ class AssistantHumanQueryCorpusTest {
         )
 
         assertParserCases(cases)
+        // A real named subject need not be in the small component dictionary.
+        assertNull(AssistantQueryParser.parse("Ермак дворники не работают").ambiguity)
+        assertNull(AssistantQueryParser.parse("ВЛ80С пожаротушение не готово").ambiguity)
     }
 
     @Test

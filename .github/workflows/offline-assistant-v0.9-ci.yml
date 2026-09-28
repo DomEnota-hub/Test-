@@ -253,7 +253,7 @@ jobs:
           if [ "$status" -ne 0 ]; then
             echo '===== ASSISTANT CORPUS FAILURE REPORTS ====='
             find app/build/test-results/testDebugUnitTest -type f \
-              \( -name 'TEST-*AssistantHumanQueryCorpusTest*.xml' -o -name 'TEST-*AssistantDiagnosticCorpusTest*.xml' \) \
+              \( -name 'TEST-*AssistantHumanQueryCorpusTest*.xml' -o -name 'TEST-*AssistantDiagnosticCorpusTest*.xml' -o -name 'TEST-*AssistantScenarioSpeechCorpusTest*.xml' \) \
               -print -exec cat {} \; || true
           fi
           exit "$status"

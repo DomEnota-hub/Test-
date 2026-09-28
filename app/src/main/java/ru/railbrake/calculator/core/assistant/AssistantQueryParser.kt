@@ -293,7 +293,6 @@ object AssistantQueryParser {
                 "тормоз" in normalized && AssistantFailureMode.GENERAL_FAILURE in failureModes -> AssistantAmbiguity.TOPIC_SCOPE
             intent == AssistantIntent.TROUBLESHOOT && componentKey == null && (
                 scopeCore in setOf("не работает", "не включается", "не выключается", "не запускается", "ошибка", "авария") ||
-                    AssistantFailureMode.GENERAL_FAILURE in failureModes ||
                     (AssistantFailureMode.PRESSURE_LEAK in failureModes &&
                         ("воздух" in normalized || "давление" in normalized))
                 ) -> AssistantAmbiguity.COMPONENT_REQUIRED
