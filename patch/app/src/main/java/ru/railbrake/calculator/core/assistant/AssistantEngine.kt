@@ -12,6 +12,14 @@ class AssistantEngine(
 
     internal fun query(parsed: AssistantParsedQuery, limit: Int = 3): AssistantEngineResult {
 
+        if (parsed.intent == AssistantIntent.SAFETY && parsed.safetyTopicIds.isEmpty() &&
+            parsed.normalizedText in setOf("опп", "первая помощь", "первую помощь", "помоги человеку")) {
+            return AssistantEngineResult.NoResult(
+                parsedQuery = parsed,
+                message = "Уточните, что произошло с человеком или какие признаки вы наблюдаете."
+            )
+        }
+
         parsed.ambiguity?.let { ambiguity ->
             return AssistantEngineResult.Clarify(
                 parsedQuery = parsed,

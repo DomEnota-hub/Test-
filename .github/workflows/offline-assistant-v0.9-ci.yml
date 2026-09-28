@@ -86,6 +86,7 @@ jobs:
             AssistantDiagnosticCorpusTest.kt \
             AssistantHumanQueryCorpusTest.kt \
             AssistantSafetyRoutingTest.kt \
+            AssistantSectionRoutingTest.kt \
             AssistantScenarioSpeechCorpusTest.kt \
             AssistantVoicePolicyTest.kt; do
             cmp \
@@ -149,6 +150,7 @@ jobs:
             AssistantDiagnosticCorpusTest.kt \
             AssistantHumanQueryCorpusTest.kt \
             AssistantSafetyRoutingTest.kt \
+            AssistantSectionRoutingTest.kt \
             AssistantScenarioSpeechCorpusTest.kt \
             AssistantVoicePolicyTest.kt; do
             test -f "buildsrc/RailBrakeCalculator/app/src/test/java/ru/railbrake/calculator/core/assistant/$testfile"

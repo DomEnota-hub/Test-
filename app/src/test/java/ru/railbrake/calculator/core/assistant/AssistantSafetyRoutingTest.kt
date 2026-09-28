@@ -70,4 +70,10 @@ class AssistantSafetyRoutingTest {
         val result = engine.query("человек замёрз") as AssistantEngineResult.Matches
         assertTrue(result.hits.none { it.document.canonicalId in setOf("nosebleed", "unconscious", "airway", "impact") })
     }
+
+    @Test fun categoryNameWithoutSymptomsDoesNotShowAnArbitraryEmergencyCard() {
+        listOf("ОПП", "первая помощь").forEach { phrase ->
+            assertTrue("$phrase", engine.query(phrase) is AssistantEngineResult.NoResult)
+        }
+    }
 }
