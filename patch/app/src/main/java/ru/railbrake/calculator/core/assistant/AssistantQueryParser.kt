@@ -167,7 +167,7 @@ object AssistantQueryParser {
             AssistantIntent.SAFETY -> TechnicalSection.SAFETY
             AssistantIntent.PROCEDURE -> TechnicalSection.KNOWLEDGE
             AssistantIntent.DEFINE_TERM -> if (componentKey != null) TechnicalSection.EQUIPMENT else TechnicalSection.KNOWLEDGE
-            AssistantIntent.FIND_TOPIC -> null
+            AssistantIntent.FIND_TOPIC -> if (componentKey != null && "атлас" in normalized) TechnicalSection.EQUIPMENT else null
         }
 
         val confidence = when (intent) {
@@ -325,7 +325,7 @@ object AssistantQueryParser {
             "слр", "реанимац", "без сознания", "не дышит", "кровотеч", "кровь не останавли", "подавил", "ожог", "обжег", "обжог",
             "сломал руку", "сломала руку", "сломал ногу", "сломала ногу", "сломана рука", "сломана нога",
             "отрав", "перелом", "судорог", "укус", "тепловой удар",
-            "замерз", "обмороз", "аптеч"
+            "аптеч"
         ).any(text::contains)
 
     private fun hasAcceptanceCue(text: String): Boolean =

@@ -101,6 +101,7 @@ class AssistantHumanQueryCorpusTest {
             ParserCase("где ГВ на схеме 2эс5к", AssistantIntent.OPEN_SCHEME, TechnicalFamily.ERMAK, "MAIN_BREAKER", section = TechnicalSection.ELECTRICAL),
             ParserCase("электросхема Ермака", AssistantIntent.OPEN_SCHEME, TechnicalFamily.ERMAK, section = TechnicalSection.ELECTRICAL),
             ParserCase("пневмосхема ВЛ80С тормозная магистраль", AssistantIntent.OPEN_SCHEME, TechnicalFamily.VL80S, "BRAKE_PIPE", section = TechnicalSection.PNEUMATIC),
+            ParserCase("где в атласе главный выключатель Ермака", AssistantIntent.FIND_TOPIC, TechnicalFamily.ERMAK, "MAIN_BREAKER", section = TechnicalSection.EQUIPMENT),
 
             ParserCase("что такое компрессор", AssistantIntent.DEFINE_TERM, component = "COMPRESSOR", section = TechnicalSection.EQUIPMENT),
             ParserCase("для чего нужен главный выключатель", AssistantIntent.DEFINE_TERM, component = "MAIN_BREAKER", section = TechnicalSection.EQUIPMENT),

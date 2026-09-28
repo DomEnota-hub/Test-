@@ -256,9 +256,14 @@ jobs:
           status=$?
           if [ "$status" -ne 0 ]; then
             echo '===== ASSISTANT CORPUS FAILURE REPORTS ====='
-            find app/build/test-results/testDebugUnitTest -type f \
-              \( -name 'TEST-*AssistantHumanQueryCorpusTest*.xml' -o -name 'TEST-*AssistantDiagnosticCorpusTest*.xml' -o -name 'TEST-*AssistantScenarioSpeechCorpusTest*.xml' \) \
-              -print -exec cat {} \; || true
+            python3 - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          for path in Path('app/build/test-results/testDebugUnitTest').glob('TEST-*Assistant*Test*.xml'):
+              for test in ET.parse(path).iter('testcase'):
+                  for failure in test.findall('failure'):
+                      print(f"{path.name} / {test.attrib.get('name')}: {failure.attrib.get('message')}")
+          PY
           fi
           exit "$status"
 

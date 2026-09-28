@@ -147,6 +147,7 @@ class InMemoryAssistantIndex(
             }
             var score = 0
             var hasContentEvidence = false
+            var matchedSpecificMode = false
             val reasons = mutableListOf<String>()
 
             val canonicalId = indexed.canonicalId
@@ -235,8 +236,9 @@ class InMemoryAssistantIndex(
 
             // A high-confidence first-aid topic beats unrelated engineering
             // cards sharing "удар" or "ток", while preserving other results.
-            if (document.kind == AssistantDocumentKind.FIRST_AID &&
-                (document.canonicalId == request.safetyTopicId || document.canonicalId in request.safetyTopicIds)) {
+            val safetyMatch = document.kind == AssistantDocumentKind.FIRST_AID &&
+                (document.canonicalId == request.safetyTopicId || document.canonicalId in request.safetyTopicIds)
+            if (safetyMatch) {
                 score += if (document.canonicalId == request.safetyTopicId) 500 else 350
                 hasContentEvidence = true
                 reasons += "safety-topic"
@@ -251,6 +253,7 @@ class InMemoryAssistantIndex(
                     matchedModes.isNotEmpty() -> {
                         score += 95 + (matchedModes.size - 1) * 15
                         hasContentEvidence = true
+                        matchedSpecificMode = matchedModes.any { it != AssistantFailureMode.GENERAL_FAILURE }
                         reasons += "failure-mode:${matchedModes.joinToString(",") { it.name }}"
                     }
                     requestedSpecific.isNotEmpty() && documentSpecific.isNotEmpty() -> {
@@ -291,9 +294,9 @@ class InMemoryAssistantIndex(
             }
 
             val insufficientAnchor = queryHeadingStems.size >= 2 &&
-                anchorOverlap < (if (queryHeadingStems.size >= 3) 2 else 1) &&
+                anchorOverlap < (if (matchedSpecificMode) 1 else if (queryHeadingStems.size >= 3) 2 else 1) &&
                 !directCanonicalId && linkedId == null && request.componentId == null &&
-                !primaryPhraseMatched && !aliasPhraseMatched
+                !primaryPhraseMatched && !aliasPhraseMatched && !safetyMatch
             if (!hasContentEvidence || score <= 0 || insufficientAnchor) null
             else AssistantSearchHit(document, score, reasons)
         }
