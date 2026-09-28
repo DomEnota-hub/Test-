@@ -128,7 +128,8 @@ internal class AssistantVoiceInput(private val context: Context) {
             val pcm = ShortArray(AssistantVoicePolicy.WINDOW_SAMPLES)
             var recorded = 0
             var buffered = 0
-            val utterance = ArrayList<Float>()
+            var utterance = FloatArray(AssistantVoicePolicy.SAMPLE_RATE)
+            var utteranceSize = 0
             // VAD returns speech with its own leading padding. Keep only the first utterance.
             while (true) {
                 coroutineContext.ensureActive()
@@ -146,10 +147,15 @@ internal class AssistantVoiceInput(private val context: Context) {
             vad.flush()
             while (!vad.empty()) {
                 val segment = vad.front().samples
-                for (sample in segment) utterance.add(sample)
+                val required = utteranceSize + segment.size
+                if (required > utterance.size) {
+                    utterance = utterance.copyOf(maxOf(required, utterance.size * 2))
+                }
+                segment.copyInto(utterance, destinationOffset = utteranceSize)
+                utteranceSize = required
                 vad.pop()
             }
-            return FloatArray(utterance.size) { utterance[it] }
+            return utterance.copyOf(utteranceSize)
         } finally {
             if (recorder.recordingState == AudioRecord.RECORDSTATE_RECORDING) recorder.stop()
             recorder.release()
