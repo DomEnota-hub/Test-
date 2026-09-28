@@ -1,4 +1,4 @@
-name: Offline Assistant v0.18.1 CI
+name: Offline Assistant v0.18.2 CI
 
 on:
   workflow_dispatch:
@@ -89,6 +89,7 @@ jobs:
               "app/src/test/java/ru/railbrake/calculator/core/assistant/$testfile" \
               "patch/app/src/test/java/ru/railbrake/calculator/core/assistant/$testfile"
           done
+          cmp app/src/main/java/ru/railbrake/calculator/ui/FirstAidScreen.kt patch/app/src/main/java/ru/railbrake/calculator/ui/FirstAidScreen.kt
           cmp app/build.gradle.kts patch/app/build.gradle.kts
 
       - name: Set up JDK 17
@@ -204,7 +205,7 @@ jobs:
 
           text, code_count = re.subn(
               r'versionCode\s*=\s*\d+',
-              'versionCode = 208',
+              'versionCode = 209',
               text,
               count=1,
           )
@@ -212,7 +213,7 @@ jobs:
               raise SystemExit('Expected versionCode was not found exactly once')
 
           def version_replacement(match):
-              return f'versionName = "{match.group(1)}-assistant-v0.18.1"'
+              return f'versionName = "{match.group(1)}-assistant-v0.18.2"'
 
           text, version_count = re.subn(
               r'versionName\s*=\s*"([^"]+)"',
@@ -289,7 +290,7 @@ jobs:
           set -euo pipefail
           APK=buildsrc/RailBrakeCalculator/app/build/outputs/apk/release/app-release.apk
           "$ANDROID_SDK_ROOT/build-tools/34.0.0/aapt" dump badging "$APK" | tee assistant-test-badging.log
-          grep -Fq "package: name='ru.railbrake.calculator.assistanttest' versionCode='208' versionName='1.2.2-dev14-beta52-assistant-v0.18.1'" assistant-test-badging.log
+          grep -Fq "package: name='ru.railbrake.calculator.assistanttest' versionCode='209' versionName='1.2.2-dev14-beta52-assistant-v0.18.2'" assistant-test-badging.log
           "$ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner" verify --verbose --print-certs "$APK" | tee assistant-test-apksigner.log
           grep -qi "Signer #1 certificate SHA-256 digest: $EXPECTED_SIGNING_CERT_SHA256" assistant-test-apksigner.log
           unzip -Z1 "$APK" > assistant-test-entries.txt
@@ -302,7 +303,7 @@ jobs:
       - name: Upload updatable signed Test APK
         uses: actions/upload-artifact@v4
         with:
-          name: railbrake-assistant-test-v0.18.1-signed-apk
+          name: railbrake-assistant-test-v0.18.2-signed-apk
           path: buildsrc/RailBrakeCalculator/app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
           retention-days: 7

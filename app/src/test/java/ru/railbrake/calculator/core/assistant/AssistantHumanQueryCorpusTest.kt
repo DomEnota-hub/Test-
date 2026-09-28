@@ -117,6 +117,16 @@ class AssistantHumanQueryCorpusTest {
             ParserCase("начать из кабины", AssistantIntent.ACCEPTANCE, section = TechnicalSection.ACCEPTANCE),
 
             ParserCase("человека ударило током", AssistantIntent.SAFETY, section = TechnicalSection.SAFETY),
+            ParserCase("человек ударила током", AssistantIntent.SAFETY, section = TechnicalSection.SAFETY),
+            ParserCase("человека ударил ток", AssistantIntent.SAFETY, section = TechnicalSection.SAFETY),
+            ParserCase("током ударило машиниста", AssistantIntent.SAFETY, section = TechnicalSection.SAFETY),
+            ParserCase("помощника машиниста шарахнула электричеством", AssistantIntent.SAFETY, section = TechnicalSection.SAFETY),
+            ParserCase("поражение электрическим током", AssistantIntent.SAFETY, section = TechnicalSection.SAFETY),
+            ParserCase("электротравма", AssistantIntent.SAFETY, section = TechnicalSection.SAFETY),
+            ParserCase("электроудар", AssistantIntent.SAFETY, section = TechnicalSection.SAFETY),
+            ParserCase("рабочего тряхнуло током", AssistantIntent.SAFETY, section = TechnicalSection.SAFETY),
+            ParserCase("удар током человека", AssistantIntent.SAFETY, section = TechnicalSection.SAFETY),
+            ParserCase("человека электричеством ударило", AssistantIntent.SAFETY, section = TechnicalSection.SAFETY),
             ParserCase("шарахнуло током что делать", AssistantIntent.SAFETY, section = TechnicalSection.SAFETY),
             ParserCase("человек без сознания", AssistantIntent.SAFETY, section = TechnicalSection.SAFETY),
             ParserCase("человек не дышит", AssistantIntent.SAFETY, section = TechnicalSection.SAFETY),
@@ -283,9 +293,9 @@ class AssistantHumanQueryCorpusTest {
             }
         }
 
-        // 84 hand-written cases above + 144 systematic speech/series variants.
+        // 94 hand-written cases above + 144 systematic speech/series variants.
         assertEquals(144, cases.size)
-        assertTrue(84 + cases.size in 200..300)
+        assertTrue(94 + cases.size in 200..300)
         assertParserCases(cases)
     }
 

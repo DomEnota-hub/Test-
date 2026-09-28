@@ -78,6 +78,12 @@ object AssistantQueryParser {
     private val replacementPatterns = replacements.map { (from, to) ->
         Regex("(?<![\\p{L}\\p{N}])${Regex.escape(from)}(?![\\p{L}\\p{N}])") to to
     }
+    // Speech recognition may change the gender/case of a nearby word. Require
+    // both an injury verb and an electrical cause, close to one another.
+    private val electricalInjury = Regex(
+        "(?:\\b(?:удар\\p{L}*|шарахнул\\p{L}*|тряхнул\\p{L}*|пораж\\p{L}*)\\b(?: +\\p{L}+){0,3} +\\b(?:ток\\p{L}*|электричеств\\p{L}*)\\b)|" +
+            "(?:\\b(?:ток\\p{L}*|электричеств\\p{L}*)\\b(?: +\\p{L}+){0,3} +\\b(?:удар\\p{L}*|шарахнул\\p{L}*|тряхнул\\p{L}*|пораж\\p{L}*)\\b)"
+    )
 
     private data class ComponentVocabulary(
         val key: String,
@@ -137,9 +143,11 @@ object AssistantQueryParser {
 
         val componentKey = componentFromAnswer(normalized)
         val failureModes = AssistantFailureModeDetector.detect(normalized)
+        val safetyTopicId = if ("электротравм" in normalized || "электроудар" in normalized ||
+            electricalInjury.containsMatchIn(normalized)) "electric" else null
 
         val intent = when {
-            hasSafetyCue(normalized) -> AssistantIntent.SAFETY
+            safetyTopicId != null || hasSafetyCue(normalized) -> AssistantIntent.SAFETY
             hasAcceptanceCue(normalized) -> AssistantIntent.ACCEPTANCE
             hasSchemeCue(normalized) -> AssistantIntent.OPEN_SCHEME
             failureModes.isNotEmpty() || troubleshootCues.any(normalized::contains) -> AssistantIntent.TROUBLESHOOT
@@ -180,7 +188,8 @@ object AssistantQueryParser {
             preferredSection = preferredSection,
             componentKey = componentKey,
             failureModes = failureModes,
-            ambiguity = ambiguity
+            ambiguity = ambiguity,
+            safetyTopicId = safetyTopicId
         )
     }
 
@@ -313,7 +322,7 @@ object AssistantQueryParser {
             "охрана труда", "безопасность", "первая помощь", "опп", "переохлаж", "обморож",
             "слр", "реанимац", "без сознания", "не дышит", "кровотеч", "кровь не останавли", "подавил", "ожог", "обжег", "обжог",
             "сломал руку", "сломала руку", "сломал ногу", "сломала ногу", "сломана рука", "сломана нога",
-            "удар током", "ударило ток", "ударил ток", "шарахнуло ток", "электроудар", "отрав", "перелом", "судорог", "укус", "тепловой удар",
+            "отрав", "перелом", "судорог", "укус", "тепловой удар",
             "замерз", "обмороз", "аптеч"
         ).any(text::contains)
 

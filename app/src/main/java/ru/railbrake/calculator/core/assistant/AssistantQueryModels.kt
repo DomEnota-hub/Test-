@@ -23,7 +23,8 @@ data class AssistantParsedQuery(
     val preferredSection: TechnicalSection?,
     val componentKey: String?,
     val failureModes: Set<AssistantFailureMode> = emptySet(),
-    val ambiguity: AssistantAmbiguity? = null
+    val ambiguity: AssistantAmbiguity? = null,
+    val safetyTopicId: String? = null
 )
 
 enum class AssistantAmbiguity {

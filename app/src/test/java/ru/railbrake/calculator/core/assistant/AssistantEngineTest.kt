@@ -6,8 +6,38 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import ru.railbrake.calculator.core.TechnicalFamily
 import ru.railbrake.calculator.core.TechnicalSection
+import ru.railbrake.calculator.ui.firstAidTopics
 
 class AssistantEngineTest {
+
+    @Test
+    fun dictatedElectricalInjuryOpensActualFirstAidTopicAheadOfRailwayCards() {
+        val railwayImpact = document(
+            id = "vl80-impact", family = TechnicalFamily.VL80S,
+            section = TechnicalSection.DIAGNOSTICS,
+            title = "Удар постороннего предмета под локомотивом",
+            aliases = setOf("удар", "утечка", "ток"), critical = true,
+            target = AssistantTarget.Vl80Diagnostic("vl80-impact")
+        )
+        val electric = firstAidTopics.first { it.id == "electric" }
+        val engine = AssistantEngine(InMemoryAssistantIndex(listOf(railwayImpact) + firstAidTopics.map(FirstAidAssistantAdapter::adapt)))
+        listOf(
+            "человек ударила током", "человека ударило током",
+            "током ударило машиниста", "помощника шарахнула электричеством",
+            "поражение электрическим током", "электротравма"
+        ).forEach { spoken ->
+            val result = engine.query(spoken)
+            assertTrue("Missing result for $spoken: $result", result is AssistantEngineResult.Matches)
+            result as AssistantEngineResult.Matches
+            assertEquals("Wrong intent for $spoken", AssistantIntent.SAFETY, result.parsedQuery.intent)
+            assertEquals("Wrong card for $spoken", AssistantTarget.FirstAid(electric.id), result.hits.first().document.target)
+            assertNull(result.recommendedTarget)
+        }
+        listOf("датчик тока", "удар постороннего предмета под локомотивом", "тепловой удар").forEach { query ->
+            val parsed = AssistantQueryParser.parse(query)
+            assertNull("Incorrect electric injury for $query", parsed.safetyTopicId)
+        }
+    }
 
     @Test
     fun asrStyleVl80FaultQueryRoutesToVl80Diagnostic() {

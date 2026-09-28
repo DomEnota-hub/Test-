@@ -10,6 +10,7 @@ data class AssistantSearchRequest(
     val preferredSection: TechnicalSection? = null,
     val componentId: String? = null,
     val failureModes: Set<AssistantFailureMode> = emptySet(),
+    val safetyTopicId: String? = null,
     val limit: Int = 5
 )
 
@@ -27,7 +28,10 @@ class InMemoryAssistantIndex(
         val failureModes: Set<AssistantFailureMode>,
         val describedComponents: Set<String>,
         val primaryPhrases: Set<String>,
-        val aliasPhrases: Set<String>
+        val aliasPhrases: Set<String>,
+        val symptomPhrases: Set<String>,
+        val linkedIds: Set<String>,
+        val canonicalId: String
     )
 
     private val documents = documents.map { document ->
@@ -66,7 +70,10 @@ class InMemoryAssistantIndex(
                 "${document.title} ${document.summary} ${document.symptomTerms.joinToString(" ")}"
             ),
             primaryPhrases = primaryPhrases,
-            aliasPhrases = aliasPhrases
+            aliasPhrases = aliasPhrases,
+            symptomPhrases = document.symptomTerms.map(String::normalizeAssistantText).filter { it.length >= 4 }.toSet(),
+            linkedIds = (document.relatedIds + document.componentIds).map(String::normalizeAssistantText).filter(String::isNotBlank).toSet(),
+            canonicalId = document.canonicalId.normalizeAssistantText()
         )
     }
 
@@ -92,7 +99,7 @@ class InMemoryAssistantIndex(
             var hasContentEvidence = false
             val reasons = mutableListOf<String>()
 
-            val canonicalId = document.canonicalId.normalizeAssistantText()
+            val canonicalId = indexed.canonicalId
             val directCanonicalId = canonicalId.isNotBlank() &&
                 (query == canonicalId || queryParts.contains(canonicalId) ||
                     (canonicalId.length >= 5 && query.contains(canonicalId)))
@@ -102,10 +109,8 @@ class InMemoryAssistantIndex(
                 reasons += "canonical-id"
             }
 
-            val linkedId = (document.relatedIds + document.componentIds)
+            val linkedId = indexed.linkedIds
                 .asSequence()
-                .map(String::normalizeAssistantText)
-                .filter(String::isNotBlank)
                 .firstOrNull { candidate ->
                     query == candidate || queryParts.contains(candidate) ||
                         (candidate.length >= 5 && query.contains(candidate))
@@ -144,10 +149,8 @@ class InMemoryAssistantIndex(
                 reasons += "alias-phrase"
             }
 
-            val symptomPhraseMatched = document.symptomTerms
+            val symptomPhraseMatched = indexed.symptomPhrases
                 .asSequence()
-                .map(String::normalizeAssistantText)
-                .filter { it.length >= 4 }
                 .any { symptom -> symptom in literalQuery || literalQuery in symptom }
             if (symptomPhraseMatched) {
                 score += 55
@@ -162,6 +165,15 @@ class InMemoryAssistantIndex(
                     hasContentEvidence = true
                     reasons += "tokens:$overlap"
                 }
+            }
+
+            // A high-confidence first-aid topic beats unrelated engineering
+            // cards sharing "удар" or "ток", while preserving other results.
+            if (request.safetyTopicId != null && document.kind == AssistantDocumentKind.FIRST_AID &&
+                document.canonicalId == request.safetyTopicId) {
+                score += 500
+                hasContentEvidence = true
+                reasons += "safety-topic"
             }
 
             if (diagnosticsFirst && document.section == TechnicalSection.DIAGNOSTICS && request.failureModes.isNotEmpty()) {
