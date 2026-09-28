@@ -1,4 +1,4 @@
-name: Offline Assistant v0.19 CI
+name: Offline Assistant v0.20 CI
 
 on:
   workflow_dispatch:
@@ -66,6 +66,7 @@ jobs:
             AssistantQueryModels.kt \
             AssistantQueryParser.kt \
             AssistantFailureMode.kt \
+            AssistantSafetyTopics.kt \
             AssistantEngine.kt \
             AssistantConversation.kt \
             AssistantRuntime.kt \
@@ -84,6 +85,7 @@ jobs:
             AssistantClarificationResolutionTest.kt \
             AssistantDiagnosticCorpusTest.kt \
             AssistantHumanQueryCorpusTest.kt \
+            AssistantSafetyRoutingTest.kt \
             AssistantScenarioSpeechCorpusTest.kt \
             AssistantVoicePolicyTest.kt; do
             cmp \
@@ -128,6 +130,7 @@ jobs:
             AssistantQueryModels.kt \
             AssistantQueryParser.kt \
             AssistantFailureMode.kt \
+            AssistantSafetyTopics.kt \
             AssistantEngine.kt \
             AssistantConversation.kt \
             AssistantRuntime.kt \
@@ -145,6 +148,7 @@ jobs:
             AssistantClarificationResolutionTest.kt \
             AssistantDiagnosticCorpusTest.kt \
             AssistantHumanQueryCorpusTest.kt \
+            AssistantSafetyRoutingTest.kt \
             AssistantScenarioSpeechCorpusTest.kt \
             AssistantVoicePolicyTest.kt; do
             test -f "buildsrc/RailBrakeCalculator/app/src/test/java/ru/railbrake/calculator/core/assistant/$testfile"
@@ -207,7 +211,7 @@ jobs:
 
           text, code_count = re.subn(
               r'versionCode\s*=\s*\d+',
-              'versionCode = 210',
+              'versionCode = 211',
               text,
               count=1,
           )
@@ -215,7 +219,7 @@ jobs:
               raise SystemExit('Expected versionCode was not found exactly once')
 
           def version_replacement(match):
-              return f'versionName = "{match.group(1)}-assistant-v0.19"'
+              return f'versionName = "{match.group(1)}-assistant-v0.20"'
 
           text, version_count = re.subn(
               r'versionName\s*=\s*"([^"]+)"',
@@ -292,7 +296,7 @@ jobs:
           set -euo pipefail
           APK=buildsrc/RailBrakeCalculator/app/build/outputs/apk/release/app-release.apk
           "$ANDROID_SDK_ROOT/build-tools/34.0.0/aapt" dump badging "$APK" | tee assistant-test-badging.log
-          grep -Fq "package: name='ru.railbrake.calculator.assistanttest' versionCode='210' versionName='1.2.2-dev14-beta52-assistant-v0.19'" assistant-test-badging.log
+          grep -Fq "package: name='ru.railbrake.calculator.assistanttest' versionCode='211' versionName='1.2.2-dev14-beta52-assistant-v0.20'" assistant-test-badging.log
           "$ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner" verify --verbose --print-certs "$APK" | tee assistant-test-apksigner.log
           grep -qi "Signer #1 certificate SHA-256 digest: $EXPECTED_SIGNING_CERT_SHA256" assistant-test-apksigner.log
           unzip -Z1 "$APK" > assistant-test-entries.txt
@@ -305,7 +309,7 @@ jobs:
       - name: Upload updatable signed Test APK
         uses: actions/upload-artifact@v4
         with:
-          name: railbrake-assistant-test-v0.19-signed-apk
+          name: railbrake-assistant-test-v0.20-signed-apk
           path: buildsrc/RailBrakeCalculator/app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
           retention-days: 7

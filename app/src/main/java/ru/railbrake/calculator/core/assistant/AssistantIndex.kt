@@ -11,6 +11,7 @@ data class AssistantSearchRequest(
     val componentId: String? = null,
     val failureModes: Set<AssistantFailureMode> = emptySet(),
     val safetyTopicId: String? = null,
+    val safetyTopicIds: Set<String> = emptySet(),
     val limit: Int = 5
 )
 
@@ -31,6 +32,7 @@ class InMemoryAssistantIndex(
         val aliasPhrases: Set<String>,
         val symptomPhrases: Set<String>,
         val headingStems: Set<String>,
+        val anchorStems: Set<String>,
         val linkedIds: Set<String>,
         val canonicalId: String
     )
@@ -74,6 +76,12 @@ class InMemoryAssistantIndex(
             aliasPhrases = aliasPhrases,
             symptomPhrases = document.symptomTerms.map(String::normalizeAssistantText).filter { it.length >= 4 }.toSet(),
             headingStems = headingStems("${document.title} ${document.summary}"),
+            anchorStems = headingStems(buildString {
+                append(document.title).append(' ').append(document.summary).append(' ')
+                append(document.aliases.joinToString(" ")).append(' ')
+                append(document.symptomTerms.joinToString(" ")).append(' ')
+                append(document.nativeSearchText)
+            }),
             linkedIds = (document.relatedIds + document.componentIds).map(String::normalizeAssistantText).filter(String::isNotBlank).toSet(),
             canonicalId = document.canonicalId.normalizeAssistantText()
         )
@@ -91,22 +99,31 @@ class InMemoryAssistantIndex(
         val literalQuery = (request.literalQuery ?: request.query).normalizeAssistantText()
         val queryParts = query.split(' ')
         val tokens = queryParts
-            .filter { it.length > 1 && it !in stopWords }
+            .filter { it.length > 2 && it !in stopWords && it !in headingStopWords }
             .toSet()
         val queryHeadingStems = headingStems(literalQuery)
         val diagnosticsFirst = request.preferredSection == TechnicalSection.DIAGNOSTICS
+        val safetyTopics = request.safetyTopicIds.ifEmpty { request.safetyTopicId?.let(::setOf).orEmpty() }
 
         // The parser supplies a likely section before ranking. Search that
         // already-indexed partition first; do not make it an exclusive gate:
         // sparse content, ambiguous speech and ID commands need the full index.
         val hasDirectIdentifier = queryParts.any(indexedIdentifiers::contains)
         val preferred = if (hasDirectIdentifier) null else request.preferredSection?.let(sectionDocuments::get)
+        if (safetyTopics.isNotEmpty() && !hasDirectIdentifier) {
+            // A symptom must never become an arbitrary other first-aid card
+            // just because its instructions also mention a person or cold.
+            return score(documents.filter { it.document.kind == AssistantDocumentKind.FIRST_AID &&
+                it.document.canonicalId in safetyTopics }, request, query, literalQuery,
+                queryParts, tokens, queryHeadingStems, diagnosticsFirst)
+        }
         if (preferred != null && preferred.size < documents.size) {
             val focused = score(preferred, request, query, literalQuery, queryParts, tokens, queryHeadingStems, diagnosticsFirst)
             if (focused.firstOrNull()?.let { hit ->
                     hit.score >= 115 && hit.reasons.any { reason ->
                         reason in setOf("primary-phrase", "alias-phrase", "symptom-phrase", "component", "safety-topic", "canonical-id") ||
                             reason.startsWith("failure-mode:") ||
+                            (reason.startsWith("anchor-terms:") && reason.substringAfter(':').toInt() >= 2) ||
                             (reason.startsWith("heading-terms:") && reason.substringAfter(':').toInt() >= 2)
                     }
                 } == true) return focused
@@ -193,8 +210,7 @@ class InMemoryAssistantIndex(
             if (tokens.isNotEmpty()) {
                 val overlap = tokens.count { token -> token in document.searchText }
                 if (overlap > 0) {
-                    score += overlap * 6
-                    hasContentEvidence = true
+                    score += overlap * 3
                     reasons += "tokens:$overlap"
                 }
             }
@@ -205,12 +221,22 @@ class InMemoryAssistantIndex(
                 hasContentEvidence = true
                 reasons += "heading-terms:$headingOverlap"
             }
+            val anchorOverlap = queryHeadingStems.count(indexed.anchorStems::contains)
+            if (anchorOverlap > headingOverlap) {
+                score += 18 * (anchorOverlap - headingOverlap)
+                hasContentEvidence = true
+                reasons += "anchor-terms:$anchorOverlap"
+            }
+            // Multiple descriptive terms should identify the same card.
+            // Mentions buried in instructions ("человек", "утечка", etc.)
+            // cannot establish a match or outweigh a specific scenario.
+            if (anchorOverlap >= 2) score += 25 * (anchorOverlap - 1)
 
             // A high-confidence first-aid topic beats unrelated engineering
             // cards sharing "удар" or "ток", while preserving other results.
-            if (request.safetyTopicId != null && document.kind == AssistantDocumentKind.FIRST_AID &&
-                document.canonicalId == request.safetyTopicId) {
-                score += 500
+            if (document.kind == AssistantDocumentKind.FIRST_AID &&
+                (document.canonicalId == request.safetyTopicId || document.canonicalId in request.safetyTopicIds)) {
+                score += if (document.canonicalId == request.safetyTopicId) 500 else 350
                 hasContentEvidence = true
                 reasons += "safety-topic"
             }
@@ -263,7 +289,11 @@ class InMemoryAssistantIndex(
                 }
             }
 
-            if (!hasContentEvidence || score <= 0) null
+            val insufficientAnchor = queryHeadingStems.size >= 2 &&
+                anchorOverlap < if (queryHeadingStems.size >= 3) 2 else 1 &&
+                !directCanonicalId && linkedId == null && request.componentId == null &&
+                !primaryPhraseMatched && !aliasPhraseMatched
+            if (!hasContentEvidence || score <= 0 || insufficientAnchor) null
             else AssistantSearchHit(document, score, reasons)
         }
             .sortedWith(
@@ -277,7 +307,9 @@ class InMemoryAssistantIndex(
         fun headingStems(text: String): Set<String> = text.normalizeAssistantText()
             .split(' ')
             .asSequence()
-            .filter { it.length >= 4 && it !in headingStopWords }
+            .filter { it.length >= 4 && it !in headingStopWords &&
+                !it.startsWith("человек") && !it.startsWith("локомотив") &&
+                !it.startsWith("помощ") && !it.startsWith("покаж") }
             .map { word ->
                 word.take(when {
                     word.length >= 9 -> 7
@@ -287,7 +319,7 @@ class InMemoryAssistantIndex(
             }
             .toSet()
 
-        val headingStopWords = setOf("неисправность", "локомотива", "локомотив", "вл80с", "ермак", "при", "после")
+        val headingStopWords = setOf("неисправность", "локомотива", "локомотив", "вл80с", "ермак", "при", "после", "человек", "человека", "человеку", "помощь", "первой")
         val stopWords = setOf(
             "на", "не", "и", "или", "в", "во", "по", "для", "что", "как",
             "где", "покажи", "найди", "открой", "про", "при", "это", "он", "она",

@@ -145,8 +145,8 @@ object AssistantQueryParser {
 
         val componentKey = componentFromAnswer(normalized)
         val failureModes = AssistantFailureModeDetector.detect(normalized)
-        val safetyTopicId = if ("электротравм" in normalized || "электроудар" in normalized ||
-            electricalInjury.containsMatchIn(normalized)) "electric" else null
+        val safetyTopicIds = AssistantSafetyTopics.resolve(normalized, electricalInjury.containsMatchIn(normalized))
+        val safetyTopicId = safetyTopicIds.firstOrNull()
 
         val intent = when {
             safetyTopicId != null || hasSafetyCue(normalized) -> AssistantIntent.SAFETY
@@ -191,7 +191,8 @@ object AssistantQueryParser {
             componentKey = componentKey,
             failureModes = failureModes,
             ambiguity = ambiguity,
-            safetyTopicId = safetyTopicId
+            safetyTopicId = safetyTopicId,
+            safetyTopicIds = safetyTopicIds
         )
     }
 

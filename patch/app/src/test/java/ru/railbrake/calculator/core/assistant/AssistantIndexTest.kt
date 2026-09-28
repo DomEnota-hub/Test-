@@ -19,6 +19,17 @@ import ru.railbrake.calculator.core.TechnicalSection
 class AssistantIndexTest {
 
     @Test
+    fun faultTitleWithAllSymptomsBeatsUnrelatedCardMentioningOneSymptomInInstructions() {
+        val correct = technicalEntry("brake-leak", TechnicalSection.DIAGNOSTICS,
+            "Утечка тормозной магистрали", "падение давления тормозной магистрали")
+        val unrelated = technicalEntry("impact", TechnicalSection.DIAGNOSTICS,
+            "Удар предмета под локомотивом", "После удара возможна утечка")
+        val hits = InMemoryAssistantIndex(listOf(unrelated, correct).map(TechnicalEntryAssistantAdapter::adapt))
+            .search(AssistantSearchRequest("утечка тормозной магистрали", preferredSection = TechnicalSection.DIAGNOSTICS))
+        assertEquals("brake-leak", hits.first().document.canonicalId)
+    }
+
+    @Test
     fun technicalEntryPreservesCanonicalIdAndNativeSearchText() {
         val entry = technicalEntry(
             id = "VL-EQ-GV",

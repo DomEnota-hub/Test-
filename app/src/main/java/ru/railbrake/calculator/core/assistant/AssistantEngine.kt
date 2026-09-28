@@ -27,6 +27,7 @@ class AssistantEngine(
             componentId = parsed.componentKey,
             failureModes = parsed.failureModes,
             safetyTopicId = parsed.safetyTopicId,
+            safetyTopicIds = parsed.safetyTopicIds,
             limit = limit.coerceIn(1, 5)
         )
         val hits = index.search(request)
