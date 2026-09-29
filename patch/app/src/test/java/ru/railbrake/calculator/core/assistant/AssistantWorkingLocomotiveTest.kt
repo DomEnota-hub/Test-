@@ -7,6 +7,7 @@ import org.junit.Test
 import ru.railbrake.calculator.core.TechnicalFamily
 import ru.railbrake.calculator.core.TechnicalSection
 import ru.railbrake.calculator.core.WorkingLocomotive
+import ru.railbrake.calculator.core.KnowledgeRepository
 import ru.railbrake.calculator.ui.firstAidTopics
 
 class AssistantWorkingLocomotiveTest {
@@ -34,6 +35,15 @@ class AssistantWorkingLocomotiveTest {
         assertEquals(TechnicalFamily.ERMAK, WorkingLocomotive.ERMAK_3ES5K.family)
         assertEquals(WorkingLocomotive.ERMAK_3ES5K,
             WorkingLocomotive.explicitlyNamed("3эс5к ГВ не включается"))
+    }
+
+    @Test fun commonKnowledgeDoesNotBecomeSeriesSpecificFromMentioningALocomotive() {
+        KnowledgeRepository.articles.forEach { article ->
+            val family = KnowledgeArticleAssistantAdapter.adapt(article).family
+            if (article.id.startsWith("vl80-")) assertEquals(TechnicalFamily.VL80S, family)
+            else if (article.id.startsWith("ermak-")) assertEquals(TechnicalFamily.ERMAK, family)
+            else assertNull("Common article ${article.id}", family)
+        }
     }
 
     @Test fun chosenCatalogResolvesFaultWithoutSeriesButDoesNotContainTheOtherFamily() {

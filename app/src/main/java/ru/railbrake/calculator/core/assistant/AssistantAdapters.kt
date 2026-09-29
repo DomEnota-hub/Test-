@@ -193,17 +193,11 @@ object KnowledgeArticleAssistantAdapter {
     )
 
     private fun inferFamily(article: KnowledgeArticle): TechnicalFamily? {
-        val haystack = buildString {
-            append(article.category)
-            append(' ')
-            append(article.title)
-            append(' ')
-            append(article.tags.joinToString(" "))
-        }.normalizeAssistantText()
-
+        // Canonical IDs in this repository declare the source catalog.
+        // A common article may mention a locomotive in its title or tags.
         return when {
-            "вл80" in haystack -> TechnicalFamily.VL80S
-            "ермак" in haystack || "2эс5к" in haystack || "3эс5к" in haystack -> TechnicalFamily.ERMAK
+            article.id.startsWith("vl80-") -> TechnicalFamily.VL80S
+            article.id.startsWith("ermak-") -> TechnicalFamily.ERMAK
             else -> null
         }
     }
