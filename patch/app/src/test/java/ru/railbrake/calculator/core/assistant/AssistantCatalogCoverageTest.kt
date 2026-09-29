@@ -85,7 +85,7 @@ class AssistantCatalogCoverageTest {
                 return@forEach
             }
             val titleTail = normalizedTitle.split(' ').drop(1).joinToString(" ")
-            val alternatives = (card.aliases + card.summary + titleTail)
+            val alternatives = (listOf(titleTail) + card.aliases + card.summary)
                 .map(String::normalizeAssistantText)
                 .filter { it.length >= 4 && it != normalizedTitle &&
                     it !in setOf("вл80с", "вл80", "ермак", "охрана труда", "первая помощь", "локомотив") }

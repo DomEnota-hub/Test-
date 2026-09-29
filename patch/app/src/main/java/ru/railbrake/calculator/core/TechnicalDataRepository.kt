@@ -667,6 +667,12 @@ class TechnicalDataRepository internal constructor(private val loadAsset: (Strin
       if (applicability.isNotEmpty()) add(TechnicalBlock("Применимость", applicability))
   },
   relatedIds = listOf(source.id),
+  searchAliases = buildList {
+      addAll(source.searchAliases)
+      source.subtitle.takeIf(String::isNotBlank)?.let(::add)
+      normal.firstOrNull()?.takeIf(String::isNotBlank)?.let(::add)
+      deviations.firstOrNull()?.takeIf(String::isNotBlank)?.let(::add)
+  }.distinct(),
   searchText = listOf(
       source.title,
       source.subtitle,

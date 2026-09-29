@@ -195,8 +195,9 @@ class InMemoryAssistantIndex(
             // headings. Match whole words so a shared prefix cannot beat the
             // exact card and a substring inside another word cannot trigger it.
             val shortTitle = document.title.normalizeAssistantText()
-            if (shortTitle.length in 2..7 && shortTitle.any(Char::isLetter) &&
-                " $shortTitle " in " $literalQuery ") {
+            val shortTitleMatched = shortTitle.length in 2..7 && shortTitle.any(Char::isLetter) &&
+                " $shortTitle " in " $literalQuery "
+            if (shortTitleMatched) {
                 score += 260
                 hasContentEvidence = true
                 reasons += "exact-short-title"
@@ -308,7 +309,7 @@ class InMemoryAssistantIndex(
             val insufficientAnchor = queryHeadingStems.size >= 2 &&
                 anchorOverlap < (if (matchedSpecificMode) 1 else if (queryHeadingStems.size >= 3) 2 else 1) &&
                 !directCanonicalId && linkedId == null && request.componentId == null &&
-                !primaryPhraseMatched && !aliasPhraseMatched && !safetyMatch
+                !primaryPhraseMatched && !aliasPhraseMatched && !shortTitleMatched && !safetyMatch
             if (!hasContentEvidence || score <= 0 || insufficientAnchor) null
             else AssistantSearchHit(document, score, reasons)
         }

@@ -15,6 +15,7 @@ import ru.railbrake.calculator.core.TechnicalBlock
 import ru.railbrake.calculator.core.TechnicalEntry
 import ru.railbrake.calculator.core.TechnicalFamily
 import ru.railbrake.calculator.core.TechnicalSection
+import ru.railbrake.calculator.ui.firstAidTopics
 
 class AssistantIndexTest {
 
@@ -46,6 +47,16 @@ class AssistantIndexTest {
                 preferredSection = TechnicalSection.EQUIPMENT)
         )
         assertEquals("VL-EQ-TR-001", result.first().document.canonicalId)
+    }
+
+    @Test
+    fun shortFirstAidHeadingSurvivesUnrelatedSectionWordsInQuestion() {
+        val burn = FirstAidAssistantAdapter.adapt(firstAidTopics.first { it.id == "burn" })
+        val result = InMemoryAssistantIndex(listOf(burn)).search(AssistantSearchRequest(
+            query = "охрана труда ожоги", literalQuery = "охрана труда ожоги",
+            preferredSection = TechnicalSection.SAFETY
+        ))
+        assertEquals("burn", result.first().document.canonicalId)
     }
 
     @Test
