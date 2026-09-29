@@ -37,6 +37,18 @@ object TechnicalEntryAssistantAdapter {
                     entry.id.endsWith("-PROTECTION") -> addAll(listOf(
                         "чем защититься на работе", "средства индивидуальной защиты", "сиз"
                     ))
+                    entry.id.endsWith("-ELECTRICAL") -> addAll(listOf(
+                        "допуск к электроустановке", "электрическая безопасность"
+                    ))
+                    entry.id.endsWith("-ROLLING-STOCK") -> addAll(listOf(
+                        "безопасность на путях", "работа рядом с поездом"
+                    ))
+                    entry.id.endsWith("-STOP") -> addAll(listOf(
+                        "когда прекратить работу", "остановить работу и доложить"
+                    ))
+                    entry.id.endsWith("-TRAINING") -> addAll(listOf(
+                        "инструктаж перед работой", "обучение по охране труда"
+                    ))
                 }
             }
         }

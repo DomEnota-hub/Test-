@@ -51,7 +51,8 @@ class AssistantCatalogCoverageTest {
                     section = if (source.asset == "ermak_schemes" &&
                         raw.optString("schemeType").let { it.contains("pneumatic", true) || it.contains("brake", true) })
                         TechnicalSection.PNEUMATIC else source.section,
-                    title = title, subtitle = raw.optString("summary"), status = "INFORMATION",
+                    title = title, subtitle = listOf("summary", "purpose", "check", "scopeNote")
+                        .map { raw.optString(it) }.firstOrNull(String::isNotBlank).orEmpty(), status = "INFORMATION",
                     blocks = emptyList(), searchText = (listOf(title) + aliases).joinToString(" ")
                 ))
             }
@@ -128,5 +129,88 @@ class AssistantCatalogCoverageTest {
         }
         assertTrue("Visible-card coverage ${relevant.size - missed.size}/${relevant.size}:\n" +
             missed.take(40).joinToString("\n"), missed.isEmpty())
+    }
+
+    @Test fun everyCardHasMoreThanItsHeadingAsAWorkingPhrase() {
+        val technical = sources.flatMap { source ->
+            val records = asset(source.asset).getJSONArray(source.array)
+            (0 until records.length()).map { n ->
+                val raw = records.getJSONObject(n)
+                val title = raw.optString(source.nameField)
+                val subtitle = listOf("summary", "purpose", "check", "scopeNote", "representationMode")
+                    .map { raw.optString(it) }.firstOrNull(String::isNotBlank).orEmpty()
+                val aliases = raw.optJSONArray("aliases")?.let { a ->
+                    (0 until a.length()).map { a.optString(it) }
+                }.orEmpty()
+                val type = raw.optString("schemeType")
+                val section = if (source.asset == "ermak_schemes" &&
+                    ("pneumatic" in type || "brake" in type)) TechnicalSection.PNEUMATIC else source.section
+                val entry = TechnicalEntry(
+                    id = raw.getString("id"), family = source.family, section = section,
+                    title = title, subtitle = subtitle, status = "INFORMATION",
+                    blocks = emptyList(), searchText = (listOf(title, subtitle) + aliases).joinToString(" ")
+                )
+                TechnicalEntryAssistantAdapter.adapt(entry) to aliases
+            }
+        }
+        val diagnostics = DiagnosticRepository.scenarios.map(Vl80DiagnosticAssistantAdapter::adapt) +
+            parseErmakDiagnostics(asset("ermak_diagnostics")).map(ErmakDiagnosticAssistantAdapter::adapt)
+        val knowledge = KnowledgeRepository.allArticles.map(KnowledgeArticleAssistantAdapter::adapt)
+        val aid = firstAidTopics.map(FirstAidAssistantAdapter::adapt)
+        val ermakAcceptance = technical.filter { it.first.family == TechnicalFamily.ERMAK &&
+            it.first.section == TechnicalSection.EQUIPMENT }.map { (equipment, _) ->
+            TechnicalEntryAssistantAdapter.adapt(TechnicalEntry(
+                id = "ER-ACC-${equipment.canonicalId.removePrefix("ER-EQ-")}",
+                family = TechnicalFamily.ERMAK, section = TechnicalSection.ACCEPTANCE,
+                title = equipment.title, subtitle = equipment.summary, status = "CHECK",
+                blocks = emptyList(), searchText = "${equipment.title} ${equipment.summary}"
+            ))
+        }
+        val safetyTitles = listOf(
+            "FACTORS" to "Опасные и вредные производственные факторы",
+            "RISK" to "Выявление опасностей и оценка риска",
+            "PROTECTION" to "Меры защиты: технические, организационные и СИЗ",
+            "ELECTRICAL" to "Электробезопасность и границы допуска",
+            "ROLLING-STOCK" to "Безопасность рядом с подвижным составом и на путях",
+            "STOP" to "Когда работу нужно прекратить и сообщить",
+            "TRAINING" to "Обучение, инструктаж и первая помощь"
+        )
+        val safety = TechnicalFamily.entries.flatMap { family -> safetyTitles.map { (suffix, title) ->
+            TechnicalEntryAssistantAdapter.adapt(TechnicalEntry(
+                id = "SAFETY-${family.name}-$suffix", family = family,
+                section = TechnicalSection.SAFETY, title = title, subtitle = "",
+                status = "INFORMATION", blocks = emptyList(), searchText = title
+            ))
+        } }
+        val docs = technical.map { it.first } + ermakAcceptance + diagnostics + knowledge + aid + safety
+        val index = InMemoryAssistantIndex(docs)
+        val misses = mutableListOf<String>()
+        docs.forEach { card ->
+            val sourceAliases = technical.firstOrNull { it.first.key == card.key }?.second.orEmpty()
+            val candidates = (sourceAliases + card.aliases + card.summary)
+                .map(String::normalizeAssistantText)
+                .filter { it.length >= 4 && it != card.title.normalizeAssistantText() }
+                .distinct()
+            val titleTail = card.title.normalizeAssistantText().split(' ').drop(1)
+                .joinToString(" ").takeIf { it.length >= 8 }
+            val alternative = (if (card.section in setOf(TechnicalSection.ELECTRICAL, TechnicalSection.PNEUMATIC))
+                titleTail else null)
+                ?: candidates.firstOrNull { it.length in 4..75 } ?: candidates.firstOrNull()
+                ?: titleTail
+            if (alternative == null) {
+                misses += "${card.canonicalId}: only heading"
+                return@forEach
+            }
+            val phrase = alternative.split(' ').take(7).joinToString(" ")
+            val hits = index.search(AssistantSearchRequest(
+                query = phrase, literalQuery = phrase, family = card.family,
+                preferredSection = card.section, limit = 3
+            ))
+            if (hits.none { it.document.key == card.key }) {
+                misses += "${card.canonicalId}: $phrase -> ${hits.joinToString { it.document.canonicalId }}"
+            }
+        }
+        assertTrue("Second-phrase coverage ${docs.size - misses.size}/${docs.size}:\n" +
+            misses.take(60).joinToString("\n"), misses.isEmpty())
     }
 }
