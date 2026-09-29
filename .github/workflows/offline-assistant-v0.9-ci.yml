@@ -8,6 +8,8 @@ on:
     paths:
       - app/src/main/java/ru/railbrake/calculator/core/assistant/**
       - patch/app/src/main/java/ru/railbrake/calculator/core/assistant/**
+      - app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt
+      - patch/app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt
       - app/src/main/java/ru/railbrake/calculator/ui/AssistantHomePanel.kt
       - patch/app/src/main/java/ru/railbrake/calculator/ui/AssistantHomePanel.kt
       - app/src/main/java/ru/railbrake/calculator/ui/AssistantResultActivity.kt
@@ -26,6 +28,8 @@ on:
     paths:
       - app/src/main/java/ru/railbrake/calculator/core/assistant/**
       - patch/app/src/main/java/ru/railbrake/calculator/core/assistant/**
+      - app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt
+      - patch/app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt
       - app/src/main/java/ru/railbrake/calculator/ui/AssistantHomePanel.kt
       - patch/app/src/main/java/ru/railbrake/calculator/ui/AssistantHomePanel.kt
       - app/src/main/java/ru/railbrake/calculator/ui/AssistantResultActivity.kt
@@ -95,6 +99,7 @@ jobs:
               "patch/app/src/test/java/ru/railbrake/calculator/core/assistant/$testfile"
           done
           cmp app/src/main/java/ru/railbrake/calculator/ui/FirstAidScreen.kt patch/app/src/main/java/ru/railbrake/calculator/ui/FirstAidScreen.kt
+          cmp app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt patch/app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt
           cmp app/build.gradle.kts patch/app/build.gradle.kts
 
       - name: Set up JDK 17

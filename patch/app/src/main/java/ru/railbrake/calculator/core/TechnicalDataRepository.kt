@@ -47,7 +47,8 @@ data class TechnicalEntry(
     val sequence: List<String> = emptyList(),
     val sequenceLabels: Map<String, String> = emptyMap(),
     val hotspots: List<TechnicalHotspot> = emptyList(),
-    val searchText: String
+    val searchText: String,
+    val searchAliases: List<String> = emptyList()
 )
 
 data class ErmakSchemeDiagnosticLink(
@@ -1316,7 +1317,8 @@ class TechnicalDataRepository(private val context: Context) {
             sequence = sequence.filter(String::isNotBlank).distinct(),
             sequenceLabels = sequenceLabels.filterKeys(String::isNotBlank),
             hotspots = hotspots.filter { it.equipmentId.isNotBlank() && it.width > 0 && it.height > 0 },
-            searchText = search
+            searchText = search,
+            searchAliases = aliases
         )
     }
 }

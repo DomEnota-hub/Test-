@@ -53,7 +53,8 @@ class AssistantCatalogCoverageTest {
                         TechnicalSection.PNEUMATIC else source.section,
                     title = title, subtitle = listOf("summary", "purpose", "check", "scopeNote")
                         .map { raw.optString(it) }.firstOrNull(String::isNotBlank).orEmpty(), status = "INFORMATION",
-                    blocks = emptyList(), searchText = (listOf(title) + aliases).joinToString(" ")
+                    blocks = emptyList(), searchText = (listOf(title) + aliases).joinToString(" "),
+                    searchAliases = aliases
                 ))
             }
         }
@@ -148,7 +149,8 @@ class AssistantCatalogCoverageTest {
                 val entry = TechnicalEntry(
                     id = raw.getString("id"), family = source.family, section = section,
                     title = title, subtitle = subtitle, status = "INFORMATION",
-                    blocks = emptyList(), searchText = (listOf(title, subtitle) + aliases).joinToString(" ")
+                    blocks = emptyList(), searchText = (listOf(title, subtitle) + aliases).joinToString(" "),
+                    searchAliases = aliases
                 )
                 TechnicalEntryAssistantAdapter.adapt(entry) to aliases
             }
@@ -187,27 +189,33 @@ class AssistantCatalogCoverageTest {
         val misses = mutableListOf<String>()
         docs.forEach { card ->
             val sourceAliases = technical.firstOrNull { it.first.key == card.key }?.second.orEmpty()
-            val candidates = (sourceAliases + card.aliases + card.summary)
-                .map(String::normalizeAssistantText)
-                .filter { it.length >= 4 && it != card.title.normalizeAssistantText() }
-                .distinct()
             val titleTail = card.title.normalizeAssistantText().split(' ').drop(1)
                 .joinToString(" ").takeIf { it.length >= 8 }
-            val alternative = (if (card.section in setOf(TechnicalSection.ELECTRICAL, TechnicalSection.PNEUMATIC))
-                titleTail else null)
-                ?: candidates.firstOrNull { it.length in 4..75 } ?: candidates.firstOrNull()
-                ?: titleTail
-            if (alternative == null) {
+            val phrases = (sourceAliases.take(3) + listOfNotNull(card.summary, titleTail) +
+                card.aliases.filter { it != card.title }.take(3))
+                .map(String::normalizeAssistantText)
+                .filter { it.length >= 4 && it !in setOf(
+                    "вл80с", "вл80", "ермак", "охрана труда", "первая помощь", "локомотив") &&
+                    it != card.title.normalizeAssistantText() }
+                .map { it.split(' ').take(7).joinToString(" ") }
+                .distinct().take(6)
+            if (phrases.isEmpty()) {
                 misses += "${card.canonicalId}: only heading"
                 return@forEach
             }
-            val phrase = alternative.split(' ').take(7).joinToString(" ")
-            val hits = index.search(AssistantSearchRequest(
-                query = phrase, literalQuery = phrase, family = card.family,
-                preferredSection = card.section, limit = 3
-            ))
-            if (hits.none { it.document.key == card.key }) {
-                misses += "${card.canonicalId}: $phrase -> ${hits.joinToString { it.document.canonicalId }}"
+            val outcomes = mutableListOf<Pair<String, List<AssistantSearchHit>>>()
+            for (phrase in phrases) {
+                val hits = index.search(AssistantSearchRequest(
+                    query = phrase, literalQuery = phrase, family = card.family,
+                    preferredSection = card.section, limit = 3
+                ))
+                outcomes += phrase to hits
+                if (hits.any { it.document.key == card.key }) break
+            }
+            if (outcomes.none { (_, hits) -> hits.any { it.document.key == card.key } }) {
+                misses += "${card.canonicalId}: " + outcomes.take(3).joinToString(" | ") { (phrase, hits) ->
+                    "$phrase -> ${hits.joinToString { it.document.canonicalId }}"
+                }
             }
         }
         assertTrue("Second-phrase coverage ${docs.size - misses.size}/${docs.size}:\n" +

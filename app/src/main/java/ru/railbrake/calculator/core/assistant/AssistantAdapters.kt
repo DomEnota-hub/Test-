@@ -22,6 +22,7 @@ object TechnicalEntryAssistantAdapter {
         val aliases = buildSet {
             add(entry.title)
             if (entry.subtitle.isNotBlank()) add(entry.subtitle)
+            addAll(entry.searchAliases.filter(String::isNotBlank))
             addAll(entry.sequenceLabels.values.filter(String::isNotBlank))
             addAll(entry.hotspots.map { it.label }.filter(String::isNotBlank))
             // Spoken occupational-safety headings omit formal qualifiers.

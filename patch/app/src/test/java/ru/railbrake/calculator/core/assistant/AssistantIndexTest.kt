@@ -33,6 +33,22 @@ class AssistantIndexTest {
     }
 
     @Test
+    fun documentedEquipmentAliasesAreIndexedAsPhrasesRatherThanBuriedBodyWords() {
+        val ekg = TechnicalEntryAssistantAdapter.adapt(TechnicalEntry(
+            id = "VL-EQ-TR-001", family = TechnicalFamily.VL80S,
+            section = TechnicalSection.EQUIPMENT, title = "ЭКГ", subtitle = "",
+            status = "VERIFIED", blocks = emptyList(), searchText = "ЭКГ главный контроллер",
+            searchAliases = listOf("главный контроллер")
+        ))
+        val diagnostic = Vl80DiagnosticAssistantAdapter.adapt(vl80Diagnostic())
+        val result = InMemoryAssistantIndex(listOf(diagnostic, ekg)).search(
+            AssistantSearchRequest("главный контроллер", family = TechnicalFamily.VL80S,
+                preferredSection = TechnicalSection.EQUIPMENT)
+        )
+        assertEquals("VL-EQ-TR-001", result.first().document.canonicalId)
+    }
+
+    @Test
     fun faultTitleWithAllSymptomsBeatsUnrelatedCardMentioningOneSymptomInInstructions() {
         val correct = technicalEntry("brake-leak", TechnicalSection.DIAGNOSTICS,
             "Утечка тормозной магистрали", "падение давления тормозной магистрали")
