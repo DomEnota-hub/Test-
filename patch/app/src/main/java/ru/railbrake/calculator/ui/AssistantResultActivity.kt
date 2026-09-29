@@ -6,8 +6,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -20,7 +22,11 @@ import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import ru.railbrake.calculator.core.TechnicalFamily
 import ru.railbrake.calculator.core.TechnicalSection
+import ru.railbrake.calculator.core.WorkingLocomotive
 import ru.railbrake.calculator.core.assistant.AssistantTarget
+import ru.railbrake.calculator.core.KnowledgeRepository
+import ru.railbrake.calculator.core.assistant.KnowledgeArticleAssistantAdapter
+import ru.railbrake.calculator.data.WorkingLocomotiveRepository
 import ru.railbrake.calculator.ui.theme.AccentPalette
 import ru.railbrake.calculator.ui.theme.AppThemeMode
 import ru.railbrake.calculator.ui.theme.RailBrakeTheme
@@ -72,10 +78,36 @@ class AssistantResultActivity : ComponentActivity() {
             return
         }
 
+        val working = remember { WorkingLocomotiveRepository(this).selected() }
+        val viewed = WorkingLocomotive.fromStored(intent.getStringExtra(EXTRA_VIEW_LOC))
+        val targetFamily = when (kind) {
+            KIND_VL80_DIAGNOSTIC -> TechnicalFamily.VL80S
+            KIND_ERMAK_DIAGNOSTIC -> TechnicalFamily.ERMAK
+            KIND_TECHNICAL -> TechnicalFamily.entries.firstOrNull {
+                it.name == intent.getStringExtra(EXTRA_FAMILY)
+            }
+            KIND_KNOWLEDGE -> KnowledgeRepository.articleById(id)
+                ?.let(KnowledgeArticleAssistantAdapter::adapt)?.family
+            else -> null
+        }
+        Column(Modifier.fillMaxSize()) {
+            if (working != null && targetFamily != null &&
+                (targetFamily != working.family || (viewed != null && viewed != working))) {
+                Text("Материал ${viewed?.title ?: targetFamily.title} · рабочий локомотив ${working.title} не изменён",
+                    modifier = Modifier.fillMaxWidth().padding(12.dp),
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.labelLarge)
+            }
+            Box(Modifier.weight(1f)) { TargetContent(kind, id, working?.family) }
+        }
+    }
+
+    @Composable
+    private fun TargetContent(kind: String, id: String, workingFamily: TechnicalFamily?) {
         when (kind) {
             KIND_VL80_DIAGNOSTIC,
             KIND_ERMAK_DIAGNOSTIC -> {
-                LocomotiveDiagnosticsScreen(initialScenarioId = id)
+                LocomotiveDiagnosticsScreen(initialScenarioId = id, workingFamily = workingFamily)
             }
 
             KIND_FIRST_AID -> {
@@ -109,6 +141,7 @@ class AssistantResultActivity : ComponentActivity() {
                 TechnicalCatalogScreen(
                     initialFamily = family,
                     initialSection = section,
+                    lockFamily = workingFamily != null,
                     sectionBackLabel = "Помощник",
                     onSectionBack = { finish() },
                     initialEntryId = id,
@@ -159,6 +192,7 @@ class AssistantResultActivity : ComponentActivity() {
         private const val EXTRA_ID = "assistant_id"
         private const val EXTRA_FAMILY = "assistant_family"
         private const val EXTRA_SECTION = "assistant_section"
+        private const val EXTRA_VIEW_LOC = "assistant_view_locomotive"
 
         private const val KIND_TECHNICAL = "technical"
         private const val KIND_VL80_DIAGNOSTIC = "vl80_diagnostic"
@@ -166,8 +200,10 @@ class AssistantResultActivity : ComponentActivity() {
         private const val KIND_KNOWLEDGE = "knowledge"
         private const val KIND_FIRST_AID = "first_aid"
 
-        fun createIntent(context: Context, target: AssistantTarget): Intent =
+        fun createIntent(context: Context, target: AssistantTarget,
+                         viewed: WorkingLocomotive? = null): Intent =
             Intent(context, AssistantResultActivity::class.java).apply {
+                viewed?.let { putExtra(EXTRA_VIEW_LOC, it.name) }
                 when (target) {
                     is AssistantTarget.Technical -> {
                         putExtra(EXTRA_KIND, KIND_TECHNICAL)
@@ -198,7 +234,8 @@ class AssistantResultActivity : ComponentActivity() {
                 }
             }
 
-        fun intent(context: Context, target: AssistantTarget): Intent =
-            createIntent(context, target)
+        fun intent(context: Context, target: AssistantTarget,
+                   viewed: WorkingLocomotive? = null): Intent =
+            createIntent(context, target, viewed)
     }
 }

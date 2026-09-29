@@ -3,6 +3,7 @@ package ru.railbrake.calculator.core.assistant
 import android.content.Context
 import ru.railbrake.calculator.core.DiagnosticRepository
 import ru.railbrake.calculator.core.ErmakDiagnosticRepository
+import ru.railbrake.calculator.core.ErmakDiagnosticScenario
 import ru.railbrake.calculator.core.KnowledgeRepository
 import ru.railbrake.calculator.core.TechnicalDataRepository
 import ru.railbrake.calculator.core.TechnicalFamily
@@ -21,18 +22,22 @@ import ru.railbrake.calculator.ui.workerKitLines
 class AssistantContentLoader(
     private val context: Context
 ) {
-    fun loadCore(): List<AssistantDocument> {
+    fun loadCore(family: TechnicalFamily? = null, variantId: String? = null): List<AssistantDocument> {
         val appContext = context.applicationContext
 
-        val vl80Diagnostics = DiagnosticRepository.scenarios
-            .map(Vl80DiagnosticAssistantAdapter::adapt)
+        val vl80Diagnostics = if (family == null || family == TechnicalFamily.VL80S) {
+            DiagnosticRepository.scenarios.map(Vl80DiagnosticAssistantAdapter::adapt)
+        } else emptyList()
 
-        val ermakDiagnostics = ErmakDiagnosticRepository(appContext)
-            .scenarios()
-            .map(ErmakDiagnosticAssistantAdapter::adapt)
+        val ermakDiagnostics = if (family == null || family == TechnicalFamily.ERMAK) {
+            ErmakDiagnosticRepository(appContext).scenarios()
+                .filter { it.availableForAssistantVariant(variantId) }
+                .map(ErmakDiagnosticAssistantAdapter::adapt)
+        } else emptyList()
 
         val knowledge = KnowledgeRepository.articles
             .map(KnowledgeArticleAssistantAdapter::adapt)
+            .filter { family == null || it.family == null || it.family == family }
 
         val firstAid = firstAidTopics.map(FirstAidAssistantAdapter::adapt)
         val firstAidKit = firstAidKitDocument()
@@ -41,7 +46,7 @@ class AssistantContentLoader(
             .distinctBy(AssistantDocument::key)
     }
 
-    fun loadAdditionalCatalog(): List<AssistantDocument> {
+    fun loadAdditionalCatalog(family: TechnicalFamily? = null): List<AssistantDocument> {
         val appContext = context.applicationContext
         val technicalRepository = TechnicalDataRepository(appContext)
 
@@ -50,17 +55,21 @@ class AssistantContentLoader(
         val indexedTechnicalSections = TechnicalSection.entries.filterNot { section ->
             section == TechnicalSection.DIAGNOSTICS || section == TechnicalSection.PROFILES
         }
-        return TechnicalFamily.entries.flatMap { family ->
+        return (family?.let { listOf(it) } ?: TechnicalFamily.entries).flatMap { catalogFamily ->
             indexedTechnicalSections.flatMap { section ->
-                technicalRepository.entries(family, section)
+                technicalRepository.entries(catalogFamily, section)
             }
         }.map(TechnicalEntryAssistantAdapter::adapt)
             .distinctBy(AssistantDocument::key)
     }
 
-    fun load(): List<AssistantDocument> =
-        (loadCore() + loadAdditionalCatalog()).distinctBy(AssistantDocument::key)
+    fun load(family: TechnicalFamily? = null): List<AssistantDocument> =
+        (loadCore(family) + loadAdditionalCatalog(family)).distinctBy(AssistantDocument::key)
 }
+
+/** Source-declared applicability; an empty set means no model restriction. */
+internal fun ErmakDiagnosticScenario.availableForAssistantVariant(variantId: String?): Boolean =
+    variantId == null || applicability.families.isEmpty() || variantId in applicability.families
 
 /** Shared by the runtime loader and the complete-catalog regression test. */
 internal fun firstAidKitDocument(): AssistantDocument = AssistantDocument(

@@ -81,9 +81,12 @@ import ru.railbrake.calculator.core.ProfileMode
 import ru.railbrake.calculator.core.TenTonsChoice
 import ru.railbrake.calculator.core.TechnicalFamily
 import ru.railbrake.calculator.core.TechnicalSection
+import ru.railbrake.calculator.core.WorkingLocomotive
+import ru.railbrake.calculator.core.assistant.AssistantRuntime
 import ru.railbrake.calculator.data.HistoryRecord
 import ru.railbrake.calculator.data.HistoryRepository
 import ru.railbrake.calculator.data.SecretAccessRepository
+import ru.railbrake.calculator.data.WorkingLocomotiveRepository
 import ru.railbrake.calculator.ui.theme.AccentPalette
 import ru.railbrake.calculator.ui.theme.AppThemeMode
 import ru.railbrake.calculator.ui.theme.RailTheme
@@ -143,6 +146,9 @@ fun BrakeCalculatorApp(
     val context = LocalContext.current
     val historyRepository = remember { HistoryRepository(context) }
     val secretAccessRepository = remember { SecretAccessRepository(context) }
+    val workingRepository = remember(context) { WorkingLocomotiveRepository(context) }
+    var workingLocomotive by remember { mutableStateOf(workingRepository.selected()) }
+    val workingFamily = workingLocomotive?.family
     var auxiliaryToolsVisible by remember { mutableStateOf(secretAccessRepository.isUnlocked()) }
     var historyVersion by remember { mutableIntStateOf(0) }
     var screenName by rememberSaveable { mutableStateOf(AppScreen.HOME.name) }
@@ -160,6 +166,7 @@ fun BrakeCalculatorApp(
     var diagnosticRootVersion by rememberSaveable { mutableIntStateOf(0) }
     var locomotiveRootVersion by rememberSaveable { mutableIntStateOf(0) }
     var acceptanceRootVersion by rememberSaveable { mutableIntStateOf(0) }
+    var acceptanceBrowseFamily by rememberSaveable { mutableStateOf<TechnicalFamily?>(null) }
     var knowledgeRootVersion by rememberSaveable { mutableIntStateOf(0) }
     var safetyRootVersion by rememberSaveable { mutableIntStateOf(0) }
     var firstAidRootVersion by rememberSaveable { mutableIntStateOf(0) }
@@ -190,7 +197,8 @@ fun BrakeCalculatorApp(
                     )
                     Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
                         Text("Железнодорожный помощник", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
-                        Text("Пользовательский профиль", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
+                        Text("Сегодня: ${workingLocomotive?.title ?: "локомотив не выбран"}",
+                            style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
                     }
                 }
 
@@ -218,7 +226,7 @@ fun BrakeCalculatorApp(
                                     locomotiveRootVersion++
                                 }
                                 AppScreen.ACCEPTANCE -> {
-                                    technicalFamilyName = TechnicalFamily.VL80S.name
+                                    acceptanceBrowseFamily = null
                                     technicalSectionName = TechnicalSection.ACCEPTANCE.name
                                     acceptanceRootVersion++
                                 }
@@ -297,6 +305,15 @@ fun BrakeCalculatorApp(
                 when (screen) {
                 AppScreen.HOME -> HomeScreen(
                     latestHistory = remember(historyVersion) { historyRepository.load().firstOrNull() },
+                    workingLocomotive = workingLocomotive,
+                    onWorkingLocomotiveChange = { selected ->
+                        workingRepository.select(selected)
+                        AssistantRuntime.activate(selected?.family, selected?.variantId)
+                        workingLocomotive = selected
+                        diagnosticStartScenarioId = null
+                        technicalInitialEntryId = null
+                        screenName = AppScreen.HOME.name
+                    },
                     onDiagnostics = {
                         diagnosticStartScenarioId = null
                         diagnosticStartEquipmentId = null
@@ -354,6 +371,7 @@ fun BrakeCalculatorApp(
                 }
                 AppScreen.LOCOMOTIVES -> key(locomotiveRootVersion) {
                     LocomotiveReferenceScreen(
+                        workingFamily = workingFamily,
                         onOpenTechnical = { family, section ->
                             technicalFamilyName = family.name
                             technicalSectionName = section.name
@@ -377,6 +395,7 @@ fun BrakeCalculatorApp(
                     initialFamily = runCatching { TechnicalFamily.valueOf(technicalFamilyName) }.getOrDefault(TechnicalFamily.VL80S),
                     initialSection = runCatching { TechnicalSection.valueOf(technicalSectionName) }.getOrDefault(TechnicalSection.EQUIPMENT),
                     initialEntryId = technicalInitialEntryId,
+                    lockFamily = workingFamily != null,
                     onSectionBack = { screenName = AppScreen.LOCOMOTIVES.name },
                     onOpenLegacyArticle = { articleId ->
                         locomotiveMaterialQuery = null
@@ -400,20 +419,30 @@ fun BrakeCalculatorApp(
                     sectionBackLabel = "Локомотивы / атлас",
                     onSectionBack = { screenName = AppScreen.LOCOMOTIVES.name }
                 )
-                AppScreen.ACCEPTANCE -> key(acceptanceRootVersion) {
-                    TechnicalCatalogScreen(
-                        initialFamily = TechnicalFamily.VL80S,
+                AppScreen.ACCEPTANCE -> key(acceptanceRootVersion, workingFamily, acceptanceBrowseFamily) {
+                    val family = workingFamily ?: acceptanceBrowseFamily
+                    if (family == null) {
+                        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                            Text("Выберите серию для разового просмотра приёмки.",
+                                style = MaterialTheme.typography.titleMedium)
+                            TechnicalFamily.entries.forEach { option ->
+                                Button(onClick = { acceptanceBrowseFamily = option }) { Text(option.title) }
+                            }
+                        }
+                    } else TechnicalCatalogScreen(
+                        initialFamily = family,
                         initialSection = TechnicalSection.ACCEPTANCE,
                         sectionBackLabel = "Главная",
                         onSectionBack = { screenName = AppScreen.HOME.name },
-                        lockFamily = false,
+                        lockFamily = true,
                         lockSection = true
                     )
                 }
                 AppScreen.DIAGNOSTICS -> key(diagnosticRootVersion) {
                     LocomotiveDiagnosticsScreen(
                         initialScenarioId = diagnosticStartScenarioId,
-                        initialEquipmentId = diagnosticStartEquipmentId
+                        initialEquipmentId = diagnosticStartEquipmentId,
+                        workingFamily = workingFamily
                     )
                 }
                 AppScreen.KNOWLEDGE -> key(knowledgeRootVersion) {
@@ -1331,13 +1360,16 @@ private fun HistoryScreen(repository: HistoryRepository, version: Int, onCleared
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun LocomotiveReferenceScreen(
+    workingFamily: TechnicalFamily?,
     onOpenTechnical: (TechnicalFamily, TechnicalSection) -> Unit,
     onOpenInteractiveVl80s: () -> Unit,
     onOpenInteractiveErmak: () -> Unit
 ) {
     var query by rememberSaveable { mutableStateOf("") }
     var seriesExpanded by rememberSaveable { mutableStateOf(false) }
-    var ermakSelected by rememberSaveable { mutableStateOf(false) }
+    var ermakSelected by rememberSaveable(workingFamily) {
+        mutableStateOf(workingFamily == TechnicalFamily.ERMAK)
+    }
     val family = if (ermakSelected) TechnicalFamily.ERMAK else TechnicalFamily.VL80S
     val found = remember(query) { LocomotiveDatabase.search(query) }
     Column(
@@ -1352,14 +1384,18 @@ private fun LocomotiveReferenceScreen(
             FilterChip(
                 selected = !ermakSelected,
                 onClick = { ermakSelected = false },
+                enabled = workingFamily == null || workingFamily == TechnicalFamily.VL80S,
                 label = { Text("ВЛ80С") }
             )
             FilterChip(
                 selected = ermakSelected,
                 onClick = { ermakSelected = true },
+                enabled = workingFamily == null || workingFamily == TechnicalFamily.ERMAK,
                 label = { Text("Ермак") }
             )
         }
+        if (workingFamily != null) Text("Другая серия доступна после смены рабочего локомотива на главной или через явный запрос помощнику.",
+            style = MaterialTheme.typography.bodySmall)
         Text(family.subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         val materials = buildList<Pair<String, () -> Unit>> {
             add("Интерактивный атлас" to if (family == TechnicalFamily.VL80S) onOpenInteractiveVl80s else onOpenInteractiveErmak)

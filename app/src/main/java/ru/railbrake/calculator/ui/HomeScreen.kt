@@ -20,8 +20,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -29,11 +31,17 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.runtime.key
+import ru.railbrake.calculator.core.WorkingLocomotive
 import ru.railbrake.calculator.data.HistoryRecord
 
 @Composable
 internal fun HomeScreen(
     latestHistory: HistoryRecord?,
+    workingLocomotive: WorkingLocomotive?,
+    onWorkingLocomotiveChange: (WorkingLocomotive?) -> Unit,
     onDiagnostics: () -> Unit,
     onKnowledge: () -> Unit,
     onLocomotives: () -> Unit,
@@ -55,11 +63,30 @@ internal fun HomeScreen(
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        AssistantHomePanel()
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Text("Сегодня работаю на: ${workingLocomotive?.title ?: "не выбрано"}",
+                    style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    items(WorkingLocomotive.entries) { option ->
+                        FilterChip(
+                            selected = option == workingLocomotive,
+                            onClick = { onWorkingLocomotiveChange(option) },
+                            label = { Text(option.title) }
+                        )
+                    }
+                }
+                if (workingLocomotive != null) TextButton(onClick = { onWorkingLocomotiveChange(null) }) {
+                    Text("Все материалы / убрать выбор")
+                } else Text("Выберите локомотив для поиска и разделов или продолжайте со всеми материалами.",
+                    style = MaterialTheme.typography.bodySmall)
+            }
+        }
+        key(workingLocomotive?.name) { AssistantHomePanel(workingLocomotive) }
 
         RailHeroCard(
             title = "Диагностика",
-            subtitle = "ВЛ80С и Ермак: поиск неисправности по наблюдаемым признакам и безопасные проверки.",
+            subtitle = "${workingLocomotive?.title ?: "ВЛ80С и Ермак"}: поиск неисправности по наблюдаемым признакам и безопасные проверки.",
             action = "НАЧАТЬ ДИАГНОСТИКУ  →",
             onClick = onDiagnostics
         )

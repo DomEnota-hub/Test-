@@ -3,14 +3,19 @@ package ru.railbrake.calculator.core.assistant
 import kotlin.math.abs
 
 class AssistantEngine(
-    private val index: InMemoryAssistantIndex
+    private val index: InMemoryAssistantIndex,
+    private val defaultFamily: ru.railbrake.calculator.core.TechnicalFamily? = null
 ) {
     fun query(rawText: String, limit: Int = 3): AssistantEngineResult {
         val parsed = AssistantQueryParser.parse(rawText)
         return query(parsed, limit)
     }
 
-    internal fun query(parsed: AssistantParsedQuery, limit: Int = 3): AssistantEngineResult {
+    internal fun query(input: AssistantParsedQuery, limit: Int = 3): AssistantEngineResult {
+        // The working choice supplies context only when the request does not
+        // name a series. First aid and general safety remain common.
+        val parsed = if (input.family == null && defaultFamily != null &&
+            input.intent != AssistantIntent.SAFETY) input.copy(family = defaultFamily) else input
 
         if (parsed.intent == AssistantIntent.SAFETY && parsed.safetyTopicIds.isEmpty() &&
             parsed.normalizedText in setOf("опп", "первая помощь", "первую помощь", "помоги человеку")) {

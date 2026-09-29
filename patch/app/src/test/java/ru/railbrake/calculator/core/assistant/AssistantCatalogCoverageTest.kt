@@ -4,6 +4,7 @@ import java.io.File
 import java.util.zip.GZIPInputStream
 import org.json.JSONObject
 import org.junit.Assert.assertTrue
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import ru.railbrake.calculator.core.DiagnosticRepository
 import ru.railbrake.calculator.core.KnowledgeRepository
@@ -36,6 +37,17 @@ class AssistantCatalogCoverageTest {
             File("../app/src/main/assets/technical/$name.json.gz")
         ).firstOrNull(File::isFile) ?: error("Missing $name")
         return JSONObject(GZIPInputStream(file.inputStream()).bufferedReader().use { it.readText() })
+    }
+
+    @Test fun ermakVariantScopeUsesSourceApplicabilityWithoutLosingSharedScenarios() {
+        val scenarios = parseErmakDiagnostics(asset("ermak_diagnostics"))
+        assertEquals(136, scenarios.size)
+        assertEquals(135, scenarios.count { it.availableForAssistantVariant("2ES5K") })
+        assertEquals(134, scenarios.count { it.availableForAssistantVariant("3ES5K") })
+        assertTrue(scenarios.filterNot { it.availableForAssistantVariant("2ES5K") }
+            .all { it.applicability.families == setOf("3ES5K") })
+        assertTrue(scenarios.filterNot { it.availableForAssistantVariant("3ES5K") }
+            .all { it.applicability.families == setOf("2ES5K") })
     }
 
     @Test fun actualRuntimeCatalogHasAHeadingAndAnAlternativeWorkingPhraseForEveryCard() {

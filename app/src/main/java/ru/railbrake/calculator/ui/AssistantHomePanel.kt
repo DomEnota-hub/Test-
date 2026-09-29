@@ -45,12 +45,15 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.railbrake.calculator.core.TechnicalFamily
 import ru.railbrake.calculator.core.TechnicalSection
+import ru.railbrake.calculator.core.WorkingLocomotive
 import ru.railbrake.calculator.core.assistant.AssistantConversation
 import ru.railbrake.calculator.core.assistant.AssistantEngine
 import ru.railbrake.calculator.core.assistant.AssistantEngineResult
 import ru.railbrake.calculator.core.assistant.AssistantIntent
 import ru.railbrake.calculator.core.assistant.AssistantPendingClarification
 import ru.railbrake.calculator.core.assistant.AssistantParsedQuery
+import ru.railbrake.calculator.core.assistant.AssistantQueryParser
+import ru.railbrake.calculator.core.assistant.AssistantAmbiguity
 import ru.railbrake.calculator.core.assistant.AssistantRuntime
 import ru.railbrake.calculator.core.assistant.AssistantVoiceInput
 import ru.railbrake.calculator.core.assistant.AssistantVoiceOutcome
@@ -64,15 +67,18 @@ private data class AssistantPanelEngineState(
 )
 
 @Composable
-internal fun AssistantHomePanel() {
+internal fun AssistantHomePanel(workingLocomotive: WorkingLocomotive? = null) {
     val context = LocalContext.current
     val appContext = context.applicationContext
+    val workingFamily = workingLocomotive?.family
+    val workingVariant = workingLocomotive?.variantId
     val engineState by produceState(
         initialValue = AssistantPanelEngineState(),
-        key1 = appContext
+        key1 = appContext,
+        key2 = workingLocomotive
     ) {
         val core = withContext(Dispatchers.IO) {
-            runCatching { AssistantRuntime.getOrCreateCore(appContext) }
+            runCatching { AssistantRuntime.getOrCreateCore(appContext, workingFamily, workingVariant) }
         }
         val coreEngine = core.getOrNull()
         if (coreEngine == null) {
@@ -86,7 +92,7 @@ internal fun AssistantHomePanel() {
         )
 
         val full = withContext(Dispatchers.IO) {
-            runCatching { AssistantRuntime.getOrCreateFull(appContext) }
+            runCatching { AssistantRuntime.getOrCreateFull(appContext, workingFamily, workingVariant) }
         }
         value = full.fold(
             onSuccess = { fullEngine -> AssistantPanelEngineState(engine = fullEngine) },
@@ -103,6 +109,7 @@ internal fun AssistantHomePanel() {
     var query by rememberSaveable { mutableStateOf("") }
     var result by remember { mutableStateOf<AssistantEngineResult?>(null) }
     var pending by remember { mutableStateOf<AssistantPendingClarification?>(null) }
+    var searchingOtherFamily by remember { mutableStateOf(false) }
     // A query may run against the small core while the technical catalog is
     // loading. Resolve a provisional miss once the full index becomes ready.
     LaunchedEffect(engine, engineState.loadingFullCatalog) {
@@ -114,6 +121,7 @@ internal fun AssistantHomePanel() {
     }
     val voiceInput = remember(appContext) { AssistantVoiceInput(appContext) }
     val scope = rememberCoroutineScope()
+    var lookupJob by remember { mutableStateOf<Job?>(null) }
     var voiceJob by remember { mutableStateOf<Job?>(null) }
     var voicePhase by remember { mutableStateOf<AssistantVoicePhase?>(null) }
     var voiceMessage by remember { mutableStateOf<String?>(null) }
@@ -158,10 +166,42 @@ internal fun AssistantHomePanel() {
         val currentEngine = engine ?: return
         val prepared = text.trim()
         if (prepared.isBlank()) return
-        val turn = AssistantConversation.submit(currentEngine, prepared, pending)
-        result = turn.result
-        pending = turn.pending
-        query = if (turn.pending != null) "" else prepared
+        val normalized = AssistantQueryParser.normalize(prepared)
+        if ("2эс5к" in normalized && "3эс5к" in normalized) {
+            voiceMessage = "Уточните, о каком варианте Ермака нужен материал: 2ЭС5К или 3ЭС5К."
+            return
+        }
+        val explicitFamily = AssistantQueryParser.parse(prepared).family
+            ?: if (pending?.missingParameter == AssistantAmbiguity.SERIES_REQUIRED)
+                AssistantQueryParser.familyFromAnswer(prepared) else pending?.context?.family
+        val requestedFamily = explicitFamily ?: workingFamily
+        val requestedVariant = WorkingLocomotive.explicitlyNamed(normalized)?.variantId
+            ?: if (requestedFamily == workingFamily) workingVariant else null
+        lookupJob?.cancel()
+        if (requestedFamily != null && (requestedFamily != workingFamily || requestedVariant != workingVariant)) {
+            searchingOtherFamily = true
+            lookupJob = scope.launch {
+                val alternate = withContext(Dispatchers.IO) {
+                    runCatching { AssistantRuntime.getOrCreateFull(appContext, requestedFamily, requestedVariant) }
+                }
+                searchingOtherFamily = false
+                alternate.fold(
+                    onSuccess = { otherEngine ->
+                        val turn = AssistantConversation.submit(otherEngine, prepared, pending)
+                        result = turn.result
+                        pending = turn.pending
+                        query = if (turn.pending != null) "" else prepared
+                    },
+                    onFailure = { voiceMessage = "Не удалось загрузить каталог другой серии. Повторите запрос." }
+                )
+            }
+        } else {
+            searchingOtherFamily = false
+            val turn = AssistantConversation.submit(currentEngine, prepared, pending)
+            result = turn.result
+            pending = turn.pending
+            query = if (turn.pending != null) "" else prepared
+        }
     }
 
     Card(
@@ -184,6 +224,12 @@ internal fun AssistantHomePanel() {
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+            Text(
+                "Рабочий локомотив: ${workingLocomotive?.title ?: "не выбран"}. " +
+                    "Названная в вопросе другая серия откроется разово.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
             OutlinedTextField(
                 value = query,
                 onValueChange = { query = it },
@@ -201,7 +247,7 @@ internal fun AssistantHomePanel() {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Button(
                     onClick = { submit() },
-                    enabled = engine != null && query.isNotBlank()
+                    enabled = engine != null && query.isNotBlank() && !searchingOtherFamily
                 ) {
                     Text("Найти")
                 }
@@ -220,6 +266,7 @@ internal fun AssistantHomePanel() {
                     Text(if (voiceJob?.isActive == true) "Завершить запись" else "Голос")
                 }
             }
+            if (searchingOtherFamily) Text("Загружаю каталог названной серии…")
             if (voicePhase != null || voiceMessage != null) {
                 Text(
                     voiceMessage ?: when (voicePhase) {
@@ -290,7 +337,10 @@ internal fun AssistantHomePanel() {
                                         context.startActivity(
                                             AssistantResultActivity.intent(
                                                 context = context,
-                                                target = hit.document.target
+                                                target = hit.document.target,
+                                                viewed = WorkingLocomotive.explicitlyNamed(
+                                                    current.parsedQuery.normalizedText
+                                                )
                                             )
                                         )
                                     }
@@ -309,6 +359,16 @@ internal fun AssistantHomePanel() {
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
+                                    val viewed = WorkingLocomotive.explicitlyNamed(current.parsedQuery.normalizedText)
+                                    if (workingLocomotive != null && hit.document.family != null &&
+                                        (hit.document.family != workingFamily ||
+                                            (viewed != null && viewed != workingLocomotive))) {
+                                        Text(
+                                            "Другая серия · рабочий локомотив ${workingLocomotive?.title.orEmpty()}",
+                                            style = MaterialTheme.typography.labelMedium,
+                                            color = MaterialTheme.colorScheme.error
+                                        )
+                                    }
                                     if (hit.document.summary.isNotBlank()) {
                                         Text(
                                             hit.document.summary,
