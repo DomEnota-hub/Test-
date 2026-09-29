@@ -1367,10 +1367,10 @@ private fun LocomotiveReferenceScreen(
 ) {
     var query by rememberSaveable { mutableStateOf("") }
     var seriesExpanded by rememberSaveable { mutableStateOf(false) }
-    var ermakSelected by rememberSaveable(workingFamily) {
-        mutableStateOf(workingFamily == TechnicalFamily.ERMAK)
+    var browsingFamilyName by rememberSaveable(workingFamily) {
+        mutableStateOf(workingFamily?.name.orEmpty())
     }
-    val family = if (ermakSelected) TechnicalFamily.ERMAK else TechnicalFamily.VL80S
+    val family = TechnicalFamily.entries.firstOrNull { it.name == browsingFamilyName }
     val found = remember(query) { LocomotiveDatabase.search(query) }
     Column(
         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 8.dp),
@@ -1382,20 +1382,23 @@ private fun LocomotiveReferenceScreen(
         )
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             FilterChip(
-                selected = !ermakSelected,
-                onClick = { ermakSelected = false },
+                selected = family == TechnicalFamily.VL80S,
+                onClick = { browsingFamilyName = TechnicalFamily.VL80S.name },
                 enabled = workingFamily == null || workingFamily == TechnicalFamily.VL80S,
                 label = { Text("ВЛ80С") }
             )
             FilterChip(
-                selected = ermakSelected,
-                onClick = { ermakSelected = true },
+                selected = family == TechnicalFamily.ERMAK,
+                onClick = { browsingFamilyName = TechnicalFamily.ERMAK.name },
                 enabled = workingFamily == null || workingFamily == TechnicalFamily.ERMAK,
                 label = { Text("Ермак") }
             )
         }
         if (workingFamily != null) Text("Другая серия доступна после смены рабочего локомотива на главной или через явный запрос помощнику.",
             style = MaterialTheme.typography.bodySmall)
+        if (family == null) Text("Выберите серию для разового просмотра атласа.",
+            style = MaterialTheme.typography.bodySmall)
+        else {
         Text(family.subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         val materials = buildList<Pair<String, () -> Unit>> {
             add("Интерактивный атлас" to if (family == TechnicalFamily.VL80S) onOpenInteractiveVl80s else onOpenInteractiveErmak)
@@ -1419,6 +1422,7 @@ private fun LocomotiveReferenceScreen(
                     label = { Text(label) }
                 )
             }
+        }
         }
         if (!seriesExpanded) Spacer(Modifier.weight(1f))
         Surface(
