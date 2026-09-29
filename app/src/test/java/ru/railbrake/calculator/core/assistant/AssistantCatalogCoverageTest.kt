@@ -52,7 +52,8 @@ class AssistantCatalogCoverageTest {
             parseErmakDiagnostics(asset("ermak_diagnostics")).map(ErmakDiagnosticAssistantAdapter::adapt)
         val documents = (technical + diagnostics +
             KnowledgeRepository.articles.map(KnowledgeArticleAssistantAdapter::adapt) +
-            firstAidTopics.map(FirstAidAssistantAdapter::adapt)).distinctBy(AssistantDocument::key)
+            firstAidTopics.map(FirstAidAssistantAdapter::adapt) +
+            firstAidKitDocument()).distinctBy(AssistantDocument::key)
         val index = InMemoryAssistantIndex(documents)
         val misses = mutableListOf<String>()
         documents.forEach { card ->

@@ -35,23 +35,7 @@ class AssistantContentLoader(
             .map(KnowledgeArticleAssistantAdapter::adapt)
 
         val firstAid = firstAidTopics.map(FirstAidAssistantAdapter::adapt)
-        val firstAidKit = AssistantDocument(
-            key = "first-aid:kit",
-            canonicalId = "kit",
-            kind = AssistantDocumentKind.FIRST_AID,
-            family = null,
-            section = TechnicalSection.SAFETY,
-            title = "Аптечка работника",
-            summary = "Состав аптечки и средства первой помощи",
-            body = workerKitLines.joinToString(" "),
-            aliases = setOf("аптечка", "аптечка работника", "жгут", "бинт", "перчатки", "салфетки"),
-            componentIds = emptySet(),
-            symptomTerms = emptySet(),
-            tags = setOf("первая помощь", "оказание первой помощи", "опп"),
-            relatedIds = emptySet(),
-            safetyCritical = true,
-            target = AssistantTarget.FirstAid("kit")
-        )
+        val firstAidKit = firstAidKitDocument()
 
         return (vl80Diagnostics + ermakDiagnostics + knowledge + firstAid + firstAidKit)
             .distinctBy(AssistantDocument::key)
@@ -77,3 +61,22 @@ class AssistantContentLoader(
     fun load(): List<AssistantDocument> =
         (loadCore() + loadAdditionalCatalog()).distinctBy(AssistantDocument::key)
 }
+
+/** Shared by the runtime loader and the complete-catalog regression test. */
+internal fun firstAidKitDocument(): AssistantDocument = AssistantDocument(
+    key = "first-aid:kit",
+    canonicalId = "kit",
+    kind = AssistantDocumentKind.FIRST_AID,
+    family = null,
+    section = TechnicalSection.SAFETY,
+    title = "Аптечка работника",
+    summary = "Состав аптечки и средства первой помощи",
+    body = workerKitLines.joinToString(" "),
+    aliases = setOf("аптечка", "аптечка работника", "жгут", "бинт", "перчатки", "салфетки"),
+    componentIds = emptySet(),
+    symptomTerms = emptySet(),
+    tags = setOf("первая помощь", "оказание первой помощи", "опп"),
+    relatedIds = emptySet(),
+    safetyCritical = true,
+    target = AssistantTarget.FirstAid("kit")
+)
