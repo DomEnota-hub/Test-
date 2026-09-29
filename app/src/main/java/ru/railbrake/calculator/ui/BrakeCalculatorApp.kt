@@ -442,7 +442,8 @@ fun BrakeCalculatorApp(
                     LocomotiveDiagnosticsScreen(
                         initialScenarioId = diagnosticStartScenarioId,
                         initialEquipmentId = diagnosticStartEquipmentId,
-                        workingFamily = workingFamily
+                        workingFamily = workingFamily,
+                        workingVariantId = workingLocomotive?.variantId
                     )
                 }
                 AppScreen.KNOWLEDGE -> key(knowledgeRootVersion) {

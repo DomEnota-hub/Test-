@@ -8,6 +8,12 @@ class AssistantEngine(
 ) {
     fun query(rawText: String, limit: Int = 3): AssistantEngineResult {
         val parsed = AssistantQueryParser.parse(rawText)
+        if (AssistantQueryParser.hasConflictingSeries(rawText)) {
+            return AssistantEngineResult.Clarify(
+                parsedQuery = parsed.copy(family = null),
+                clarification = clarificationFor(AssistantAmbiguity.SERIES_REQUIRED, parsed)
+            )
+        }
         return query(parsed, limit)
     }
 

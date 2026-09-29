@@ -46,6 +46,7 @@ import ru.railbrake.calculator.core.DiagnosticRepository
 import ru.railbrake.calculator.core.ErmakDiagnosticChoice
 import ru.railbrake.calculator.core.ErmakDiagnosticRepository
 import ru.railbrake.calculator.core.ErmakDiagnosticScenario
+import ru.railbrake.calculator.core.assistant.availableForAssistantVariant
 import ru.railbrake.calculator.core.requiresPolicyEvaluation
 import ru.railbrake.calculator.data.DiagnosticSessionRecord
 import ru.railbrake.calculator.data.DiagnosticSessionRepository
@@ -122,7 +123,11 @@ private fun ermakQuickCandidate(scenario: ErmakDiagnosticScenario): Boolean {
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun ErmakDiagnosticsScreen(initialScenarioId: String? = null, initialEquipmentId: String? = null) {
+fun ErmakDiagnosticsScreen(
+    initialScenarioId: String? = null,
+    initialEquipmentId: String? = null,
+    workingVariantId: String? = null
+) {
     val context = LocalContext.current
     val repository = remember { ErmakDiagnosticRepository(context.applicationContext) }
     val scenarios by produceState<List<ErmakDiagnosticScenario>?>(null) {
@@ -141,12 +146,23 @@ fun ErmakDiagnosticsScreen(initialScenarioId: String? = null, initialEquipmentId
 
     BackHandler(enabled = selected != null) { selectedId = null }
     if (selected != null) {
-        ErmakDiagnosticRoute(selected, onBack = { selectedId = null }, onSaved = { historyVersion++ })
+        Column(Modifier.fillMaxSize()) {
+            if (!selected.availableForAssistantVariant(workingVariantId)) {
+                Text("Материал другого варианта Ермака. Рабочий локомотив не изменён.",
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                    color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold)
+            }
+            androidx.compose.foundation.layout.Box(Modifier.weight(1f)) {
+                ErmakDiagnosticRoute(selected, onBack = { selectedId = null }, onSaved = { historyVersion++ })
+            }
+        }
         return
     }
 
     val baseScenarios = scenarios.orEmpty().filter { scenario ->
-        (initialEquipmentId == null || initialEquipmentId in scenario.equipmentIds) && ermakMatchesQuery(scenario, query)
+        scenario.availableForAssistantVariant(workingVariantId) &&
+            (initialEquipmentId == null || initialEquipmentId in scenario.equipmentIds) &&
+            ermakMatchesQuery(scenario, query)
     }
     val visible = when (catalogMode) {
         "scenarios" -> baseScenarios.filter { category == "Все" || ermakCategory(it) == category }

@@ -98,16 +98,18 @@ class AssistantResultActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.labelLarge)
             }
-            Box(Modifier.weight(1f)) { TargetContent(kind, id, working?.family) }
+            Box(Modifier.weight(1f)) { TargetContent(kind, id, working?.family, working?.variantId) }
         }
     }
 
     @Composable
-    private fun TargetContent(kind: String, id: String, workingFamily: TechnicalFamily?) {
+    private fun TargetContent(kind: String, id: String, workingFamily: TechnicalFamily?,
+                              workingVariantId: String?) {
         when (kind) {
             KIND_VL80_DIAGNOSTIC,
             KIND_ERMAK_DIAGNOSTIC -> {
-                LocomotiveDiagnosticsScreen(initialScenarioId = id, workingFamily = workingFamily)
+                LocomotiveDiagnosticsScreen(initialScenarioId = id, workingFamily = workingFamily,
+                    workingVariantId = workingVariantId)
             }
 
             KIND_FIRST_AID -> {

@@ -8,6 +8,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import ru.railbrake.calculator.core.TechnicalFamily
 import ru.railbrake.calculator.core.TechnicalSection
+import ru.railbrake.calculator.core.WorkingLocomotive
 
 class AssistantClarificationResolutionTest {
 
@@ -25,6 +26,29 @@ class AssistantClarificationResolutionTest {
             assertNull(next.pending)
             assertTrue(next.continuedFromPending)
         }
+    }
+
+    @Test
+    fun variantReplyRetainsItsNameInTheResultAndTemporaryNavigation() {
+        val first = AssistantConversation.submit(engine(), "ГВ не включается")
+        val next = AssistantConversation.submit(engine(), "на 3ЭС5К", first.pending)
+
+        assertTrue(next.result is AssistantEngineResult.Matches)
+        assertEquals(TechnicalFamily.ERMAK, next.result!!.parsedQuery.family)
+        assertEquals(WorkingLocomotive.ERMAK_3ES5K,
+            WorkingLocomotive.explicitlyNamed(next.result!!.parsedQuery.normalizedText))
+        assertTrue(next.continuedFromPending)
+    }
+
+    @Test
+    fun incompatibleSeriesAreFlaggedBeforeChoosingAnIndex() {
+        assertTrue(AssistantQueryParser.hasConflictingSeries("ВЛ80С или на Ермаке ГВ не включается"))
+        assertTrue(AssistantQueryParser.hasConflictingSeries("2ЭС5К и 3ЭС5К"))
+        assertFalse(AssistantQueryParser.hasConflictingSeries("На 2ЭС5К ГВ не включается"))
+        val result = engine().query("ВЛ80С или Ермак: ГВ не включается")
+        assertTrue(result is AssistantEngineResult.Clarify)
+        assertEquals(AssistantAmbiguity.SERIES_REQUIRED,
+            (result as AssistantEngineResult.Clarify).clarification.reason)
     }
 
     @Test

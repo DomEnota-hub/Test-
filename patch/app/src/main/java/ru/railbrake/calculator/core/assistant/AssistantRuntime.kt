@@ -14,41 +14,57 @@ object AssistantRuntime {
     private val lock = Any()
     private val core = linkedMapOf<Scope, Snapshot>()
     private val full = linkedMapOf<Scope, AssistantEngine>()
+    private var generation = 0L
 
     /** Switching the day-to-day context releases indexes for the old choice. */
     fun activate(family: TechnicalFamily?, variantId: String?) = synchronized(lock) {
+        generation++
         val selected = Scope(family, variantId)
         core.keys.retainAll(setOf(selected))
         full.keys.retainAll(setOf(selected))
     }
 
     fun getOrCreateCore(context: Context, family: TechnicalFamily? = null,
-                        variantId: String? = null): AssistantEngine =
-        synchronized(lock) {
-            val scope = Scope(family, variantId)
-            full[scope] ?: core.getOrPut(scope) {
-                val docs = AssistantContentLoader(context.applicationContext).loadCore(family, variantId)
-                Snapshot(docs, AssistantEngine(InMemoryAssistantIndex(docs), family))
-            }.engine
+                        variantId: String? = null): AssistantEngine {
+        val scope = Scope(family, variantId)
+        val started = synchronized(lock) {
+            (full[scope] ?: core[scope]?.engine) to generation
         }
+        started.first?.let { return it }
+        val docs = AssistantContentLoader(context.applicationContext).loadCore(family, variantId)
+        val built = AssistantEngine(InMemoryAssistantIndex(docs), family)
+        return synchronized(lock) {
+            full[scope] ?: core[scope]?.engine ?: built.also {
+                if (generation == started.second) {
+                    core[scope] = Snapshot(docs, built)
+                    while (core.size > 2) core.remove(core.keys.first())
+                }
+            }
+        }
+    }
 
     fun getOrCreateFull(context: Context, family: TechnicalFamily? = null,
-                        variantId: String? = null): AssistantEngine =
-        synchronized(lock) {
-            val scope = Scope(family, variantId)
-            val result = full.getOrPut(scope) {
-                val docs = core.getOrPut(scope) {
-                    val coreDocs = AssistantContentLoader(context.applicationContext).loadCore(family, variantId)
-                    Snapshot(coreDocs, AssistantEngine(InMemoryAssistantIndex(coreDocs), family))
-                }.documents
-                val all = (docs + AssistantContentLoader(context.applicationContext)
-                    .loadAdditionalCatalog(family)).distinctBy(AssistantDocument::key)
-                AssistantEngine(InMemoryAssistantIndex(all), family)
-            }
-            core.remove(scope) // The full engine supersedes its smaller snapshot.
-            while (full.size > 2) full.remove(full.keys.first())
-            result
+                        variantId: String? = null): AssistantEngine {
+        val scope = Scope(family, variantId)
+        val started = synchronized(lock) {
+            Triple(full[scope], core[scope]?.documents, generation)
         }
+        started.first?.let { return it }
+        val loader = AssistantContentLoader(context.applicationContext)
+        val docs = started.second ?: loader.loadCore(family, variantId)
+        val all = (docs + loader.loadAdditionalCatalog(family)).distinctBy(AssistantDocument::key)
+        val built = AssistantEngine(InMemoryAssistantIndex(all), family)
+        return synchronized(lock) {
+            full[scope] ?: built.also {
+                // A selection made during loading must not resurrect the old index.
+                if (generation == started.third) {
+                    core.remove(scope)
+                    full[scope] = built
+                    while (full.size > 2) full.remove(full.keys.first())
+                }
+            }
+        }
+    }
 
     /** The unselected mode retains the original all-catalog behavior. */
     fun getOrCreate(context: Context): AssistantEngine = getOrCreateFull(context)

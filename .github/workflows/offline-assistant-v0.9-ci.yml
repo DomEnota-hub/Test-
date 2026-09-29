@@ -95,7 +95,7 @@ jobs:
             cmp "app/src/main/java/ru/railbrake/calculator/core/assistant/$file" \
                 "patch/app/src/main/java/ru/railbrake/calculator/core/assistant/$file"
           done
-          for file in AssistantHomePanel.kt AssistantResultActivity.kt HomeScreen.kt BrakeCalculatorApp.kt LocomotiveDiagnosticsScreen.kt; do
+          for file in AssistantHomePanel.kt AssistantResultActivity.kt HomeScreen.kt BrakeCalculatorApp.kt LocomotiveDiagnosticsScreen.kt ErmakDiagnosticsScreen.kt; do
             cmp "app/src/main/java/ru/railbrake/calculator/ui/$file" \
                 "patch/app/src/main/java/ru/railbrake/calculator/ui/$file"
           done

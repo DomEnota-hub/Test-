@@ -4,6 +4,16 @@ import ru.railbrake.calculator.core.TechnicalFamily
 import ru.railbrake.calculator.core.TechnicalSection
 
 object AssistantQueryParser {
+    /** Conflicting named series must not be resolved by the parser's first match. */
+    fun hasConflictingSeries(rawText: String): Boolean {
+        val text = normalize(rawText)
+        val vl80 = "вл80" in text
+        val twoSections = "2эс5к" in text
+        val threeSections = "3эс5к" in text
+        return (vl80 && ("ермак" in text || twoSections || threeSections)) ||
+            (twoSections && threeSections)
+    }
+
     private val replacements = listOf(
         "вээл восемьдесят эс" to "вл80с",
         "вээл восемьдесят с" to "вл80с",

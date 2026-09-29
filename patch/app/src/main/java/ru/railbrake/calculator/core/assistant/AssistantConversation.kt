@@ -63,7 +63,11 @@ object AssistantConversation {
                 if (parsedAnswer.componentKey != null || parsedAnswer.failureModes.isNotEmpty()) return null
                 when (AssistantQueryParser.familyFromAnswer(answer)) {
                     TechnicalFamily.VL80S -> "ВЛ80С"
-                    TechnicalFamily.ERMAK -> "Ермак"
+                    TechnicalFamily.ERMAK -> when {
+                        "2эс5к" in AssistantQueryParser.normalize(answer) -> "2ЭС5К"
+                        "3эс5к" in AssistantQueryParser.normalize(answer) -> "3ЭС5К"
+                        else -> "Ермак"
+                    }
                     null -> null
                 }
             }

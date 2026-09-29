@@ -13,7 +13,8 @@ import ru.railbrake.calculator.core.TechnicalFamily
 fun LocomotiveDiagnosticsScreen(
     initialScenarioId: String? = null,
     initialEquipmentId: String? = null,
-    workingFamily: TechnicalFamily? = null
+    workingFamily: TechnicalFamily? = null,
+    workingVariantId: String? = null
 ) {
     val linkedFamily = if (initialScenarioId != null || initialEquipmentId != null)
         diagnosticInitialFamily(initialScenarioId, initialEquipmentId) else null
@@ -46,7 +47,8 @@ fun LocomotiveDiagnosticsScreen(
                     diagnosticEquipmentForFamily(initialEquipmentId, family))
             else ErmakDiagnosticsScreen(
                 initialScenarioId = diagnosticScenarioForFamily(initialScenarioId, family),
-                initialEquipmentId = diagnosticEquipmentForFamily(initialEquipmentId, family)
+                initialEquipmentId = diagnosticEquipmentForFamily(initialEquipmentId, family),
+                workingVariantId = workingVariantId
             )
         }
     }

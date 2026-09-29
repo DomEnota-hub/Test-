@@ -167,10 +167,11 @@ internal fun AssistantHomePanel(workingLocomotive: WorkingLocomotive? = null) {
         val prepared = text.trim()
         if (prepared.isBlank()) return
         val normalized = AssistantQueryParser.normalize(prepared)
-        if ("2эс5к" in normalized && "3эс5к" in normalized) {
-            voiceMessage = "Уточните, о каком варианте Ермака нужен материал: 2ЭС5К или 3ЭС5К."
+        if (AssistantQueryParser.hasConflictingSeries(prepared)) {
+            voiceMessage = "Уточните одну серию: ВЛ80С, 2ЭС5К или 3ЭС5К."
             return
         }
+        voiceMessage = null
         val explicitFamily = AssistantQueryParser.parse(prepared).family
             ?: if (pending?.missingParameter == AssistantAmbiguity.SERIES_REQUIRED)
                 AssistantQueryParser.familyFromAnswer(prepared) else pending?.context?.family
