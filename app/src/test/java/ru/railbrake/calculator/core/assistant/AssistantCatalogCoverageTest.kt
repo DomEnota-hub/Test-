@@ -7,6 +7,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import ru.railbrake.calculator.core.DiagnosticRepository
 import ru.railbrake.calculator.core.KnowledgeRepository
+import ru.railbrake.calculator.core.TechnicalDataRepository
 import ru.railbrake.calculator.core.TechnicalEntry
 import ru.railbrake.calculator.core.TechnicalFamily
 import ru.railbrake.calculator.core.TechnicalSection
@@ -35,6 +36,80 @@ class AssistantCatalogCoverageTest {
             File("../app/src/main/assets/technical/$name.json.gz")
         ).firstOrNull(File::isFile) ?: error("Missing $name")
         return JSONObject(GZIPInputStream(file.inputStream()).bufferedReader().use { it.readText() })
+    }
+
+    @Test fun actualRuntimeCatalogHasAHeadingAndAnAlternativeWorkingPhraseForEveryCard() {
+        val repository = TechnicalDataRepository { path ->
+            asset(path.substringAfterLast('/').removeSuffix(".json"))
+        }
+        val sections = TechnicalSection.entries.filterNot {
+            it in setOf(TechnicalSection.PROFILES, TechnicalSection.DIAGNOSTICS)
+        }
+        val technical = TechnicalFamily.entries.flatMap { family ->
+            sections.flatMap { section -> repository.entries(family, section) }
+        }.map(TechnicalEntryAssistantAdapter::adapt)
+        val diagnostics = DiagnosticRepository.scenarios.map(Vl80DiagnosticAssistantAdapter::adapt) +
+            parseErmakDiagnostics(asset("ermak_diagnostics")).map(ErmakDiagnosticAssistantAdapter::adapt)
+        val documents = (technical + diagnostics +
+            KnowledgeRepository.articles.map(KnowledgeArticleAssistantAdapter::adapt) +
+            firstAidTopics.map(FirstAidAssistantAdapter::adapt)).distinctBy(AssistantDocument::key)
+        val index = InMemoryAssistantIndex(documents)
+        val misses = mutableListOf<String>()
+        documents.forEach { card ->
+            val normalizedTitle = card.title.normalizeAssistantText()
+            if (normalizedTitle.isBlank()) {
+                misses += "${card.key}: no visible heading"
+                return@forEach
+            }
+            val family = when (card.family) {
+                TechnicalFamily.VL80S -> "ВЛ80С"
+                TechnicalFamily.ERMAK -> "Ермак"
+                null -> ""
+            }
+            val cue = when (card.section) {
+                TechnicalSection.ACCEPTANCE -> "приемка"
+                TechnicalSection.EQUIPMENT, TechnicalSection.SYSTEMS -> "атлас"
+                TechnicalSection.DIAGNOSTICS -> "неисправность"
+                TechnicalSection.SAFETY -> "охрана труда"
+                TechnicalSection.ELECTRICAL -> "электросхема"
+                TechnicalSection.PNEUMATIC -> "пневмосхема"
+                else -> "справочник"
+            }
+            val titleQuery = AssistantQueryParser.parse("$cue $family ${card.title}")
+            val titleHits = index.search(AssistantSearchRequest(
+                query = titleQuery.searchText, literalQuery = titleQuery.normalizedText,
+                family = card.family, preferredSection = card.section, limit = 3
+            ))
+            if (titleHits.none { it.document.key == card.key }) {
+                misses += "${card.key}: heading -> ${titleHits.joinToString { it.document.canonicalId }}"
+                return@forEach
+            }
+            val titleTail = normalizedTitle.split(' ').drop(1).joinToString(" ")
+            val alternatives = (card.aliases + card.summary + titleTail)
+                .map(String::normalizeAssistantText)
+                .filter { it.length >= 4 && it != normalizedTitle &&
+                    it !in setOf("вл80с", "вл80", "ермак", "охрана труда", "первая помощь", "локомотив") }
+                .map { it.split(' ').take(8).joinToString(" ") }
+                .distinct().take(7)
+            if (alternatives.isEmpty()) {
+                misses += "${card.key}: only heading"
+                return@forEach
+            }
+            var recovered = false
+            for (phrase in alternatives) {
+                val hits = index.search(AssistantSearchRequest(
+                    query = phrase, literalQuery = phrase,
+                    family = card.family, preferredSection = card.section, limit = 3
+                ))
+                if (hits.any { it.document.key == card.key }) {
+                    recovered = true
+                    break
+                }
+            }
+            if (!recovered) misses += "${card.key}: no alternative in top 3; ${alternatives.take(4)}"
+        }
+        assertTrue("Full runtime catalog ${documents.size - misses.size}/${documents.size}:\n" +
+            misses.take(60).joinToString("\n"), misses.isEmpty())
     }
 
     @Test fun everyCanonicalCardHasVisibleSearchWordsAndCanBeRetrievedWithoutItsId() {

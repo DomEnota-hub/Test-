@@ -79,7 +79,8 @@ internal fun verifiedRequiredAcceptanceIds(entries: List<TechnicalEntry>, expect
     return ids
 }
 
-class TechnicalDataRepository(private val context: Context) {
+class TechnicalDataRepository internal constructor(private val loadAsset: (String) -> JSONObject) {
+    constructor(context: Context) : this({ asset -> TechnicalAssetReader.json(context, asset) })
     companion object {
         private val sharedSectionCache = mutableMapOf<Pair<TechnicalFamily, TechnicalSection>, List<TechnicalEntry>>()
         private val sharedEntryCache = mutableMapOf<String, TechnicalEntry>()
@@ -279,7 +280,7 @@ class TechnicalDataRepository(private val context: Context) {
         return id.startsWith("VL-") || id.startsWith("VL80-") || id.startsWith("ER-") || id.startsWith("SYS-") || id.startsWith("SAFETY-") || id.startsWith("route_") || id.matches(Regex("^[a-z][a-z0-9]+(?:-[a-z0-9]+)+$"))
     }
 
-    private fun json(asset: String): JSONObject = TechnicalAssetReader.json(context, asset)
+    private fun json(asset: String): JSONObject = loadAsset(asset)
 
     private fun loadVl80sProfiles(): List<TechnicalEntry> {
         val root = json("technical/vl80s_variants.json")
