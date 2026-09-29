@@ -191,6 +191,17 @@ class InMemoryAssistantIndex(
                 reasons += "primary-phrase"
             }
 
+            // Short apparatus names (ЭКГ, МСУД-Н) are legitimate complete
+            // headings. Match whole words so a shared prefix cannot beat the
+            // exact card and a substring inside another word cannot trigger it.
+            val shortTitle = document.title.normalizeAssistantText()
+            if (shortTitle.length in 2..7 && shortTitle.any(Char::isLetter) &&
+                " $shortTitle " in " $literalQuery ") {
+                score += 260
+                hasContentEvidence = true
+                reasons += "exact-short-title"
+            }
+
             val aliasPhraseMatched = indexed.aliasPhrases.any { phrase ->
                 phrase in literalQuery || (literalQuery.length >= 8 && literalQuery in phrase)
             }

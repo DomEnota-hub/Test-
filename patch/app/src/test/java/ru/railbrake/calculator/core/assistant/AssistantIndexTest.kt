@@ -19,6 +19,20 @@ import ru.railbrake.calculator.core.TechnicalSection
 class AssistantIndexTest {
 
     @Test
+    fun exactShortTechnicalHeadingBeatsRelatedLongTitles() {
+        val ekg = TechnicalEntryAssistantAdapter.adapt(
+            technicalEntry("VL-EQ-TR-001", TechnicalSection.EQUIPMENT, "ЭКГ", "электроконтроллер")
+        )
+        val broad = TechnicalEntryAssistantAdapter.adapt(
+            technicalEntry("VL-EQ-TR-002", TechnicalSection.EQUIPMENT,
+                "Контроллер тяги", "ЭКГ и цепи управления ЭКГ")
+        )
+        val result = AssistantEngine(InMemoryAssistantIndex(listOf(broad, ekg))).query("атлас ВЛ80С ЭКГ")
+        assertTrue(result is AssistantEngineResult.Matches)
+        assertEquals("VL-EQ-TR-001", (result as AssistantEngineResult.Matches).hits.first().document.canonicalId)
+    }
+
+    @Test
     fun faultTitleWithAllSymptomsBeatsUnrelatedCardMentioningOneSymptomInInstructions() {
         val correct = technicalEntry("brake-leak", TechnicalSection.DIAGNOSTICS,
             "Утечка тормозной магистрали", "падение давления тормозной магистрали")
