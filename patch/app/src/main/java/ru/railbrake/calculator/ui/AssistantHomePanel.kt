@@ -25,6 +25,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
@@ -102,6 +103,15 @@ internal fun AssistantHomePanel() {
     var query by rememberSaveable { mutableStateOf("") }
     var result by remember { mutableStateOf<AssistantEngineResult?>(null) }
     var pending by remember { mutableStateOf<AssistantPendingClarification?>(null) }
+    // A query may run against the small core while the technical catalog is
+    // loading. Resolve a provisional miss once the full index becomes ready.
+    LaunchedEffect(engine, engineState.loadingFullCatalog) {
+        if (engine != null && !engineState.loadingFullCatalog &&
+            result is AssistantEngineResult.NoResult && pending == null && query.isNotBlank() &&
+            query == result?.parsedQuery?.rawText?.trim()) {
+            result = engine.query(query)
+        }
+    }
     val voiceInput = remember(appContext) { AssistantVoiceInput(appContext) }
     val scope = rememberCoroutineScope()
     var voiceJob by remember { mutableStateOf<Job?>(null) }

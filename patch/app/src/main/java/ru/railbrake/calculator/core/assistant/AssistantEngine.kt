@@ -62,7 +62,11 @@ class AssistantEngine(
             )
         }
 
-        if (parsed.family == null) {
+        // A general safety/reference topic can have identical cards under two
+        // locomotive catalogues. Only operational questions need a series gate.
+        if (parsed.family == null && parsed.intent in setOf(
+                AssistantIntent.TROUBLESHOOT, AssistantIntent.OPEN_SCHEME, AssistantIntent.ACCEPTANCE
+            )) {
             crossFamilyAmbiguity(hits)?.let { clarification ->
                 return AssistantEngineResult.Clarify(
                     parsedQuery = parsed,

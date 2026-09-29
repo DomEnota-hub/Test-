@@ -305,6 +305,15 @@ class InMemoryAssistantIndex(
                 compareByDescending<AssistantSearchHit> { it.score }
                     .thenBy { it.document.title }
             )
+            // Generic occupational-safety cards are projected into both
+            // locomotive catalogues. Show the same text once for a broad query.
+            .distinctBy { hit ->
+                val card = hit.document
+                if (request.family == null && card.section == TechnicalSection.SAFETY &&
+                    card.kind == AssistantDocumentKind.TECHNICAL_ENTRY) {
+                    listOf(card.section, card.title, card.summary, card.body)
+                } else listOf(card.key)
+            }
             .take(request.limit.coerceIn(1, 20))
     }
 

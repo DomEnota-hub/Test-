@@ -46,4 +46,42 @@ class AssistantSectionRoutingTest {
             assertEquals("$query", expected, (result as AssistantEngineResult.Matches).hits.first().document.canonicalId)
         }
     }
+
+    @Test fun occupationalSafetyHeadingsAndSpokenNamesDoNotAskForLocomotive() {
+        val documents = TechnicalFamily.entries.flatMap { family ->
+            listOf(
+                "FACTORS" to "Опасные и вредные производственные факторы",
+                "RISK" to "Выявление опасностей и оценка риска",
+                "PROTECTION" to "Меры защиты: технические, организационные и СИЗ",
+                "ELECTRICAL" to "Электробезопасность и границы допуска",
+                "ROLLING-STOCK" to "Безопасность рядом с подвижным составом и на путях",
+                "STOP" to "Когда работу нужно прекратить и сообщить",
+                "TRAINING" to "Обучение, инструктаж и первая помощь"
+            ).map { (id, title) ->
+                TechnicalEntryAssistantAdapter.adapt(ru.railbrake.calculator.core.TechnicalEntry(
+                    id = "SAFETY-${family.name}-$id", family = family, section = TechnicalSection.SAFETY,
+                    title = title, subtitle = "", status = "INFORMATION", blocks = emptyList(),
+                    searchText = title
+                ))
+            }
+        }
+        val engine = AssistantEngine(InMemoryAssistantIndex(documents))
+        val cases = mapOf(
+            "вредные факторы" to "FACTORS",
+            "производственные вредности" to "FACTORS",
+            "опасные факторы на работе" to "FACTORS",
+            "профессиональные риски" to "RISK",
+            "оценка профрисков" to "RISK",
+            "чем защититься на работе" to "PROTECTION"
+        )
+        cases.forEach { (phrase, suffix) ->
+            val result = engine.query(phrase)
+            assertTrue("$phrase: $result", result is AssistantEngineResult.Matches)
+            val hits = (result as AssistantEngineResult.Matches).hits
+            assertTrue("$phrase: ${hits.map { it.document.canonicalId }}",
+                hits.first().document.canonicalId.endsWith(suffix))
+            assertEquals("$phrase: duplicated series", 1,
+                hits.count { it.document.canonicalId.endsWith(suffix) })
+        }
+    }
 }

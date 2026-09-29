@@ -24,6 +24,21 @@ object TechnicalEntryAssistantAdapter {
             if (entry.subtitle.isNotBlank()) add(entry.subtitle)
             addAll(entry.sequenceLabels.values.filter(String::isNotBlank))
             addAll(entry.hotspots.map { it.label }.filter(String::isNotBlank))
+            // Spoken occupational-safety headings omit formal qualifiers.
+            if (entry.section == TechnicalSection.SAFETY) {
+                when {
+                    entry.id.endsWith("-FACTORS") -> addAll(listOf(
+                        "вредные факторы", "опасные факторы", "производственные вредности",
+                        "опасности на работе", "вредные условия труда"
+                    ))
+                    entry.id.endsWith("-RISK") -> addAll(listOf(
+                        "профессиональные риски", "оценка профрисков", "какие опасности на рабочем месте"
+                    ))
+                    entry.id.endsWith("-PROTECTION") -> addAll(listOf(
+                        "чем защититься на работе", "средства индивидуальной защиты", "сиз"
+                    ))
+                }
+            }
         }
 
         val componentIds = buildSet {
