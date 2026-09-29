@@ -1,0 +1,100 @@
+name: Assistant full repository export
+
+on:
+  push:
+    branches:
+      - assistant-full-export-20260929
+    paths:
+      - .github/workflows/assistant-full-export-20260929.yml
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository with full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Build transferable repository handoff
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUT="$RUNNER_TEMP/Test-full-handoff"
+          mkdir -p "$OUT"
+
+          git fetch origin '+refs/heads/*:refs/remotes/origin/*' --tags --force --prune
+
+          while IFS= read -r ref; do
+            name="${ref#refs/remotes/origin/}"
+            [ "$name" = "HEAD" ] && continue
+            if [ "$name" = "assistant-full-export-20260929" ]; then
+              continue
+            fi
+            git branch -f "$name" "$ref"
+          done < <(git for-each-ref --format='%(refname)' refs/remotes/origin/)
+
+          ACTIVE_BRANCH='feature/offline-assistant-v0.9'
+          git show-ref --verify --quiet "refs/heads/$ACTIVE_BRANCH"
+          git show-ref --verify --quiet refs/heads/main
+          ACTIVE_SHA="$(git rev-parse "refs/heads/$ACTIVE_BRANCH")"
+          MAIN_SHA="$(git rev-parse refs/heads/main)"
+
+          git bundle create "$OUT/Test-repository.bundle" --branches --tags
+          git bundle verify "$OUT/Test-repository.bundle"
+
+          git archive --format=zip --output="$OUT/Test-active-feature-offline-assistant-v0.9-source.zip" "refs/heads/$ACTIVE_BRANCH"
+          git archive --format=zip --output="$OUT/Test-main-source.zip" refs/heads/main
+
+          git show-ref > "$OUT/REFS.txt"
+          git branch -a -vv > "$OUT/BRANCHES.txt"
+
+          cat > "$OUT/README_RESTORE.txt" <<EOF
+          RailBrakeCalculator / Test repository transferable handoff
+          ==========================================================
+
+          Repository: https://github.com/DomEnota-maker/Test-
+          Active development branch: $ACTIVE_BRANCH
+          Active branch HEAD: $ACTIVE_SHA
+          Main HEAD: $MAIN_SHA
+
+          This package contains:
+          1. Test-repository.bundle — complete Git history and branch/tag refs fetched at export time.
+          2. Test-active-feature-offline-assistant-v0.9-source.zip — clean source snapshot of the active assistant branch.
+          3. Test-main-source.zip — clean source snapshot of main.
+          4. REFS.txt / BRANCHES.txt — captured references and branch state.
+          5. SHA256SUMS.txt — checksums for verification.
+
+          Restore a working Git repository from the bundle:
+
+            git clone -b feature/offline-assistant-v0.9 Test-repository.bundle Test-restored
+            cd Test-restored
+            git remote set-url origin https://github.com/DomEnota-maker/Test-.git
+
+          The bundle contains committed repository data only. GitHub secrets, Actions secrets,
+          account credentials and other server-side settings are not part of a Git repository
+          and therefore are not included.
+          EOF
+
+          git clone -q -b "$ACTIVE_BRANCH" "$OUT/Test-repository.bundle" "$RUNNER_TEMP/Test-bundle-verify"
+          test "$(git -C "$RUNNER_TEMP/Test-bundle-verify" rev-parse HEAD)" = "$ACTIVE_SHA"
+
+          (cd "$OUT" && sha256sum Test-repository.bundle Test-active-feature-offline-assistant-v0.9-source.zip Test-main-source.zip REFS.txt BRANCHES.txt README_RESTORE.txt > SHA256SUMS.txt)
+          (cd "$OUT" && zip -qr "$RUNNER_TEMP/Test-repository-FULL-HANDOFF-2026-09-29.zip" .)
+          unzip -t "$RUNNER_TEMP/Test-repository-FULL-HANDOFF-2026-09-29.zip" >/dev/null
+          sha256sum "$RUNNER_TEMP/Test-repository-FULL-HANDOFF-2026-09-29.zip"
+          ls -lh "$RUNNER_TEMP/Test-repository-FULL-HANDOFF-2026-09-29.zip"
+
+      - name: Upload full handoff archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: Test-repository-FULL-HANDOFF-2026-09-29
+          path: ${{ runner.temp }}/Test-repository-FULL-HANDOFF-2026-09-29.zip
+          compression-level: 0
+          retention-days: 7
+          if-no-files-found: error
