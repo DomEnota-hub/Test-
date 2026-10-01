@@ -1,0 +1,66 @@
+name: Build Package C layout interaction palette
+
+on:
+  push:
+    branches:
+      - integration/chme3-assistant
+    paths:
+      - 'qa/build_package_c_layout_interaction_palette.py'
+      - 'qa/validate_package_c_layout_interaction_palette.py'
+      - 'app/src/main/assets/technical/stepwise_scheme_flows.json'
+      - 'app/src/main/assets/technical/ermak_schemes.json.gz'
+      - 'docs/locomotives/diesel/chme3-family/**/interactive_schemes.json'
+      - 'docs/locomotives/diesel/chme3-family/common/interactive_shared_views.json'
+      - '.github/workflows/package-c-build-layout.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Guard branch head
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin integration/chme3-assistant
+          test "$(git rev-parse origin/integration/chme3-assistant)" = "$GITHUB_SHA"
+
+      - name: Generate and validate Package C assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 qa/build_package_c_layout_interaction_palette.py
+          python3 qa/validate_package_c_layout_interaction_palette.py
+          git diff --check
+
+      - name: Commit generated Package C assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add \
+            app/src/main/assets/technical/scheme_layout_metadata.json \
+            app/src/main/assets/technical/scheme_view_contract.json \
+            app/src/main/assets/technical/scheme_semantic_palette.json \
+            patch/app/src/main/assets/technical/scheme_layout_metadata.json \
+            patch/app/src/main/assets/technical/scheme_view_contract.json \
+            patch/app/src/main/assets/technical/scheme_semantic_palette.json \
+            docs/integration/PACKAGE_C_LAYOUT_INTERACTION_PALETTE_CHECKPOINT.md
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo "Package C assets are already current"
+            exit 0
+          fi
+          git config user.name "DomEnota-hub"
+          git config user.email "domenota6212@gmail.com"
+          git commit -m "data: add scheme layout interaction palette contracts"
+          git fetch origin integration/chme3-assistant
+          test "$(git rev-parse origin/integration/chme3-assistant)" = "$GITHUB_SHA"
+          git push origin HEAD:integration/chme3-assistant
