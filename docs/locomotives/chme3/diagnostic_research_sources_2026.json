@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "packageId": "chme3-family",
+  "updatedAt": "2026-10-01",
+  "state": "DIAGNOSTICS_PASS_3_SOURCE_RESEARCH",
+  "records": [
+    {
+      "id":"CHME3-DIAG-SRC-996R-2026-CATALOG",
+      "title":"Перечень действий локомотивных бригад — издание/актуализация 2026",
+      "url":"https://www.centrmag.ru/catalog/product/perechen_deystviy_lokomotivnyh_brigad_po_vyyavleniyu_i_ystraneniyu_neispravnostey_na_lokomotivah_pri_poezdnoy_i_manevrovoy_rabote_2025_god_poslednyaya/",
+      "kind":"CURRENT_STATUS_CORROBORATION",
+      "status":"OFFICIAL_STATUS_SECONDARY",
+      "claimsSupported":["Перечень по распоряжению 996/р указан как действующий в издании 2026 года","в содержании сохраняется отдельный порядок для тепловозов ЧМЭ3"],
+      "doesNotProve":["точный текст каждого пункта ЧМЭ3","отсутствие промежуточных изменений конкретного приложения","допустимость конкретного полевого способа"],
+      "actionAuthority":"NO_BY_ITSELF"
+    },
+    {
+      "id":"CHME3-DIAG-SRC-996R-2024-CATALOG",
+      "title":"996/р в редакции распоряжения 592/р от 05.03.2024",
+      "url":"https://urizdat.ru/books/zheleznodorozhnyy-transport/lokomotivy-i-lokomotivnoe-hozyaystvo-ct-ctr/perechen-deystviy-lokomotivnyh-brigad-po-vyyavleniyu-i-ustraneniyu-neispravnostey-na-lokomotivah-pri-poezdnoy-i-manevrovoy-rabote-utverzhden-rasporyazheniem-oao-rzhd-ot-12-04-2022-996-r-v-redakcii-rasporyazheniya-oao-rzhd-ot-05-03-2024-592-r.html",
+      "kind":"REVISION_CORROBORATION",
+      "status":"996R_CONFIRMED",
+      "claimsSupported":["редакция 592/р от 05.03.2024","отдельное приложение/порядок для ЧМЭ3","996/р введено взамен 671р"],
+      "actionAuthority":"NO_BY_ITSELF"
+    },
+    {
+      "id":"CHME3-DIAG-SRC-SCBIST-INDEX",
+      "title":"Сборник документации по ЧМЭ3",
+      "url":"https://scbist.com/tyagovyi-podvizhnoi-sostav/12424-teplovoz-chme3-dokumentaciya-print.html",
+      "kind":"ARCHIVE_INDEX",
+      "status":"UNVERIFIED",
+      "materialsFound":["Поиск неисправностей ЧМЭ3","Основные аварийные схемы приведения тепловоза в движение","Неисправности ЧМЭ3 — разное","Методичка ЧМЭ-3","Руководство по ТО и ТР ЧМЭ3","УСТА","электронный РЧО","электрические и пневматические схемы"],
+      "actionAuthority":"NO",
+      "notes":"Каждый файл должен получить отдельную provenance-запись после извлечения и проверки, индекс сам по себе не подтверждает содержание."
+    },
+    {
+      "id":"CHME3-DIAG-SRC-OLTEP-DIESEL",
+      "title":"Неисправности дизеля тепловоза ЧМЭ3",
+      "url":"https://oltep.narod.ru/neispr/neisp_diz.htm",
+      "kind":"FIELD_PRACTICE",
+      "status":"UNVERIFIED",
+      "useFor":["симптомы","различающие признаки","машинистская терминология","гипотезы причин","поиск конфликтов с 996/р и РЭ"],
+      "notFor":["автоматическое разрешение ремонтных действий","нештатные обходы и вмешательства без проверки"],
+      "actionAuthority":"NO_UNTIL_CONFLICT_REVIEW"
+    }
+  ]
+}
