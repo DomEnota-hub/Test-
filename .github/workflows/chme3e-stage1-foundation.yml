@@ -1,0 +1,23 @@
+name: ChME3E stage 1 foundation
+
+on:
+  push:
+    branches:
+      - feature/locomotive-knowledge-foundation
+    paths:
+      - 'docs/locomotives/manifests/**'
+      - 'docs/locomotives/diesel/chme3-family/**'
+      - 'qa/validate_chme3e_stage1.py'
+      - '.github/workflows/chme3e-stage1-foundation.yml'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate ChME3E stage 1 foundation
+        run: python qa/validate_chme3e_stage1.py
