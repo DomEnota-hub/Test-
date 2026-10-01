@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "familyId": "chme3-family",
+  "updatedAt": "2026-10-01",
+  "purpose": "Unified runtime-ready contract for interactive locomotive schemes. It is compatible with the existing TechnicalHotspot model and the Ermak hotspot/flow approach, while keeping source-image overlays optional.",
+  "renderModes": {
+    "SEMANTIC_CANVAS": "Render nodes and directed links from the data itself. Hotspot coordinates are semantic layout coordinates and are not claimed to match a scanned drawing.",
+    "SOURCE_OVERLAY": "Optional future mode. Requires a verified source image plus independently checked image-space hotspot coordinates."
+  },
+  "coordinateSystem": {
+    "origin": "TOP_LEFT",
+    "width": 1600,
+    "height": 900,
+    "unit": "VIRTUAL_PIXEL",
+    "compatibleWithTechnicalHotspot": true
+  },
+  "hotspotContract": {
+    "required": ["equipmentId", "label", "layoutHint"],
+    "layoutHintRequired": ["x", "y", "width", "height"],
+    "onTap": "OPEN_EQUIPMENT_CARD",
+    "onSearchHit": "FOCUS_AND_HIGHLIGHT",
+    "diagnosticNavigation": "FOCUS_SCHEME_AND_EQUIPMENT",
+    "minimumWidth": 120,
+    "minimumHeight": 56
+  },
+  "flowContract": {
+    "required": ["from", "to", "label"],
+    "rule": "Every from/to endpoint must be represented by a hotspot in the same effective view.",
+    "direction": "DIRECTED"
+  },
+  "navigationContract": {
+    "systemToScheme": "derive from systemRefs/view metadata",
+    "schemeToEquipment": "hotspot equipmentId",
+    "equipmentToScheme": "derive reverse index from all hotspot layers",
+    "diagnosticToScheme": "join diagnostic equipment refs to hotspot equipmentId; an explicit preferredSchemeId may override ranking",
+    "equipmentCardBackToScheme": "reverse index sorted by active profile and scheme priority",
+    "designationSearch": "resolve aliases/designations to equipmentId, then focus all matching hotspots",
+    "profileSelection": "profile gate is mandatory before showing variant-only views or hotspots"
+  },
+  "profileIsolation": {
+    "chme3-base": {
+      "forbidEquipmentPrefixes": ["CHME3T-", "CHME3E-"]
+    },
+    "chme3t-rheostatic": {
+      "forbidEquipmentPrefixes": ["CHME3E-"],
+      "requiredView": "CHME3T-INT-EDB"
+    },
+    "chme3e-electronic": {
+      "forbidEquipmentPrefixes": ["CHME3T-"],
+      "forbidFeatures": ["factory_rheostatic_brake", "braking_resistor_bank", "edb_runtime_actions"]
+    }
+  },
+  "sourceOverlayPolicy": {
+    "default": "NOT_REQUIRED_FOR_SEMANTIC_INTERACTIVITY",
+    "imageCoordinatesMustNotBeInvented": true,
+    "overlayBecomesReadyWhen": [
+      "source image is identified and versioned",
+      "hotspots are mapped in the image coordinate system",
+      "all hotspot-to-equipment mappings pass QA"
+    ]
+  }
+}
