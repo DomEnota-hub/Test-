@@ -10,8 +10,11 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def read(name, apk=None):
     relative = f"technical/chme3_{name}.json.gz"
-    raw = zipfile.ZipFile(apk).read(f"assets/{relative}") if apk else (ROOT / "app/src/main/assets" / relative).read_bytes()
-    return json.loads(gzip.decompress(raw))
+    if apk:
+        # Android packages .gz assets after decompressing them and drops the suffix.
+        with zipfile.ZipFile(apk) as archive:
+            return json.loads(archive.read(f"assets/{relative.removesuffix('.gz')}"))
+    return json.loads(gzip.decompress((ROOT / "app/src/main/assets" / relative).read_bytes()))
 
 
 def check(apk=None):
