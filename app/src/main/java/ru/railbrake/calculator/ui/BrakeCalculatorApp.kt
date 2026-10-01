@@ -427,8 +427,9 @@ fun BrakeCalculatorApp(
                         screenName = AppScreen.LOCOMOTIVE_LEGACY.name
                     },
                     onOpenDiagnosticScenario = { scenarioId, sourceEntryId, sourceSection ->
-                        technicalFamilyName = if (scenarioId.startsWith("CHME3")) technicalFamilyName else TechnicalFamily.ERMAK.name
-                        viewingFamilyName = technicalFamilyName
+                        val targetFamily = diagnosticInitialFamily(scenarioId, null)
+                        technicalFamilyName = targetFamily.name
+                        viewingFamilyName = targetFamily.name
                         technicalSectionName = sourceSection.name
                         technicalInitialEntryId = sourceEntryId
                         diagnosticStartScenarioId = scenarioId

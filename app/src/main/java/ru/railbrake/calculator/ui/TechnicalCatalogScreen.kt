@@ -861,8 +861,13 @@ private fun TechnicalEntryDetail(
                 RailStatusPill(status, accent = accent)
             }
         }
-        if ((entry.id.startsWith("ER-SCH-LAYOUT-") || entry.family.isChme3) && entry.hotspots.isNotEmpty()) {
-            item { ErmakInteractiveAtlas(entry, repository, onOpen) }
+        if (entry.section == TechnicalSection.ELECTRICAL || entry.section == TechnicalSection.PNEUMATIC) {
+            item {
+                if (!StepwiseSchemeForEntry(entry, repository, onOpen)) {
+                    if (entry.hotspots.isNotEmpty()) ErmakInteractiveAtlas(entry, repository, onOpen)
+                    else if (entry.sequence.isNotEmpty()) TechnicalSequenceLinks(entry, repository, onOpen)
+                }
+            }
         } else if (entry.section == TechnicalSection.ACCEPTANCE && entry.sequence.isNotEmpty()) {
             item { TechnicalSequence(entry, repository) }
         } else if (entry.sequence.isNotEmpty()) {
@@ -905,6 +910,7 @@ private fun TechnicalEntryDetail(
             }
         }
         items(renderableDetailBlocks, key = { it.title }) { block ->
+            val blockColors = technicalBlockColors(block.title)
             val displayLines = repository.displayLines(block.lines)
                 .mapNotNull(::technicalPresentationLine)
                 .distinct()
@@ -922,8 +928,8 @@ private fun TechnicalEntryDetail(
             }
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = technicalBlockContainer(entry.section, block.title)),
-                border = BorderStroke(1.dp, accent.copy(alpha = 0.38f)),
+                colors = CardDefaults.cardColors(containerColor = blockColors.container, contentColor = blockColors.content),
+                border = BorderStroke(1.dp, blockColors.border),
                 shape = RoundedCornerShape(18.dp)
             ) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(7.dp)) {
@@ -933,7 +939,7 @@ private fun TechnicalEntryDetail(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column(Modifier.weight(1f)) {
-                            Text(block.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                            Text(block.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black, color = blockColors.content)
                             if (compactErmak && !expanded) {
                                 Text(
                                     "$contentCount пунктов",
@@ -1296,7 +1302,7 @@ private fun ErmakInteractiveAtlas(
         shape = RoundedCornerShape(18.dp)
     ) {
         Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            Text("Интерактивный атлас «Ермак»", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+            Text("Интерактивная схема ${entry.family.title}", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
             Text(
                 "Функциональная карта по встроенным данным компоновки. Зоны показывают принадлежность оборудования, но не заменяют заводской монтажный чертёж.",
                 style = MaterialTheme.typography.bodySmall,
@@ -2100,14 +2106,29 @@ private fun AcceptanceResultCard(
 private fun formatAcceptanceTime(timestampMillis: Long): String =
     SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault()).format(Date(timestampMillis))
 
+private data class TechnicalBlockColors(val container: Color, val border: Color, val content: Color)
+
 @Composable
-private fun technicalBlockContainer(section: TechnicalSection,title:String):Color=when {
-    title.contains("Опас",true)->MaterialTheme.colorScheme.errorContainer
-    title.contains("Неисправ",true)->MaterialTheme.colorScheme.secondaryContainer
-    title.contains("Нормаль",true)->MaterialTheme.colorScheme.primaryContainer
-    title.contains("Провер",true)->MaterialTheme.colorScheme.tertiaryContainer
-    else->technicalSectionContainer(section)
+private fun technicalBlockColors(title: String): TechnicalBlockColors {
+    val dark = MaterialTheme.colorScheme.background.red < 0.3f
+    return when {
+        title.contains("Опас", true) || title.contains("Запрет", true) -> if (dark)
+            TechnicalBlockColors(Color(0xFF7F1D1D), Color(0xFFFCA5A5), Color(0xFFFFE5E5)) else
+            TechnicalBlockColors(Color(0xFFFEE2E2), Color(0xFFB91C1C), Color(0xFF7F1D1D))
+        title.contains("Отклон", true) || title.contains("Неисправ", true) -> if (dark)
+            TechnicalBlockColors(Color(0xFF7C2D12), Color(0xFFFDBA74), Color(0xFFFFE5CD)) else
+            TechnicalBlockColors(Color(0xFFFFEDD5), Color(0xFFC2410C), Color(0xFF7C2D12))
+        title.contains("Нормаль", true) -> if (dark)
+            TechnicalBlockColors(Color(0xFF14532D), Color(0xFF86EFAC), Color(0xFFDCFCE7)) else
+            TechnicalBlockColors(Color(0xFFDCFCE7), Color(0xFF16A34A), Color(0xFF14532D))
+        else -> if (dark)
+            TechnicalBlockColors(Color(0xFF1E293B), Color(0xFF64748B), Color(0xFFE2E8F0)) else
+            TechnicalBlockColors(Color(0xFFF1F5F9), Color(0xFF94A3B8), Color(0xFF1E293B))
+    }
 }
+
+@Composable
+private fun technicalBlockContainer(section: TechnicalSection,title:String):Color = technicalBlockColors(title).container
 
 @Composable
 private fun technicalSectionContainer(section:TechnicalSection):Color =

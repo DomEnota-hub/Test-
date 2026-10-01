@@ -219,11 +219,29 @@ class TechnicalDataRepository internal constructor(private val loadAsset: (Strin
         return null
     }
 
+    private val readableSources by lazy {
+        val sources = json("technical/source_presentations.json").getJSONObject("sources")
+        buildMap {
+            val keys = sources.keys()
+            while (keys.hasNext()) {
+                val id = keys.next()
+                val source = sources.getJSONObject(id)
+                put(id, source.optString("title"))
+            }
+        }
+    }
+
+    private val embeddedReference = Regex("(?i)(?:CHME3E|CHME3T|CHME3|VL80|VL|ER|SYS|SAFETY)(?:-[A-Z0-9_]+)+")
+
+    private fun readableReferences(value: String): String = embeddedReference.replace(value) { match ->
+        readableSources[match.value] ?: entry(match.value)?.title ?: ""
+    }
+
     fun displayLines(lines: List<String>): List<String> = lines.mapNotNull { line ->
         line.split(" • ")
             .mapNotNull { part ->
-                part.takeUnless { looksLikeEntryId(it) && entry(it) != null || isInternalTechnicalReference(it) }
-                    ?.let(::technicalPresentationLine)?.takeIf(String::isNotBlank)
+                part.takeUnless { looksLikeEntryId(it) && entry(it) != null }
+                    ?.let(::readableReferences)?.let(::technicalPresentationLine)?.takeIf(String::isNotBlank)
             }.distinct().joinToString(" • ").takeIf(String::isNotBlank)
     }
 

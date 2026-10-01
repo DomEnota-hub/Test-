@@ -3,7 +3,7 @@ package ru.railbrake.calculator.core
 /** Permanent presentation boundary: internal technical identifiers are routing keys, never UI text. */
 object UserFacingTechnicalPolicy {
     private val internalIdToken = Regex(
-        pattern = "(?i)(?<![\\p{L}\\p{N}_])(?:CHME3E|CHME3T|CHME3|VL80|VL|ER|SYS|SAFETY)(?:-[A-Z0-9_]+)+(?![\\p{L}\\p{N}_])"
+        pattern = "(?i)(?<![\\p{L}\\p{N}_])(?:CHME3E|CHME3T|CHME3|VL80|VL|ER|SYS|SAFETY|STEP|HS)(?:-[A-Z0-9_]+)+(?![\\p{L}\\p{N}_])"
     )
     private val internalRouteToken = Regex(
         pattern = "(?i)(?<![\\p{L}\\p{N}_])(?:route|profile|variant)_[a-z0-9_]+(?![\\p{L}\\p{N}_])"

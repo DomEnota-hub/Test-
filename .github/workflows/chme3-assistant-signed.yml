@@ -8,6 +8,15 @@ on:
     paths:
       - app/src/main/assets/technical/chme3*
       - patch/app/src/main/assets/technical/chme3*
+      - app/src/main/assets/technical/stepwise_scheme_flows.json
+      - app/src/main/assets/technical/scheme_*.json
+      - app/src/main/assets/technical/source_presentations.json
+      - patch/app/src/main/assets/technical/source_presentations.json
+      - qa/build_source_presentations.py
+      - app/src/main/java/ru/railbrake/calculator/ui/StepwiseSchemeViewer.kt
+      - patch/app/src/main/java/ru/railbrake/calculator/ui/StepwiseSchemeViewer.kt
+      - app/src/main/java/ru/railbrake/calculator/ui/TechnicalCatalogScreen.kt
+      - patch/app/src/main/java/ru/railbrake/calculator/ui/TechnicalCatalogScreen.kt
       - docs/locomotives/**
       - qa/verify_chme3_android_assets.py
       - app/src/main/java/ru/railbrake/calculator/core/assistant/**
@@ -123,6 +132,11 @@ jobs:
           done
           cmp app/src/main/java/ru/railbrake/calculator/ui/FirstAidScreen.kt patch/app/src/main/java/ru/railbrake/calculator/ui/FirstAidScreen.kt
           cmp app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt patch/app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt
+          cmp app/src/main/java/ru/railbrake/calculator/core/UserFacingTechnicalPolicy.kt patch/app/src/main/java/ru/railbrake/calculator/core/UserFacingTechnicalPolicy.kt
+          cmp app/src/main/java/ru/railbrake/calculator/ui/StepwiseSchemeViewer.kt patch/app/src/main/java/ru/railbrake/calculator/ui/StepwiseSchemeViewer.kt
+          cmp app/src/main/java/ru/railbrake/calculator/ui/TechnicalCatalogScreen.kt patch/app/src/main/java/ru/railbrake/calculator/ui/TechnicalCatalogScreen.kt
+          cmp app/src/main/java/ru/railbrake/calculator/ui/theme/Theme.kt patch/app/src/main/java/ru/railbrake/calculator/ui/theme/Theme.kt
+          cmp app/src/main/assets/technical/source_presentations.json patch/app/src/main/assets/technical/source_presentations.json
           cmp app/build.gradle.kts patch/app/build.gradle.kts
 
       - name: Set up JDK 17
@@ -250,7 +264,7 @@ jobs:
 
           text, code_count = re.subn(
               r'versionCode\s*=\s*\d+',
-              'versionCode = 214',
+              'versionCode = 215',
               text,
               count=1,
           )
@@ -258,7 +272,7 @@ jobs:
               raise SystemExit('Expected versionCode was not found exactly once')
 
           def version_replacement(match):
-              return f'versionName = "{match.group(1)}-assistant-v0.23"'
+              return f'versionName = "{match.group(1)}-assistant-v0.24"'
 
           text, version_count = re.subn(
               r'versionName\s*=\s*"([^"]+)"',
@@ -287,7 +301,12 @@ jobs:
           PY
 
       - name: Validate ChME3 Android projection
-        run: python3 qa/verify_chme3_android_assets.py
+        run: |
+          python3 qa/verify_chme3_android_assets.py
+          python3 qa/validate_package_b_stepwise_flows.py
+          python3 qa/validate_package_c_layout_interaction_palette.py
+          python3 qa/build_source_presentations.py
+          git diff --exit-code -- app/src/main/assets/technical/source_presentations.json patch/app/src/main/assets/technical/source_presentations.json
 
       - name: Compile and test debug sources
         working-directory: buildsrc/RailBrakeCalculator
@@ -343,11 +362,14 @@ jobs:
           set -euo pipefail
           APK=buildsrc/RailBrakeCalculator/app/build/outputs/apk/release/app-release.apk
           "$ANDROID_SDK_ROOT/build-tools/34.0.0/aapt" dump badging "$APK" | tee assistant-test-badging.log
-          grep -Fq "package: name='ru.railbrake.calculator.assistanttest' versionCode='214' versionName='1.2.2-dev14-beta53-chme3-assistant-v0.23'" assistant-test-badging.log
+          grep -Fq "package: name='ru.railbrake.calculator.assistanttest' versionCode='215' versionName='1.2.2-dev14-beta53-chme3-assistant-v0.24'" assistant-test-badging.log
           "$ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner" verify --verbose --print-certs "$APK" | tee assistant-test-apksigner.log
           grep -qi "Signer #1 certificate SHA-256 digest: $EXPECTED_SIGNING_CERT_SHA256" assistant-test-apksigner.log
           unzip -Z1 "$APK" | grep 'assets/technical/' | head -30
           python3 qa/verify_chme3_android_assets.py "$APK"
+          for file in stepwise_scheme_flows scheme_layout_metadata scheme_view_contract scheme_semantic_palette source_presentations; do
+            unzip -Z1 "$APK" | grep -Fxq "assets/technical/$file.json"
+          done
           unzip -Z1 "$APK" > assistant-test-entries.txt
           grep -Fxq 'assets/assistant_voice/silero_vad.onnx' assistant-test-entries.txt
           for file in encoder.int8.onnx decoder.onnx joiner.int8.onnx tokens.txt; do
@@ -359,7 +381,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: railbrake-assistant-test-v0.23-chme3-signed-apk
+          name: railbrake-assistant-test-v0.24-chme3-signed-apk
           path: buildsrc/RailBrakeCalculator/app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
           retention-days: 7

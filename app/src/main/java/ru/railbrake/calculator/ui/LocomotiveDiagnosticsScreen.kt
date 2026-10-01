@@ -73,11 +73,15 @@ internal fun diagnosticInitialFamily(scenarioId: String?, equipmentId: String?):
 internal fun diagnosticScenarioForFamily(id: String?, family: TechnicalFamily): String? = when (family) {
     TechnicalFamily.VL80S -> id?.takeUnless { it.startsWith("ER-") }
     TechnicalFamily.ERMAK -> id?.takeIf { it.startsWith("ER-DIAG-") }
-    TechnicalFamily.CHME3, TechnicalFamily.CHME3T, TechnicalFamily.CHME3E -> id?.takeIf { it.startsWith("CHME3") }
+    TechnicalFamily.CHME3 -> id?.takeIf { it.startsWith("CHME3-") }
+    TechnicalFamily.CHME3T -> id?.takeIf { it.startsWith("CHME3-") || it.startsWith("CHME3T-") }
+    TechnicalFamily.CHME3E -> id?.takeIf { it.startsWith("CHME3-") || it.startsWith("CHME3E-") }
 }
 
 internal fun diagnosticEquipmentForFamily(id: String?, family: TechnicalFamily): String? = when (family) {
     TechnicalFamily.VL80S -> id?.takeUnless { it.startsWith("ER-") }
     TechnicalFamily.ERMAK -> id?.takeIf { it.startsWith("ER-EQ-") }
-    TechnicalFamily.CHME3, TechnicalFamily.CHME3T, TechnicalFamily.CHME3E -> id?.takeIf { it.startsWith("CHME3") }
+    TechnicalFamily.CHME3 -> id?.takeIf { it.startsWith("CHME3-") }
+    TechnicalFamily.CHME3T -> id?.takeIf { it.startsWith("CHME3-") || it.startsWith("CHME3T-") }
+    TechnicalFamily.CHME3E -> id?.takeIf { it.startsWith("CHME3-") || it.startsWith("CHME3E-") }
 }

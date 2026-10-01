@@ -18,7 +18,7 @@ import androidx.core.view.WindowCompat
 enum class AccentPalette(val title: String, val primary: Color, val container: Color) {
     BLUE("Холодный синий", Color(0xFF82A9FF), Color(0xFF182947)),
     AMBER("Янтарный", RailAmber, RailAmberSoft),
-    GREEN("Стальной зелёный", Color(0xFF68C9A5), Color(0xFF18342C)),
+    GREEN("Яркий зелёный", Color(0xFF4ADE80), Color(0xFF14532D)),
     YELLOW("Сигнальный жёлтый", Color(0xFFFFC857), Color(0xFF3B3017)),
     PURPLE("Холодный фиолетовый", Color(0xFFB9A3E8), Color(0xFF302744))
 }
@@ -72,7 +72,7 @@ private data class LightAccentTokens(
 private fun lightAccentTokens(palette: AccentPalette): LightAccentTokens = when (palette) {
     AccentPalette.BLUE -> LightAccentTokens(Color(0xFF1D5FAE), Color(0xFFDCE8FF))
     AccentPalette.AMBER -> LightAccentTokens(Color(0xFFA34B00), Color(0xFFFFE0C2))
-    AccentPalette.GREEN -> LightAccentTokens(Color(0xFF1B7354), Color(0xFFD1F0E3))
+    AccentPalette.GREEN -> LightAccentTokens(Color(0xFF16A34A), Color(0xFFDCFCE7))
     AccentPalette.YELLOW -> LightAccentTokens(Color(0xFF765C00), Color(0xFFFFEFA8))
     AccentPalette.PURPLE -> LightAccentTokens(Color(0xFF69499E), Color(0xFFEADFFA))
 }
@@ -106,7 +106,7 @@ private fun darkColors(palette: AccentPalette) = darkColorScheme(
 private fun lightColors(palette: AccentPalette) = lightAccentTokens(palette).let { accent ->
     lightColorScheme(
         primary = accent.primary,
-        onPrimary = Color.White,
+        onPrimary = if (palette == AccentPalette.GREEN) Color(0xFF052E16) else Color.White,
         primaryContainer = accent.container,
         onPrimaryContainer = Color(0xFF172033),
         secondary = Color(0xFF4A5B6E),
