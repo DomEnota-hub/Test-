@@ -36,14 +36,28 @@ def main() -> int:
     family_entry = family_profiles.get("chme3e-electronic")
     if not family_entry:
         raise AssertionError("CHME3E missing from family manifest")
-    accepted_support_states = {
-        "STAGE_1_FOUNDATION_COMPLETE",
-        "STAGE_2_ATLAS_SCHEMES_COMPLETE",
-        "STAGE_3_DIAGNOSTICS_COMPLETE",
-        "KNOWLEDGE_FOUNDATION_COMPLETE",
-    }
-    if family_entry.get("supportState") not in accepted_support_states:
-        raise AssertionError(f"CHME3E family-manifest state does not include completed stage 1: {family_entry.get('supportState')}")
+
+    # Stage completion is monotonic. Once the manifest exposes completedStages,
+    # later support-state names must not make an earlier completed gate fail.
+    completed_stages = set(family_entry.get("completedStages", []))
+    if completed_stages:
+        if "FOUNDATION" not in completed_stages:
+            raise AssertionError(
+                f"CHME3E family manifest lost completed FOUNDATION stage: {sorted(completed_stages)}"
+            )
+    else:
+        accepted_legacy_support_states = {
+            "STAGE_1_FOUNDATION_COMPLETE",
+            "STAGE_2_ATLAS_SCHEMES_COMPLETE",
+            "STAGE_2_ATLAS_SCHEMES_INTERACTIVE_COMPLETE",
+            "STAGE_3_DIAGNOSTICS_COMPLETE",
+            "KNOWLEDGE_FOUNDATION_COMPLETE",
+        }
+        if family_entry.get("supportState") not in accepted_legacy_support_states:
+            raise AssertionError(
+                "CHME3E family-manifest state does not include completed stage 1: "
+                f"{family_entry.get('supportState')}"
+            )
 
     if profile.get("profileId") != "chme3e-electronic" or profile.get("series") != "ЧМЭ3Э":
         raise AssertionError("bad CHME3E profile identity")
