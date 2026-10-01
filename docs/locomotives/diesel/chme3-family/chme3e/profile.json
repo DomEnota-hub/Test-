@@ -5,8 +5,8 @@
   "series": "ЧМЭ3Э",
   "tractionType": "diesel",
   "updatedAt": "2026-10-01",
-  "stage": "STAGE_3_DIAGNOSTICS_ASSISTANT_SEMANTICS_COMPLETE",
-  "completedStages": ["FOUNDATION", "ATLAS_SCHEMES", "INTERACTIVE_SCHEMES", "DIAGNOSTICS"],
+  "stage": "STAGE_4_ACCEPTANCE_CROSS_LAYER_QA_COMPLETE",
+  "completedStages": ["FOUNDATION", "ATLAS_SCHEMES", "INTERACTIVE_SCHEMES", "DIAGNOSTICS", "ACCEPTANCE_FINAL_QA"],
   "title": "ЧМЭ3Э — электронное исполнение без заводского реостатного тормоза",
   "sharedBase": "../common",
   "variantLayer": ".",
@@ -25,7 +25,8 @@
     "CHME3T rheostatic brake equipment",
     "CHME3T braking resistor bank",
     "CHME3T braking resistor cooling",
-    "CHME3T EDB runtime actions"
+    "CHME3T EDB runtime actions",
+    "CHME3T EDB acceptance item"
   ],
   "profileRules": {
     "inheritCommonMechanicalContent": true,
@@ -34,6 +35,7 @@
     "electricalSchemePolicy": "Use a dedicated CHME3E electrical layer; shared apparatus may reference family-common entities, but circuit logic must follow CHME3E-specific evidence.",
     "interactiveSchemePolicy": "Expose semantic-canvas interactive views through the family interactive contract. Source-overlay coordinates require a separately verified image mapping and must never be invented.",
     "diagnosticPolicy": "Inherit only shared scenarios explicitly applicable to ЧМЭ3Э and add the dedicated electronic runtime-v2 layer. Training/reference sources may localize faults but do not grant bypass/repair authority.",
+    "acceptancePolicy": "Inherit the 20 common family checks subject to applicability; add profile-extended electronic/preheat/remote-control observations without declaring training-derived content a universal network-wide mandatory TO-1 list.",
     "edbPolicy": "Factory rheostatic-brake content is excluded unless a specific non-factory modernization is independently confirmed for the physical locomotive.",
     "modernizationPolicy": "Actual installed equipment overrides assumptions from series/number for information routing, but does not grant authority for actions without current source support.",
     "unknownExecutionPolicy": "Fail closed for variant-dependent operational actions."
@@ -48,7 +50,8 @@
     "stage2Sources": "source_registry_stage2.json",
     "diagnostics": "diagnostics_stage3.json",
     "diagnosticRuntimeV2": "diagnostic_runtime_graphs_v2.json",
-    "assistantSemantics": "assistant_semantics_stage3.json"
+    "assistantSemantics": "assistant_semantics_stage3.json",
+    "acceptance": "acceptance_stage4.json"
   },
   "interactiveCapabilities": {
     "renderMode": "SEMANTIC_CANVAS",
@@ -67,6 +70,16 @@
     "edbProfileMismatch": "FAIL_CLOSED_CLARIFY",
     "externalThreePhaseInstructions": "NOT_ALLOWED"
   },
+  "acceptanceCapabilities": {
+    "inheritedCommonRequiredChecks": 20,
+    "profileExtendedChecks": 4,
+    "inheritedRoutes": 7,
+    "sharedApplicableExpandedEquipment": 67,
+    "variantExpandedEquipment": 33,
+    "effectiveExpandedEquipment": 100,
+    "profileDiagnosticLinks": 12,
+    "edbIsolation": "PASS"
+  },
   "numberReference": {
     "status": "REFERENCE_ONLY_NOT_PROFILE_AUTHORITY",
     "knownPublishedRanges": ["5932", "6220-6244", "6665-6884"],
@@ -78,8 +91,7 @@
     "CHME3E-SRC-NOTIK-CH17",
     "CHME3E-SRC-FLEET-RANGES-REFERENCE"
   ],
-  "nextStages": [
-    "STAGE_4_ACCEPTANCE_CROSS_LAYER_QA"
-  ],
-  "integrationState": "NOT_READY_UNTIL_STAGE_4"
+  "nextStages": ["APP_INTEGRATION"],
+  "integrationState": "KNOWLEDGE_FOUNDATION_READY_FOR_APP_INTEGRATION",
+  "integrationBoundary": "This status covers the validated knowledge package only. Android repositories/UI/assets and the production assistant index are not yet wired to consume it."
 }
