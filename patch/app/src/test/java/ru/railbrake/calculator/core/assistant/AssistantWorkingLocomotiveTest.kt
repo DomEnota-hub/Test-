@@ -11,6 +11,18 @@ import ru.railbrake.calculator.core.KnowledgeRepository
 import ru.railbrake.calculator.ui.firstAidTopics
 
 class AssistantWorkingLocomotiveTest {
+    @Test fun threeDieselProfilesResolveIndependentlyAndEdbDoesNotLeakIntoChme3e() {
+        assertEquals(WorkingLocomotive.CHME3, WorkingLocomotive.explicitlyNamed("чмэ три"))
+        assertEquals(WorkingLocomotive.CHME3T, WorkingLocomotive.explicitlyNamed("чмэ три т"))
+        assertEquals(WorkingLocomotive.CHME3E, WorkingLocomotive.explicitlyNamed("чмэ три э"))
+        assertEquals(TechnicalFamily.CHME3E, AssistantQueryParser.parse("чмэ три э позиция есть тяги нет").family)
+
+        val engine = AssistantEngine(InMemoryAssistantIndex(listOf(fault(TechnicalFamily.CHME3E))), TechnicalFamily.CHME3E)
+        val mismatch = engine.query("На ЧМЭ3Э реостатный тормоз не работает")
+        assertTrue(mismatch is AssistantEngineResult.NoResult)
+        mismatch as AssistantEngineResult.NoResult
+        assertTrue(mismatch.message.contains("ЧМЭ3Т"))
+    }
     private fun fault(family: TechnicalFamily): AssistantDocument = AssistantDocument(
         key = "diagnostic:${family.name}:gv",
         canonicalId = "${family.name}-gv",

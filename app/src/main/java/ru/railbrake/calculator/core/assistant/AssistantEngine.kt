@@ -1,6 +1,7 @@
 package ru.railbrake.calculator.core.assistant
 
 import kotlin.math.abs
+import ru.railbrake.calculator.core.TechnicalFamily
 
 class AssistantEngine(
     private val index: InMemoryAssistantIndex,
@@ -22,6 +23,15 @@ class AssistantEngine(
         // name a series. First aid and general safety remain common.
         val parsed = if (input.family == null && defaultFamily != null &&
             input.intent != AssistantIntent.SAFETY) input.copy(family = defaultFamily) else input
+
+        if (parsed.family == TechnicalFamily.CHME3E && listOf(
+                "реостатный тормоз", "эдт", "тормозные резисторы", "вентилятор тормозных резисторов"
+            ).any { it in parsed.normalizedText }) {
+            return AssistantEngineResult.NoResult(
+                parsedQuery = parsed,
+                message = "Заводской реостатный тормоз относится к ЧМЭ3Т. Уточните фактическое исполнение или модернизацию тепловоза; маршрут ЧМЭ3Т для ЧМЭ3Э автоматически не открывается."
+            )
+        }
 
         if (parsed.intent == AssistantIntent.SAFETY && parsed.safetyTopicIds.isEmpty() &&
             parsed.normalizedText in setOf("опп", "первая помощь", "первую помощь", "помоги человеку")) {
@@ -124,7 +134,10 @@ class AssistantEngine(
             reason = AssistantAmbiguity.SERIES_REQUIRED,
             options = listOf(
                 AssistantClarificationOption("VL80S", "ВЛ80С"),
-                AssistantClarificationOption("ERMAK", "2ЭС5К / 3ЭС5К «Ермак»")
+                AssistantClarificationOption("ERMAK", "2ЭС5К / 3ЭС5К «Ермак»"),
+                AssistantClarificationOption("CHME3", "ЧМЭ3"),
+                AssistantClarificationOption("CHME3T", "ЧМЭ3Т"),
+                AssistantClarificationOption("CHME3E", "ЧМЭ3Э")
             )
         )
     }
@@ -162,7 +175,10 @@ class AssistantEngine(
             reason = ambiguity,
             options = listOf(
                 AssistantClarificationOption("VL80S", "ВЛ80С"),
-                AssistantClarificationOption("ERMAK", "2ЭС5К / 3ЭС5К «Ермак»")
+                AssistantClarificationOption("ERMAK", "2ЭС5К / 3ЭС5К «Ермак»"),
+                AssistantClarificationOption("CHME3", "ЧМЭ3"),
+                AssistantClarificationOption("CHME3T", "ЧМЭ3Т"),
+                AssistantClarificationOption("CHME3E", "ЧМЭ3Э")
             )
         )
 

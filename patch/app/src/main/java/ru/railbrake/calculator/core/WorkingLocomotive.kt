@@ -19,9 +19,9 @@ enum class WorkingLocomotive(
         fun explicitlyNamed(text: String): WorkingLocomotive? {
             val normalized = text.lowercase().replace('ё', 'е')
             return when {
-                "чмэ3э" in normalized || "чмэ 3 э" in normalized -> CHME3E
-                "чмэ3т" in normalized || "чмэ 3 т" in normalized -> CHME3T
-                "чмэ3" in normalized || "чмэ 3" in normalized -> CHME3
+                "чмэ3э" in normalized || "чмэ 3 э" in normalized || "чмэ три э" in normalized -> CHME3E
+                "чмэ3т" in normalized || "чмэ 3 т" in normalized || "чмэ три т" in normalized -> CHME3T
+                "чмэ3" in normalized || "чмэ 3" in normalized || "чмэ три" in normalized -> CHME3
                 "3эс5к" in normalized -> ERMAK_3ES5K
                 "2эс5к" in normalized -> ERMAK_2ES5K
                 "вл80" in normalized -> VL80S
