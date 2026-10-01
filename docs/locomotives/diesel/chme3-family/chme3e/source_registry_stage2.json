@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "profileId": "chme3e-electronic",
+  "updatedAt": "2026-10-01",
+  "stage": "STAGE_2_ATLAS_SCHEMES",
+  "sources": [
+    {
+      "id": "CHME3E-SRC-NOTIK-EQUIPMENT-67",
+      "parentSourceId": "CHME3-SRC-NOTIK-1996",
+      "title": "§67 — Особенности электрического оборудования ЧМЭ3Т и ЧМЭ3Э",
+      "kind": "TRAINING_SECTION",
+      "provenanceStatus": "TRAINING_REFERENCE",
+      "authorityForAction": "NO_BY_ITSELF",
+      "applicability": ["ЧМЭ3Э"],
+      "purpose": ["atlas_variant_equipment", "electronic_regulator", "controller", "relays_contactors", "layout"],
+      "url": "https://www.sinref.ru/000_uchebniki/05300_transport_jd_teplovozi/170_teplovozi_chme3_chme3t_chme3e_izdanie2_notik_1996/146.htm"
+    },
+    {
+      "id": "CHME3E-SRC-NOTIK-WATER-47",
+      "parentSourceId": "CHME3-SRC-NOTIK-1996",
+      "title": "§47 — Водяная система ЧМЭ3Т и ЧМЭ3Э с электрическим обогревом",
+      "kind": "TRAINING_SECTION",
+      "provenanceStatus": "TRAINING_REFERENCE",
+      "authorityForAction": "NO_BY_ITSELF",
+      "applicability": ["ЧМЭ3Т", "ЧМЭ3Э"],
+      "purpose": ["preheating_atlas", "water_scheme", "electric_pumps", "heater_elements"],
+      "url": "https://www.sinref.ru/000_uchebniki/05300_transport_jd_teplovozi/170_teplovozi_chme3_chme3t_chme3e_izdanie2_notik_1996/082.htm"
+    },
+    {
+      "id": "CHME3E-SRC-NOTIK-FIELD-WEAKENING-96",
+      "parentSourceId": "CHME3E-SRC-NOTIK-CH17",
+      "title": "§96 — Ослабление возбуждения тяговых электродвигателей ЧМЭ3Э",
+      "kind": "TRAINING_SECTION",
+      "provenanceStatus": "TRAINING_REFERENCE",
+      "authorityForAction": "NO_BY_ITSELF",
+      "applicability": ["ЧМЭ3Э"],
+      "purpose": ["traction_electronic_control", "current_voltage_sensors", "field_weakening", "electronic_regulator_links"],
+      "url": "https://sinref.ru/000_uchebniki/05300_transport_jd_teplovozi/170_teplovozi_chme3_chme3t_chme3e_izdanie2_notik_1996/191.htm"
+    },
+    {
+      "id": "CHME3E-SRC-NOTIK-ONE-PERSON-99",
+      "parentSourceId": "CHME3E-SRC-NOTIK-CH17",
+      "title": "§99 — Управление тепловозом ЧМЭ3Э в одно лицо",
+      "kind": "TRAINING_SECTION",
+      "provenanceStatus": "TRAINING_REFERENCE",
+      "authorityForAction": "NO_BY_ITSELF",
+      "applicability": ["ЧМЭ3Э"],
+      "purpose": ["portable_control_panels", "single_person_control", "control_relays_valves"],
+      "url": "https://sinref.ru/000_uchebniki/05300_transport_jd_teplovozi/170_teplovozi_chme3_chme3t_chme3e_izdanie2_notik_1996/194.htm"
+    },
+    {
+      "id": "CHME3E-SRC-NOTIK-ELECTRIC-TRANSFER-61",
+      "parentSourceId": "CHME3-SRC-NOTIK-1996",
+      "title": "§61 — Общие сведения об электрической передаче ЧМЭ3/ЧМЭ3Т/ЧМЭ3Э",
+      "kind": "TRAINING_SECTION",
+      "provenanceStatus": "TRAINING_REFERENCE",
+      "authorityForAction": "NO_BY_ITSELF",
+      "applicability": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "purpose": ["family_common_traction", "traction_generator", "traction_motors", "reverser", "field_weakening_base"],
+      "url": "https://www.sinref.ru/000_uchebniki/05300_transport_jd_teplovozi/170_teplovozi_chme3_chme3t_chme3e_izdanie2_notik_1996/109.htm"
+    }
+  ],
+  "stage2EvidenceRule": "These references may define Atlas architecture and functional links. They do not grant current operational action authority."
+}
