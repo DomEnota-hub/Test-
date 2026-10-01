@@ -3,7 +3,7 @@
   "familyId": "chme3-family",
   "tractionType": "diesel",
   "updatedAt": "2026-10-01",
-  "migrationState": "STAGE_2_FAMILY_INTERACTIVE_COMPLETE",
+  "migrationState": "STAGE_3_FAMILY_DIAGNOSTICS_ASSISTANT_SEMANTICS_COMPLETE",
   "legacyMigrationRoot": "docs/locomotives/chme3",
   "canonicalLayers": {
     "common": "common",
@@ -21,7 +21,8 @@
       "completedStages": ["FOUNDATION", "ATLAS_SCHEMES", "INTERACTIVE_SCHEMES", "DIAGNOSTICS", "ACCEPTANCE_FINAL_QA"],
       "sharedBase": "common",
       "variantLayer": "chme3",
-      "interactiveSchemeFile": "chme3/interactive_schemes.json"
+      "interactiveSchemeFile": "chme3/interactive_schemes.json",
+      "diagnosticSource": "LEGACY_SHARED_RUNTIME_V2_56_SCENARIOS"
     },
     {
       "profileId": "chme3t-rheostatic",
@@ -30,17 +31,19 @@
       "completedStages": ["FOUNDATION", "ATLAS_SCHEMES", "INTERACTIVE_SCHEMES", "DIAGNOSTICS", "ACCEPTANCE_FINAL_QA"],
       "sharedBase": "common",
       "variantLayer": "chme3t",
-      "interactiveSchemeFile": "chme3t/interactive_schemes.json"
+      "interactiveSchemeFile": "chme3t/interactive_schemes.json",
+      "diagnosticSource": "LEGACY_SHARED_RUNTIME_V2_56_SCENARIOS_WITH_PROFILE_GATED_EDB"
     },
     {
       "profileId": "chme3e-electronic",
       "series": "ЧМЭ3Э",
-      "supportState": "STAGE_2_ATLAS_SCHEMES_INTERACTIVE_COMPLETE",
-      "completedStages": ["FOUNDATION", "ATLAS_SCHEMES", "INTERACTIVE_SCHEMES"],
+      "supportState": "STAGE_3_DIAGNOSTICS_ASSISTANT_SEMANTICS_COMPLETE",
+      "completedStages": ["FOUNDATION", "ATLAS_SCHEMES", "INTERACTIVE_SCHEMES", "DIAGNOSTICS"],
       "sharedBase": "common",
       "variantLayer": "chme3e",
       "interactiveSchemeFile": "chme3e/interactive_schemes.json",
-      "requiredBeforeIntegration": ["DIAGNOSTICS_COMPLETE", "ACCEPTANCE_FINAL_QA_COMPLETE"]
+      "diagnosticFiles": ["chme3e/diagnostics_stage3.json", "chme3e/diagnostic_runtime_graphs_v2.json", "chme3e/assistant_semantics_stage3.json"],
+      "requiredBeforeIntegration": ["ACCEPTANCE_FINAL_QA_COMPLETE"]
     }
   ],
   "interactiveSchemePolicy": {
@@ -49,6 +52,17 @@
     "defaultRenderMode": "SEMANTIC_CANVAS",
     "sourceOverlay": "OPTIONAL_REQUIRES_VERIFIED_IMAGE_MAPPING",
     "rule": "Every supported profile must expose interactive electrical and pneumatic coverage; every directed flow endpoint must be clickable and profile-safe."
+  },
+  "diagnosticPolicy": {
+    "manifest": "common/diagnostics_manifest.json",
+    "legacySharedScenarios": 56,
+    "legacyRuntimeV2Coverage": 56,
+    "chme3eVariantScenarios": 12,
+    "chme3eVariantRuntimeV2Coverage": 12,
+    "assistantSemantics": "chme3e/assistant_semantics_stage3.json",
+    "sourceBoundActions": "FAIL_CLOSED_REQUIRES_CURRENT_AUTHORITY_AND_PROFILE_MATCH",
+    "fieldPracticeAuthority": "NO",
+    "profileIsolation": "CHME3T_EDB_MUST_NOT_ROUTE_TO_CHME3E"
   },
   "inheritancePolicy": {
     "commonContent": "Mechanical, diesel, fuel, oil, water, pneumatic and other content may be inherited only where applicability is explicitly confirmed for the profile.",
