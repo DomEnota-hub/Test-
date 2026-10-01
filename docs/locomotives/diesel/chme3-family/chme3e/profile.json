@@ -5,7 +5,8 @@
   "series": "ЧМЭ3Э",
   "tractionType": "diesel",
   "updatedAt": "2026-10-01",
-  "stage": "STAGE_2_ATLAS_SCHEMES_INTERACTIVE_COMPLETE",
+  "stage": "STAGE_3_DIAGNOSTICS_ASSISTANT_SEMANTICS_COMPLETE",
+  "completedStages": ["FOUNDATION", "ATLAS_SCHEMES", "INTERACTIVE_SCHEMES", "DIAGNOSTICS"],
   "title": "ЧМЭ3Э — электронное исполнение без заводского реостатного тормоза",
   "sharedBase": "../common",
   "variantLayer": ".",
@@ -32,6 +33,7 @@
     "inheritChme3tElectronicContent": "NO_AUTOMATIC_INHERITANCE",
     "electricalSchemePolicy": "Use a dedicated CHME3E electrical layer; shared apparatus may reference family-common entities, but circuit logic must follow CHME3E-specific evidence.",
     "interactiveSchemePolicy": "Expose semantic-canvas interactive views through the family interactive contract. Source-overlay coordinates require a separately verified image mapping and must never be invented.",
+    "diagnosticPolicy": "Inherit only shared scenarios explicitly applicable to ЧМЭ3Э and add the dedicated electronic runtime-v2 layer. Training/reference sources may localize faults but do not grant bypass/repair authority.",
     "edbPolicy": "Factory rheostatic-brake content is excluded unless a specific non-factory modernization is independently confirmed for the physical locomotive.",
     "modernizationPolicy": "Actual installed equipment overrides assumptions from series/number for information routing, but does not grant authority for actions without current source support.",
     "unknownExecutionPolicy": "Fail closed for variant-dependent operational actions."
@@ -43,7 +45,10 @@
     "schemes": "schemes_variant.json",
     "interactiveSchemes": "interactive_schemes.json",
     "schemeDesignations": "scheme_designations.json",
-    "stage2Sources": "source_registry_stage2.json"
+    "stage2Sources": "source_registry_stage2.json",
+    "diagnostics": "diagnostics_stage3.json",
+    "diagnosticRuntimeV2": "diagnostic_runtime_graphs_v2.json",
+    "assistantSemantics": "assistant_semantics_stage3.json"
   },
   "interactiveCapabilities": {
     "renderMode": "SEMANTIC_CANVAS",
@@ -52,6 +57,15 @@
     "diagnosticToSchemeJoin": "BY_EQUIPMENT_ID",
     "profileIsolation": true,
     "verifiedSourceOverlay": "NOT_YET_REQUIRED"
+  },
+  "diagnosticCapabilities": {
+    "sharedLegacyRuntimeV2Scenarios": 56,
+    "profileSpecificRuntimeV2Scenarios": 12,
+    "profileSpecificAssistantRoutes": 12,
+    "spokenCorpusCases": 12,
+    "oppositeEventPairs": 8,
+    "edbProfileMismatch": "FAIL_CLOSED_CLARIFY",
+    "externalThreePhaseInstructions": "NOT_ALLOWED"
   },
   "numberReference": {
     "status": "REFERENCE_ONLY_NOT_PROFILE_AUTHORITY",
@@ -65,7 +79,7 @@
     "CHME3E-SRC-FLEET-RANGES-REFERENCE"
   ],
   "nextStages": [
-    "STAGE_3_DIAGNOSTICS_ASSISTANT_SEMANTICS",
     "STAGE_4_ACCEPTANCE_CROSS_LAYER_QA"
-  ]
+  ],
+  "integrationState": "NOT_READY_UNTIL_STAGE_4"
 }
