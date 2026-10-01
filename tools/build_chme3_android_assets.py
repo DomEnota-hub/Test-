@@ -45,6 +45,7 @@ shared_views = read(FAMILY / "common/interactive_shared_views.json")["views"]
 base_views = read(FAMILY / "chme3/interactive_schemes.json")["profileViews"]
 t_views = read(FAMILY / "chme3t/interactive_schemes.json")["profileViews"]
 e_views = read(FAMILY / "chme3e/interactive_schemes.json")["profileViews"]
+e_scheme_flows = {scheme["id"]: scheme.get("flows", []) for scheme in read(FAMILY / "chme3e/schemes_variant.json")["records"]}
 required = read(LEGACY / "acceptance_required_pass4.json")["items"]
 routes = read(LEGACY / "acceptance_contract_pass4.json")["routes"]
 base_phases = read(LEGACY / "acceptance_contract_pass4.json")["phaseRules"]
@@ -107,7 +108,8 @@ for variant, name, equipment, views in (
         blocks = [("Назначение", fields(item, "purpose", "principle")), ("Расположение", fields(item, "location")),
                   ("Нормальное состояние", fields(item, "normalState")), ("Признаки отклонения", fields(item, "deviationSigns")),
                   ("Безопасность", fields(item, "safetyNotes")), ("Источники", fields(item, "evidenceRefs"))]
-        related = [item["systemId"], *item.get("relatedIds", []), *item.get("schemeRefs", [])]
+        related = [item["systemId"], *item.get("relatedIds", []), *item.get("schemeRefs", []),
+                   *(s["id"] for s in all_scenarios.values() if name in s["profiles"] and item["id"] in s["equipmentIds"])]
         aliases = item.get("aliases", []) + item.get("assistantTerms", [])
         entries.append(entry(item, "EQUIPMENT", title, blocks, related, aliases=aliases))
         article = {**item, "id": item["id"].replace("-EQ-", "-KB-")}
@@ -118,8 +120,11 @@ for variant, name, equipment, views in (
             continue
         section = "PNEUMATIC" if view.get("schemeType") in ("pneumatic", "fluid", "air", "brake_pneumatic") else "ELECTRICAL"
         flows = [f"{f['from']} → {f['to']}: {f['label']}" for f in view.get("flowLayer", [])]
+        if not flows:
+            flows = [f"{source} → {target}: {label}" for source, target, label in e_scheme_flows.get(view.get("sourceSchemeRef"), [])]
         entries.append(entry(view, section, view["title"], [("Направления связей", flows), ("Профиль", [name])],
                              related=[h["equipmentId"] for h in hotspots], hotspots=hotspots,
+                             sequence=[h["equipmentId"] for h in hotspots],
                              aliases=[view.get("sourceSchemeRef", "")], status="INTERACTIVE_SCHEME"))
     acceptance = []
     req_items = [item for item in required if variant == "CHME3T" or item["id"] != "CHME3T-REQ-21"]
@@ -171,6 +176,10 @@ for variant, name, equipment, views in (
                                                    ([e_spoken[scenario["id"]]] if scenario["id"] in e_spoken else [])),
                                 graph=dict(startNodeId=graph["startNodeId"], nodes=nodes),
                                 sourceAgeNote=scenario.get("evidenceStatus", scenario.get("provenanceStatus", ""))))
+        entries.append(entry(scenario, "DIAGNOSTICS", scenario["title"],
+                             [("Наблюдаемые признаки", scenario.get("symptoms", [])),
+                              ("Граница действий", [scenario.get("actionAuthority", "")])],
+                             related=scenario["equipmentIds"], aliases=scenario.get("queryTerms", []), status="DIAGNOSTIC_ROUTE"))
     for base in (ROOT / "app", ROOT / "patch/app"):
         write_asset(base / f"src/main/assets/technical/chme3_{variant.lower()}_catalog.json.gz", dict(entries=entries))
         write_asset(base / f"src/main/assets/technical/chme3_{variant.lower()}_diagnostics.json.gz", dict(scenarios=diagnostics))
