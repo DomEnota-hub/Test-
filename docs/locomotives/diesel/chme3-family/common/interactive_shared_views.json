@@ -1,0 +1,179 @@
+{
+  "schemaVersion": 1,
+  "familyId": "chme3-family",
+  "renderMode": "SEMANTIC_CANVAS",
+  "updatedAt": "2026-10-01",
+  "views": [
+    {
+      "id":"CHME3-INT-FUEL","title":"Топливная система","schemeType":"fluid","systemRefs":["CHME3-SYS-FUEL"],"profiles":["chme3-base","chme3t-rheostatic","chme3e-electronic"],"sourceSchemeRef":"CHME3-SCH-FUEL",
+      "hotspotLayer":[
+        {"equipmentId":"CHME3-EQ-FUEL-TANK","label":"Топливный бак","layoutHint":{"x":80,"y":360,"width":180,"height":72}},
+        {"equipmentId":"CHME3-EQ-FUEL-PRIME-PUMP","label":"Подкачивающий насос","layoutHint":{"x":330,"y":360,"width":210,"height":72}},
+        {"equipmentId":"CHME3-EQ-FUEL-FILTER","label":"Топливные фильтры","layoutHint":{"x":610,"y":360,"width":190,"height":72}},
+        {"equipmentId":"CHME3-EQ-INJECTION-PUMP","label":"ТНВД","layoutHint":{"x":880,"y":360,"width":180,"height":72}},
+        {"equipmentId":"CHME3-EQ-INJECTOR","label":"Форсунки","layoutHint":{"x":1140,"y":360,"width":180,"height":72}},
+        {"equipmentId":"CHME3-EQ-DIESEL","label":"Дизель","layoutHint":{"x":1380,"y":360,"width":150,"height":72}}
+      ],
+      "flowLayer":[
+        {"from":"CHME3-EQ-FUEL-TANK","to":"CHME3-EQ-FUEL-PRIME-PUMP","label":"забор топлива"},
+        {"from":"CHME3-EQ-FUEL-PRIME-PUMP","to":"CHME3-EQ-FUEL-FILTER","label":"подача"},
+        {"from":"CHME3-EQ-FUEL-FILTER","to":"CHME3-EQ-INJECTION-PUMP","label":"очищенное топливо"},
+        {"from":"CHME3-EQ-INJECTION-PUMP","to":"CHME3-EQ-INJECTOR","label":"высокое давление"},
+        {"from":"CHME3-EQ-INJECTOR","to":"CHME3-EQ-DIESEL","label":"впрыск"}
+      ]
+    },
+    {
+      "id":"CHME3-INT-OIL","title":"Система смазки дизеля","schemeType":"fluid","systemRefs":["CHME3-SYS-OIL"],"profiles":["chme3-base","chme3t-rheostatic","chme3e-electronic"],"sourceSchemeRef":"CHME3-SCH-OIL",
+      "hotspotLayer":[
+        {"equipmentId":"CHME3-EQ-OIL-PRIME-PUMP","label":"Маслопрокачивающий насос","layoutHint":{"x":100,"y":250,"width":230,"height":72}},
+        {"equipmentId":"CHME3-EQ-OIL-PUMP","label":"Масляный насос","layoutHint":{"x":100,"y":500,"width":200,"height":72}},
+        {"equipmentId":"CHME3-EQ-OIL-FILTER","label":"Масляные фильтры","layoutHint":{"x":450,"y":500,"width":200,"height":72}},
+        {"equipmentId":"CHME3-EQ-OIL-WATER-HEX","label":"Водомасляный теплообменник","layoutHint":{"x":800,"y":500,"width":260,"height":72}},
+        {"equipmentId":"CHME3-EQ-DIESEL","label":"Дизель","layoutHint":{"x":1240,"y":360,"width":180,"height":86}}
+      ],
+      "flowLayer":[
+        {"from":"CHME3-EQ-OIL-PRIME-PUMP","to":"CHME3-EQ-DIESEL","label":"предварительная прокачка"},
+        {"from":"CHME3-EQ-OIL-PUMP","to":"CHME3-EQ-OIL-FILTER","label":"рабочая циркуляция"},
+        {"from":"CHME3-EQ-OIL-FILTER","to":"CHME3-EQ-OIL-WATER-HEX","label":"очищенное масло"},
+        {"from":"CHME3-EQ-OIL-WATER-HEX","to":"CHME3-EQ-DIESEL","label":"охлаждённое масло"}
+      ]
+    },
+    {
+      "id":"CHME3-INT-WATER","title":"Водяная система и охлаждение","schemeType":"fluid","systemRefs":["CHME3-SYS-WATER","CHME3-SYS-COOLING"],"profiles":["chme3-base","chme3t-rheostatic","chme3e-electronic"],"sourceSchemeRef":"CHME3-SCH-WATER",
+      "hotspotLayer":[
+        {"equipmentId":"CHME3-EQ-WATER-PUMP","label":"Водяные насосы","layoutHint":{"x":120,"y":390,"width":200,"height":72}},
+        {"equipmentId":"CHME3-EQ-DIESEL","label":"Дизель","layoutHint":{"x":470,"y":210,"width":190,"height":80}},
+        {"equipmentId":"CHME3-EQ-OIL-WATER-HEX","label":"Теплообменник масла","layoutHint":{"x":470,"y":390,"width":230,"height":72}},
+        {"equipmentId":"CHME3-EQ-CHARGE-AIR-COOLER","label":"Охладитель наддува","layoutHint":{"x":470,"y":570,"width":230,"height":72}},
+        {"equipmentId":"CHME3-EQ-RADIATOR","label":"Радиатор","layoutHint":{"x":970,"y":390,"width":190,"height":72}},
+        {"equipmentId":"CHME3-EQ-COOLING-FANS","label":"Вентиляторы охлаждения","layoutHint":{"x":1290,"y":390,"width":230,"height":72}}
+      ],
+      "flowLayer":[
+        {"from":"CHME3-EQ-WATER-PUMP","to":"CHME3-EQ-DIESEL","label":"охлаждение дизеля"},
+        {"from":"CHME3-EQ-WATER-PUMP","to":"CHME3-EQ-OIL-WATER-HEX","label":"отвод тепла масла"},
+        {"from":"CHME3-EQ-WATER-PUMP","to":"CHME3-EQ-CHARGE-AIR-COOLER","label":"охлаждение наддува"},
+        {"from":"CHME3-EQ-DIESEL","to":"CHME3-EQ-RADIATOR","label":"нагретая вода"},
+        {"from":"CHME3-EQ-RADIATOR","to":"CHME3-EQ-COOLING-FANS","label":"отвод тепла"}
+      ]
+    },
+    {
+      "id":"CHME3-INT-AIR","title":"Наддув и газообмен","schemeType":"gas","systemRefs":["CHME3-SYS-AIR"],"profiles":["chme3-base","chme3t-rheostatic","chme3e-electronic"],"sourceSchemeRef":"CHME3-SCH-AIR",
+      "hotspotLayer":[
+        {"equipmentId":"CHME3-EQ-DIESEL","label":"Дизель","layoutHint":{"x":170,"y":390,"width":190,"height":80}},
+        {"equipmentId":"CHME3-EQ-TURBO","label":"Турбонагнетатель","layoutHint":{"x":570,"y":250,"width":210,"height":72}},
+        {"equipmentId":"CHME3-EQ-CHARGE-AIR-COOLER","label":"Охладитель наддува","layoutHint":{"x":940,"y":250,"width":230,"height":72}},
+        {"equipmentId":"CHME3-EQ-INTAKE-EXHAUST","label":"Впуск/выпуск","layoutHint":{"x":940,"y":540,"width":210,"height":72}}
+      ],
+      "flowLayer":[
+        {"from":"CHME3-EQ-DIESEL","to":"CHME3-EQ-TURBO","label":"выпускные газы"},
+        {"from":"CHME3-EQ-TURBO","to":"CHME3-EQ-CHARGE-AIR-COOLER","label":"сжатый воздух"},
+        {"from":"CHME3-EQ-CHARGE-AIR-COOLER","to":"CHME3-EQ-DIESEL","label":"охлаждённый наддув"},
+        {"from":"CHME3-EQ-DIESEL","to":"CHME3-EQ-INTAKE-EXHAUST","label":"газообмен"}
+      ]
+    },
+    {
+      "id":"CHME3-INT-AUX","title":"Привод вспомогательных механизмов","schemeType":"mechanical","systemRefs":["CHME3-SYS-AUX"],"profiles":["chme3-base","chme3t-rheostatic","chme3e-electronic"],"sourceSchemeRef":"CHME3-SCH-AUX-DRIVE",
+      "hotspotLayer":[
+        {"equipmentId":"CHME3-EQ-DIESEL","label":"Дизель","layoutHint":{"x":120,"y":380,"width":180,"height":80}},
+        {"equipmentId":"CHME3-EQ-HYDRO-GEAR","label":"Гидромеханический редуктор","layoutHint":{"x":470,"y":380,"width":260,"height":80}},
+        {"equipmentId":"CHME3-EQ-COMPRESSOR-DRIVE","label":"Привод компрессора","layoutHint":{"x":860,"y":230,"width":220,"height":72}},
+        {"equipmentId":"CHME3-EQ-COMPRESSOR","label":"Компрессор","layoutHint":{"x":1240,"y":230,"width":190,"height":72}},
+        {"equipmentId":"CHME3-EQ-COOLING-FANS","label":"Вентиляторы охлаждения","layoutHint":{"x":1040,"y":560,"width":230,"height":72}}
+      ],
+      "flowLayer":[
+        {"from":"CHME3-EQ-DIESEL","to":"CHME3-EQ-HYDRO-GEAR","label":"механическая мощность"},
+        {"from":"CHME3-EQ-HYDRO-GEAR","to":"CHME3-EQ-COMPRESSOR-DRIVE","label":"привод"},
+        {"from":"CHME3-EQ-COMPRESSOR-DRIVE","to":"CHME3-EQ-COMPRESSOR","label":"вращение"},
+        {"from":"CHME3-EQ-HYDRO-GEAR","to":"CHME3-EQ-COOLING-FANS","label":"привод охлаждения"}
+      ]
+    },
+    {
+      "id":"CHME3-INT-PNEUMATIC","title":"Пневматическая и тормозная система","schemeType":"pneumatic","systemRefs":["CHME3-SYS-BRAKE","CHME3-SYS-CONTROL"],"profiles":["chme3-base","chme3t-rheostatic","chme3e-electronic"],"sourceSchemeRef":"CHME3-SCH-PNEUMATIC",
+      "hotspotLayer":[
+        {"equipmentId":"CHME3-EQ-COMPRESSOR","label":"Компрессор","layoutHint":{"x":70,"y":170,"width":180,"height":68}},
+        {"equipmentId":"CHME3-EQ-INTERCOOLER","label":"Холодильник","layoutHint":{"x":320,"y":170,"width":180,"height":68}},
+        {"equipmentId":"CHME3-EQ-AIR-DRY-SEPARATOR","label":"Маслоотделитель","layoutHint":{"x":570,"y":170,"width":190,"height":68}},
+        {"equipmentId":"CHME3-EQ-MAIN-RESERVOIRS","label":"Главные резервуары","layoutHint":{"x":840,"y":170,"width":220,"height":68}},
+        {"equipmentId":"CHME3-EQ-PRESSURE-GOV","label":"Регулятор давления","layoutHint":{"x":260,"y":60,"width":210,"height":64}},
+        {"equipmentId":"CHME3-EQ-DRIVER-BRAKE-VALVE","label":"Кран машиниста","layoutHint":{"x":1130,"y":280,"width":190,"height":68}},
+        {"equipmentId":"CHME3-EQ-EQUALIZING-RESERVOIR","label":"Уравнительный резервуар","layoutHint":{"x":1360,"y":280,"width":210,"height":68}},
+        {"equipmentId":"CHME3-EQ-AIR-DISTRIBUTOR","label":"Воздухораспределитель","layoutHint":{"x":1130,"y":470,"width":210,"height":68}},
+        {"equipmentId":"CHME3-EQ-AUX-BRAKE-VALVE","label":"Кран вспом. тормоза","layoutHint":{"x":820,"y":600,"width":220,"height":68}},
+        {"equipmentId":"CHME3-EQ-BRAKE-CYLINDERS","label":"Тормозные цилиндры","layoutHint":{"x":1190,"y":650,"width":220,"height":68}},
+        {"equipmentId":"CHME3-EQ-EPC-AUTOSTOP","label":"ЭПК-150","layoutHint":{"x":830,"y":410,"width":170,"height":68}},
+        {"equipmentId":"CHME3-EQ-PNEUMATIC-CONTROL-RESERVOIR","label":"Резервуар управления","layoutHint":{"x":520,"y":600,"width":220,"height":68}}
+      ],
+      "flowLayer":[
+        {"from":"CHME3-EQ-COMPRESSOR","to":"CHME3-EQ-INTERCOOLER","label":"сжатый воздух"},
+        {"from":"CHME3-EQ-INTERCOOLER","to":"CHME3-EQ-AIR-DRY-SEPARATOR","label":"охлаждение/отделение"},
+        {"from":"CHME3-EQ-AIR-DRY-SEPARATOR","to":"CHME3-EQ-MAIN-RESERVOIRS","label":"запас воздуха"},
+        {"from":"CHME3-EQ-PRESSURE-GOV","to":"CHME3-EQ-COMPRESSOR","label":"управление по давлению"},
+        {"from":"CHME3-EQ-MAIN-RESERVOIRS","to":"CHME3-EQ-DRIVER-BRAKE-VALVE","label":"питание"},
+        {"from":"CHME3-EQ-DRIVER-BRAKE-VALVE","to":"CHME3-EQ-EQUALIZING-RESERVOIR","label":"задание давления"},
+        {"from":"CHME3-EQ-DRIVER-BRAKE-VALVE","to":"CHME3-EQ-AIR-DISTRIBUTOR","label":"изменение давления ТМ"},
+        {"from":"CHME3-EQ-AIR-DISTRIBUTOR","to":"CHME3-EQ-BRAKE-CYLINDERS","label":"автоматическое торможение"},
+        {"from":"CHME3-EQ-AUX-BRAKE-VALVE","to":"CHME3-EQ-BRAKE-CYLINDERS","label":"вспомогательное торможение"},
+        {"from":"CHME3-EQ-MAIN-RESERVOIRS","to":"CHME3-EQ-PNEUMATIC-CONTROL-RESERVOIR","label":"питание аппаратов"}
+      ]
+    },
+    {
+      "id":"CHME3-INT-RUNNING","title":"Экипажная часть","schemeType":"mechanical","systemRefs":["CHME3-SYS-RUNNING"],"profiles":["chme3-base","chme3t-rheostatic","chme3e-electronic"],"sourceSchemeRef":"CHME3-SCH-RUNNING",
+      "hotspotLayer":[
+        {"equipmentId":"CHME3-EQ-MAIN-FRAME","label":"Главная рама","layoutHint":{"x":620,"y":100,"width":250,"height":72}},
+        {"equipmentId":"CHME3-EQ-BOGIE","label":"Тележка","layoutHint":{"x":620,"y":260,"width":220,"height":72}},
+        {"equipmentId":"CHME3-EQ-SPRING","label":"Рессорное подвешивание","layoutHint":{"x":340,"y":420,"width":230,"height":72}},
+        {"equipmentId":"CHME3-EQ-AXLEBOX","label":"Букса","layoutHint":{"x":620,"y":420,"width":170,"height":72}},
+        {"equipmentId":"CHME3-EQ-WHEELSET","label":"Колёсная пара","layoutHint":{"x":620,"y":650,"width":200,"height":72}},
+        {"equipmentId":"CHME3-EQ-TRACTION-MOTORS","label":"ТЭД","layoutHint":{"x":980,"y":390,"width":170,"height":72}},
+        {"equipmentId":"CHME3-EQ-TRACTION-GEAR","label":"Тяговый редуктор","layoutHint":{"x":1000,"y":650,"width":210,"height":72}},
+        {"equipmentId":"CHME3-EQ-COUPLER","label":"Автосцепка","layoutHint":{"x":80,"y":100,"width":180,"height":72}}
+      ],
+      "flowLayer":[
+        {"from":"CHME3-EQ-MAIN-FRAME","to":"CHME3-EQ-BOGIE","label":"нагрузка"},
+        {"from":"CHME3-EQ-BOGIE","to":"CHME3-EQ-SPRING","label":"подвешивание"},
+        {"from":"CHME3-EQ-SPRING","to":"CHME3-EQ-AXLEBOX","label":"нагрузка к оси"},
+        {"from":"CHME3-EQ-AXLEBOX","to":"CHME3-EQ-WHEELSET","label":"опора оси"},
+        {"from":"CHME3-EQ-TRACTION-MOTORS","to":"CHME3-EQ-TRACTION-GEAR","label":"вращающий момент"},
+        {"from":"CHME3-EQ-TRACTION-GEAR","to":"CHME3-EQ-WHEELSET","label":"тяговый момент"}
+      ]
+    },
+    {
+      "id":"CHME3-INT-BRAKE-MECH","title":"Тормозные цилиндры и рычажная передача","schemeType":"brake_mechanical","systemRefs":["CHME3-SYS-BRAKE","CHME3-SYS-RUNNING"],"profiles":["chme3-base","chme3t-rheostatic","chme3e-electronic"],"sourceSchemeRef":"CHME3-SCH-BRAKE-MECHANICAL",
+      "hotspotLayer":[
+        {"equipmentId":"CHME3-EQ-AIR-DISTRIBUTOR","label":"Воздухораспределитель","layoutHint":{"x":100,"y":260,"width":220,"height":72}},
+        {"equipmentId":"CHME3-EQ-AUX-BRAKE-VALVE","label":"Кран вспом. тормоза","layoutHint":{"x":100,"y":520,"width":220,"height":72}},
+        {"equipmentId":"CHME3-EQ-BRAKE-CYLINDERS","label":"Тормозные цилиндры","layoutHint":{"x":550,"y":390,"width":220,"height":72}},
+        {"equipmentId":"CHME3-EQ-BRAKE-RIGGING","label":"Рычажная передача","layoutHint":{"x":940,"y":390,"width":220,"height":72}},
+        {"equipmentId":"CHME3-EQ-WHEELSET","label":"Колёсная пара","layoutHint":{"x":1320,"y":390,"width":200,"height":72}}
+      ],
+      "flowLayer":[
+        {"from":"CHME3-EQ-AIR-DISTRIBUTOR","to":"CHME3-EQ-BRAKE-CYLINDERS","label":"автоматическое управление"},
+        {"from":"CHME3-EQ-AUX-BRAKE-VALVE","to":"CHME3-EQ-BRAKE-CYLINDERS","label":"вспомогательное торможение"},
+        {"from":"CHME3-EQ-BRAKE-CYLINDERS","to":"CHME3-EQ-BRAKE-RIGGING","label":"механическое усилие"},
+        {"from":"CHME3-EQ-BRAKE-RIGGING","to":"CHME3-EQ-WHEELSET","label":"прижатие колодок"}
+      ]
+    },
+    {
+      "id":"CHME3-INT-DIESEL-SUPPORT","title":"Дизель — топливо, регулирование и защита","schemeType":"functional","systemRefs":["CHME3-SYS-DIESEL","CHME3-SYS-GOV","CHME3-SYS-FUEL"],"profiles":["chme3-base","chme3t-rheostatic","chme3e-electronic"],"sourceSchemeRef":"CHME3-SCH-DIESEL-SUPPORT",
+      "hotspotLayer":[
+        {"equipmentId":"CHME3-EQ-FUEL-PRIME-PUMP","label":"Подкачка","layoutHint":{"x":100,"y":580,"width":180,"height":64}},
+        {"equipmentId":"CHME3-EQ-FUEL-FILTER","label":"Фильтры","layoutHint":{"x":370,"y":580,"width":170,"height":64}},
+        {"equipmentId":"CHME3-EQ-INJECTION-PUMP","label":"ТНВД","layoutHint":{"x":650,"y":580,"width":170,"height":64}},
+        {"equipmentId":"CHME3-EQ-INJECTOR","label":"Форсунки","layoutHint":{"x":930,"y":580,"width":170,"height":64}},
+        {"equipmentId":"CHME3-EQ-DIESEL","label":"Дизель","layoutHint":{"x":1210,"y":390,"width":200,"height":80}},
+        {"equipmentId":"CHME3-EQ-GOVERNOR-SERVOMOTOR","label":"Сервомотор","layoutHint":{"x":300,"y":190,"width":190,"height":64}},
+        {"equipmentId":"CHME3-EQ-GOVERNOR","label":"Регулятор дизеля","layoutHint":{"x":650,"y":190,"width":210,"height":64}},
+        {"equipmentId":"CHME3-EQ-OVERSPEED-GOV","label":"Предельный регулятор","layoutHint":{"x":1040,"y":190,"width":220,"height":64}}
+      ],
+      "flowLayer":[
+        {"from":"CHME3-EQ-FUEL-PRIME-PUMP","to":"CHME3-EQ-FUEL-FILTER","label":"топливо"},
+        {"from":"CHME3-EQ-FUEL-FILTER","to":"CHME3-EQ-INJECTION-PUMP","label":"топливо"},
+        {"from":"CHME3-EQ-INJECTION-PUMP","to":"CHME3-EQ-INJECTOR","label":"высокое давление"},
+        {"from":"CHME3-EQ-INJECTOR","to":"CHME3-EQ-DIESEL","label":"впрыск"},
+        {"from":"CHME3-EQ-GOVERNOR-SERVOMOTOR","to":"CHME3-EQ-GOVERNOR","label":"команда режима"},
+        {"from":"CHME3-EQ-GOVERNOR","to":"CHME3-EQ-INJECTION-PUMP","label":"цикловая подача"},
+        {"from":"CHME3-EQ-OVERSPEED-GOV","to":"CHME3-EQ-DIESEL","label":"защита по оборотам"}
+      ]
+    }
+  ]
+}
