@@ -1,0 +1,27 @@
+name: Trigger Package A signed validation
+
+on:
+  push:
+    branches:
+      - integration/chme3-assistant
+    paths:
+      - '.github/workflows/trigger-package-a-signed-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch canonical Test build on current branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh workflow run chme3-assistant-signed.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref integration/chme3-assistant
+          echo "Canonical signed validation dispatched for integration/chme3-assistant"
