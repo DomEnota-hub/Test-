@@ -46,7 +46,7 @@ private data class SchemeSequence(
 )
 private data class FlowStyle(val label: String, val light: Color, val dark: Color, val dashed: Boolean)
 
-private class StepwiseSchemeData(context: Context) {
+private class StepwiseSchemeData(private val context: Context) {
     private fun asset(name: String) = JSONObject(context.assets.open("technical/$name").bufferedReader().use { it.readText() })
     private val palette = asset("scheme_semantic_palette.json")
     val styles: Map<String, FlowStyle> = buildMap {

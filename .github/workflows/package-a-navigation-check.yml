@@ -46,8 +46,12 @@ jobs:
           do
             cmp "app/src/main/java/ru/railbrake/calculator/$rel" "patch/app/src/main/java/ru/railbrake/calculator/$rel"
           done
-      - name: Unit tests
+      - name: Check presentation and scheme assets
         shell: bash
         run: |
-          chmod +x gradlew
-          ./gradlew :app:testDebugUnitTest --no-daemon
+          set -euo pipefail
+          python3 qa/verify_chme3_android_assets.py
+          python3 qa/validate_package_b_stepwise_flows.py
+          python3 qa/validate_package_c_layout_interaction_palette.py
+          python3 qa/build_source_presentations.py
+          git diff --exit-code -- app/src/main/assets/technical/source_presentations.json patch/app/src/main/assets/technical/source_presentations.json
