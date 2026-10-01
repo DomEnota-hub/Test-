@@ -1,0 +1,44 @@
+name: Package B scheme discovery
+
+on:
+  push:
+    branches:
+      - integration/chme3-assistant
+    paths:
+      - '.github/workflows/package-b-discover-schemes.yml'
+  workflow_dispatch:
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect Ermak scheme flows
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import gzip, json
+          from pathlib import Path
+          p = Path('app/src/main/assets/technical/ermak_schemes.json.gz')
+          with gzip.open(p, 'rt', encoding='utf-8') as f:
+              data = json.load(f)
+          print('TOP_KEYS', sorted(data.keys()))
+          for key in ('sources','sourceRegistry','sourceIndex'):
+              value = data.get(key)
+              if value is not None:
+                  if isinstance(value, list):
+                      print(key, 'LIST', len(value))
+                      for x in value[:20]: print(' SOURCE', x)
+                  elif isinstance(value, dict):
+                      print(key, 'DICT_KEYS', list(value)[:30])
+          schemes = data.get('schemes', [])
+          print('SCHEME_COUNT', len(schemes))
+          for s in schemes:
+              layers = s.get('layers') or {}
+              flows = layers.get('flowLayer') or []
+              hotspots = layers.get('hotspotLayer') or []
+              print('SCHEME', s.get('id'), '|', s.get('schemeType'), '|', s.get('representationMode'), '| status=', s.get('status'), '| flows=',len(flows),'| hotspots=',len(hotspots),'| sources=',s.get('sourceRefs'),'| variants=',s.get('variantRules'))
+              for edge in flows[:8]:
+                  print(' EDGE', edge)
+          PY
