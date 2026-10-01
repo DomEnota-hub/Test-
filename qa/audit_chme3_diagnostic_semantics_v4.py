@@ -38,9 +38,13 @@ GENERIC_FRAGMENTS = (
     "обратиться к обслуживающему персоналу",
 )
 
+# A terminal may be a positive exclusion ("узел исправен") or a confirmed observed
+# state as well as a fault/safety restriction. These stems still require the rest of
+# the graph to pass branching, reachability, uncertainty and anti-clone checks.
 TERMINAL_SIGNAL_WORDS = (
-    "локализ", "вероят", "неисправ", "огранич", "прекрат", "останов", "долож",
-    "недостаточно", "зафикс", "исключ", "разреш", "запрещ", "состояние"
+    "локализ", "вероят", "неисправ", "исправ", "подтвержд", "огранич", "прекрат",
+    "останов", "долож", "недостаточно", "зафикс", "исключ", "разреш", "запрещ",
+    "состояние"
 )
 
 
