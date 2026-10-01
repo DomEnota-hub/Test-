@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "familyId": "chme3-family",
+  "tractionType": "diesel",
+  "updatedAt": "2026-10-01",
+  "migrationState": "STAGE_1_CHME3E_FOUNDATION",
+  "legacyMigrationRoot": "docs/locomotives/chme3",
+  "canonicalLayers": {
+    "common": "common",
+    "variants": {
+      "chme3-base": "chme3",
+      "chme3t-rheostatic": "chme3t",
+      "chme3e-electronic": "chme3e"
+    }
+  },
+  "profiles": [
+    {
+      "profileId": "chme3-base",
+      "series": "ЧМЭ3",
+      "supportState": "KNOWLEDGE_FOUNDATION_COMPLETE_LEGACY_LAYOUT",
+      "sharedBase": "common",
+      "variantLayer": "chme3"
+    },
+    {
+      "profileId": "chme3t-rheostatic",
+      "series": "ЧМЭ3Т",
+      "supportState": "KNOWLEDGE_FOUNDATION_COMPLETE_LEGACY_LAYOUT",
+      "sharedBase": "common",
+      "variantLayer": "chme3t"
+    },
+    {
+      "profileId": "chme3e-electronic",
+      "series": "ЧМЭ3Э",
+      "supportState": "STAGE_1_FOUNDATION_COMPLETE",
+      "sharedBase": "common",
+      "variantLayer": "chme3e",
+      "requiredBeforeIntegration": ["ATLAS_SCHEMES_COMPLETE", "DIAGNOSTICS_COMPLETE", "ACCEPTANCE_FINAL_QA_COMPLETE"]
+    }
+  ],
+  "inheritancePolicy": {
+    "commonContent": "Mechanical, diesel, fuel, oil, water, pneumatic and other content may be inherited only where applicability is explicitly confirmed for the profile.",
+    "variantOverrides": "Electrical/electronic control, layout and variant-only equipment must live in the variant layer when they differ.",
+    "noNegativeInheritance": "Absence of a variant-only feature is explicit. A profile must never inherit CHME3T rheostatic-brake equipment merely because it shares electronic equipment with CHME3T.",
+    "unknownExecution": "When actual equipment or modernization is unknown, variant-dependent actions fail closed."
+  }
+}
