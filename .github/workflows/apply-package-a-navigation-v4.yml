@@ -1,3 +1,4 @@
+# Package A applier. Re-triggered after registry mirror alignment.
 name: Apply Package A navigation architecture v4
 
 on:
