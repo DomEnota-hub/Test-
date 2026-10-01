@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-10-01",
+  "layoutPolicy": {
+    "root": "docs/locomotives",
+    "levels": ["tractionType", "family", "variant"],
+    "tractionTypes": ["diesel", "electric"],
+    "familyRequiredDirectories": ["common"],
+    "variantRule": "Variant directories contain only profile-specific content and overrides; shared content belongs in common.",
+    "integrationRule": "Runtime integration must resolve a profile through this manifest and must not discover locomotive files by filename guessing.",
+    "idRule": "Every runtime entity keeps a stable family/variant-prefixed ID namespace; profile-specific equipment must not leak into another profile.",
+    "legacyRule": "Legacy package roots remain read-only migration inputs until the family manifest marks migrationState=CANONICAL_COMPLETE and family QA is green."
+  },
+  "families": [
+    {
+      "familyId": "chme3-family",
+      "tractionType": "diesel",
+      "canonicalRoot": "docs/locomotives/diesel/chme3-family",
+      "legacyMigrationRoot": "docs/locomotives/chme3",
+      "migrationState": "CANONICAL_STRUCTURE_STARTED",
+      "profiles": ["chme3-base", "chme3t-rheostatic", "chme3e-electronic"]
+    }
+  ]
+}
