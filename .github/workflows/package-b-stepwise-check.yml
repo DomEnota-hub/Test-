@@ -1,0 +1,32 @@
+name: Package B stepwise flow check
+
+on:
+  push:
+    branches:
+      - integration/chme3-assistant
+    paths:
+      - '.github/workflows/package-b-stepwise-check.yml'
+      - 'qa/build_package_b_stepwise_flows.py'
+      - 'qa/validate_package_b_stepwise_flows.py'
+      - 'app/src/main/assets/technical/stepwise_scheme_flows.json'
+      - 'patch/app/src/main/assets/technical/stepwise_scheme_flows.json'
+      - 'docs/integration/PACKAGE_B_STEPWISE_FLOWS_CHECKPOINT.md'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deterministic rebuild and validation
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp app/src/main/assets/technical/stepwise_scheme_flows.json /tmp/package-b-before.json
+          cp docs/integration/PACKAGE_B_STEPWISE_FLOWS_CHECKPOINT.md /tmp/package-b-checkpoint-before.md
+          python3 qa/build_package_b_stepwise_flows.py
+          cmp /tmp/package-b-before.json app/src/main/assets/technical/stepwise_scheme_flows.json
+          cmp /tmp/package-b-checkpoint-before.md docs/integration/PACKAGE_B_STEPWISE_FLOWS_CHECKPOINT.md
+          python3 qa/validate_package_b_stepwise_flows.py
+          cmp app/src/main/assets/technical/stepwise_scheme_flows.json patch/app/src/main/assets/technical/stepwise_scheme_flows.json
+          git diff --exit-code -- app/src/main/assets/technical/stepwise_scheme_flows.json patch/app/src/main/assets/technical/stepwise_scheme_flows.json docs/integration/PACKAGE_B_STEPWISE_FLOWS_CHECKPOINT.md
