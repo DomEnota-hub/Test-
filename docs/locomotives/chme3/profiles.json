@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "familyId": "chme3-family",
+  "title": "ЧМЭ3 / ЧМЭ3Т / ЧМЭ3Э",
+  "defaultProfilePolicy": "Не определять исполнение только по общему названию ЧМЭ3. Для действий и схем, зависящих от модификации, требовать подтверждение серии/номера/фактического оборудования.",
+  "profiles": [
+    {
+      "id": "chme3-base",
+      "series": "ЧМЭ3",
+      "title": "ЧМЭ3 — базовое исполнение",
+      "features": [
+        "diesel_k6s310dr_family",
+        "dc_electric_transmission",
+        "six_traction_motors",
+        "no_factory_rheostatic_brake"
+      ],
+      "evidenceRefs": ["CHME3-SRC-NOTIK-1996", "CHME3-SRC-NOTIK-1990"],
+      "evidenceStatus": "TRAINING_REFERENCE",
+      "confidence": "HIGH_FOR_ARCHITECTURE_REQUIRES_UNIT_LEVEL_CHECK_FOR_SPECIFICS",
+      "actionAuthority": "REQUIRES_PROFILE_CHECK"
+    },
+    {
+      "id": "chme3t-rheostatic",
+      "series": "ЧМЭ3Т",
+      "title": "ЧМЭ3Т — исполнение с электродинамическим тормозом",
+      "features": [
+        "diesel_k6s310dr_family",
+        "dc_electric_transmission",
+        "six_traction_motors",
+        "rheostatic_brake",
+        "braking_resistor_bank",
+        "braking_resistor_cooling",
+        "additional_electronic_control",
+        "diesel_preheating_device"
+      ],
+      "variantNotes": [
+        "Компоновка дополнительного оборудования и аккумуляторной батареи различается между партиями.",
+        "Электрическая схема существенно отличается от базового ЧМЭ3 из-за реостатного тормоза и дополнительной электроники."
+      ],
+      "evidenceRefs": ["CHME3-SRC-NOTIK-1996", "CHME3-SRC-K6S310DR-1988"],
+      "evidenceStatus": "TRAINING_REFERENCE",
+      "confidence": "HIGH_FOR_FAMILY_DIFFERENCES_REQUIRES_NUMBER_RANGE_FOR_LAYOUT",
+      "actionAuthority": "REQUIRES_PROFILE_CHECK"
+    },
+    {
+      "id": "chme3e-electronic",
+      "series": "ЧМЭ3Э",
+      "title": "ЧМЭ3Э — электронное управление без реостатного тормоза",
+      "features": [
+        "diesel_k6s310dr_family",
+        "dc_electric_transmission",
+        "six_traction_motors",
+        "additional_electronic_control",
+        "diesel_preheating_device",
+        "no_factory_rheostatic_brake"
+      ],
+      "evidenceRefs": ["CHME3-SRC-NOTIK-1996"],
+      "evidenceStatus": "TRAINING_REFERENCE",
+      "confidence": "HIGH_FOR_FAMILY_DIFFERENCES",
+      "actionAuthority": "REQUIRES_PROFILE_CHECK",
+      "supportState": "SCHEMA_READY_CONTENT_AFTER_CHME3_CHME3T_CORE"
+    }
+  ],
+  "profileDimensions": [
+    {
+      "id": "series_variant",
+      "requiredFor": ["electrical_schemes", "diagnostics_variant_actions", "atlas_variant_equipment"],
+      "values": ["chme3-base", "chme3t-rheostatic", "chme3e-electronic"]
+    },
+    {
+      "id": "number_or_equipment_layout",
+      "requiredFor": ["equipment_location", "battery_location", "braking_resistor_layout", "modernized_equipment"],
+      "values": ["unknown", "confirmed_by_number", "confirmed_by_physical_equipment"],
+      "notes": "Не кодировать жёсткую привязку по номерным диапазонам как единственную истину до сверки по нескольким источникам и реальному исполнению после ремонтов/модернизаций."
+    },
+    {
+      "id": "local_modernization",
+      "requiredFor": ["usta", "electronic_governor", "bort_system", "local_rewire", "non_factory_modification"],
+      "values": ["none_confirmed", "unknown", "specific_modernization_confirmed"]
+    }
+  ],
+  "conflictPolicy": {
+    "rule": "Фактическое установленное оборудование важнее предположения по номеру, но не отменяет требования проверить допустимость действия по актуальным документам.",
+    "fallback": "При неизвестном исполнении показывать общую справочную информацию и блокировать вариантозависимые действия."
+  }
+}
