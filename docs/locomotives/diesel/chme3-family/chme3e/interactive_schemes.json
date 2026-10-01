@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "profileId": "chme3e-electronic",
+  "updatedAt": "2026-10-01",
+  "contractRef": "../common/interactive_scheme_contract.json",
+  "sharedViewRefs": [
+    "CHME3-INT-FUEL","CHME3-INT-OIL","CHME3-INT-WATER","CHME3-INT-AIR","CHME3-INT-AUX","CHME3-INT-PNEUMATIC","CHME3-INT-RUNNING","CHME3-INT-BRAKE-MECH","CHME3-INT-DIESEL-SUPPORT"
+  ],
+  "flowSourceFile": "schemes_variant.json",
+  "profileViews": [
+    {
+      "id":"CHME3E-INT-TRACTION-CONTROL","title":"ЧМЭ3Э — электронное регулирование тяги и мощности","schemeType":"electrical","profileGate":"chme3e-electronic","sourceSchemeRef":"CHME3E-SCH-TRACTION-CONTROL","flowSource":"SOURCE_SCHEME_REF",
+      "hotspotLayer":[
+        {"equipmentId":"CHME3E-EQ-CONTROLLER-HH106","label":"НН106","layoutHint":{"x":40,"y":100,"width":160,"height":64}},
+        {"equipmentId":"CHME3E-EQ-MODE-SWITCH-PE","label":"ПЭ","layoutHint":{"x":40,"y":240,"width":140,"height":60}},
+        {"equipmentId":"CHME3E-EQ-MODE-SWITCH-PDU","label":"ПДУ","layoutHint":{"x":40,"y":360,"width":140,"height":60}},
+        {"equipmentId":"CHME3E-EQ-MODE-SWITCH-PEM","label":"ПЕМ","layoutHint":{"x":40,"y":480,"width":140,"height":60}},
+        {"equipmentId":"CHME3E-EQ-ER-YZJK9-YIND5","label":"YZJK9 / YIND5","layoutHint":{"x":260,"y":100,"width":190,"height":64}},
+        {"equipmentId":"CHME3E-EQ-TACHOMETER-SENSOR-BLOCK","label":"Датчик оборотов","layoutHint":{"x":260,"y":650,"width":190,"height":64}},
+        {"equipmentId":"CHME3E-EQ-ER-YPSM5","label":"YPSM5","layoutHint":{"x":500,"y":650,"width":160,"height":64}},
+        {"equipmentId":"CHME3E-EQ-CURRENT-SENSOR-DTG","label":"ДТГ","layoutHint":{"x":500,"y":520,"width":150,"height":64}},
+        {"equipmentId":"CHME3E-EQ-VOLTAGE-SENSOR-DNG","label":"ДНГ","layoutHint":{"x":500,"y":390,"width":150,"height":64}},
+        {"equipmentId":"CHME3E-EQ-ER-YZV9","label":"YZV9","layoutHint":{"x":740,"y":170,"width":150,"height":64}},
+        {"equipmentId":"CHME3E-EQ-ER-YRUI3","label":"YRUI3","layoutHint":{"x":740,"y":320,"width":150,"height":64}},
+        {"equipmentId":"CHME3E-EQ-ER-YODU4","label":"YODU4","layoutHint":{"x":740,"y":470,"width":150,"height":64}},
+        {"equipmentId":"CHME3E-EQ-ER-YKA5","label":"YKA5","layoutHint":{"x":740,"y":620,"width":150,"height":64}},
+        {"equipmentId":"CHME3E-EQ-ER-YKS5","label":"YKS5","layoutHint":{"x":970,"y":170,"width":150,"height":64}},
+        {"equipmentId":"CHME3-EQ-EXCITER","label":"Возбудитель","layoutHint":{"x":1180,"y":170,"width":170,"height":64}},
+        {"equipmentId":"CHME3-EQ-TRACTION-GENERATOR","label":"Тяговый генератор","layoutHint":{"x":1380,"y":170,"width":190,"height":70}},
+        {"equipmentId":"CHME3-EQ-TRAIN-CONTACTORS","label":"Поездные контакторы","layoutHint":{"x":1140,"y":360,"width":210,"height":70}},
+        {"equipmentId":"CHME3-EQ-TRACTION-MOTORS","label":"ТЭД","layoutHint":{"x":1390,"y":360,"width":170,"height":70}},
+        {"equipmentId":"CHME3E-EQ-RELAY-REM","label":"РЕМ","layoutHint":{"x":970,"y":560,"width":150,"height":60}},
+        {"equipmentId":"CHME3E-EQ-RELAY-RE","label":"РЕ","layoutHint":{"x":1160,"y":560,"width":150,"height":60}}
+      ]
+    },
+    {
+      "id":"CHME3E-INT-FIELD-WEAKENING","title":"ЧМЭ3Э — автоматическое ослабление возбуждения","schemeType":"electrical","profileGate":"chme3e-electronic","sourceSchemeRef":"CHME3E-SCH-FIELD-WEAKENING","flowSource":"SOURCE_SCHEME_REF",
+      "hotspotLayer":[
+        {"equipmentId":"CHME3E-EQ-CURRENT-SENSOR-DTG","label":"ДТГ","layoutHint":{"x":100,"y":220,"width":160,"height":64}},
+        {"equipmentId":"CHME3E-EQ-VOLTAGE-SENSOR-DNG","label":"ДНГ","layoutHint":{"x":100,"y":480,"width":160,"height":64}},
+        {"equipmentId":"CHME3E-EQ-RELAY-RE","label":"РЕ","layoutHint":{"x":100,"y":650,"width":160,"height":64}},
+        {"equipmentId":"CHME3E-EQ-ER-YSH11","label":"YSH11","layoutHint":{"x":500,"y":360,"width":180,"height":70}},
+        {"equipmentId":"CHME3E-EQ-ER-YOUT8","label":"YOUT8","layoutHint":{"x":830,"y":360,"width":180,"height":70}},
+        {"equipmentId":"CHME3-EQ-CONTACTORS","label":"КШ1—КШ6 / контакторы","layoutHint":{"x":1160,"y":360,"width":230,"height":70}},
+        {"equipmentId":"CHME3-EQ-TRACTION-MOTORS","label":"ТЭД","layoutHint":{"x":1430,"y":360,"width":150,"height":70}}
+      ]
+    },
+    {
+      "id":"CHME3E-INT-START","title":"ЧМЭ3Э — электронная логика пуска","schemeType":"electrical_control","profileGate":"chme3e-electronic","sourceSchemeRef":"CHME3E-SCH-START-ELECTRONIC","flowSource":"SOURCE_SCHEME_REF",
+      "hotspotLayer":[
+        {"equipmentId":"CHME3E-EQ-CONTROLLER-HH106","label":"НН106","layoutHint":{"x":80,"y":170,"width":170,"height":68}},
+        {"equipmentId":"CHME3E-EQ-ER-YCRA1","label":"YCRA1","layoutHint":{"x":390,"y":170,"width":170,"height":68}},
+        {"equipmentId":"CHME3-EQ-OIL-PRIME-PUMP","label":"Маслопрокачка","layoutHint":{"x":760,"y":80,"width":210,"height":68}},
+        {"equipmentId":"CHME3-EQ-CONTACTORS","label":"Пусковые контакторы","layoutHint":{"x":760,"y":280,"width":220,"height":68}},
+        {"equipmentId":"CHME3-EQ-BATTERY","label":"АКБ","layoutHint":{"x":390,"y":540,"width":170,"height":68}},
+        {"equipmentId":"CHME3-EQ-TRACTION-GENERATOR","label":"Тяговый генератор / стартерный режим","layoutHint":{"x":840,"y":540,"width":290,"height":68}},
+        {"equipmentId":"CHME3E-EQ-RELAY-RD","label":"РД","layoutHint":{"x":1280,"y":540,"width":150,"height":68}}
+      ]
+    },
+    {
+      "id":"CHME3E-INT-PREHEAT-RUNNING","title":"ЧМЭ3Э — обогрев водяной системы от тягового генератора","schemeType":"electrical_thermal","profileGate":"chme3e-electronic","sourceSchemeRef":"CHME3E-SCH-PREHEAT-RUNNING","flowSource":"SOURCE_SCHEME_REF",
+      "hotspotLayer":[
+        {"equipmentId":"CHME3E-EQ-MODE-SWITCH-PO","label":"ПО","layoutHint":{"x":80,"y":330,"width":150,"height":64}},
+        {"equipmentId":"CHME3E-EQ-CONTACTOR-KOG1","label":"КОГ1","layoutHint":{"x":360,"y":250,"width":160,"height":64}},
+        {"equipmentId":"CHME3E-EQ-CONTACTOR-KOG2","label":"КОГ2","layoutHint":{"x":360,"y":450,"width":160,"height":64}},
+        {"equipmentId":"CHME3-EQ-EXCITER","label":"Возбудитель","layoutHint":{"x":690,"y":120,"width":170,"height":64}},
+        {"equipmentId":"CHME3-EQ-TRACTION-GENERATOR","label":"Тяговый генератор","layoutHint":{"x":690,"y":330,"width":210,"height":70}},
+        {"equipmentId":"CHME3E-EQ-HEATER-ELEMENTS-R85-R88","label":"R85—R88","layoutHint":{"x":1120,"y":330,"width":190,"height":70}},
+        {"equipmentId":"CHME3-EQ-WATER-PUMP","label":"Водяной насос","layoutHint":{"x":1120,"y":560,"width":190,"height":70}}
+      ]
+    },
+    {
+      "id":"CHME3E-INT-PREHEAT-EXTERNAL","title":"ЧМЭ3Э — внешний прогрев неработающего дизеля","schemeType":"electrical_thermal","profileGate":"chme3e-electronic","sourceSchemeRef":"CHME3E-SCH-PREHEAT-EXTERNAL","flowSource":"SOURCE_SCHEME_REF",
+      "hotspotLayer":[
+        {"equipmentId":"CHME3E-EQ-MODE-SWITCH-PO","label":"ПО","layoutHint":{"x":100,"y":330,"width":150,"height":64}},
+        {"equipmentId":"CHME3E-EQ-CONTACTOR-KOP","label":"КОП","layoutHint":{"x":420,"y":330,"width":160,"height":64}},
+        {"equipmentId":"CHME3E-EQ-HEATER-ELEMENTS-R85-R88","label":"R85—R88","layoutHint":{"x":830,"y":180,"width":190,"height":70}},
+        {"equipmentId":"CHME3E-EQ-WATER-PUMP-MOTORS-DOV","label":"ДОВ1—ДОВ3","layoutHint":{"x":830,"y":500,"width":190,"height":70}},
+        {"equipmentId":"CHME3E-EQ-ELECTRIC-WATER-PUMPS","label":"Электронасосы 53—55","layoutHint":{"x":1210,"y":500,"width":230,"height":70}}
+      ],
+      "safetyNote":"Interactive view is informational and must not be used as a procedure for connecting an external three-phase supply."
+    },
+    {
+      "id":"CHME3E-INT-REMOTE-CONTROL","title":"ЧМЭ3Э — управление в одно лицо","schemeType":"electrical_pneumatic_control","profileGate":"chme3e-electronic","sourceSchemeRef":"CHME3E-SCH-REMOTE-CONTROL","flowSource":"SOURCE_SCHEME_REF",
+      "hotspotLayer":[
+        {"equipmentId":"CHME3E-EQ-PORTABLE-CONTROL-PANELS","label":"Переносные пульты","layoutHint":{"x":100,"y":330,"width":220,"height":70}},
+        {"equipmentId":"CHME3E-EQ-CONTROLLER-HH106","label":"НН106","layoutHint":{"x":460,"y":180,"width":170,"height":70}},
+        {"equipmentId":"CHME3E-EQ-ELECTRONIC-REGULATOR-GC40P","label":"GC40P","layoutHint":{"x":830,"y":180,"width":180,"height":70}},
+        {"equipmentId":"CHME3-EQ-PNEUMATIC-CONTROL-RESERVOIR","label":"Резервуар управления","layoutHint":{"x":460,"y":540,"width":230,"height":70}},
+        {"equipmentId":"CHME3E-EQ-ROOF-SIGNAL-LAMPS","label":"Сигнальные лампы","layoutHint":{"x":1180,"y":330,"width":210,"height":70}}
+      ]
+    }
+  ],
+  "designationSource":"scheme_designations.json",
+  "navigationPolicy":{"reverseIndex":"DERIVE_FROM_HOTSPOTS","diagnosticJoin":"BY_EQUIPMENT_ID","search":"DESIGNATION_AND_ALIAS_TO_EQUIPMENT"},
+  "explicitExclusions":["CHME3T-INT-EDB","CHME3T-EQ-EDB-CONTROL","CHME3T-EQ-BRAKE-RESISTORS","CHME3T-EQ-BRAKE-RESISTOR-FAN"]
+}
