@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "packageId": "chme3-family",
+  "updatedAt": "2026-10-01",
+  "state": "ATLAS_PASS_2_INDEX_EXTENSION",
+  "purpose": "Узлы, выделенные из принципиальных электрических и пневматических схем после первого индексирования. При финальной интеграции объединяются с atlas_index.json.",
+  "equipment": [
+    {"id":"CHME3-EQ-AIR-DISTRIBUTOR","name":"Воздухораспределитель","systemId":"CHME3-SYS-BRAKE","applicability":["ЧМЭ3","ЧМЭ3Т","ЧМЭ3Э"],"aliases":["ВР","ВР 483","483М"]},
+    {"id":"CHME3-EQ-BRAKE-CYLINDERS","name":"Тормозные цилиндры","systemId":"CHME3-SYS-BRAKE","applicability":["ЧМЭ3","ЧМЭ3Т","ЧМЭ3Э"],"aliases":["ТЦ","тормозной цилиндр"]},
+    {"id":"CHME3-EQ-EPC-AUTOSTOP","name":"Электропневматический клапан автостопа ЭПК-150","systemId":"CHME3-SYS-BRAKE","applicability":["ЧМЭ3","ЧМЭ3Т","ЧМЭ3Э"],"aliases":["ЭПК","ЭПК-150"]},
+    {"id":"CHME3-EQ-EQUALIZING-RESERVOIR","name":"Уравнительный резервуар","systemId":"CHME3-SYS-BRAKE","applicability":["ЧМЭ3","ЧМЭ3Т","ЧМЭ3Э"],"aliases":["УР"]},
+    {"id":"CHME3-EQ-PNEUMATIC-CONTROL-RESERVOIR","name":"Резервуар системы управления аппаратами","systemId":"CHME3-SYS-CONTROL","applicability":["ЧМЭ3","ЧМЭ3Т","ЧМЭ3Э"],"aliases":["резервуар управления"]},
+    {"id":"CHME3-EQ-AIR-DRY-SEPARATOR","name":"Маслоотделитель пневмосистемы","systemId":"CHME3-SYS-BRAKE","applicability":["ЧМЭ3","ЧМЭ3Т","ЧМЭ3Э"],"aliases":["маслоотделитель","влагоотделитель"]},
+    {"id":"CHME3-EQ-INTERCOOLER","name":"Промежуточный холодильник компрессора","systemId":"CHME3-SYS-BRAKE","applicability":["ЧМЭ3","ЧМЭ3Т","ЧМЭ3Э"],"aliases":["холодильник компрессора"]},
+    {"id":"CHME3-EQ-TRAIN-CONTACTORS","name":"Поездные контакторы","systemId":"CHME3-SYS-CONTROL","applicability":["ЧМЭ3","ЧМЭ3Т","ЧМЭ3Э"],"aliases":["КП1","КП2","КП3","поездной контактор"]},
+    {"id":"CHME3-EQ-BATTERY-SWITCH","name":"Рубильник аккумуляторной батареи","systemId":"CHME3-SYS-ELECTRIC","applicability":["ЧМЭ3","ЧМЭ3Т","ЧМЭ3Э"],"aliases":["ОВ","рубильник АКБ"]},
+    {"id":"CHME3-EQ-GOVERNOR-SERVOMOTOR","name":"Сервомотор регулятора дизеля","systemId":"CHME3-SYS-GOV","applicability":["ЧМЭ3","ЧМЭ3Т","ЧМЭ3Э"],"aliases":["СМД","сервомотор регулятора"]}
+  ],
+  "evidenceRefs": ["CHME3-SRC-LOKOMOTIV-1986-ELEMENTS","CHME3-SRC-IOFFE-ELECTRIC-2023","CHME3-SRC-PNEUMATIC-PUBLIC","CHME3-SRC-NOTIK-1996"]
+}
