@@ -72,6 +72,7 @@ import ru.railbrake.calculator.core.Appendix12Result
 import ru.railbrake.calculator.core.AppendixFormula
 import ru.railbrake.calculator.core.BrakeCalculator
 import ru.railbrake.calculator.core.ConsistItem
+import ru.railbrake.calculator.core.LocomotiveCatalogRegistry
 import ru.railbrake.calculator.core.LocomotiveDatabase
 import ru.railbrake.calculator.core.LocomotiveSpec
 import ru.railbrake.calculator.core.MassCalculationInput
@@ -149,6 +150,13 @@ fun BrakeCalculatorApp(
     val workingRepository = remember(context) { WorkingLocomotiveRepository(context) }
     var workingLocomotive by remember { mutableStateOf(workingRepository.selected()) }
     val workingFamily = workingLocomotive?.family
+    var viewingFamilyName by rememberSaveable {
+        mutableStateOf(LocomotiveCatalogRegistry.initialViewingFamily(null, workingLocomotive).name)
+    }
+    val viewingFamily = LocomotiveCatalogRegistry.browsingFamilyOrDefault(
+        viewingFamilyName,
+        workingFamily ?: TechnicalFamily.VL80S
+    )
     var auxiliaryToolsVisible by remember { mutableStateOf(secretAccessRepository.isUnlocked()) }
     var historyVersion by remember { mutableIntStateOf(0) }
     var screenName by rememberSaveable { mutableStateOf(AppScreen.HOME.name) }
@@ -166,7 +174,6 @@ fun BrakeCalculatorApp(
     var diagnosticRootVersion by rememberSaveable { mutableIntStateOf(0) }
     var locomotiveRootVersion by rememberSaveable { mutableIntStateOf(0) }
     var acceptanceRootVersion by rememberSaveable { mutableIntStateOf(0) }
-    var acceptanceBrowseFamily by rememberSaveable { mutableStateOf<TechnicalFamily?>(null) }
     var knowledgeRootVersion by rememberSaveable { mutableIntStateOf(0) }
     var safetyRootVersion by rememberSaveable { mutableIntStateOf(0) }
     var firstAidRootVersion by rememberSaveable { mutableIntStateOf(0) }
@@ -226,7 +233,6 @@ fun BrakeCalculatorApp(
                                     locomotiveRootVersion++
                                 }
                                 AppScreen.ACCEPTANCE -> {
-                                    acceptanceBrowseFamily = null
                                     technicalSectionName = TechnicalSection.ACCEPTANCE.name
                                     acceptanceRootVersion++
                                 }
@@ -310,6 +316,7 @@ fun BrakeCalculatorApp(
                         workingRepository.select(selected)
                         AssistantRuntime.activate(selected?.family, selected?.variantId)
                         workingLocomotive = selected
+                        selected?.family?.let { viewingFamilyName = it.name }
                         diagnosticStartScenarioId = null
                         technicalInitialEntryId = null
                         screenName = AppScreen.HOME.name
@@ -372,24 +379,30 @@ fun BrakeCalculatorApp(
                 AppScreen.LOCOMOTIVES -> key(locomotiveRootVersion) {
                     LocomotiveReferenceScreen(
                         workingFamily = workingFamily,
+                        viewingFamily = viewingFamily,
+                        onViewingFamilyChange = { viewingFamilyName = it.name },
                         onOpenTechnical = { family, section ->
+                            viewingFamilyName = family.name
                             technicalFamilyName = family.name
                             technicalSectionName = section.name
                             technicalInitialEntryId = null
                             screenName = AppScreen.LOCOMOTIVE_MATERIAL.name
                         },
                         onOpenInteractiveVl80s = {
+                            viewingFamilyName = TechnicalFamily.VL80S.name
                             locomotiveMaterialQuery = null
                             locomotiveMaterialArticleId = "vl80-layout"
                             screenName = AppScreen.LOCOMOTIVE_LEGACY.name
                         },
                         onOpenInteractiveErmak = {
+                            viewingFamilyName = TechnicalFamily.ERMAK.name
                             technicalFamilyName = TechnicalFamily.ERMAK.name
                             technicalSectionName = TechnicalSection.ELECTRICAL.name
                             technicalInitialEntryId = "ER-SCH-LAYOUT-2ES5K-BASE"
                             screenName = AppScreen.LOCOMOTIVE_MATERIAL.name
                         },
                         onOpenInteractiveChme3 = { family ->
+                            viewingFamilyName = family.name
                             technicalFamilyName = family.name
                             technicalSectionName = TechnicalSection.ELECTRICAL.name
                             technicalInitialEntryId = if (family == TechnicalFamily.CHME3E)
@@ -402,7 +415,11 @@ fun BrakeCalculatorApp(
                     initialFamily = runCatching { TechnicalFamily.valueOf(technicalFamilyName) }.getOrDefault(TechnicalFamily.VL80S),
                     initialSection = runCatching { TechnicalSection.valueOf(technicalSectionName) }.getOrDefault(TechnicalSection.EQUIPMENT),
                     initialEntryId = technicalInitialEntryId,
-                    lockFamily = workingFamily != null,
+                    lockFamily = false,
+                    onFamilyChange = { family ->
+                        viewingFamilyName = family.name
+                        technicalFamilyName = family.name
+                    },
                     onSectionBack = { screenName = AppScreen.LOCOMOTIVES.name },
                     onOpenLegacyArticle = { articleId ->
                         locomotiveMaterialQuery = null
@@ -411,6 +428,7 @@ fun BrakeCalculatorApp(
                     },
                     onOpenDiagnosticScenario = { scenarioId, sourceEntryId, sourceSection ->
                         technicalFamilyName = if (scenarioId.startsWith("CHME3")) technicalFamilyName else TechnicalFamily.ERMAK.name
+                        viewingFamilyName = technicalFamilyName
                         technicalSectionName = sourceSection.name
                         technicalInitialEntryId = sourceEntryId
                         diagnosticStartScenarioId = scenarioId
@@ -426,31 +444,28 @@ fun BrakeCalculatorApp(
                     sectionBackLabel = "Локомотивы / атлас",
                     onSectionBack = { screenName = AppScreen.LOCOMOTIVES.name }
                 )
-                AppScreen.ACCEPTANCE -> key(acceptanceRootVersion, workingFamily, acceptanceBrowseFamily) {
-                    val family = workingFamily ?: acceptanceBrowseFamily
-                    if (family == null) {
-                        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                            Text("Выберите серию для разового просмотра приёмки.",
-                                style = MaterialTheme.typography.titleMedium)
-                            TechnicalFamily.entries.forEach { option ->
-                                Button(onClick = { acceptanceBrowseFamily = option }) { Text(option.title) }
-                            }
-                        }
-                    } else TechnicalCatalogScreen(
-                        initialFamily = family,
+                AppScreen.ACCEPTANCE -> key(acceptanceRootVersion, viewingFamily) {
+                    TechnicalCatalogScreen(
+                        initialFamily = viewingFamily,
                         initialSection = TechnicalSection.ACCEPTANCE,
                         sectionBackLabel = "Главная",
                         onSectionBack = { screenName = AppScreen.HOME.name },
-                        lockFamily = true,
-                        lockSection = true
+                        lockFamily = false,
+                        lockSection = true,
+                        onFamilyChange = { family ->
+                            viewingFamilyName = family.name
+                            technicalFamilyName = family.name
+                        }
                     )
                 }
                 AppScreen.DIAGNOSTICS -> key(diagnosticRootVersion) {
                     LocomotiveDiagnosticsScreen(
                         initialScenarioId = diagnosticStartScenarioId,
                         initialEquipmentId = diagnosticStartEquipmentId,
+                        initialFamily = viewingFamily,
                         workingFamily = workingFamily,
-                        workingVariantId = workingLocomotive?.variantId
+                        workingVariantId = workingLocomotive?.variantId,
+                        onFamilyChange = { family -> viewingFamilyName = family.name }
                     )
                 }
                 AppScreen.KNOWLEDGE -> key(knowledgeRootVersion) {
@@ -472,12 +487,14 @@ fun BrakeCalculatorApp(
                         screenName = AppScreen.HOME.name
                     },
                     onOpenScenario = { scenarioId ->
+                        viewingFamilyName = diagnosticInitialFamily(scenarioId, null).name
                         diagnosticStartScenarioId = scenarioId
                         diagnosticStartEquipmentId = null
                         diagnosticReturnScreenName = AppScreen.HOME.name
                         screenName = AppScreen.DIAGNOSTICS.name
                     },
                     onOpenEquipment = { equipmentId ->
+                        viewingFamilyName = diagnosticInitialFamily(null, equipmentId).name
                         diagnosticStartScenarioId = null
                         diagnosticStartEquipmentId = equipmentId
                         diagnosticReturnScreenName = AppScreen.HOME.name
@@ -1369,6 +1386,8 @@ private fun HistoryScreen(repository: HistoryRepository, version: Int, onCleared
 @Composable
 private fun LocomotiveReferenceScreen(
     workingFamily: TechnicalFamily?,
+    viewingFamily: TechnicalFamily,
+    onViewingFamilyChange: (TechnicalFamily) -> Unit,
     onOpenTechnical: (TechnicalFamily, TechnicalSection) -> Unit,
     onOpenInteractiveVl80s: () -> Unit,
     onOpenInteractiveErmak: () -> Unit,
@@ -1376,8 +1395,8 @@ private fun LocomotiveReferenceScreen(
 ) {
     var query by rememberSaveable { mutableStateOf("") }
     var seriesExpanded by rememberSaveable { mutableStateOf(false) }
-    var browsingFamilyName by rememberSaveable(workingFamily) {
-        mutableStateOf(workingFamily?.name.orEmpty())
+    var browsingFamilyName by rememberSaveable(viewingFamily) {
+        mutableStateOf(viewingFamily.name)
     }
     val family = TechnicalFamily.entries.firstOrNull { it.name == browsingFamilyName }
     val found = remember(query) { LocomotiveDatabase.search(query) }
@@ -1390,17 +1409,22 @@ private fun LocomotiveReferenceScreen(
             "Выберите серию и тип материала"
         )
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            TechnicalFamily.entries.forEach { option ->
+            LocomotiveCatalogRegistry.families.forEach { option ->
                 FilterChip(
                     selected = family == option,
-                    onClick = { browsingFamilyName = option.name },
-                    enabled = workingFamily == null || workingFamily == option,
+                    onClick = {
+                        browsingFamilyName = option.name
+                        onViewingFamilyChange(option)
+                    },
                     label = { Text(option.title) }
                 )
             }
         }
-        if (workingFamily != null) Text("Другая серия доступна после смены рабочего локомотива на главной или через явный запрос помощнику.",
-            style = MaterialTheme.typography.bodySmall)
+        if (workingFamily != null && family != null && family != workingFamily) Text(
+            "Разовый просмотр ${family.title}. Рабочая серия ${workingFamily.title} не изменена.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
         if (family == null) Text("Выберите серию для разового просмотра атласа.",
             style = MaterialTheme.typography.bodySmall)
         else {

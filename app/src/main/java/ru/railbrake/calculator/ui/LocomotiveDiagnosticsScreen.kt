@@ -9,6 +9,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import ru.railbrake.calculator.core.LocomotiveCatalogRegistry
 import ru.railbrake.calculator.core.TechnicalFamily
 
 @Composable
@@ -17,7 +18,8 @@ fun LocomotiveDiagnosticsScreen(
     initialEquipmentId: String? = null,
     initialFamily: TechnicalFamily? = null,
     workingFamily: TechnicalFamily? = null,
-    workingVariantId: String? = null
+    workingVariantId: String? = null,
+    onFamilyChange: (TechnicalFamily) -> Unit = {}
 ) {
     val linkedFamily = if (initialScenarioId != null || initialEquipmentId != null)
         diagnosticInitialFamily(initialScenarioId, initialEquipmentId) else null
@@ -32,10 +34,12 @@ fun LocomotiveDiagnosticsScreen(
         }
         Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            TechnicalFamily.entries.forEach { option ->
-                FilterChip(family == option, { familyName = option.name },
-                    enabled = workingFamily == null || workingFamily == option,
-                    label = { Text(option.title) })
+            LocomotiveCatalogRegistry.families.forEach { option ->
+                FilterChip(
+                    selected = family == option,
+                    onClick = { familyName = option.name; onFamilyChange(option) },
+                    label = { Text(option.title) }
+                )
             }
         }
         if (workingFamily != null && family != null && family != workingFamily) {
@@ -50,7 +54,7 @@ fun LocomotiveDiagnosticsScreen(
             else ErmakDiagnosticsScreen(
                 initialScenarioId = diagnosticScenarioForFamily(initialScenarioId, family),
                 initialEquipmentId = diagnosticEquipmentForFamily(initialEquipmentId, family),
-                workingVariantId = workingVariantId,
+                workingVariantId = workingVariantId.takeIf { family == workingFamily },
                 family = family
             )
         }

@@ -70,6 +70,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import ru.railbrake.calculator.core.LocomotiveCatalogRegistry
 import ru.railbrake.calculator.core.TechnicalDataRepository
 import ru.railbrake.calculator.core.TechnicalEntry
 import ru.railbrake.calculator.core.TechnicalFamily
@@ -98,12 +99,13 @@ fun TechnicalCatalogScreen(
     lockSection: Boolean = false,
     initialEntryId: String? = null,
     onOpenLegacyArticle: ((String) -> Unit)? = null,
-    onOpenDiagnosticScenario: ((String, String, TechnicalSection) -> Unit)? = null
+    onOpenDiagnosticScenario: ((String, String, TechnicalSection) -> Unit)? = null,
+    onFamilyChange: (TechnicalFamily) -> Unit = {}
 ) {
     val context = LocalContext.current
     val repository = remember { TechnicalDataRepository(context.applicationContext) }
     val recentRepository = remember { TechnicalRecentRepository(context.applicationContext) }
-    var familyName by rememberSaveable { mutableStateOf(initialFamily.name) }
+    var familyName by rememberSaveable(initialFamily) { mutableStateOf(initialFamily.name) }
     var sectionName by rememberSaveable { mutableStateOf(initialSection.name) }
     var query by rememberSaveable { mutableStateOf("") }
     var selectedId by rememberSaveable(initialEntryId) { mutableStateOf(initialEntryId) }
@@ -306,11 +308,12 @@ fun TechnicalCatalogScreen(
         }
         item {
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                items(if (lockFamily) listOf(family) else listOf(TechnicalFamily.VL80S, TechnicalFamily.ERMAK)) { option ->
+                items(if (lockFamily) listOf(family) else LocomotiveCatalogRegistry.families) { option ->
                     FilterChip(
                         selected = family == option,
                         onClick = {
                             familyName = option.name
+                            onFamilyChange(option)
                             if (!lockSection) {
                                 val sections = repository.sections(option)
                                 if (runCatching { TechnicalSection.valueOf(sectionName) }.getOrNull() !in sections) sectionName = sections.first().name

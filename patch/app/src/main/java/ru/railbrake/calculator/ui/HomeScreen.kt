@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.key
+import ru.railbrake.calculator.core.LocomotiveCatalogRegistry
 import ru.railbrake.calculator.core.WorkingLocomotive
 import ru.railbrake.calculator.data.HistoryRecord
 
@@ -68,7 +69,7 @@ internal fun HomeScreen(
                 Text("Сегодня работаю на: ${workingLocomotive?.title ?: "не выбрано"}",
                     style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(WorkingLocomotive.entries) { option ->
+                    items(LocomotiveCatalogRegistry.workingOptions) { option ->
                         FilterChip(
                             selected = option == workingLocomotive,
                             onClick = { onWorkingLocomotiveChange(if (option == workingLocomotive) null else option) },

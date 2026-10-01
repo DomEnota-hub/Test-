@@ -1443,7 +1443,7 @@ private fun block(title: String, lines: List<String>): TechnicalBlock? =
 private fun listOfNotEmpty(vararg blocks: TechnicalBlock?): List<TechnicalBlock> = blocks.filterNotNull()
 
 internal fun isInternalTechnicalReference(value: String): Boolean =
-    value.trim().matches(Regex("^(?:VL80|VL|ER)-[A-Z0-9][A-Z0-9_-]*$", RegexOption.IGNORE_CASE))
+    UserFacingTechnicalPolicy.isInternalReference(value)
 
 internal fun userFacingTechnicalText(value: String): String = value
     .replace(Regex("variant-profile", RegexOption.IGNORE_CASE), "профиль исполнения")

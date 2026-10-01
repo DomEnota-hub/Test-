@@ -208,8 +208,7 @@ private val hiddenServiceLocators = setOf(
 )
 
 internal fun technicalPresentationLine(value: String): String? {
-    val cleaned = userFacingTechnicalText(value).trim()
-    if (cleaned.isBlank()) return null
+    val cleaned = UserFacingTechnicalPolicy.sanitize(userFacingTechnicalText(value))?.trim() ?: return null
     val parts = cleaned.split(" • ")
         .mapNotNull(::technicalPresentationAtom)
         .distinct()
