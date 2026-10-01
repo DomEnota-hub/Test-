@@ -152,6 +152,12 @@ jobs:
           unzip -q RailBrakeCalculator.zip -d buildsrc
           test -f buildsrc/RailBrakeCalculator/settings.gradle.kts
           cp -a patch/. buildsrc/RailBrakeCalculator/
+          for variant in chme3 chme3t chme3e; do
+            for kind in catalog diagnostics; do
+              cmp "patch/app/src/main/assets/technical/chme3_${variant}_${kind}.json.gz" \
+                  "buildsrc/RailBrakeCalculator/app/src/main/assets/technical/chme3_${variant}_${kind}.json.gz"
+            done
+          done
           for file in \
             AssistantModels.kt \
             AssistantAdapters.kt \
@@ -340,6 +346,7 @@ jobs:
           grep -Fq "package: name='ru.railbrake.calculator.assistanttest' versionCode='214' versionName='1.2.2-dev14-beta53-chme3-assistant-v0.23'" assistant-test-badging.log
           "$ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner" verify --verbose --print-certs "$APK" | tee assistant-test-apksigner.log
           grep -qi "Signer #1 certificate SHA-256 digest: $EXPECTED_SIGNING_CERT_SHA256" assistant-test-apksigner.log
+          unzip -Z1 "$APK" | grep 'assets/technical/' | head -30
           python3 qa/verify_chme3_android_assets.py "$APK"
           unzip -Z1 "$APK" > assistant-test-entries.txt
           grep -Fxq 'assets/assistant_voice/silero_vad.onnx' assistant-test-entries.txt
@@ -349,6 +356,7 @@ jobs:
           grep -Fxq 'lib/arm64-v8a/libsherpa-onnx-jni.so' assistant-test-entries.txt
 
       - name: Upload updatable signed Test APK
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: railbrake-assistant-test-v0.23-chme3-signed-apk
