@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "profileId": "chme3t-rheostatic",
+  "updatedAt": "2026-10-01",
+  "contractRef": "../common/interactive_scheme_contract.json",
+  "sharedViewRefs": [
+    "CHME3-INT-FUEL","CHME3-INT-OIL","CHME3-INT-WATER","CHME3-INT-AIR","CHME3-INT-AUX","CHME3-INT-PNEUMATIC","CHME3-INT-RUNNING","CHME3-INT-BRAKE-MECH","CHME3-INT-DIESEL-SUPPORT"
+  ],
+  "inheritedProfileViews": {
+    "fromProfile": "chme3-base",
+    "viewIds": ["CHME3-INT-TRACTION","CHME3-INT-CONTROL"],
+    "rule": "Reuse only common traction/control topology; CHME3T-only equipment is represented by its own variant views and gates."
+  },
+  "profileViews": [
+    {
+      "id":"CHME3T-INT-EDB","title":"ЧМЭ3Т — электродинамический реостатный тормоз","schemeType":"electrical_braking","profileGate":"chme3t-rheostatic","sourceSchemeRef":"CHME3T-SCH-EDB",
+      "hotspotLayer":[
+        {"equipmentId":"CHME3-EQ-TRACTION-MOTORS","label":"Тяговые двигатели","layoutHint":{"x":120,"y":370,"width":220,"height":76}},
+        {"equipmentId":"CHME3T-EQ-EDB-CONTROL","label":"Управление ЭДТ","layoutHint":{"x":520,"y":370,"width":220,"height":76}},
+        {"equipmentId":"CHME3T-EQ-BRAKE-RESISTORS","label":"Тормозные резисторы","layoutHint":{"x":950,"y":370,"width":230,"height":76}},
+        {"equipmentId":"CHME3T-EQ-BRAKE-RESISTOR-FAN","label":"Охлаждение резисторов","layoutHint":{"x":950,"y":590,"width":250,"height":76}}
+      ],
+      "flowLayer":[
+        {"from":"CHME3-EQ-TRACTION-MOTORS","to":"CHME3T-EQ-EDB-CONTROL","label":"генераторный режим ТЭД"},
+        {"from":"CHME3T-EQ-EDB-CONTROL","to":"CHME3T-EQ-BRAKE-RESISTORS","label":"тормозная энергия"},
+        {"from":"CHME3T-EQ-BRAKE-RESISTOR-FAN","to":"CHME3T-EQ-BRAKE-RESISTORS","label":"охлаждение"}
+      ],
+      "diagnosticAnchors":["реостатный тормоз не включается","нет тормозного тока","перегрев резисторов","отключается ЭДТ"]
+    }
+  ],
+  "navigationPolicy":{"reverseIndex":"DERIVE_FROM_HOTSPOTS","diagnosticJoin":"BY_EQUIPMENT_ID","search":"DESIGNATION_AND_ALIAS_TO_EQUIPMENT"}
+}
