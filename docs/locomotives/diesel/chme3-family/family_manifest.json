@@ -3,7 +3,7 @@
   "familyId": "chme3-family",
   "tractionType": "diesel",
   "updatedAt": "2026-10-01",
-  "migrationState": "STAGE_2_CHME3E_ATLAS_SCHEMES",
+  "migrationState": "STAGE_2_FAMILY_INTERACTIVE_COMPLETE",
   "legacyMigrationRoot": "docs/locomotives/chme3",
   "canonicalLayers": {
     "common": "common",
@@ -17,27 +17,39 @@
     {
       "profileId": "chme3-base",
       "series": "ЧМЭ3",
-      "supportState": "KNOWLEDGE_FOUNDATION_COMPLETE_LEGACY_LAYOUT",
+      "supportState": "KNOWLEDGE_FOUNDATION_INTERACTIVE_COMPLETE",
+      "completedStages": ["FOUNDATION", "ATLAS_SCHEMES", "INTERACTIVE_SCHEMES", "DIAGNOSTICS", "ACCEPTANCE_FINAL_QA"],
       "sharedBase": "common",
-      "variantLayer": "chme3"
+      "variantLayer": "chme3",
+      "interactiveSchemeFile": "chme3/interactive_schemes.json"
     },
     {
       "profileId": "chme3t-rheostatic",
       "series": "ЧМЭ3Т",
-      "supportState": "KNOWLEDGE_FOUNDATION_COMPLETE_LEGACY_LAYOUT",
+      "supportState": "KNOWLEDGE_FOUNDATION_INTERACTIVE_COMPLETE",
+      "completedStages": ["FOUNDATION", "ATLAS_SCHEMES", "INTERACTIVE_SCHEMES", "DIAGNOSTICS", "ACCEPTANCE_FINAL_QA"],
       "sharedBase": "common",
-      "variantLayer": "chme3t"
+      "variantLayer": "chme3t",
+      "interactiveSchemeFile": "chme3t/interactive_schemes.json"
     },
     {
       "profileId": "chme3e-electronic",
       "series": "ЧМЭ3Э",
-      "supportState": "STAGE_2_ATLAS_SCHEMES_COMPLETE",
-      "completedStages": ["FOUNDATION", "ATLAS_SCHEMES"],
+      "supportState": "STAGE_2_ATLAS_SCHEMES_INTERACTIVE_COMPLETE",
+      "completedStages": ["FOUNDATION", "ATLAS_SCHEMES", "INTERACTIVE_SCHEMES"],
       "sharedBase": "common",
       "variantLayer": "chme3e",
+      "interactiveSchemeFile": "chme3e/interactive_schemes.json",
       "requiredBeforeIntegration": ["DIAGNOSTICS_COMPLETE", "ACCEPTANCE_FINAL_QA_COMPLETE"]
     }
   ],
+  "interactiveSchemePolicy": {
+    "contract": "common/interactive_scheme_contract.json",
+    "sharedViews": "common/interactive_shared_views.json",
+    "defaultRenderMode": "SEMANTIC_CANVAS",
+    "sourceOverlay": "OPTIONAL_REQUIRES_VERIFIED_IMAGE_MAPPING",
+    "rule": "Every supported profile must expose interactive electrical and pneumatic coverage; every directed flow endpoint must be clickable and profile-safe."
+  },
   "inheritancePolicy": {
     "commonContent": "Mechanical, diesel, fuel, oil, water, pneumatic and other content may be inherited only where applicability is explicitly confirmed for the profile.",
     "variantOverrides": "Electrical/electronic control, layout and variant-only equipment must live in the variant layer when they differ.",
