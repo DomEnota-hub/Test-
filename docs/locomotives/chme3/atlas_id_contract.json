@@ -17,7 +17,8 @@
     {"canonical":"CHME3-EQ-FUEL-PRIME-PUMP","aliases":["CHME3-EQ-FUEL-PRIMING-PUMP","fuel-priming-pump"]},
     {"canonical":"CHME3-EQ-OIL-PRIME-PUMP","aliases":["CHME3-EQ-OIL-PRIMING-PUMP","oil-priming-pump"]},
     {"canonical":"CHME3-EQ-MAIN-RESERVOIRS","aliases":["CHME3-EQ-MAIN-RESERVOIR","main-reservoir"]},
-    {"canonical":"CHME3T-EQ-BRAKE-RESISTORS","aliases":["CHME3T-EQ-BRAKING-RESISTORS","CHME3T-EQ-RHEOSTATS"]},
+    {"canonical":"CHME3-EQ-TRAIN-CONTACTORS","aliases":["CHME3-EQ-MAIN-CONTACTORS","CHME3-EQ-TRACTION-CONTACTORS","train-contactors","main-contactors"]},
+    {"canonical":"CHME3T-EQ-BRAKE-RESISTORS","aliases":["CHME3T-EQ-BRAKE-RESISTOR","CHME3T-EQ-BRAKING-RESISTORS","CHME3T-EQ-RHEOSTATS"]},
     {"canonical":"CHME3T-EQ-EDB-CONTROL","aliases":["CHME3T-EQ-RHEOSTATIC-BRAKE-CONTROL","CHME3T-EQ-DYNAMIC-BRAKE-CONTROL"]}
   ],
   "reservedEquipmentIds": [
@@ -35,6 +36,7 @@
   ],
   "notes": [
     "reservedEquipmentIds допускается создать во втором заходе как отдельные карточки, если они ещё агрегированы внутри более общей сущности.",
-    "Миграционные alias-ID существуют только для импорта/проверки и не должны отображаться пользователю."
+    "Миграционные alias-ID существуют только для импорта/проверки и не должны отображаться пользователю.",
+    "К checkpoint 2 активные файлы должны использовать canonical ID; aliases сохраняются только для миграции старых ссылок."
   ]
 }
