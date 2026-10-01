@@ -1,0 +1,4254 @@
+{
+  "schemaVersion": 1,
+  "packageId": "package-c-scheme-layout-metadata",
+  "generatedAt": "2026-10-01",
+  "sourceAsset": "technical/stepwise_scheme_flows.json",
+  "purpose": "Renderer-ready display coordinates for Package B flows. Coordinates are presentation metadata, not claims about physical equipment position or wire/pipe routing.",
+  "layoutPolicy": {
+    "coordinateSpace": {
+      "width": 1600,
+      "height": 900
+    },
+    "defaultNodeSize": {
+      "width": 190,
+      "height": 72
+    },
+    "preferExistingInteractiveHotspots": true,
+    "deterministicFallbackAllowed": true,
+    "physicalSpatialClaimAllowed": false,
+    "exactWireOrPipeRouteClaimAllowed": false
+  },
+  "statistics": {
+    "sequenceCount": 55,
+    "nodeCount": 208,
+    "layoutModes": {
+      "SOURCE_HOTSPOT_COORDINATES": 55
+    }
+  },
+  "layouts": [
+    {
+      "sequenceId": "STEP-ER-SCH-EL-BASE-POWER-HV-PATH",
+      "family": "ERMAK",
+      "domain": "ELECTRICAL",
+      "sourceSchemeRef": "ER-SCH-EL-BASE-POWER",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "base_early"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": false,
+        "notes": ""
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 1073,
+        "bottom": 246
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "HS-ER-EQ-HV-001",
+          "equipmentId": "ER-EQ-HV-001",
+          "label": "Токоприёмник",
+          "position": {
+            "x": 20,
+            "y": 20,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-HV-002",
+          "equipmentId": "ER-EQ-HV-002",
+          "label": "Дроссель помехоподавления",
+          "position": {
+            "x": 225,
+            "y": 20,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-HV-003",
+          "equipmentId": "ER-EQ-HV-003",
+          "label": "Высоковольтный разъединитель",
+          "position": {
+            "x": 430,
+            "y": 20,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-HV-004",
+          "equipmentId": "ER-EQ-HV-004",
+          "label": "Главный выключатель",
+          "position": {
+            "x": 635,
+            "y": 20,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-HV-005",
+          "equipmentId": "ER-EQ-HV-005",
+          "label": "Фильтр первичной цепи",
+          "position": {
+            "x": 840,
+            "y": 20,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-HV-006",
+          "equipmentId": "ER-EQ-HV-006",
+          "label": "Трансформатор тока первичной цепи",
+          "position": {
+            "x": 20,
+            "y": 120,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-HV-008",
+          "equipmentId": "ER-EQ-HV-008",
+          "label": "Тяговый трансформатор",
+          "position": {
+            "x": 430,
+            "y": 120,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "STEP-ER-SCH-EL-BASE-POWER-TRACTION",
+      "family": "ERMAK",
+      "domain": "ELECTRICAL",
+      "sourceSchemeRef": "ER-SCH-EL-BASE-POWER",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "base_early"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": false,
+        "notes": ""
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 0,
+        "top": 72,
+        "right": 1073,
+        "bottom": 476
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "HS-ER-EQ-HV-008",
+          "equipmentId": "ER-EQ-HV-008",
+          "label": "Тяговый трансформатор",
+          "position": {
+            "x": 430,
+            "y": 120,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-TR-001",
+          "equipmentId": "ER-EQ-TR-001",
+          "label": "Выпрямительно-инверторный преобразователь",
+          "position": {
+            "x": 20,
+            "y": 250,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-TR-003",
+          "equipmentId": "ER-EQ-TR-003",
+          "label": "Сглаживающий реактор",
+          "position": {
+            "x": 430,
+            "y": 250,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-TR-004",
+          "equipmentId": "ER-EQ-TR-004",
+          "label": "Быстродействующий выключатель ТЭД",
+          "position": {
+            "x": 635,
+            "y": 250,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-TR-006",
+          "equipmentId": "ER-EQ-TR-006",
+          "label": "Реверсивный переключатель",
+          "position": {
+            "x": 20,
+            "y": 350,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-TR-007",
+          "equipmentId": "ER-EQ-TR-007",
+          "label": "Тягово-тормозной переключатель",
+          "position": {
+            "x": 225,
+            "y": 350,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-TR-005",
+          "equipmentId": "ER-EQ-TR-005",
+          "label": "Тяговый электродвигатель",
+          "position": {
+            "x": 840,
+            "y": 250,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "STEP-ER-SCH-EL-BASE-POWER-REGENERATION",
+      "family": "ERMAK",
+      "domain": "ELECTRICAL",
+      "sourceSchemeRef": "ER-SCH-EL-BASE-POWER",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "base_early"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": false,
+        "notes": ""
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 0,
+        "top": 72,
+        "right": 1073,
+        "bottom": 476
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "HS-ER-EQ-TR-005",
+          "equipmentId": "ER-EQ-TR-005",
+          "label": "Тяговый электродвигатель",
+          "position": {
+            "x": 840,
+            "y": 250,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-TR-007",
+          "equipmentId": "ER-EQ-TR-007",
+          "label": "Тягово-тормозной переключатель",
+          "position": {
+            "x": 225,
+            "y": 350,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-TR-001",
+          "equipmentId": "ER-EQ-TR-001",
+          "label": "Выпрямительно-инверторный преобразователь",
+          "position": {
+            "x": 20,
+            "y": 250,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-HV-008",
+          "equipmentId": "ER-EQ-HV-008",
+          "label": "Тяговый трансформатор",
+          "position": {
+            "x": 430,
+            "y": 120,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "STEP-ER-SCH-EL-BASE-AUX-AUX-SUPPLY",
+      "family": "ERMAK",
+      "domain": "ELECTRICAL",
+      "sourceSchemeRef": "ER-SCH-EL-BASE-AUX",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "base_early"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": false,
+        "notes": ""
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 253,
+        "bottom": 361
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "HS-ER-EQ-HV-008",
+          "equipmentId": "ER-EQ-HV-008",
+          "label": "Тяговый трансформатор",
+          "position": {
+            "x": 20,
+            "y": 20,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-AU-001",
+          "equipmentId": "ER-EQ-AU-001",
+          "label": "Обмотка собственных нужд тягового трансформатора",
+          "position": {
+            "x": 20,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-AU-006",
+          "equipmentId": "ER-EQ-AU-006",
+          "label": "Преобразователь частоты и числа фаз",
+          "position": {
+            "x": 20,
+            "y": 235,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "STEP-ER-SCH-EL-BASE-AUX-COOLING",
+      "family": "ERMAK",
+      "domain": "ELECTRICAL",
+      "sourceSchemeRef": "ER-SCH-EL-BASE-AUX",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "base_early"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": false,
+        "notes": ""
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 1073,
+        "bottom": 261
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "HS-ER-EQ-HV-008",
+          "equipmentId": "ER-EQ-HV-008",
+          "label": "Тяговый трансформатор",
+          "position": {
+            "x": 20,
+            "y": 20,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-AU-001",
+          "equipmentId": "ER-EQ-AU-001",
+          "label": "Обмотка собственных нужд тягового трансформатора",
+          "position": {
+            "x": 20,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-AU-002",
+          "equipmentId": "ER-EQ-AU-002",
+          "label": "Вентиляторы охлаждения ТЭД",
+          "position": {
+            "x": 225,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-AU-004",
+          "equipmentId": "ER-EQ-AU-004",
+          "label": "Электронасос охлаждения тягового трансформатора",
+          "position": {
+            "x": 635,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-AU-005",
+          "equipmentId": "ER-EQ-AU-005",
+          "label": "Вентилятор блока балластных резисторов",
+          "position": {
+            "x": 840,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "STEP-ER-SCH-EL-BASE-AUX-COMPRESSOR",
+      "family": "ERMAK",
+      "domain": "ELECTRICAL",
+      "sourceSchemeRef": "ER-SCH-EL-BASE-AUX",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "base_early"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": false,
+        "notes": ""
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 458,
+        "bottom": 361
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "HS-ER-EQ-HV-008",
+          "equipmentId": "ER-EQ-HV-008",
+          "label": "Тяговый трансформатор",
+          "position": {
+            "x": 20,
+            "y": 20,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-AU-001",
+          "equipmentId": "ER-EQ-AU-001",
+          "label": "Обмотка собственных нужд тягового трансформатора",
+          "position": {
+            "x": 20,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-AU-007",
+          "equipmentId": "ER-EQ-AU-007",
+          "label": "Блок мотор-компрессора",
+          "position": {
+            "x": 225,
+            "y": 235,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "STEP-ER-SCH-EL-BASE-CONTROL-CONTROL-POWER",
+      "family": "ERMAK",
+      "domain": "ELECTRICAL",
+      "sourceSchemeRef": "ER-SCH-EL-BASE-CONTROL",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "base_early"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": false,
+        "notes": ""
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 1073,
+        "bottom": 246
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "HS-ER-EQ-CT-006",
+          "equipmentId": "ER-EQ-CT-006",
+          "label": "Аккумуляторная батарея",
+          "position": {
+            "x": 20,
+            "y": 120,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-CT-005",
+          "equipmentId": "ER-EQ-CT-005",
+          "label": "Шкаф питания цепей управления",
+          "position": {
+            "x": 840,
+            "y": 20,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-CT-001",
+          "equipmentId": "ER-EQ-CT-001",
+          "label": "МСУД-Н",
+          "position": {
+            "x": 20,
+            "y": 20,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-CT-002",
+          "equipmentId": "ER-EQ-CT-002",
+          "label": "Блок управления МСУД-Н",
+          "position": {
+            "x": 225,
+            "y": 20,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "STEP-ER-SCH-EL-BASE-CONTROL-DRIVER-COMMAND",
+      "family": "ERMAK",
+      "domain": "ELECTRICAL",
+      "sourceSchemeRef": "ER-SCH-EL-BASE-CONTROL",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "base_early"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": false,
+        "notes": ""
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 663,
+        "bottom": 246
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "HS-ER-EQ-CT-007",
+          "equipmentId": "ER-EQ-CT-007",
+          "label": "Контроллер машиниста",
+          "position": {
+            "x": 225,
+            "y": 120,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-CT-001",
+          "equipmentId": "ER-EQ-CT-001",
+          "label": "МСУД-Н",
+          "position": {
+            "x": 20,
+            "y": 20,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-CT-008",
+          "equipmentId": "ER-EQ-CT-008",
+          "label": "Межсекционная линия управления и диагностики",
+          "position": {
+            "x": 430,
+            "y": 120,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "STEP-ER-SCH-EL-AXLE-MODERN-AXLE-CONTROL",
+      "family": "ERMAK",
+      "domain": "ELECTRICAL",
+      "sourceSchemeRef": "ER-SCH-EL-AXLE-MODERN",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "traction_axle_control_modern",
+          "msud_015_extended"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": true,
+        "notes": "Не является полной монтажной схемой позднего исполнения."
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 458,
+        "bottom": 261
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "HS-ER-EQ-CT-007",
+          "equipmentId": "ER-EQ-CT-007",
+          "label": "Контроллер машиниста",
+          "position": {
+            "x": 225,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-CT-009",
+          "equipmentId": "ER-EQ-CT-009",
+          "label": "МСУД-015",
+          "position": {
+            "x": 20,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-TR-013",
+          "equipmentId": "ER-EQ-TR-013",
+          "label": "Поосный канал регулирования тяги",
+          "position": {
+            "x": 20,
+            "y": 20,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-TR-005",
+          "equipmentId": "ER-EQ-TR-005",
+          "label": "Тяговый электродвигатель",
+          "position": {
+            "x": 225,
+            "y": 20,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "STEP-ER-SCH-EL-AXLE-MODERN-FEEDBACK",
+      "family": "ERMAK",
+      "domain": "ELECTRICAL",
+      "sourceSchemeRef": "ER-SCH-EL-AXLE-MODERN",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "traction_axle_control_modern",
+          "msud_015_extended"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": true,
+        "notes": "Не является полной монтажной схемой позднего исполнения."
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 253,
+        "bottom": 491
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "HS-ER-EQ-MC-006",
+          "equipmentId": "ER-EQ-MC-006",
+          "label": "Датчик скорости колёсной пары",
+          "position": {
+            "x": 20,
+            "y": 365,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-CT-009",
+          "equipmentId": "ER-EQ-CT-009",
+          "label": "МСУД-015",
+          "position": {
+            "x": 20,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-TR-013",
+          "equipmentId": "ER-EQ-TR-013",
+          "label": "Поосный канал регулирования тяги",
+          "position": {
+            "x": 20,
+            "y": 20,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "STEP-ER-SCH-EL-MSUD015-COMMAND",
+      "family": "ERMAK",
+      "domain": "ELECTRICAL",
+      "sourceSchemeRef": "ER-SCH-EL-MSUD015",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "msud_015_extended",
+          "traction_axle_control_modern"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": true,
+        "notes": "Внутренняя блок-схема и версии ПО не домысливаются."
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 458,
+        "bottom": 261
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "HS-ER-EQ-CT-007",
+          "equipmentId": "ER-EQ-CT-007",
+          "label": "Контроллер машиниста",
+          "position": {
+            "x": 225,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-CT-009",
+          "equipmentId": "ER-EQ-CT-009",
+          "label": "МСУД-015",
+          "position": {
+            "x": 20,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-TR-013",
+          "equipmentId": "ER-EQ-TR-013",
+          "label": "Поосный канал регулирования тяги",
+          "position": {
+            "x": 20,
+            "y": 20,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "STEP-ER-SCH-EL-MSUD015-FEEDBACK",
+      "family": "ERMAK",
+      "domain": "ELECTRICAL",
+      "sourceSchemeRef": "ER-SCH-EL-MSUD015",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "msud_015_extended",
+          "traction_axle_control_modern"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": true,
+        "notes": "Внутренняя блок-схема и версии ПО не домысливаются."
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 458,
+        "bottom": 376
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "HS-ER-EQ-TR-011",
+          "equipmentId": "ER-EQ-TR-011",
+          "label": "Датчик тока тяговой цепи",
+          "position": {
+            "x": 225,
+            "y": 20,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-MC-006",
+          "equipmentId": "ER-EQ-MC-006",
+          "label": "Датчик скорости колёсной пары",
+          "position": {
+            "x": 20,
+            "y": 250,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-CT-009",
+          "equipmentId": "ER-EQ-CT-009",
+          "label": "МСУД-015",
+          "position": {
+            "x": 20,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "STEP-ER-SCH-SAFETY-BASE-SAFETY-CONTROL",
+      "family": "ERMAK",
+      "domain": "ELECTRICAL",
+      "sourceSchemeRef": "ER-SCH-SAFETY-BASE",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "base_early"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": false,
+        "notes": ""
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 868,
+        "bottom": 361
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "HS-ER-EQ-SF-007",
+          "equipmentId": "ER-EQ-SF-007",
+          "label": "Приёмные катушки локомотивной сигнализации",
+          "position": {
+            "x": 225,
+            "y": 235,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-SF-001",
+          "equipmentId": "ER-EQ-SF-001",
+          "label": "КЛУБ-У",
+          "position": {
+            "x": 20,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-SF-004",
+          "equipmentId": "ER-EQ-SF-004",
+          "label": "САУТ-ЦМ/485",
+          "position": {
+            "x": 635,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-BR-012",
+          "equipmentId": "ER-EQ-BR-012",
+          "label": "Электропневматический клапан автостопа",
+          "position": {
+            "x": 225,
+            "y": 20,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "STEP-ER-SCH-SAFETY-BLOK-BLOK-BRAKE",
+      "family": "ERMAK",
+      "domain": "ELECTRICAL",
+      "sourceSchemeRef": "ER-SCH-SAFETY-BLOK",
+      "applicability": {
+        "models": [
+          "2ES5K"
+        ],
+        "includeProfiles": [
+          "safety_blok_confirmed_2es5k"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": true,
+        "notes": "Не переносить на 3ЭС5К и на все 2ЭС5К без подтверждения."
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 253,
+        "bottom": 261
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "HS-ER-EQ-SF-010",
+          "equipmentId": "ER-EQ-SF-010",
+          "label": "БЛОК / БЛОК-М",
+          "position": {
+            "x": 20,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-BR-012",
+          "equipmentId": "ER-EQ-BR-012",
+          "label": "Электропневматический клапан автостопа",
+          "position": {
+            "x": 20,
+            "y": 20,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "STEP-ER-SCH-FIRE-BASE-FIRE-DETECT",
+      "family": "ERMAK",
+      "domain": "ELECTRICAL",
+      "sourceSchemeRef": "ER-SCH-FIRE-BASE",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "base_early"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": false,
+        "notes": ""
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 0,
+        "top": 87,
+        "right": 868,
+        "bottom": 261
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "HS-ER-EQ-FR-002",
+          "equipmentId": "ER-EQ-FR-002",
+          "label": "Пожарные извещатели",
+          "position": {
+            "x": 225,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-FR-004",
+          "equipmentId": "ER-EQ-FR-004",
+          "label": "Приёмно-контрольный прибор пожарной системы",
+          "position": {
+            "x": 635,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-FR-001",
+          "equipmentId": "ER-EQ-FR-001",
+          "label": "КТС-УАСП",
+          "position": {
+            "x": 20,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "STEP-ER-SCH-FIRE-BASE-FIRE-SUPPRESS",
+      "family": "ERMAK",
+      "domain": "ELECTRICAL",
+      "sourceSchemeRef": "ER-SCH-FIRE-BASE",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "base_early"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": false,
+        "notes": ""
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 0,
+        "top": 87,
+        "right": 663,
+        "bottom": 261
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "HS-ER-EQ-FR-001",
+          "equipmentId": "ER-EQ-FR-001",
+          "label": "КТС-УАСП",
+          "position": {
+            "x": 20,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-FR-003",
+          "equipmentId": "ER-EQ-FR-003",
+          "label": "Генераторы огнетушащего аэрозоля",
+          "position": {
+            "x": 430,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "STEP-ER-SCH-PN-2ES5K-BASE-AIR-SUPPLY",
+      "family": "ERMAK",
+      "domain": "PNEUMATIC",
+      "sourceSchemeRef": "ER-SCH-PN-2ES5K-BASE",
+      "applicability": {
+        "models": [
+          "2ES5K"
+        ],
+        "includeProfiles": [
+          "base_early"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": true,
+        "notes": "Тормозной приборный слой выбирается отдельно."
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 1073,
+        "bottom": 361
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "HS-ER-EQ-AU-007",
+          "equipmentId": "ER-EQ-AU-007",
+          "label": "Блок мотор-компрессора",
+          "position": {
+            "x": 20,
+            "y": 20,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-PN-005",
+          "equipmentId": "ER-EQ-PN-005",
+          "label": "Обратный клапан компрессора",
+          "position": {
+            "x": 840,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-PN-007",
+          "equipmentId": "ER-EQ-PN-007",
+          "label": "Маслоотделители пневмосистемы",
+          "position": {
+            "x": 225,
+            "y": 235,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-PN-001",
+          "equipmentId": "ER-EQ-PN-001",
+          "label": "Группа главных резервуаров",
+          "position": {
+            "x": 20,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-PN-002",
+          "equipmentId": "ER-EQ-PN-002",
+          "label": "Питательная магистраль",
+          "position": {
+            "x": 225,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "STEP-ER-SCH-PN-2ES5K-BASE-PANTOGRAPH-GV",
+      "family": "ERMAK",
+      "domain": "PNEUMATIC",
+      "sourceSchemeRef": "ER-SCH-PN-2ES5K-BASE",
+      "applicability": {
+        "models": [
+          "2ES5K"
+        ],
+        "includeProfiles": [
+          "base_early"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": true,
+        "notes": "Тормозной приборный слой выбирается отдельно."
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 1073,
+        "bottom": 461
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "HS-ER-EQ-AU-008",
+          "equipmentId": "ER-EQ-AU-008",
+          "label": "Вспомогательный компрессор с электроприводом",
+          "position": {
+            "x": 225,
+            "y": 20,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-PN-010",
+          "equipmentId": "ER-EQ-PN-010",
+          "label": "Магистраль токоприёмника и главного выключателя",
+          "position": {
+            "x": 840,
+            "y": 235,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-PN-011",
+          "equipmentId": "ER-EQ-PN-011",
+          "label": "Клапан токоприёмника",
+          "position": {
+            "x": 20,
+            "y": 335,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "STEP-ER-SCH-PN-3ES5K-BASE-AIR-SUPPLY",
+      "family": "ERMAK",
+      "domain": "PNEUMATIC",
+      "sourceSchemeRef": "ER-SCH-PN-3ES5K-BASE",
+      "applicability": {
+        "models": [
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "base_early"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": true,
+        "notes": "Тормозной приборный слой выбирается отдельно."
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 1073,
+        "bottom": 361
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "HS-ER-EQ-AU-007",
+          "equipmentId": "ER-EQ-AU-007",
+          "label": "Блок мотор-компрессора",
+          "position": {
+            "x": 20,
+            "y": 20,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-PN-005",
+          "equipmentId": "ER-EQ-PN-005",
+          "label": "Обратный клапан компрессора",
+          "position": {
+            "x": 840,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-PN-007",
+          "equipmentId": "ER-EQ-PN-007",
+          "label": "Маслоотделители пневмосистемы",
+          "position": {
+            "x": 225,
+            "y": 235,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-PN-001",
+          "equipmentId": "ER-EQ-PN-001",
+          "label": "Группа главных резервуаров",
+          "position": {
+            "x": 20,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-PN-002",
+          "equipmentId": "ER-EQ-PN-002",
+          "label": "Питательная магистраль",
+          "position": {
+            "x": 225,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "STEP-ER-SCH-PN-3ES5K-BASE-PANTOGRAPH-GV",
+      "family": "ERMAK",
+      "domain": "PNEUMATIC",
+      "sourceSchemeRef": "ER-SCH-PN-3ES5K-BASE",
+      "applicability": {
+        "models": [
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "base_early"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": true,
+        "notes": "Тормозной приборный слой выбирается отдельно."
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 1073,
+        "bottom": 461
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "HS-ER-EQ-AU-008",
+          "equipmentId": "ER-EQ-AU-008",
+          "label": "Вспомогательный компрессор с электроприводом",
+          "position": {
+            "x": 225,
+            "y": 20,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-PN-010",
+          "equipmentId": "ER-EQ-PN-010",
+          "label": "Магистраль токоприёмника и главного выключателя",
+          "position": {
+            "x": 840,
+            "y": 235,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-PN-011",
+          "equipmentId": "ER-EQ-PN-011",
+          "label": "Клапан токоприёмника",
+          "position": {
+            "x": 20,
+            "y": 335,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "STEP-ER-SCH-PN-BRAKE-395-CHARGING",
+      "family": "ERMAK",
+      "domain": "PNEUMATIC",
+      "sourceSchemeRef": "ER-SCH-PN-BRAKE-395",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "brake_395"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": true,
+        "notes": ""
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 868,
+        "bottom": 261
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "HS-ER-EQ-PN-001",
+          "equipmentId": "ER-EQ-PN-001",
+          "label": "Группа главных резервуаров",
+          "position": {
+            "x": 20,
+            "y": 20,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-PN-002",
+          "equipmentId": "ER-EQ-PN-002",
+          "label": "Питательная магистраль",
+          "position": {
+            "x": 225,
+            "y": 20,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-BR-014",
+          "equipmentId": "ER-EQ-BR-014",
+          "label": "Кран машиниста №395",
+          "position": {
+            "x": 20,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-BR-001",
+          "equipmentId": "ER-EQ-BR-001",
+          "label": "Тормозная магистраль",
+          "position": {
+            "x": 225,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-BR-004",
+          "equipmentId": "ER-EQ-BR-004",
+          "label": "Воздухораспределитель грузового типа",
+          "position": {
+            "x": 635,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "STEP-ER-SCH-PN-BRAKE-395-SERVICE-BRAKE",
+      "family": "ERMAK",
+      "domain": "PNEUMATIC",
+      "sourceSchemeRef": "ER-SCH-PN-BRAKE-395",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "brake_395"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": true,
+        "notes": ""
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 0,
+        "top": 87,
+        "right": 1073,
+        "bottom": 361
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "HS-ER-EQ-BR-014",
+          "equipmentId": "ER-EQ-BR-014",
+          "label": "Кран машиниста №395",
+          "position": {
+            "x": 20,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-BR-001",
+          "equipmentId": "ER-EQ-BR-001",
+          "label": "Тормозная магистраль",
+          "position": {
+            "x": 225,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-BR-004",
+          "equipmentId": "ER-EQ-BR-004",
+          "label": "Воздухораспределитель грузового типа",
+          "position": {
+            "x": 635,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-BR-005",
+          "equipmentId": "ER-EQ-BR-005",
+          "label": "Реле давления тормозных цилиндров",
+          "position": {
+            "x": 840,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-BR-006",
+          "equipmentId": "ER-EQ-BR-006",
+          "label": "Тормозные цилиндры",
+          "position": {
+            "x": 20,
+            "y": 235,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "STEP-ER-SCH-PN-BRAKE-395-ELECTRIC-SUBSTITUTION",
+      "family": "ERMAK",
+      "domain": "PNEUMATIC",
+      "sourceSchemeRef": "ER-SCH-PN-BRAKE-395",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "brake_395"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": true,
+        "notes": ""
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 0,
+        "top": 87,
+        "right": 1073,
+        "bottom": 461
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "HS-ER-EQ-BR-013",
+          "equipmentId": "ER-EQ-BR-013",
+          "label": "Клапан замещения электрического тормоза",
+          "position": {
+            "x": 225,
+            "y": 335,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-BR-005",
+          "equipmentId": "ER-EQ-BR-005",
+          "label": "Реле давления тормозных цилиндров",
+          "position": {
+            "x": 840,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-BR-006",
+          "equipmentId": "ER-EQ-BR-006",
+          "label": "Тормозные цилиндры",
+          "position": {
+            "x": 20,
+            "y": 235,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "STEP-ER-SCH-PN-BRAKE-130-REMOTE-BRAKE",
+      "family": "ERMAK",
+      "domain": "PNEUMATIC",
+      "sourceSchemeRef": "ER-SCH-PN-BRAKE-130",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "brake_130_uktol",
+          "base_remote_brake_control"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": true,
+        "notes": ""
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 0,
+        "top": 87,
+        "right": 868,
+        "bottom": 261
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "HS-ER-EQ-BR-008",
+          "equipmentId": "ER-EQ-BR-008",
+          "label": "Контроллер крана машиниста дистанционного управления",
+          "position": {
+            "x": 225,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-BR-003",
+          "equipmentId": "ER-EQ-BR-003",
+          "label": "Блок электропневматических приборов",
+          "position": {
+            "x": 20,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-BR-015",
+          "equipmentId": "ER-EQ-BR-015",
+          "label": "УКТОЛ с краном №130/130-2",
+          "position": {
+            "x": 430,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-BR-001",
+          "equipmentId": "ER-EQ-BR-001",
+          "label": "Тормозная магистраль",
+          "position": {
+            "x": 635,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "STEP-ER-SCH-PN-BRAKE-130-SERVICE-BRAKE",
+      "family": "ERMAK",
+      "domain": "PNEUMATIC",
+      "sourceSchemeRef": "ER-SCH-PN-BRAKE-130",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "brake_130_uktol",
+          "base_remote_brake_control"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": true,
+        "notes": ""
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 0,
+        "top": 87,
+        "right": 868,
+        "bottom": 361
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "HS-ER-EQ-BR-015",
+          "equipmentId": "ER-EQ-BR-015",
+          "label": "УКТОЛ с краном №130/130-2",
+          "position": {
+            "x": 430,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-BR-001",
+          "equipmentId": "ER-EQ-BR-001",
+          "label": "Тормозная магистраль",
+          "position": {
+            "x": 635,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-BR-004",
+          "equipmentId": "ER-EQ-BR-004",
+          "label": "Воздухораспределитель грузового типа",
+          "position": {
+            "x": 20,
+            "y": 235,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-BR-005",
+          "equipmentId": "ER-EQ-BR-005",
+          "label": "Реле давления тормозных цилиндров",
+          "position": {
+            "x": 225,
+            "y": 235,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-BR-006",
+          "equipmentId": "ER-EQ-BR-006",
+          "label": "Тормозные цилиндры",
+          "position": {
+            "x": 430,
+            "y": 235,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "STEP-ER-SCH-PN-BRAKE-130-2-REMOTE-BRAKE",
+      "family": "ERMAK",
+      "domain": "PNEUMATIC",
+      "sourceSchemeRef": "ER-SCH-PN-BRAKE-130-2",
+      "applicability": {
+        "models": [
+          "2ES5K"
+        ],
+        "includeProfiles": [
+          "brake_130_2_uktol"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": true,
+        "notes": "Не объединять с №130."
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 0,
+        "top": 87,
+        "right": 1073,
+        "bottom": 361
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "HS-ER-EQ-BR-015",
+          "equipmentId": "ER-EQ-BR-015",
+          "label": "УКТОЛ с краном №130/130-2",
+          "position": {
+            "x": 20,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-BR-001",
+          "equipmentId": "ER-EQ-BR-001",
+          "label": "Тормозная магистраль",
+          "position": {
+            "x": 225,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-BR-004",
+          "equipmentId": "ER-EQ-BR-004",
+          "label": "Воздухораспределитель грузового типа",
+          "position": {
+            "x": 635,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-BR-005",
+          "equipmentId": "ER-EQ-BR-005",
+          "label": "Реле давления тормозных цилиндров",
+          "position": {
+            "x": 840,
+            "y": 135,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "HS-ER-EQ-BR-006",
+          "equipmentId": "ER-EQ-BR-006",
+          "label": "Тормозные цилиндры",
+          "position": {
+            "x": 20,
+            "y": 235,
+            "width": 185,
+            "height": 78
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "CHME3-STEP-TRACTION-CURRENT",
+      "family": "CHME3",
+      "domain": "ELECTRICAL",
+      "sourceSchemeRef": "CHME3-SCH-TRACTION",
+      "applicability": {
+        "families": [
+          "CHME3"
+        ],
+        "profileIds": [
+          "chme3-base"
+        ],
+        "selectionRequired": false
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 342,
+        "top": 312,
+        "right": 1600,
+        "bottom": 484
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "CHME3-EQ-TRACTION-GENERATOR",
+          "equipmentId": "CHME3-EQ-TRACTION-GENERATOR",
+          "label": "Тяговый генератор",
+          "position": {
+            "x": 390,
+            "y": 360,
+            "width": 220,
+            "height": 76
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-TRAIN-CONTACTORS",
+          "equipmentId": "CHME3-EQ-TRAIN-CONTACTORS",
+          "label": "Поездные контакторы",
+          "position": {
+            "x": 760,
+            "y": 360,
+            "width": 230,
+            "height": 76
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-REVERSER",
+          "equipmentId": "CHME3-EQ-REVERSER",
+          "label": "Реверсор",
+          "position": {
+            "x": 1110,
+            "y": 360,
+            "width": 180,
+            "height": 76
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-TRACTION-MOTORS",
+          "equipmentId": "CHME3-EQ-TRACTION-MOTORS",
+          "label": "Тяговые двигатели",
+          "position": {
+            "x": 1370,
+            "y": 360,
+            "width": 190,
+            "height": 76
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "CHME3-STEP-TRACTION-EXCITATION",
+      "family": "CHME3",
+      "domain": "ELECTRICAL",
+      "sourceSchemeRef": "CHME3-SCH-TRACTION",
+      "applicability": {
+        "families": [
+          "CHME3"
+        ],
+        "profileIds": [
+          "chme3-base"
+        ],
+        "selectionRequired": false
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 342,
+        "top": 112,
+        "right": 658,
+        "bottom": 484
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "CHME3-EQ-EXCITER",
+          "equipmentId": "CHME3-EQ-EXCITER",
+          "label": "Возбудитель",
+          "position": {
+            "x": 390,
+            "y": 160,
+            "width": 190,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-TRACTION-GENERATOR",
+          "equipmentId": "CHME3-EQ-TRACTION-GENERATOR",
+          "label": "Тяговый генератор",
+          "position": {
+            "x": 390,
+            "y": 360,
+            "width": 220,
+            "height": 76
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "CHME3-STEP-CONTROL-POWER",
+      "family": "CHME3",
+      "domain": "ELECTRICAL",
+      "sourceSchemeRef": "CHME3-SCH-CONTROL",
+      "applicability": {
+        "families": [
+          "CHME3"
+        ],
+        "profileIds": [
+          "chme3-base"
+        ],
+        "selectionRequired": false
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 32,
+        "top": 132,
+        "right": 1398,
+        "bottom": 656
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "CHME3-EQ-BATTERY",
+          "equipmentId": "CHME3-EQ-BATTERY",
+          "label": "АКБ",
+          "position": {
+            "x": 80,
+            "y": 180,
+            "width": 170,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-BATTERY-SWITCH",
+          "equipmentId": "CHME3-EQ-BATTERY-SWITCH",
+          "label": "Рубильник АКБ",
+          "position": {
+            "x": 350,
+            "y": 180,
+            "width": 190,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-GOVERNOR-SERVOMOTOR",
+          "equipmentId": "CHME3-EQ-GOVERNOR-SERVOMOTOR",
+          "label": "Сервомотор регулятора",
+          "position": {
+            "x": 440,
+            "y": 540,
+            "width": 230,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-GOVERNOR",
+          "equipmentId": "CHME3-EQ-GOVERNOR",
+          "label": "Регулятор дизеля",
+          "position": {
+            "x": 790,
+            "y": 540,
+            "width": 210,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-TRAIN-CONTACTORS",
+          "equipmentId": "CHME3-EQ-TRAIN-CONTACTORS",
+          "label": "Поездные контакторы",
+          "position": {
+            "x": 1120,
+            "y": 540,
+            "width": 230,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "CHME3T-STEP-TRACTION-CURRENT",
+      "family": "CHME3T",
+      "domain": "ELECTRICAL",
+      "sourceSchemeRef": "CHME3-SCH-TRACTION",
+      "applicability": {
+        "families": [
+          "CHME3T"
+        ],
+        "profileIds": [
+          "chme3t-rheostatic"
+        ],
+        "selectionRequired": true
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 342,
+        "top": 312,
+        "right": 1600,
+        "bottom": 484
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "CHME3-EQ-TRACTION-GENERATOR",
+          "equipmentId": "CHME3-EQ-TRACTION-GENERATOR",
+          "label": "Тяговый генератор",
+          "position": {
+            "x": 390,
+            "y": 360,
+            "width": 220,
+            "height": 76
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-TRAIN-CONTACTORS",
+          "equipmentId": "CHME3-EQ-TRAIN-CONTACTORS",
+          "label": "Поездные контакторы",
+          "position": {
+            "x": 760,
+            "y": 360,
+            "width": 230,
+            "height": 76
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-REVERSER",
+          "equipmentId": "CHME3-EQ-REVERSER",
+          "label": "Реверсор",
+          "position": {
+            "x": 1110,
+            "y": 360,
+            "width": 180,
+            "height": 76
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-TRACTION-MOTORS",
+          "equipmentId": "CHME3-EQ-TRACTION-MOTORS",
+          "label": "Тяговые двигатели",
+          "position": {
+            "x": 1370,
+            "y": 360,
+            "width": 190,
+            "height": 76
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "CHME3T-STEP-TRACTION-EXCITATION",
+      "family": "CHME3T",
+      "domain": "ELECTRICAL",
+      "sourceSchemeRef": "CHME3-SCH-TRACTION",
+      "applicability": {
+        "families": [
+          "CHME3T"
+        ],
+        "profileIds": [
+          "chme3t-rheostatic"
+        ],
+        "selectionRequired": true
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 342,
+        "top": 112,
+        "right": 658,
+        "bottom": 484
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "CHME3-EQ-EXCITER",
+          "equipmentId": "CHME3-EQ-EXCITER",
+          "label": "Возбудитель",
+          "position": {
+            "x": 390,
+            "y": 160,
+            "width": 190,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-TRACTION-GENERATOR",
+          "equipmentId": "CHME3-EQ-TRACTION-GENERATOR",
+          "label": "Тяговый генератор",
+          "position": {
+            "x": 390,
+            "y": 360,
+            "width": 220,
+            "height": 76
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "CHME3T-STEP-CONTROL-POWER",
+      "family": "CHME3T",
+      "domain": "ELECTRICAL",
+      "sourceSchemeRef": "CHME3-SCH-CONTROL",
+      "applicability": {
+        "families": [
+          "CHME3T"
+        ],
+        "profileIds": [
+          "chme3t-rheostatic"
+        ],
+        "selectionRequired": true
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 32,
+        "top": 132,
+        "right": 1398,
+        "bottom": 656
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "CHME3-EQ-BATTERY",
+          "equipmentId": "CHME3-EQ-BATTERY",
+          "label": "АКБ",
+          "position": {
+            "x": 80,
+            "y": 180,
+            "width": 170,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-BATTERY-SWITCH",
+          "equipmentId": "CHME3-EQ-BATTERY-SWITCH",
+          "label": "Рубильник АКБ",
+          "position": {
+            "x": 350,
+            "y": 180,
+            "width": 190,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-GOVERNOR-SERVOMOTOR",
+          "equipmentId": "CHME3-EQ-GOVERNOR-SERVOMOTOR",
+          "label": "Сервомотор регулятора",
+          "position": {
+            "x": 440,
+            "y": 540,
+            "width": 230,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-GOVERNOR",
+          "equipmentId": "CHME3-EQ-GOVERNOR",
+          "label": "Регулятор дизеля",
+          "position": {
+            "x": 790,
+            "y": 540,
+            "width": 210,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-TRAIN-CONTACTORS",
+          "equipmentId": "CHME3-EQ-TRAIN-CONTACTORS",
+          "label": "Поездные контакторы",
+          "position": {
+            "x": 1120,
+            "y": 540,
+            "width": 230,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "CHME3-STEP-PNEUMATIC-AIR-SUPPLY",
+      "family": "CHME3",
+      "domain": "PNEUMATIC",
+      "sourceSchemeRef": "CHME3-SCH-PNEUMATIC",
+      "applicability": {
+        "families": [
+          "CHME3"
+        ],
+        "profileIds": [
+          "chme3-base"
+        ],
+        "selectionRequired": false
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 22,
+        "top": 122,
+        "right": 1368,
+        "bottom": 396
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "CHME3-EQ-COMPRESSOR",
+          "equipmentId": "CHME3-EQ-COMPRESSOR",
+          "label": "Компрессор",
+          "position": {
+            "x": 70,
+            "y": 170,
+            "width": 180,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-INTERCOOLER",
+          "equipmentId": "CHME3-EQ-INTERCOOLER",
+          "label": "Холодильник",
+          "position": {
+            "x": 320,
+            "y": 170,
+            "width": 180,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-MAIN-RESERVOIRS",
+          "equipmentId": "CHME3-EQ-MAIN-RESERVOIRS",
+          "label": "Главные резервуары",
+          "position": {
+            "x": 840,
+            "y": 170,
+            "width": 220,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-DRIVER-BRAKE-VALVE",
+          "equipmentId": "CHME3-EQ-DRIVER-BRAKE-VALVE",
+          "label": "Кран машиниста",
+          "position": {
+            "x": 1130,
+            "y": 280,
+            "width": 190,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "CHME3-STEP-PNEUMATIC-AUTO-BRAKE",
+      "family": "CHME3",
+      "domain": "PNEUMATIC",
+      "sourceSchemeRef": "CHME3-SCH-PNEUMATIC",
+      "applicability": {
+        "families": [
+          "CHME3"
+        ],
+        "profileIds": [
+          "chme3-base"
+        ],
+        "selectionRequired": false
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 1082,
+        "top": 232,
+        "right": 1458,
+        "bottom": 766
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "CHME3-EQ-DRIVER-BRAKE-VALVE",
+          "equipmentId": "CHME3-EQ-DRIVER-BRAKE-VALVE",
+          "label": "Кран машиниста",
+          "position": {
+            "x": 1130,
+            "y": 280,
+            "width": 190,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-AIR-DISTRIBUTOR",
+          "equipmentId": "CHME3-EQ-AIR-DISTRIBUTOR",
+          "label": "Воздухораспределитель",
+          "position": {
+            "x": 1130,
+            "y": 470,
+            "width": 210,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-BRAKE-CYLINDERS",
+          "equipmentId": "CHME3-EQ-BRAKE-CYLINDERS",
+          "label": "Тормозные цилиндры",
+          "position": {
+            "x": 1190,
+            "y": 650,
+            "width": 220,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "CHME3-STEP-PNEUMATIC-INDEPENDENT-BRAKE",
+      "family": "CHME3",
+      "domain": "PNEUMATIC",
+      "sourceSchemeRef": "CHME3-SCH-PNEUMATIC",
+      "applicability": {
+        "families": [
+          "CHME3"
+        ],
+        "profileIds": [
+          "chme3-base"
+        ],
+        "selectionRequired": false
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 772,
+        "top": 552,
+        "right": 1458,
+        "bottom": 766
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "CHME3-EQ-AUX-BRAKE-VALVE",
+          "equipmentId": "CHME3-EQ-AUX-BRAKE-VALVE",
+          "label": "Кран вспом. тормоза",
+          "position": {
+            "x": 820,
+            "y": 600,
+            "width": 220,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-BRAKE-CYLINDERS",
+          "equipmentId": "CHME3-EQ-BRAKE-CYLINDERS",
+          "label": "Тормозные цилиндры",
+          "position": {
+            "x": 1190,
+            "y": 650,
+            "width": 220,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "CHME3-STEP-PNEUMATIC-COMPRESSOR-CONTROL",
+      "family": "CHME3",
+      "domain": "PNEUMATIC",
+      "sourceSchemeRef": "CHME3-SCH-PNEUMATIC",
+      "applicability": {
+        "families": [
+          "CHME3"
+        ],
+        "profileIds": [
+          "chme3-base"
+        ],
+        "selectionRequired": false
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 22,
+        "top": 12,
+        "right": 518,
+        "bottom": 286
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "CHME3-EQ-PRESSURE-GOV",
+          "equipmentId": "CHME3-EQ-PRESSURE-GOV",
+          "label": "Регулятор давления",
+          "position": {
+            "x": 260,
+            "y": 60,
+            "width": 210,
+            "height": 64
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-COMPRESSOR",
+          "equipmentId": "CHME3-EQ-COMPRESSOR",
+          "label": "Компрессор",
+          "position": {
+            "x": 70,
+            "y": 170,
+            "width": 180,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "CHME3T-STEP-PNEUMATIC-AIR-SUPPLY",
+      "family": "CHME3T",
+      "domain": "PNEUMATIC",
+      "sourceSchemeRef": "CHME3-SCH-PNEUMATIC",
+      "applicability": {
+        "families": [
+          "CHME3T"
+        ],
+        "profileIds": [
+          "chme3t-rheostatic"
+        ],
+        "selectionRequired": true
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 22,
+        "top": 122,
+        "right": 1368,
+        "bottom": 396
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "CHME3-EQ-COMPRESSOR",
+          "equipmentId": "CHME3-EQ-COMPRESSOR",
+          "label": "Компрессор",
+          "position": {
+            "x": 70,
+            "y": 170,
+            "width": 180,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-INTERCOOLER",
+          "equipmentId": "CHME3-EQ-INTERCOOLER",
+          "label": "Холодильник",
+          "position": {
+            "x": 320,
+            "y": 170,
+            "width": 180,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-MAIN-RESERVOIRS",
+          "equipmentId": "CHME3-EQ-MAIN-RESERVOIRS",
+          "label": "Главные резервуары",
+          "position": {
+            "x": 840,
+            "y": 170,
+            "width": 220,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-DRIVER-BRAKE-VALVE",
+          "equipmentId": "CHME3-EQ-DRIVER-BRAKE-VALVE",
+          "label": "Кран машиниста",
+          "position": {
+            "x": 1130,
+            "y": 280,
+            "width": 190,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "CHME3T-STEP-PNEUMATIC-AUTO-BRAKE",
+      "family": "CHME3T",
+      "domain": "PNEUMATIC",
+      "sourceSchemeRef": "CHME3-SCH-PNEUMATIC",
+      "applicability": {
+        "families": [
+          "CHME3T"
+        ],
+        "profileIds": [
+          "chme3t-rheostatic"
+        ],
+        "selectionRequired": true
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 1082,
+        "top": 232,
+        "right": 1458,
+        "bottom": 766
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "CHME3-EQ-DRIVER-BRAKE-VALVE",
+          "equipmentId": "CHME3-EQ-DRIVER-BRAKE-VALVE",
+          "label": "Кран машиниста",
+          "position": {
+            "x": 1130,
+            "y": 280,
+            "width": 190,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-AIR-DISTRIBUTOR",
+          "equipmentId": "CHME3-EQ-AIR-DISTRIBUTOR",
+          "label": "Воздухораспределитель",
+          "position": {
+            "x": 1130,
+            "y": 470,
+            "width": 210,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-BRAKE-CYLINDERS",
+          "equipmentId": "CHME3-EQ-BRAKE-CYLINDERS",
+          "label": "Тормозные цилиндры",
+          "position": {
+            "x": 1190,
+            "y": 650,
+            "width": 220,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "CHME3T-STEP-PNEUMATIC-INDEPENDENT-BRAKE",
+      "family": "CHME3T",
+      "domain": "PNEUMATIC",
+      "sourceSchemeRef": "CHME3-SCH-PNEUMATIC",
+      "applicability": {
+        "families": [
+          "CHME3T"
+        ],
+        "profileIds": [
+          "chme3t-rheostatic"
+        ],
+        "selectionRequired": true
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 772,
+        "top": 552,
+        "right": 1458,
+        "bottom": 766
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "CHME3-EQ-AUX-BRAKE-VALVE",
+          "equipmentId": "CHME3-EQ-AUX-BRAKE-VALVE",
+          "label": "Кран вспом. тормоза",
+          "position": {
+            "x": 820,
+            "y": 600,
+            "width": 220,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-BRAKE-CYLINDERS",
+          "equipmentId": "CHME3-EQ-BRAKE-CYLINDERS",
+          "label": "Тормозные цилиндры",
+          "position": {
+            "x": 1190,
+            "y": 650,
+            "width": 220,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "CHME3T-STEP-PNEUMATIC-COMPRESSOR-CONTROL",
+      "family": "CHME3T",
+      "domain": "PNEUMATIC",
+      "sourceSchemeRef": "CHME3-SCH-PNEUMATIC",
+      "applicability": {
+        "families": [
+          "CHME3T"
+        ],
+        "profileIds": [
+          "chme3t-rheostatic"
+        ],
+        "selectionRequired": true
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 22,
+        "top": 12,
+        "right": 518,
+        "bottom": 286
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "CHME3-EQ-PRESSURE-GOV",
+          "equipmentId": "CHME3-EQ-PRESSURE-GOV",
+          "label": "Регулятор давления",
+          "position": {
+            "x": 260,
+            "y": 60,
+            "width": 210,
+            "height": 64
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-COMPRESSOR",
+          "equipmentId": "CHME3-EQ-COMPRESSOR",
+          "label": "Компрессор",
+          "position": {
+            "x": 70,
+            "y": 170,
+            "width": 180,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "CHME3E-STEP-PNEUMATIC-AIR-SUPPLY",
+      "family": "CHME3E",
+      "domain": "PNEUMATIC",
+      "sourceSchemeRef": "CHME3-SCH-PNEUMATIC",
+      "applicability": {
+        "families": [
+          "CHME3E"
+        ],
+        "profileIds": [
+          "chme3e-electronic"
+        ],
+        "selectionRequired": true
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 22,
+        "top": 122,
+        "right": 1368,
+        "bottom": 396
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "CHME3-EQ-COMPRESSOR",
+          "equipmentId": "CHME3-EQ-COMPRESSOR",
+          "label": "Компрессор",
+          "position": {
+            "x": 70,
+            "y": 170,
+            "width": 180,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-INTERCOOLER",
+          "equipmentId": "CHME3-EQ-INTERCOOLER",
+          "label": "Холодильник",
+          "position": {
+            "x": 320,
+            "y": 170,
+            "width": 180,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-MAIN-RESERVOIRS",
+          "equipmentId": "CHME3-EQ-MAIN-RESERVOIRS",
+          "label": "Главные резервуары",
+          "position": {
+            "x": 840,
+            "y": 170,
+            "width": 220,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-DRIVER-BRAKE-VALVE",
+          "equipmentId": "CHME3-EQ-DRIVER-BRAKE-VALVE",
+          "label": "Кран машиниста",
+          "position": {
+            "x": 1130,
+            "y": 280,
+            "width": 190,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "CHME3E-STEP-PNEUMATIC-AUTO-BRAKE",
+      "family": "CHME3E",
+      "domain": "PNEUMATIC",
+      "sourceSchemeRef": "CHME3-SCH-PNEUMATIC",
+      "applicability": {
+        "families": [
+          "CHME3E"
+        ],
+        "profileIds": [
+          "chme3e-electronic"
+        ],
+        "selectionRequired": true
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 1082,
+        "top": 232,
+        "right": 1458,
+        "bottom": 766
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "CHME3-EQ-DRIVER-BRAKE-VALVE",
+          "equipmentId": "CHME3-EQ-DRIVER-BRAKE-VALVE",
+          "label": "Кран машиниста",
+          "position": {
+            "x": 1130,
+            "y": 280,
+            "width": 190,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-AIR-DISTRIBUTOR",
+          "equipmentId": "CHME3-EQ-AIR-DISTRIBUTOR",
+          "label": "Воздухораспределитель",
+          "position": {
+            "x": 1130,
+            "y": 470,
+            "width": 210,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-BRAKE-CYLINDERS",
+          "equipmentId": "CHME3-EQ-BRAKE-CYLINDERS",
+          "label": "Тормозные цилиндры",
+          "position": {
+            "x": 1190,
+            "y": 650,
+            "width": 220,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "CHME3E-STEP-PNEUMATIC-INDEPENDENT-BRAKE",
+      "family": "CHME3E",
+      "domain": "PNEUMATIC",
+      "sourceSchemeRef": "CHME3-SCH-PNEUMATIC",
+      "applicability": {
+        "families": [
+          "CHME3E"
+        ],
+        "profileIds": [
+          "chme3e-electronic"
+        ],
+        "selectionRequired": true
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 772,
+        "top": 552,
+        "right": 1458,
+        "bottom": 766
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "CHME3-EQ-AUX-BRAKE-VALVE",
+          "equipmentId": "CHME3-EQ-AUX-BRAKE-VALVE",
+          "label": "Кран вспом. тормоза",
+          "position": {
+            "x": 820,
+            "y": 600,
+            "width": 220,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-BRAKE-CYLINDERS",
+          "equipmentId": "CHME3-EQ-BRAKE-CYLINDERS",
+          "label": "Тормозные цилиндры",
+          "position": {
+            "x": 1190,
+            "y": 650,
+            "width": 220,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "CHME3E-STEP-PNEUMATIC-COMPRESSOR-CONTROL",
+      "family": "CHME3E",
+      "domain": "PNEUMATIC",
+      "sourceSchemeRef": "CHME3-SCH-PNEUMATIC",
+      "applicability": {
+        "families": [
+          "CHME3E"
+        ],
+        "profileIds": [
+          "chme3e-electronic"
+        ],
+        "selectionRequired": true
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 22,
+        "top": 12,
+        "right": 518,
+        "bottom": 286
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "CHME3-EQ-PRESSURE-GOV",
+          "equipmentId": "CHME3-EQ-PRESSURE-GOV",
+          "label": "Регулятор давления",
+          "position": {
+            "x": 260,
+            "y": 60,
+            "width": 210,
+            "height": 64
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-COMPRESSOR",
+          "equipmentId": "CHME3-EQ-COMPRESSOR",
+          "label": "Компрессор",
+          "position": {
+            "x": 70,
+            "y": 170,
+            "width": 180,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "CHME3T-STEP-EDB-BRAKING-ENERGY",
+      "family": "CHME3T",
+      "domain": "ELECTRICAL",
+      "sourceSchemeRef": "CHME3T-SCH-EDB",
+      "applicability": {
+        "families": [
+          "CHME3T"
+        ],
+        "profileIds": [
+          "chme3t-rheostatic"
+        ],
+        "selectionRequired": true
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 72,
+        "top": 322,
+        "right": 1228,
+        "bottom": 494
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "CHME3-EQ-TRACTION-MOTORS",
+          "equipmentId": "CHME3-EQ-TRACTION-MOTORS",
+          "label": "Тяговые двигатели",
+          "position": {
+            "x": 120,
+            "y": 370,
+            "width": 220,
+            "height": 76
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3T-EQ-EDB-CONTROL",
+          "equipmentId": "CHME3T-EQ-EDB-CONTROL",
+          "label": "Управление ЭДТ",
+          "position": {
+            "x": 520,
+            "y": 370,
+            "width": 220,
+            "height": 76
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3T-EQ-BRAKE-RESISTORS",
+          "equipmentId": "CHME3T-EQ-BRAKE-RESISTORS",
+          "label": "Тормозные резисторы",
+          "position": {
+            "x": 950,
+            "y": 370,
+            "width": 230,
+            "height": 76
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "CHME3E-STEP-TRACTION-SETPOINT",
+      "family": "CHME3E",
+      "domain": "ELECTRICAL",
+      "sourceSchemeRef": "CHME3E-SCH-TRACTION-CONTROL",
+      "applicability": {
+        "families": [
+          "CHME3E"
+        ],
+        "profileIds": [
+          "chme3e-electronic"
+        ],
+        "selectionRequired": true
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 0,
+        "top": 52,
+        "right": 938,
+        "bottom": 282
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "CHME3E-EQ-CONTROLLER-HH106",
+          "equipmentId": "CHME3E-EQ-CONTROLLER-HH106",
+          "label": "НН106",
+          "position": {
+            "x": 40,
+            "y": 100,
+            "width": 160,
+            "height": 64
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3E-EQ-ER-YZJK9-YIND5",
+          "equipmentId": "CHME3E-EQ-ER-YZJK9-YIND5",
+          "label": "YZJK9 / YIND5",
+          "position": {
+            "x": 260,
+            "y": 100,
+            "width": 190,
+            "height": 64
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3E-EQ-ER-YZV9",
+          "equipmentId": "CHME3E-EQ-ER-YZV9",
+          "label": "YZV9",
+          "position": {
+            "x": 740,
+            "y": 170,
+            "width": 150,
+            "height": 64
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "CHME3E-STEP-TRACTION-FEEDBACK",
+      "family": "CHME3E",
+      "domain": "ELECTRICAL",
+      "sourceSchemeRef": "CHME3E-SCH-TRACTION-CONTROL",
+      "applicability": {
+        "families": [
+          "CHME3E"
+        ],
+        "profileIds": [
+          "chme3e-electronic"
+        ],
+        "selectionRequired": true
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 212,
+        "top": 122,
+        "right": 938,
+        "bottom": 762
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "CHME3E-EQ-TACHOMETER-SENSOR-BLOCK",
+          "equipmentId": "CHME3E-EQ-TACHOMETER-SENSOR-BLOCK",
+          "label": "Датчик оборотов",
+          "position": {
+            "x": 260,
+            "y": 650,
+            "width": 190,
+            "height": 64
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3E-EQ-ER-YPSM5",
+          "equipmentId": "CHME3E-EQ-ER-YPSM5",
+          "label": "YPSM5",
+          "position": {
+            "x": 500,
+            "y": 650,
+            "width": 160,
+            "height": 64
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3E-EQ-ER-YZV9",
+          "equipmentId": "CHME3E-EQ-ER-YZV9",
+          "label": "YZV9",
+          "position": {
+            "x": 740,
+            "y": 170,
+            "width": 150,
+            "height": 64
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3E-EQ-CURRENT-SENSOR-DTG",
+          "equipmentId": "CHME3E-EQ-CURRENT-SENSOR-DTG",
+          "label": "ДТГ",
+          "position": {
+            "x": 500,
+            "y": 520,
+            "width": 150,
+            "height": 64
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3E-EQ-VOLTAGE-SENSOR-DNG",
+          "equipmentId": "CHME3E-EQ-VOLTAGE-SENSOR-DNG",
+          "label": "ДНГ",
+          "position": {
+            "x": 500,
+            "y": 390,
+            "width": 150,
+            "height": 64
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3E-EQ-ER-YRUI3",
+          "equipmentId": "CHME3E-EQ-ER-YRUI3",
+          "label": "YRUI3",
+          "position": {
+            "x": 740,
+            "y": 320,
+            "width": 150,
+            "height": 64
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "CHME3E-STEP-TRACTION-EXCITATION",
+      "family": "CHME3E",
+      "domain": "ELECTRICAL",
+      "sourceSchemeRef": "CHME3E-SCH-TRACTION-CONTROL",
+      "applicability": {
+        "families": [
+          "CHME3E"
+        ],
+        "profileIds": [
+          "chme3e-electronic"
+        ],
+        "selectionRequired": true
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 692,
+        "top": 122,
+        "right": 1600,
+        "bottom": 288
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "CHME3E-EQ-ER-YZV9",
+          "equipmentId": "CHME3E-EQ-ER-YZV9",
+          "label": "YZV9",
+          "position": {
+            "x": 740,
+            "y": 170,
+            "width": 150,
+            "height": 64
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3E-EQ-ER-YKS5",
+          "equipmentId": "CHME3E-EQ-ER-YKS5",
+          "label": "YKS5",
+          "position": {
+            "x": 970,
+            "y": 170,
+            "width": 150,
+            "height": 64
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-EXCITER",
+          "equipmentId": "CHME3-EQ-EXCITER",
+          "label": "Возбудитель",
+          "position": {
+            "x": 1180,
+            "y": 170,
+            "width": 170,
+            "height": 64
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-TRACTION-GENERATOR",
+          "equipmentId": "CHME3-EQ-TRACTION-GENERATOR",
+          "label": "Тяговый генератор",
+          "position": {
+            "x": 1380,
+            "y": 170,
+            "width": 190,
+            "height": 70
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "CHME3E-STEP-TRACTION-CURRENT",
+      "family": "CHME3E",
+      "domain": "ELECTRICAL",
+      "sourceSchemeRef": "CHME3E-SCH-TRACTION-CONTROL",
+      "applicability": {
+        "families": [
+          "CHME3E"
+        ],
+        "profileIds": [
+          "chme3e-electronic"
+        ],
+        "selectionRequired": true
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 1092,
+        "top": 122,
+        "right": 1600,
+        "bottom": 478
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "CHME3-EQ-TRACTION-GENERATOR",
+          "equipmentId": "CHME3-EQ-TRACTION-GENERATOR",
+          "label": "Тяговый генератор",
+          "position": {
+            "x": 1380,
+            "y": 170,
+            "width": 190,
+            "height": 70
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-TRAIN-CONTACTORS",
+          "equipmentId": "CHME3-EQ-TRAIN-CONTACTORS",
+          "label": "Поездные контакторы",
+          "position": {
+            "x": 1140,
+            "y": 360,
+            "width": 210,
+            "height": 70
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-TRACTION-MOTORS",
+          "equipmentId": "CHME3-EQ-TRACTION-MOTORS",
+          "label": "ТЭД",
+          "position": {
+            "x": 1390,
+            "y": 360,
+            "width": 170,
+            "height": 70
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "CHME3E-STEP-FIELD-WEAKENING",
+      "family": "CHME3E",
+      "domain": "ELECTRICAL",
+      "sourceSchemeRef": "CHME3E-SCH-FIELD-WEAKENING",
+      "applicability": {
+        "families": [
+          "CHME3E"
+        ],
+        "profileIds": [
+          "chme3e-electronic"
+        ],
+        "selectionRequired": true
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 52,
+        "top": 172,
+        "right": 1600,
+        "bottom": 762
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "CHME3E-EQ-CURRENT-SENSOR-DTG",
+          "equipmentId": "CHME3E-EQ-CURRENT-SENSOR-DTG",
+          "label": "ДТГ",
+          "position": {
+            "x": 100,
+            "y": 220,
+            "width": 160,
+            "height": 64
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3E-EQ-ER-YSH11",
+          "equipmentId": "CHME3E-EQ-ER-YSH11",
+          "label": "YSH11",
+          "position": {
+            "x": 500,
+            "y": 360,
+            "width": 180,
+            "height": 70
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3E-EQ-VOLTAGE-SENSOR-DNG",
+          "equipmentId": "CHME3E-EQ-VOLTAGE-SENSOR-DNG",
+          "label": "ДНГ",
+          "position": {
+            "x": 100,
+            "y": 480,
+            "width": 160,
+            "height": 64
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3E-EQ-RELAY-RE",
+          "equipmentId": "CHME3E-EQ-RELAY-RE",
+          "label": "РЕ",
+          "position": {
+            "x": 100,
+            "y": 650,
+            "width": 160,
+            "height": 64
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3E-EQ-ER-YOUT8",
+          "equipmentId": "CHME3E-EQ-ER-YOUT8",
+          "label": "YOUT8",
+          "position": {
+            "x": 830,
+            "y": 360,
+            "width": 180,
+            "height": 70
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-CONTACTORS",
+          "equipmentId": "CHME3-EQ-CONTACTORS",
+          "label": "КШ1—КШ6 / контакторы",
+          "position": {
+            "x": 1160,
+            "y": 360,
+            "width": 230,
+            "height": 70
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-TRACTION-MOTORS",
+          "equipmentId": "CHME3-EQ-TRACTION-MOTORS",
+          "label": "ТЭД",
+          "position": {
+            "x": 1430,
+            "y": 360,
+            "width": 150,
+            "height": 70
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "CHME3E-STEP-START",
+      "family": "CHME3E",
+      "domain": "ELECTRICAL",
+      "sourceSchemeRef": "CHME3E-SCH-START-ELECTRONIC",
+      "applicability": {
+        "families": [
+          "CHME3E"
+        ],
+        "profileIds": [
+          "chme3e-electronic"
+        ],
+        "selectionRequired": true
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 32,
+        "top": 32,
+        "right": 1478,
+        "bottom": 656
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "CHME3E-EQ-CONTROLLER-HH106",
+          "equipmentId": "CHME3E-EQ-CONTROLLER-HH106",
+          "label": "НН106",
+          "position": {
+            "x": 80,
+            "y": 170,
+            "width": 170,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3E-EQ-ER-YCRA1",
+          "equipmentId": "CHME3E-EQ-ER-YCRA1",
+          "label": "YCRA1",
+          "position": {
+            "x": 390,
+            "y": 170,
+            "width": 170,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-OIL-PRIME-PUMP",
+          "equipmentId": "CHME3-EQ-OIL-PRIME-PUMP",
+          "label": "Маслопрокачка",
+          "position": {
+            "x": 760,
+            "y": 80,
+            "width": 210,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-CONTACTORS",
+          "equipmentId": "CHME3-EQ-CONTACTORS",
+          "label": "Пусковые контакторы",
+          "position": {
+            "x": 760,
+            "y": 280,
+            "width": 220,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-BATTERY",
+          "equipmentId": "CHME3-EQ-BATTERY",
+          "label": "АКБ",
+          "position": {
+            "x": 390,
+            "y": 540,
+            "width": 170,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-TRACTION-GENERATOR",
+          "equipmentId": "CHME3-EQ-TRACTION-GENERATOR",
+          "label": "Тяговый генератор / стартерный режим",
+          "position": {
+            "x": 840,
+            "y": 540,
+            "width": 290,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3E-EQ-RELAY-RD",
+          "equipmentId": "CHME3E-EQ-RELAY-RD",
+          "label": "РД",
+          "position": {
+            "x": 1280,
+            "y": 540,
+            "width": 150,
+            "height": 68
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "CHME3E-STEP-PREHEAT-RUNNING",
+      "family": "CHME3E",
+      "domain": "ELECTRICAL",
+      "sourceSchemeRef": "CHME3E-SCH-PREHEAT-RUNNING",
+      "applicability": {
+        "families": [
+          "CHME3E"
+        ],
+        "profileIds": [
+          "chme3e-electronic"
+        ],
+        "selectionRequired": true
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 32,
+        "top": 202,
+        "right": 1358,
+        "bottom": 678
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "CHME3E-EQ-MODE-SWITCH-PO",
+          "equipmentId": "CHME3E-EQ-MODE-SWITCH-PO",
+          "label": "ПО",
+          "position": {
+            "x": 80,
+            "y": 330,
+            "width": 150,
+            "height": 64
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3E-EQ-CONTACTOR-KOG1",
+          "equipmentId": "CHME3E-EQ-CONTACTOR-KOG1",
+          "label": "КОГ1",
+          "position": {
+            "x": 360,
+            "y": 250,
+            "width": 160,
+            "height": 64
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3E-EQ-CONTACTOR-KOG2",
+          "equipmentId": "CHME3E-EQ-CONTACTOR-KOG2",
+          "label": "КОГ2",
+          "position": {
+            "x": 360,
+            "y": 450,
+            "width": 160,
+            "height": 64
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-TRACTION-GENERATOR",
+          "equipmentId": "CHME3-EQ-TRACTION-GENERATOR",
+          "label": "Тяговый генератор",
+          "position": {
+            "x": 690,
+            "y": 330,
+            "width": 210,
+            "height": 70
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3E-EQ-HEATER-ELEMENTS-R85-R88",
+          "equipmentId": "CHME3E-EQ-HEATER-ELEMENTS-R85-R88",
+          "label": "R85—R88",
+          "position": {
+            "x": 1120,
+            "y": 330,
+            "width": 190,
+            "height": 70
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3-EQ-WATER-PUMP",
+          "equipmentId": "CHME3-EQ-WATER-PUMP",
+          "label": "Водяной насос",
+          "position": {
+            "x": 1120,
+            "y": 560,
+            "width": 190,
+            "height": 70
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "CHME3E-STEP-PREHEAT-EXTERNAL",
+      "family": "CHME3E",
+      "domain": "ELECTRICAL",
+      "sourceSchemeRef": "CHME3E-SCH-PREHEAT-EXTERNAL",
+      "applicability": {
+        "families": [
+          "CHME3E"
+        ],
+        "profileIds": [
+          "chme3e-electronic"
+        ],
+        "selectionRequired": true
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 52,
+        "top": 132,
+        "right": 1488,
+        "bottom": 618
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "CHME3E-EQ-MODE-SWITCH-PO",
+          "equipmentId": "CHME3E-EQ-MODE-SWITCH-PO",
+          "label": "ПО",
+          "position": {
+            "x": 100,
+            "y": 330,
+            "width": 150,
+            "height": 64
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3E-EQ-CONTACTOR-KOP",
+          "equipmentId": "CHME3E-EQ-CONTACTOR-KOP",
+          "label": "КОП",
+          "position": {
+            "x": 420,
+            "y": 330,
+            "width": 160,
+            "height": 64
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3E-EQ-HEATER-ELEMENTS-R85-R88",
+          "equipmentId": "CHME3E-EQ-HEATER-ELEMENTS-R85-R88",
+          "label": "R85—R88",
+          "position": {
+            "x": 830,
+            "y": 180,
+            "width": 190,
+            "height": 70
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3E-EQ-WATER-PUMP-MOTORS-DOV",
+          "equipmentId": "CHME3E-EQ-WATER-PUMP-MOTORS-DOV",
+          "label": "ДОВ1—ДОВ3",
+          "position": {
+            "x": 830,
+            "y": 500,
+            "width": 190,
+            "height": 70
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3E-EQ-ELECTRIC-WATER-PUMPS",
+          "equipmentId": "CHME3E-EQ-ELECTRIC-WATER-PUMPS",
+          "label": "Электронасосы 53—55",
+          "position": {
+            "x": 1210,
+            "y": 500,
+            "width": 230,
+            "height": 70
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "CHME3E-STEP-REMOTE-CONTROL-ELECTRICAL",
+      "family": "CHME3E",
+      "domain": "ELECTRICAL",
+      "sourceSchemeRef": "CHME3E-SCH-REMOTE-CONTROL",
+      "applicability": {
+        "families": [
+          "CHME3E"
+        ],
+        "profileIds": [
+          "chme3e-electronic"
+        ],
+        "selectionRequired": true
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 52,
+        "top": 132,
+        "right": 1438,
+        "bottom": 448
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "CHME3E-EQ-PORTABLE-CONTROL-PANELS",
+          "equipmentId": "CHME3E-EQ-PORTABLE-CONTROL-PANELS",
+          "label": "Переносные пульты",
+          "position": {
+            "x": 100,
+            "y": 330,
+            "width": 220,
+            "height": 70
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3E-EQ-CONTROLLER-HH106",
+          "equipmentId": "CHME3E-EQ-CONTROLLER-HH106",
+          "label": "НН106",
+          "position": {
+            "x": 460,
+            "y": 180,
+            "width": 170,
+            "height": 70
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3E-EQ-ELECTRONIC-REGULATOR-GC40P",
+          "equipmentId": "CHME3E-EQ-ELECTRONIC-REGULATOR-GC40P",
+          "label": "GC40P",
+          "position": {
+            "x": 830,
+            "y": 180,
+            "width": 180,
+            "height": 70
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3E-EQ-ROOF-SIGNAL-LAMPS",
+          "equipmentId": "CHME3E-EQ-ROOF-SIGNAL-LAMPS",
+          "label": "Сигнальные лампы",
+          "position": {
+            "x": 1180,
+            "y": 330,
+            "width": 210,
+            "height": 70
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    },
+    {
+      "sequenceId": "CHME3E-STEP-REMOTE-CONTROL-PNEUMATIC",
+      "family": "CHME3E",
+      "domain": "PNEUMATIC",
+      "sourceSchemeRef": "CHME3E-SCH-REMOTE-CONTROL",
+      "applicability": {
+        "families": [
+          "CHME3E"
+        ],
+        "profileIds": [
+          "chme3e-electronic"
+        ],
+        "selectionRequired": true
+      },
+      "layoutMode": "SOURCE_HOTSPOT_COORDINATES",
+      "spatialClaim": "DISPLAY_COORDINATES_ONLY_NOT_PHYSICAL_EQUIPMENT_LOCATION",
+      "coordinateSpace": {
+        "width": 1600,
+        "height": 900
+      },
+      "contentBounds": {
+        "left": 52,
+        "top": 282,
+        "right": 738,
+        "bottom": 658
+      },
+      "fitPaddingDp": 24,
+      "nodes": [
+        {
+          "nodeKey": "CHME3-EQ-PNEUMATIC-CONTROL-RESERVOIR",
+          "equipmentId": "CHME3-EQ-PNEUMATIC-CONTROL-RESERVOIR",
+          "label": "Резервуар управления",
+          "position": {
+            "x": 460,
+            "y": 540,
+            "width": 230,
+            "height": 70
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        },
+        {
+          "nodeKey": "CHME3E-EQ-PORTABLE-CONTROL-PANELS",
+          "equipmentId": "CHME3E-EQ-PORTABLE-CONTROL-PANELS",
+          "label": "Переносные пульты",
+          "position": {
+            "x": 100,
+            "y": 330,
+            "width": 220,
+            "height": 70
+          },
+          "placementEvidence": "SOURCE_INTERACTIVE_HOTSPOT"
+        }
+      ]
+    }
+  ]
+}

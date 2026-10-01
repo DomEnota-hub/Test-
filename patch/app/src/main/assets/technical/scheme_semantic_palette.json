@@ -1,0 +1,331 @@
+{
+  "schemaVersion": 1,
+  "paletteId": "fleet-scheme-semantic-palette-v1",
+  "updatedAt": "2026-10-01",
+  "policy": {
+    "semanticMeaningOverridesUserAccent": true,
+    "userAccentMayStyleChromeButNotSafetyOrStateMeaning": true,
+    "colorIsNeverOnlySignal": true,
+    "lightAndDarkHaveIndependentTokens": true
+  },
+  "contentStates": {
+    "purposeNeutral": {
+      "label": "Назначение / нейтральная информация",
+      "light": {
+        "foreground": "#334155",
+        "surface": "#F1F5F9"
+      },
+      "dark": {
+        "foreground": "#CBD5E1",
+        "surface": "#1E293B"
+      },
+      "iconOrLabelRequired": true
+    },
+    "normalState": {
+      "label": "Нормальное состояние",
+      "light": {
+        "foreground": "#166534",
+        "surface": "#DCFCE7"
+      },
+      "dark": {
+        "foreground": "#86EFAC",
+        "surface": "#14532D"
+      },
+      "iconOrLabelRequired": true
+    },
+    "deviation": {
+      "label": "Признак отклонения",
+      "light": {
+        "foreground": "#9A3412",
+        "surface": "#FFEDD5"
+      },
+      "dark": {
+        "foreground": "#FDBA74",
+        "surface": "#7C2D12"
+      },
+      "iconOrLabelRequired": true,
+      "note": "Оранжевый semantic token намеренно отделён от янтарного accent token."
+    },
+    "safetyDanger": {
+      "label": "Опасность / запрет",
+      "light": {
+        "foreground": "#991B1B",
+        "surface": "#FEE2E2"
+      },
+      "dark": {
+        "foreground": "#FCA5A5",
+        "surface": "#7F1D1D"
+      },
+      "iconOrLabelRequired": true
+    },
+    "information": {
+      "label": "Справочная информация",
+      "light": {
+        "foreground": "#1D4ED8",
+        "surface": "#DBEAFE"
+      },
+      "dark": {
+        "foreground": "#93C5FD",
+        "surface": "#1E3A8A"
+      },
+      "iconOrLabelRequired": true
+    }
+  },
+  "accentMigrationTarget": {
+    "legacyName": "стальная зелёная",
+    "newDisplayName": "яркая зелёная",
+    "lightPrimary": "#16A34A",
+    "darkPrimary": "#4ADE80",
+    "scope": "THEME_ACCENT_ONLY_NOT_SEMANTIC_STATE",
+    "runtimeChangeInThisPackage": false
+  },
+  "flowTokens": [
+    {
+      "flowKind": "AIR_SUPPLY",
+      "label": "Подача сжатого воздуха",
+      "lineStyle": "solid-pneumatic",
+      "light": {
+        "stroke": "#0369A1"
+      },
+      "dark": {
+        "stroke": "#7DD3FC"
+      },
+      "marker": "ARROW_OR_DOMAIN_MARKER",
+      "textLabelRequired": true
+    },
+    {
+      "flowKind": "AUXILIARY_POWER",
+      "label": "Питание собственных нужд",
+      "lineStyle": "solid-medium",
+      "light": {
+        "stroke": "#7C3AED"
+      },
+      "dark": {
+        "stroke": "#C4B5FD"
+      },
+      "marker": "ARROW_OR_DOMAIN_MARKER",
+      "textLabelRequired": true
+    },
+    {
+      "flowKind": "BRAKE_CYLINDER_CONTROL",
+      "label": "Тормозные цилиндры",
+      "lineStyle": "solid-pneumatic-brake",
+      "light": {
+        "stroke": "#B91C1C"
+      },
+      "dark": {
+        "stroke": "#FCA5A5"
+      },
+      "marker": "ARROW_OR_DOMAIN_MARKER",
+      "textLabelRequired": true
+    },
+    {
+      "flowKind": "BRAKE_PIPE_PRESSURE_CHANGE",
+      "label": "Изменение давления ТМ",
+      "lineStyle": "double-pneumatic",
+      "light": {
+        "stroke": "#C2410C"
+      },
+      "dark": {
+        "stroke": "#FB923C"
+      },
+      "marker": "ARROW_OR_DOMAIN_MARKER",
+      "textLabelRequired": true
+    },
+    {
+      "flowKind": "BRAKING_CURRENT",
+      "label": "Тормозной ток / энергия",
+      "lineStyle": "solid-heavy-brake",
+      "light": {
+        "stroke": "#B91C1C"
+      },
+      "dark": {
+        "stroke": "#FCA5A5"
+      },
+      "marker": "ARROW_OR_DOMAIN_MARKER",
+      "textLabelRequired": true
+    },
+    {
+      "flowKind": "COMMAND",
+      "label": "Команда / разрешение",
+      "lineStyle": "dashed-arrow",
+      "light": {
+        "stroke": "#1D4ED8"
+      },
+      "dark": {
+        "stroke": "#93C5FD"
+      },
+      "marker": "ARROW_OR_DOMAIN_MARKER",
+      "textLabelRequired": true
+    },
+    {
+      "flowKind": "CONTROL_POWER",
+      "label": "Питание цепей управления",
+      "lineStyle": "solid-thin",
+      "light": {
+        "stroke": "#475569"
+      },
+      "dark": {
+        "stroke": "#CBD5E1"
+      },
+      "marker": "ARROW_OR_DOMAIN_MARKER",
+      "textLabelRequired": true
+    },
+    {
+      "flowKind": "CONTROL_PRESSURE",
+      "label": "Управляющее давление",
+      "lineStyle": "dashed-pneumatic",
+      "light": {
+        "stroke": "#0284C7"
+      },
+      "dark": {
+        "stroke": "#38BDF8"
+      },
+      "marker": "ARROW_OR_DOMAIN_MARKER",
+      "textLabelRequired": true
+    },
+    {
+      "flowKind": "CONTROL_SIGNAL",
+      "label": "Управляющий сигнал",
+      "lineStyle": "dashed-arrow",
+      "light": {
+        "stroke": "#0369A1"
+      },
+      "dark": {
+        "stroke": "#7DD3FC"
+      },
+      "marker": "ARROW_OR_DOMAIN_MARKER",
+      "textLabelRequired": true
+    },
+    {
+      "flowKind": "COOLANT_FLOW",
+      "label": "Циркуляция теплоносителя",
+      "lineStyle": "wave-arrow",
+      "light": {
+        "stroke": "#0F766E"
+      },
+      "dark": {
+        "stroke": "#5EEAD4"
+      },
+      "marker": "ARROW_OR_DOMAIN_MARKER",
+      "textLabelRequired": true
+    },
+    {
+      "flowKind": "EXCITATION",
+      "label": "Возбуждение",
+      "lineStyle": "dash-dot-arrow",
+      "light": {
+        "stroke": "#9333EA"
+      },
+      "dark": {
+        "stroke": "#D8B4FE"
+      },
+      "marker": "ARROW_OR_DOMAIN_MARKER",
+      "textLabelRequired": true
+    },
+    {
+      "flowKind": "FEEDBACK_SIGNAL",
+      "label": "Сигнал обратной связи",
+      "lineStyle": "dotted-arrow",
+      "light": {
+        "stroke": "#0F766E"
+      },
+      "dark": {
+        "stroke": "#5EEAD4"
+      },
+      "marker": "ARROW_OR_DOMAIN_MARKER",
+      "textLabelRequired": true
+    },
+    {
+      "flowKind": "FIRE_SIGNAL",
+      "label": "Сигнал пожарной системы",
+      "lineStyle": "dotted-alert",
+      "light": {
+        "stroke": "#BE123C"
+      },
+      "dark": {
+        "stroke": "#FDA4AF"
+      },
+      "marker": "ARROW_OR_DOMAIN_MARKER",
+      "textLabelRequired": true
+    },
+    {
+      "flowKind": "HIGH_VOLTAGE_POWER",
+      "label": "Высоковольтное питание",
+      "lineStyle": "solid-heavy",
+      "light": {
+        "stroke": "#6D28D9"
+      },
+      "dark": {
+        "stroke": "#C4B5FD"
+      },
+      "marker": "ARROW_OR_DOMAIN_MARKER",
+      "textLabelRequired": true
+    },
+    {
+      "flowKind": "REGENERATIVE_CURRENT",
+      "label": "Ток рекуперации",
+      "lineStyle": "solid-heavy-reverse",
+      "light": {
+        "stroke": "#047857"
+      },
+      "dark": {
+        "stroke": "#6EE7B7"
+      },
+      "marker": "ARROW_OR_DOMAIN_MARKER",
+      "textLabelRequired": true
+    },
+    {
+      "flowKind": "SAFETY_COMMAND",
+      "label": "Команда системы безопасности",
+      "lineStyle": "double-dashed-arrow",
+      "light": {
+        "stroke": "#991B1B"
+      },
+      "dark": {
+        "stroke": "#F87171"
+      },
+      "marker": "ARROW_OR_DOMAIN_MARKER",
+      "textLabelRequired": true
+    },
+    {
+      "flowKind": "STARTER_CURRENT",
+      "label": "Пусковой ток",
+      "lineStyle": "solid-heavy-start",
+      "light": {
+        "stroke": "#92400E"
+      },
+      "dark": {
+        "stroke": "#FBBF24"
+      },
+      "marker": "ARROW_OR_DOMAIN_MARKER",
+      "textLabelRequired": true
+    },
+    {
+      "flowKind": "STATUS_SIGNAL",
+      "label": "Сигнал состояния",
+      "lineStyle": "dotted-arrow",
+      "light": {
+        "stroke": "#4F46E5"
+      },
+      "dark": {
+        "stroke": "#A5B4FC"
+      },
+      "marker": "ARROW_OR_DOMAIN_MARKER",
+      "textLabelRequired": true
+    },
+    {
+      "flowKind": "TRACTION_CURRENT",
+      "label": "Тяговый ток",
+      "lineStyle": "solid-heavy-arrow",
+      "light": {
+        "stroke": "#B45309"
+      },
+      "dark": {
+        "stroke": "#FDBA74"
+      },
+      "marker": "ARROW_OR_DOMAIN_MARKER",
+      "textLabelRequired": true
+    }
+  ]
+}

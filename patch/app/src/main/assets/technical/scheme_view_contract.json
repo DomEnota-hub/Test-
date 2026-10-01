@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "contractId": "fleet-interactive-scheme-view-contract-v1",
+  "updatedAt": "2026-10-01",
+  "coordinateSpace": {
+    "width": 1600,
+    "height": 900
+  },
+  "initialView": {
+    "mode": "RESET_TO_FIT",
+    "fitContent": true,
+    "fitPaddingDp": 24,
+    "centerContent": true,
+    "preserveSelection": false
+  },
+  "zoom": {
+    "unit": "MULTIPLIER_RELATIVE_TO_FIT",
+    "fitMultiplier": 1.0,
+    "minMultiplier": 1.0,
+    "maxMultiplier": 5.0,
+    "pinchEnabled": true,
+    "pinchFocalPoint": "GESTURE_CENTROID",
+    "wheelOrTrackpadEnabledWhenAvailable": true
+  },
+  "pan": {
+    "enabled": true,
+    "axes": [
+      "X",
+      "Y"
+    ],
+    "enabledAtFit": false,
+    "bounds": "CLAMP_CONTENT_TO_VIEWPORT_WITH_16DP_OVERSCROLL",
+    "oneFingerPanAfterZoom": true
+  },
+  "resetToFit": {
+    "actionId": "RESET_TO_FIT",
+    "visibleControlRequired": true,
+    "doubleTap": "RESET_TO_FIT",
+    "result": {
+      "zoomMultiplier": 1.0,
+      "offsetX": 0.0,
+      "offsetY": 0.0
+    }
+  },
+  "selection": {
+    "tapNode": "OPEN_EQUIPMENT_CARD",
+    "tapEmptySpace": "KEEP_VIEW_STATE",
+    "selectedNodeMustRemainIdentifiableWithoutColor": true
+  },
+  "stepPlayback": {
+    "default": "MANUAL",
+    "animation": "OPTIONAL",
+    "animateOnlyOnUserRequest": true,
+    "autoPanToActiveStep": false,
+    "focusActiveStepAction": "FIT_ACTIVE_STEP_WITH_CONTEXT",
+    "reducedMotion": "NO_MOVING_FLOW_ANIMATION"
+  },
+  "accessibility": {
+    "colorIsNeverOnlySignal": true,
+    "flowKindTextLabelRequired": true,
+    "linePatternRequired": true,
+    "resetControlContentDescription": "Показать схему целиком",
+    "minimumTouchTargetDp": 48
+  },
+  "orientation": {
+    "portrait": "SUPPORTED",
+    "landscape": "SUPPORTED",
+    "retainLogicalSelectionOnRotation": true,
+    "recomputeFitOnViewportChange": true
+  },
+  "stateModel": {
+    "persistentAcrossStepChange": [
+      "zoomMultiplier",
+      "offsetX",
+      "offsetY",
+      "selectedSequenceId"
+    ],
+    "resetOnSequenceChange": [
+      "zoomMultiplier",
+      "offsetX",
+      "offsetY"
+    ]
+  }
+}
