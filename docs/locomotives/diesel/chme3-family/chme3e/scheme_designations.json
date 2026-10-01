@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "profileId": "chme3e-electronic",
+  "updatedAt": "2026-10-01",
+  "electrical": [
+    {"designation":"НН106","equipmentId":"CHME3E-EQ-CONTROLLER-HH106","role":"driver controller"},
+    {"designation":"GC40P","equipmentId":"CHME3E-EQ-ELECTRONIC-REGULATOR-GC40P","role":"electronic regulator"},
+    {"designation":"ПЭ","equipmentId":"CHME3E-EQ-MODE-SWITCH-PE","role":"electronics mode switch"},
+    {"designation":"ПО","equipmentId":"CHME3E-EQ-MODE-SWITCH-PO","role":"preheat mode switch"},
+    {"designation":"ПДУ","equipmentId":"CHME3E-EQ-MODE-SWITCH-PDU","role":"voltage-rise mode switch"},
+    {"designation":"ПЕМ","equipmentId":"CHME3E-EQ-MODE-SWITCH-PEM","role":"drive-shunting mode switch"},
+    {"designation":"КОГ1","equipmentId":"CHME3E-EQ-CONTACTOR-KOG1","role":"generator-powered preheat contactor"},
+    {"designation":"КОГ2","equipmentId":"CHME3E-EQ-CONTACTOR-KOG2","role":"generator-powered preheat contactor"},
+    {"designation":"КОП","equipmentId":"CHME3E-EQ-CONTACTOR-KOP","role":"external-preheat contactor"},
+    {"designation":"РЕ","equipmentId":"CHME3E-EQ-RELAY-RE","role":"drive relay"},
+    {"designation":"РЕМ","equipmentId":"CHME3E-EQ-RELAY-REM","role":"drive-shunting relay"},
+    {"designation":"РДЕ","equipmentId":"CHME3E-EQ-RELAY-RDE","role":"multiple-unit relay"},
+    {"designation":"РД","equipmentId":"CHME3E-EQ-RELAY-RD","role":"diesel-state relay"},
+    {"designation":"ДТГ","equipmentId":"CHME3E-EQ-CURRENT-SENSOR-DTG","role":"traction-generator current sensor"},
+    {"designation":"ДНГ","equipmentId":"CHME3E-EQ-VOLTAGE-SENSOR-DNG","role":"traction-generator voltage sensor"},
+    {"designation":"R85—R88","equipmentId":"CHME3E-EQ-HEATER-ELEMENTS-R85-R88","role":"water-system heating elements"},
+    {"designation":"ДОВ1—ДОВ3","equipmentId":"CHME3E-EQ-WATER-PUMP-MOTORS-DOV","role":"electric water-pump motors"},
+    {"designation":"YRN3","equipmentId":"CHME3E-EQ-ER-YRN3","role":"auxiliary-generator voltage regulation"},
+    {"designation":"YKS5","equipmentId":"CHME3E-EQ-ER-YKS5","role":"exciter-field electronic control"},
+    {"designation":"YPSM5","equipmentId":"CHME3E-EQ-ER-YPSM5","role":"tachometer signal processing"},
+    {"designation":"YZV9","equipmentId":"CHME3E-EQ-ER-YZV9","role":"traction power regulation"},
+    {"designation":"YRUI3","equipmentId":"CHME3E-EQ-ER-YRUI3","role":"traction-generator voltage regulation"},
+    {"designation":"YSH11","equipmentId":"CHME3E-EQ-ER-YSH11","role":"field-weakening decision block"},
+    {"designation":"YODU4","equipmentId":"CHME3E-EQ-ER-YODU4","role":"voltage-rise limiting"},
+    {"designation":"YKA5","equipmentId":"CHME3E-EQ-ER-YKA5","role":"wheel-slip processing"},
+    {"designation":"YZJK9/YIND5","equipmentId":"CHME3E-EQ-ER-YZJK9-YIND5","role":"controller-position encoding"},
+    {"designation":"YOUT8","equipmentId":"CHME3E-EQ-ER-YOUT8","role":"electronic output block"},
+    {"designation":"YCRA1","equipmentId":"CHME3E-EQ-ER-YCRA1","role":"start-sequence timing"},
+    {"designation":"YSZ3","equipmentId":"CHME3E-EQ-ER-YSZ3","role":"stabilized electronic supply"}
+  ],
+  "negativeDesignationPolicy": {
+    "mustNotResolveForProfile": ["КТ1—КТ7 as rheostatic-brake contactors", "ЕТ as brake-mode switch", "RT1—RT6 as braking resistor bank"],
+    "reason": "Factory ЧМЭ3Э has no rheostatic brake; same-family ЧМЭ3Т designations must not leak into this profile."
+  },
+  "evidenceRefs": ["CHME3E-SRC-NOTIK-EQUIPMENT-67", "CHME3E-SRC-NOTIK-FIELD-WEAKENING-96", "CHME3E-SRC-NOTIK-WATER-47"]
+}
