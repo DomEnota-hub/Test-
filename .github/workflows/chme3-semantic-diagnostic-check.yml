@@ -22,5 +22,5 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Audit promoted runtime graphs and report migration coverage
-        run: python qa/audit_chme3_diagnostic_semantics_v4.py
+      - name: Require complete non-generic runtime diagnostics
+        run: python qa/audit_chme3_diagnostic_semantics_v4.py --require-complete
