@@ -6,11 +6,61 @@ on:
     branches:
       - integration/chme3-assistant
     paths:
-      - app/**
+      - app/src/main/assets/technical/chme3*
+      - patch/app/src/main/assets/technical/chme3*
       - docs/locomotives/**
-      - patch/**
-      - qa/**
-      - RailBrakeCalculator.zip
+      - qa/verify_chme3_android_assets.py
+      - app/src/main/java/ru/railbrake/calculator/core/assistant/**
+      - patch/app/src/main/java/ru/railbrake/calculator/core/assistant/**
+      - app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt
+      - patch/app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt
+      - app/src/main/java/ru/railbrake/calculator/ui/AssistantHomePanel.kt
+      - patch/app/src/main/java/ru/railbrake/calculator/ui/AssistantHomePanel.kt
+      - app/src/main/java/ru/railbrake/calculator/ui/AssistantResultActivity.kt
+      - patch/app/src/main/java/ru/railbrake/calculator/ui/AssistantResultActivity.kt
+      - app/src/main/java/ru/railbrake/calculator/ui/HomeScreen.kt
+      - patch/app/src/main/java/ru/railbrake/calculator/ui/HomeScreen.kt
+      - patch/app/src/main/java/ru/railbrake/calculator/ui/LocomotiveDiagnosticsScreen.kt
+      - app/src/main/java/ru/railbrake/calculator/ui/LocomotiveDiagnosticsScreen.kt
+      - patch/app/src/main/java/ru/railbrake/calculator/ui/BrakeCalculatorApp.kt
+      - app/src/main/java/ru/railbrake/calculator/ui/BrakeCalculatorApp.kt
+      - patch/app/src/main/java/ru/railbrake/calculator/data/WorkingLocomotiveRepository.kt
+      - app/src/main/java/ru/railbrake/calculator/data/WorkingLocomotiveRepository.kt
+      - patch/app/src/main/java/ru/railbrake/calculator/core/WorkingLocomotive.kt
+      - app/src/main/java/ru/railbrake/calculator/core/WorkingLocomotive.kt
+      - patch/app/src/main/AndroidManifest.xml
+      - app/build.gradle.kts
+      - patch/app/build.gradle.kts
+      - app/src/test/java/ru/railbrake/calculator/core/assistant/**
+      - patch/app/src/test/java/ru/railbrake/calculator/core/assistant/**
+      - .github/workflows/chme3-assistant-signed.yml
+  pull_request:
+    branches:
+      - dev14-integration
+    paths:
+      - app/src/main/java/ru/railbrake/calculator/core/assistant/**
+      - patch/app/src/main/java/ru/railbrake/calculator/core/assistant/**
+      - app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt
+      - patch/app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt
+      - app/src/main/java/ru/railbrake/calculator/ui/AssistantHomePanel.kt
+      - patch/app/src/main/java/ru/railbrake/calculator/ui/AssistantHomePanel.kt
+      - app/src/main/java/ru/railbrake/calculator/ui/AssistantResultActivity.kt
+      - patch/app/src/main/java/ru/railbrake/calculator/ui/AssistantResultActivity.kt
+      - app/src/main/java/ru/railbrake/calculator/ui/HomeScreen.kt
+      - patch/app/src/main/java/ru/railbrake/calculator/ui/HomeScreen.kt
+      - patch/app/src/main/java/ru/railbrake/calculator/ui/LocomotiveDiagnosticsScreen.kt
+      - app/src/main/java/ru/railbrake/calculator/ui/LocomotiveDiagnosticsScreen.kt
+      - patch/app/src/main/java/ru/railbrake/calculator/ui/BrakeCalculatorApp.kt
+      - app/src/main/java/ru/railbrake/calculator/ui/BrakeCalculatorApp.kt
+      - patch/app/src/main/java/ru/railbrake/calculator/data/WorkingLocomotiveRepository.kt
+      - app/src/main/java/ru/railbrake/calculator/data/WorkingLocomotiveRepository.kt
+      - patch/app/src/main/java/ru/railbrake/calculator/core/WorkingLocomotive.kt
+      - app/src/main/java/ru/railbrake/calculator/core/WorkingLocomotive.kt
+      - patch/app/src/main/AndroidManifest.xml
+      - app/build.gradle.kts
+      - patch/app/build.gradle.kts
+      - app/src/test/java/ru/railbrake/calculator/core/assistant/**
+      - patch/app/src/test/java/ru/railbrake/calculator/core/assistant/**
       - .github/workflows/chme3-assistant-signed.yml
 
 permissions:
@@ -23,122 +73,57 @@ jobs:
     env:
       RELEASE_KEYSTORE_B64: ${{ secrets.RAILBRAKE_KEYSTORE_BASE64 }}
       EXPECTED_SIGNING_CERT_SHA256: ea9fe9341a6ba72b585bd7ff82ce29c8fc5b7b59e76b8b134df203eaab8e2788
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Resolve build identity
+      - name: Verify assistant source mirrors
         shell: bash
         run: |
           set -euo pipefail
-          VERSION_CODE="$(sed -n 's/^[[:space:]]*versionCode = \([0-9][0-9]*\).*/\1/p' app/build.gradle.kts | head -n1)"
-          VERSION_NAME="$(sed -n 's/^[[:space:]]*versionName = "\([^"]*\)".*/\1/p' app/build.gradle.kts | head -n1)"
-          test -n "$VERSION_CODE"
-          test -n "$VERSION_NAME"
-          echo "VERSION_CODE=$VERSION_CODE" >> "$GITHUB_ENV"
-          echo "VERSION_NAME=$VERSION_NAME" >> "$GITHUB_ENV"
-          echo "Building $VERSION_NAME ($VERSION_CODE)"
-
-      - name: Verify source mirrors and current contracts
-        shell: bash
-        run: |
-          set -euo pipefail
-          cmp app/build.gradle.kts patch/app/build.gradle.kts
-          cmp app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt patch/app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt
-          cmp app/src/main/java/ru/railbrake/calculator/core/KnowledgeRepository.kt patch/app/src/main/java/ru/railbrake/calculator/core/KnowledgeRepository.kt
-          cmp app/src/main/java/ru/railbrake/calculator/core/KnowledgeFirstWave.kt patch/app/src/main/java/ru/railbrake/calculator/core/KnowledgeFirstWave.kt
-          cmp app/src/main/java/ru/railbrake/calculator/core/DiagnosticResearchIntegration.kt patch/app/src/main/java/ru/railbrake/calculator/core/DiagnosticResearchIntegration.kt
-          cmp app/src/main/java/ru/railbrake/calculator/core/TechnicalAssetReader.kt patch/app/src/main/java/ru/railbrake/calculator/core/TechnicalAssetReader.kt
-          cmp app/src/main/java/ru/railbrake/calculator/core/DiagnosticCompletionCatalog.kt patch/app/src/main/java/ru/railbrake/calculator/core/DiagnosticCompletionCatalog.kt
-          cmp app/src/main/java/ru/railbrake/calculator/core/DiagnosticUnknownRouting.kt patch/app/src/main/java/ru/railbrake/calculator/core/DiagnosticUnknownRouting.kt
-          cmp app/src/main/java/ru/railbrake/calculator/core/DiagnosticPolicyEngine.kt patch/app/src/main/java/ru/railbrake/calculator/core/DiagnosticPolicyEngine.kt
-          cmp app/src/main/java/ru/railbrake/calculator/core/ErmakDiagnosticRepository.kt patch/app/src/main/java/ru/railbrake/calculator/core/ErmakDiagnosticRepository.kt
-          cmp app/src/main/java/ru/railbrake/calculator/core/TechnicalPresentation.kt patch/app/src/main/java/ru/railbrake/calculator/core/TechnicalPresentation.kt
-          cmp app/src/main/java/ru/railbrake/calculator/data/DiagnosticSessionRepository.kt patch/app/src/main/java/ru/railbrake/calculator/data/DiagnosticSessionRepository.kt
-          cmp app/src/main/java/ru/railbrake/calculator/data/AcceptanceStateRepository.kt patch/app/src/main/java/ru/railbrake/calculator/data/AcceptanceStateRepository.kt
-          cmp app/src/main/java/ru/railbrake/calculator/data/ExamDisplayPreferences.kt patch/app/src/main/java/ru/railbrake/calculator/data/ExamDisplayPreferences.kt
-          cmp app/src/main/java/ru/railbrake/calculator/data/TechnicalRecentRepository.kt patch/app/src/main/java/ru/railbrake/calculator/data/TechnicalRecentRepository.kt
-          cmp app/src/main/java/ru/railbrake/calculator/data/SecretAccessRepository.kt patch/app/src/main/java/ru/railbrake/calculator/data/SecretAccessRepository.kt
-          cmp app/src/main/java/ru/railbrake/calculator/ui/DiagnosticScreen.kt patch/app/src/main/java/ru/railbrake/calculator/ui/DiagnosticScreen.kt
-          cmp app/src/main/java/ru/railbrake/calculator/ui/ErmakDiagnosticsScreen.kt patch/app/src/main/java/ru/railbrake/calculator/ui/ErmakDiagnosticsScreen.kt
-          cmp app/src/main/java/ru/railbrake/calculator/ui/BrakeCalculatorApp.kt patch/app/src/main/java/ru/railbrake/calculator/ui/BrakeCalculatorApp.kt
-          cmp app/src/main/java/ru/railbrake/calculator/ui/HomeScreen.kt patch/app/src/main/java/ru/railbrake/calculator/ui/HomeScreen.kt
-          cmp app/src/main/java/ru/railbrake/calculator/ui/KnowledgeBaseScreen.kt patch/app/src/main/java/ru/railbrake/calculator/ui/KnowledgeBaseScreen.kt
-          cmp app/src/main/java/ru/railbrake/calculator/ui/SafetyScreen.kt patch/app/src/main/java/ru/railbrake/calculator/ui/SafetyScreen.kt
-          cmp app/src/main/java/ru/railbrake/calculator/ui/FirstAidScreen.kt patch/app/src/main/java/ru/railbrake/calculator/ui/FirstAidScreen.kt
-          cmp app/src/main/java/ru/railbrake/calculator/ui/ExamQuestionScreen.kt patch/app/src/main/java/ru/railbrake/calculator/ui/ExamQuestionScreen.kt
-          cmp app/src/main/java/ru/railbrake/calculator/ui/TechnicalCatalogScreen.kt patch/app/src/main/java/ru/railbrake/calculator/ui/TechnicalCatalogScreen.kt
-          cmp app/src/test/java/ru/railbrake/calculator/data/AcceptanceSummaryTest.kt patch/app/src/test/java/ru/railbrake/calculator/data/AcceptanceSummaryTest.kt
-          cmp app/src/test/java/ru/railbrake/calculator/core/TechnicalPresentationTest.kt patch/app/src/test/java/ru/railbrake/calculator/core/TechnicalPresentationTest.kt
-          cmp app/src/test/java/ru/railbrake/calculator/core/DiagnosticPolicyEngineTest.kt patch/app/src/test/java/ru/railbrake/calculator/core/DiagnosticPolicyEngineTest.kt
-          cmp app/src/test/java/ru/railbrake/calculator/core/ErmakDiagnosticRuntimeContractTest.kt patch/app/src/test/java/ru/railbrake/calculator/core/ErmakDiagnosticRuntimeContractTest.kt
-          cmp app/src/test/java/ru/railbrake/calculator/core/DiagnosticUnknownRoutingTest.kt patch/app/src/test/java/ru/railbrake/calculator/core/DiagnosticUnknownRoutingTest.kt
-          cmp app/src/test/java/ru/railbrake/calculator/data/TechnicalRecentRepositoryTest.kt patch/app/src/test/java/ru/railbrake/calculator/data/TechnicalRecentRepositoryTest.kt
-          cmp app/src/test/java/ru/railbrake/calculator/ui/ExamQuestionReadingModeTest.kt patch/app/src/test/java/ru/railbrake/calculator/ui/ExamQuestionReadingModeTest.kt
-          cmp app/src/test/java/ru/railbrake/calculator/ui/FirstAidContentTest.kt patch/app/src/test/java/ru/railbrake/calculator/ui/FirstAidContentTest.kt
-          cmp app/src/test/java/ru/railbrake/calculator/ui/TechnicalCatalogNavigationTest.kt patch/app/src/test/java/ru/railbrake/calculator/ui/TechnicalCatalogNavigationTest.kt
-          cmp app/src/main/java/ru/railbrake/calculator/ui/theme/Theme.kt patch/app/src/main/java/ru/railbrake/calculator/ui/theme/Theme.kt
-          expected=(
-            ermak_diagnostics ermak_equipment ermak_knowledge ermak_links ermak_schemes ermak_system_map
-            vl80s_acceptance vl80s_diagnostics vl80s_electrical vl80s_electrical_variants vl80s_equipment
-            vl80s_pneumatic vl80s_pneumatic_variants vl80s_variants
-          )
-          for name in "${expected[@]}"; do
-            test -f "app/src/main/assets/technical/${name}.json.gz"
-            test -f "patch/app/src/main/assets/technical/${name}.json.gz"
-            cmp "app/src/main/assets/technical/${name}.json.gz" "patch/app/src/main/assets/technical/${name}.json.gz"
+          for file in \
+            AssistantModels.kt \
+            AssistantAdapters.kt \
+            AssistantContentLoader.kt \
+            AssistantIndex.kt \
+            AssistantQueryModels.kt \
+            AssistantQueryParser.kt \
+            AssistantFailureMode.kt \
+            AssistantSafetyTopics.kt \
+            AssistantEngine.kt \
+            AssistantConversation.kt \
+            AssistantRuntime.kt \
+            AssistantVoiceInput.kt \
+            AssistantVoicePolicy.kt; do
+            cmp "app/src/main/java/ru/railbrake/calculator/core/assistant/$file" \
+                "patch/app/src/main/java/ru/railbrake/calculator/core/assistant/$file"
           done
-          grep -Fq 'QuickRouteItem("Масляный насос трансформатора"' app/src/main/java/ru/railbrake/calculator/ui/DiagnosticScreen.kt
-          ! grep -Fq 'label = { Text("Тренажёр") }' app/src/main/java/ru/railbrake/calculator/ui/DiagnosticScreen.kt
-          grep -Fq 'Text("Уточнение симптома"' app/src/main/java/ru/railbrake/calculator/ui/ErmakDiagnosticsScreen.kt
-          grep -Fq 'private fun ErmakQuestionAnswers(' app/src/main/java/ru/railbrake/calculator/ui/ErmakDiagnosticsScreen.kt
-          grep -Fq 'choice.isUnknown' app/src/main/java/ru/railbrake/calculator/ui/ErmakDiagnosticsScreen.kt
-          grep -Fq ') { Text("Не знаю") }' app/src/main/java/ru/railbrake/calculator/ui/ErmakDiagnosticsScreen.kt
-          grep -Fq 'Text("Пользовательский профиль"' app/src/main/java/ru/railbrake/calculator/ui/BrakeCalculatorApp.kt
-          grep -Fq 'BLUE("Холодный синий", Color(0xFF82A9FF), Color(0xFF182947))' app/src/main/java/ru/railbrake/calculator/ui/theme/Theme.kt
-          grep -Fq 'AMBER("Янтарный", RailAmber, RailAmberSoft)' app/src/main/java/ru/railbrake/calculator/ui/theme/Theme.kt
-          grep -Fq 'IconButton(onClick = { query = "" })' app/src/main/java/ru/railbrake/calculator/ui/KnowledgeBaseScreen.kt
-          grep -Fq 'SafetyScreen(onBack = { screenName = AppScreen.HOME.name })' app/src/main/java/ru/railbrake/calculator/ui/BrakeCalculatorApp.kt
-          ! grep -Fq 'initialCategory = "Охрана труда"' app/src/main/java/ru/railbrake/calculator/ui/BrakeCalculatorApp.kt
-          grep -Fq 'fun searchSafety(query: String, category: String)' app/src/main/java/ru/railbrake/calculator/core/KnowledgeRepository.kt
-          grep -Fq 'id = "safety-ppe-testing"' app/src/main/java/ru/railbrake/calculator/core/KnowledgeRepository.kt
-          grep -Fq 'title = "Общий порядок действий"' app/src/main/java/ru/railbrake/calculator/ui/FirstAidScreen.kt
-          grep -Fq 'Редкие судорожные вдохи считайте отсутствием нормального дыхания' app/src/main/java/ru/railbrake/calculator/ui/FirstAidScreen.kt
-          grep -Fq 'id = "heat"' app/src/main/java/ru/railbrake/calculator/ui/FirstAidScreen.kt
-          grep -Fq 'id = "chest_abdomen"' app/src/main/java/ru/railbrake/calculator/ui/FirstAidScreen.kt
-          grep -Fq 'не менее 20 минут' app/src/main/java/ru/railbrake/calculator/ui/FirstAidScreen.kt
-          grep -Fq 'label = { Text("Найти по симптому или действию") }' app/src/main/java/ru/railbrake/calculator/ui/FirstAidScreen.kt
-          grep -Fq 'fun firstAidTopicMatches' app/src/main/java/ru/railbrake/calculator/ui/FirstAidScreen.kt
-          grep -Fq 'VL80S_REQUIRED_ACCEPTANCE_COUNT = 15' app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt
-          grep -Fq 'ERMAK_REQUIRED_ACCEPTANCE_COUNT = 18' app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt
-          grep -Fq 'Базовый объём по руководству' app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt
-          grep -Fq 'Тормоза, сигналы, нормы и общие материалы' app/src/main/java/ru/railbrake/calculator/ui/HomeScreen.kt
-          grep -Fq 'Показывать материалы в Базе знаний' app/src/main/java/ru/railbrake/calculator/ui/ExamQuestionScreen.kt
-          grep -Fq 'Text("Режим чтения")' app/src/main/java/ru/railbrake/calculator/ui/ExamQuestionScreen.kt
-          grep -Fq 'EXAM_READING_EXIT_LABEL = "Выйти"' app/src/main/java/ru/railbrake/calculator/ui/ExamQuestionScreen.kt
-          grep -Fq 'Text(EXAM_READING_EXIT_LABEL)' app/src/main/java/ru/railbrake/calculator/ui/ExamQuestionScreen.kt
-          grep -Fq 'Switch(checked = showLinks' app/src/main/java/ru/railbrake/calculator/ui/ExamQuestionScreen.kt
-          grep -Fq 'Text("Недавние материалы"' app/src/main/java/ru/railbrake/calculator/ui/TechnicalCatalogScreen.kt
-          grep -Fq 'fun technicalBreadcrumbSelection' app/src/main/java/ru/railbrake/calculator/ui/TechnicalCatalogScreen.kt
-          grep -Fq '.verticalScroll(rememberScrollState())' app/src/main/java/ru/railbrake/calculator/ui/TechnicalCatalogScreen.kt
-          grep -Fq 'private fun AcceptanceHelpDialog' app/src/main/java/ru/railbrake/calculator/ui/TechnicalCatalogScreen.kt
-          grep -Fq '.weight(1f, fill = false)' app/src/main/java/ru/railbrake/calculator/ui/TechnicalCatalogScreen.kt
-          grep -Fq 'acceptance-help-large-font-after-scroll' qa/dev14_android_smoke.py
-          grep -Fq 'class TechnicalRecentRepository' app/src/main/java/ru/railbrake/calculator/data/TechnicalRecentRepository.kt
-          grep -Fq 'font_scale", "1.3"' qa/dev14_android_smoke.py
-          grep -Fq 'KEY_SHOW_IN_KNOWLEDGE' app/src/main/java/ru/railbrake/calculator/data/SecretAccessRepository.kt
-          grep -Fq 'getSharedPreferences("calculation_inputs"' app/src/main/java/ru/railbrake/calculator/ui/BrakeCalculatorApp.kt
-          grep -Fq 'Локальный журнал Ермака' app/src/main/java/ru/railbrake/calculator/ui/ErmakDiagnosticsScreen.kt
-          grep -Fq 'profileId = DiagnosticSessionRepository.PROFILE_ERMAK' app/src/main/java/ru/railbrake/calculator/ui/ErmakDiagnosticsScreen.kt
-          grep -Fq 'loadForProfile(DiagnosticSessionRepository.PROFILE_VL80S)' app/src/main/java/ru/railbrake/calculator/ui/DiagnosticScreen.kt
-          grep -Fq 'fun startOrContinueSession(' app/src/main/java/ru/railbrake/calculator/data/AcceptanceStateRepository.kt
-          grep -Fq 'Text("Скопировать отчёт")' app/src/main/java/ru/railbrake/calculator/ui/TechnicalCatalogScreen.kt
-          grep -Fq 'Расширенный маршрут систематизирует карточки оборудования' app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt
-          grep -Fq 'reportContainsSessionSummaryAndNotes' app/src/test/java/ru/railbrake/calculator/data/AcceptanceSummaryTest.kt
-          python3 qa/verify_runtime_asset_paths.py app/src/main/java app/src/main/assets
-          python3 qa/verify_diagnostic_unknown_routes.py
-          python3 qa/verify_diagnostic_graphs.py app/src/main/assets
-          python3 qa/verify_ermak_atlas.py app/src/main/assets
+          for file in AssistantHomePanel.kt AssistantResultActivity.kt HomeScreen.kt BrakeCalculatorApp.kt LocomotiveDiagnosticsScreen.kt ErmakDiagnosticsScreen.kt; do
+            cmp "app/src/main/java/ru/railbrake/calculator/ui/$file" \
+                "patch/app/src/main/java/ru/railbrake/calculator/ui/$file"
+          done
+          cmp app/src/main/java/ru/railbrake/calculator/core/WorkingLocomotive.kt patch/app/src/main/java/ru/railbrake/calculator/core/WorkingLocomotive.kt
+          cmp app/src/main/java/ru/railbrake/calculator/data/WorkingLocomotiveRepository.kt patch/app/src/main/java/ru/railbrake/calculator/data/WorkingLocomotiveRepository.kt
+          for testfile in \
+            AssistantIndexTest.kt \
+            AssistantEngineTest.kt \
+            AssistantClarificationResolutionTest.kt \
+            AssistantDiagnosticCorpusTest.kt \
+            AssistantHumanQueryCorpusTest.kt \
+            AssistantSafetyRoutingTest.kt \
+            AssistantSectionRoutingTest.kt \
+            AssistantScenarioSpeechCorpusTest.kt \
+            AssistantCatalogCoverageTest.kt \
+            AssistantVoicePolicyTest.kt \
+            AssistantWorkingLocomotiveTest.kt; do
+            cmp \
+              "app/src/test/java/ru/railbrake/calculator/core/assistant/$testfile" \
+              "patch/app/src/test/java/ru/railbrake/calculator/core/assistant/$testfile"
+          done
+          cmp app/src/main/java/ru/railbrake/calculator/ui/FirstAidScreen.kt patch/app/src/main/java/ru/railbrake/calculator/ui/FirstAidScreen.kt
+          cmp app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt patch/app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt
+          cmp app/build.gradle.kts patch/app/build.gradle.kts
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -158,7 +143,7 @@ jobs:
         with:
           gradle-version: '8.7'
 
-      - name: Extract base and overlay permanent source
+      - name: Extract dev13 base and overlay dev14 plus assistant
         shell: bash
         run: |
           set -euo pipefail
@@ -167,35 +152,165 @@ jobs:
           unzip -q RailBrakeCalculator.zip -d buildsrc
           test -f buildsrc/RailBrakeCalculator/settings.gradle.kts
           cp -a patch/. buildsrc/RailBrakeCalculator/
-          grep -Fq "versionCode = $VERSION_CODE" buildsrc/RailBrakeCalculator/app/build.gradle.kts
-          grep -Fq "versionName = \"$VERSION_NAME\"" buildsrc/RailBrakeCalculator/app/build.gradle.kts
-          python3 qa/verify_runtime_asset_paths.py buildsrc/RailBrakeCalculator/app/src/main/java buildsrc/RailBrakeCalculator/app/src/main/assets
+          for file in \
+            AssistantModels.kt \
+            AssistantAdapters.kt \
+            AssistantContentLoader.kt \
+            AssistantIndex.kt \
+            AssistantQueryModels.kt \
+            AssistantQueryParser.kt \
+            AssistantFailureMode.kt \
+            AssistantSafetyTopics.kt \
+            AssistantEngine.kt \
+            AssistantConversation.kt \
+            AssistantRuntime.kt \
+            AssistantVoiceInput.kt \
+            AssistantVoicePolicy.kt; do
+            test -f "buildsrc/RailBrakeCalculator/app/src/main/java/ru/railbrake/calculator/core/assistant/$file"
+          done
+          test -f buildsrc/RailBrakeCalculator/app/src/main/java/ru/railbrake/calculator/ui/AssistantHomePanel.kt
+          test -f buildsrc/RailBrakeCalculator/app/src/main/java/ru/railbrake/calculator/ui/AssistantResultActivity.kt
+          test -f buildsrc/RailBrakeCalculator/app/src/main/java/ru/railbrake/calculator/ui/HomeScreen.kt
+          grep -q 'AssistantResultActivity' buildsrc/RailBrakeCalculator/app/src/main/AndroidManifest.xml
+          for testfile in \
+            AssistantIndexTest.kt \
+            AssistantEngineTest.kt \
+            AssistantClarificationResolutionTest.kt \
+            AssistantDiagnosticCorpusTest.kt \
+            AssistantHumanQueryCorpusTest.kt \
+            AssistantSafetyRoutingTest.kt \
+            AssistantSectionRoutingTest.kt \
+            AssistantScenarioSpeechCorpusTest.kt \
+            AssistantCatalogCoverageTest.kt \
+            AssistantVoicePolicyTest.kt \
+            AssistantWorkingLocomotiveTest.kt; do
+            test -f "buildsrc/RailBrakeCalculator/app/src/test/java/ru/railbrake/calculator/core/assistant/$testfile"
+          done
+          grep -q 'android.permission.RECORD_AUDIO' buildsrc/RailBrakeCalculator/app/src/main/AndroidManifest.xml
+
+      - name: Bundle pinned offline speech engine and Russian models
+        shell: bash
+        run: |
+          set -euo pipefail
+          base=buildsrc/RailBrakeCalculator/app
+          mkdir -p "$base/libs" "$base/src/main/assets/assistant_voice"
+          curl -fL --retry 3 --connect-timeout 20 \
+            https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.13.8/sherpa-onnx-1.13.8.aar \
+            -o "$base/libs/sherpa-onnx.aar"
+          curl -fL --retry 3 --connect-timeout 20 \
+            https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/silero_vad.onnx \
+            -o "$base/src/main/assets/assistant_voice/silero_vad.onnx"
+          curl -fL --retry 3 --connect-timeout 20 \
+            https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-zipformer-ru-int8-2025-04-20.tar.bz2 \
+            -o /tmp/sherpa-ru.tar.bz2
+          tar -xjf /tmp/sherpa-ru.tar.bz2 -C /tmp
+          model=sherpa-onnx-zipformer-ru-int8-2025-04-20
+          mkdir -p "$base/src/main/assets/assistant_voice/$model"
+          for file in encoder.int8.onnx decoder.onnx joiner.int8.onnx tokens.txt; do
+            cp "/tmp/$model/$file" "$base/src/main/assets/assistant_voice/$model/$file"
+          done
+          sha256sum "$base/libs/sherpa-onnx.aar" "$base/src/main/assets/assistant_voice/silero_vad.onnx" \
+            "$base/src/main/assets/assistant_voice/$model/"* | tee offline-voice-sha256.txt
+          printf '%s  %s\n' \
+            633c24321e06b1fe79feafa03ea16cbc0f8a286641e2da3559bac91bdb13bd96 "$base/libs/sherpa-onnx.aar" \
+            9e2449e1087496d8d4caba907f23e0bd3f78d91fa552479bb9c23ac09cbb1fd6 "$base/src/main/assets/assistant_voice/silero_vad.onnx" \
+            dcbe1ffa0211e77ca6d3a80164df13fbda3ec00e47d12b9f449f89572df12136 "$base/src/main/assets/assistant_voice/$model/decoder.onnx" \
+            eb6c12fbad810d5bc3e427802e604604c69b5943a91feebc43424dd09d9ec407 "$base/src/main/assets/assistant_voice/$model/encoder.int8.onnx" \
+            93f2e1d12b78d53e7802f1606488c14bb3d764b15fadf5ef6c022f6ba1fa40f7 "$base/src/main/assets/assistant_voice/$model/joiner.int8.onnx" \
+            93bbbc0bae6b78c0bbb743d4aa9fded3bb5ff3aac5f0200e3a769a5a05e0fdf6 "$base/src/main/assets/assistant_voice/$model/tokens.txt" \
+            | sha256sum --check --status
+          unzip -l "$base/libs/sherpa-onnx.aar" | grep -q 'jni/arm64-v8a/libsherpa-onnx-jni.so'
+
+      - name: Prepare updatable Test application
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          project = Path('buildsrc/RailBrakeCalculator')
+          gradle = project / 'app/build.gradle.kts'
+          text = gradle.read_text(encoding='utf-8')
+
+          text, app_id_count = re.subn(
+              r'applicationId\s*=\s*"ru\.railbrake\.calculator"',
+              'applicationId = "ru.railbrake.calculator.assistanttest"',
+              text,
+              count=1,
+          )
+          if app_id_count != 1:
+              raise SystemExit('Expected applicationId was not found exactly once')
+
+          text, code_count = re.subn(
+              r'versionCode\s*=\s*\d+',
+              'versionCode = 214',
+              text,
+              count=1,
+          )
+          if code_count != 1:
+              raise SystemExit('Expected versionCode was not found exactly once')
+
+          def version_replacement(match):
+              return f'versionName = "{match.group(1)}-assistant-v0.23"'
+
+          text, version_count = re.subn(
+              r'versionName\s*=\s*"([^"]+)"',
+              version_replacement,
+              text,
+              count=1,
+          )
+          if version_count != 1:
+              raise SystemExit('Expected versionName was not found exactly once')
+
+          gradle.write_text(text, encoding='utf-8')
+
+          strings = project / 'app/src/main/res/values/strings.xml'
+          strings_text = strings.read_text(encoding='utf-8')
+          marker = '<string name="app_name">ЖД Помощник</string>'
+          if marker not in strings_text:
+              raise SystemExit('Expected app_name was not found')
+          strings.write_text(
+              strings_text.replace(
+                  marker,
+                  '<string name="app_name">ЖД Помощник Test</string>',
+                  1,
+              ),
+              encoding='utf-8',
+          )
+          PY
 
       - name: Validate ChME3 Android projection
         run: python3 qa/verify_chme3_android_assets.py
 
-      - name: Run unit tests
+      - name: Compile and test debug sources
         working-directory: buildsrc/RailBrakeCalculator
-        run: timeout --signal=TERM 15m gradle :app:testDebugUnitTest --stacktrace --console=plain
+        shell: bash
+        run: |
+          set +e
+          timeout --signal=KILL 15m gradle :app:testDebugUnitTest --stacktrace --console=plain
+          status=$?
+          if [ "$status" -ne 0 ]; then
+            echo '===== ASSISTANT CORPUS FAILURE REPORTS ====='
+            python3 - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          for path in Path('app/build/test-results/testDebugUnitTest').glob('TEST-*Assistant*Test*.xml'):
+              for test in ET.parse(path).iter('testcase'):
+                  for failure in test.findall('failure'):
+                      print(f"{path.name} / {test.attrib.get('name')}: {failure.attrib.get('message')}")
+          PY
+          fi
+          exit "$status"
 
-      - name: Run Android lint
+      - name: Android lint
         working-directory: buildsrc/RailBrakeCalculator
-        run: timeout --signal=TERM 15m gradle :app:lintDebug --stacktrace --console=plain
-
-      - name: Build debug APK
-        working-directory: buildsrc/RailBrakeCalculator
-        run: timeout --signal=TERM 15m gradle :app:assembleDebug --stacktrace --console=plain
-
-      - name: Verify debug APK runtime contracts
         shell: bash
         run: |
           set -euo pipefail
-          APK=buildsrc/RailBrakeCalculator/app/build/outputs/apk/debug/app-debug.apk
-          python3 qa/verify_technical_assets_in_apk.py "$APK"
-          python3 qa/verify_chme3_android_assets.py "$APK"
-          python3 qa/verify_runtime_asset_paths.py buildsrc/RailBrakeCalculator/app/src/main/java buildsrc/RailBrakeCalculator/app/src/main/assets "$APK"
+          timeout --signal=KILL 5m gradle --no-daemon :app:lintDebug --stacktrace --console=plain
 
-      - name: Decode release signing key
+      - name: Decode stable signing key
         working-directory: buildsrc/RailBrakeCalculator
         shell: bash
         run: |
@@ -204,32 +319,39 @@ jobs:
           echo "$RELEASE_KEYSTORE_B64" | base64 --decode > release.keystore
           test -s release.keystore
 
-      - name: Build signed release APK
+      - name: Build signed Test APK
         working-directory: buildsrc/RailBrakeCalculator
+        shell: bash
         env:
           RAILBRAKE_KEYSTORE_PATH: ${{ github.workspace }}/buildsrc/RailBrakeCalculator/release.keystore
           RAILBRAKE_STORE_PASSWORD: ${{ secrets.RAILBRAKE_STORE_PASSWORD }}
           RAILBRAKE_KEY_ALIAS: ${{ secrets.RAILBRAKE_KEY_ALIAS }}
           RAILBRAKE_KEY_PASSWORD: ${{ secrets.RAILBRAKE_KEY_PASSWORD }}
-        run: timeout --signal=TERM 15m gradle :app:assembleRelease --stacktrace --console=plain
+        run: |
+          set -euo pipefail
+          timeout --signal=KILL 15m gradle :app:assembleRelease --stacktrace --console=plain
 
-      - name: Verify signed release package
+      - name: Verify signed Test APK identity and signature
         shell: bash
         run: |
           set -euo pipefail
           APK=buildsrc/RailBrakeCalculator/app/build/outputs/apk/release/app-release.apk
-          "$ANDROID_SDK_ROOT/build-tools/34.0.0/aapt" dump badging "$APK" | tee apk-badging.log
-          grep -Fq "package: name='ru.railbrake.calculator' versionCode='$VERSION_CODE' versionName='$VERSION_NAME'" apk-badging.log
-          "$ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner" verify --verbose --print-certs "$APK" | tee signed-apksigner.log
-          grep -qi "Signer #1 certificate SHA-256 digest: $EXPECTED_SIGNING_CERT_SHA256" signed-apksigner.log
-          python3 qa/verify_technical_assets_in_apk.py "$APK"
+          "$ANDROID_SDK_ROOT/build-tools/34.0.0/aapt" dump badging "$APK" | tee assistant-test-badging.log
+          grep -Fq "package: name='ru.railbrake.calculator.assistanttest' versionCode='214' versionName='1.2.2-dev14-beta53-chme3-assistant-v0.23'" assistant-test-badging.log
+          "$ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner" verify --verbose --print-certs "$APK" | tee assistant-test-apksigner.log
+          grep -qi "Signer #1 certificate SHA-256 digest: $EXPECTED_SIGNING_CERT_SHA256" assistant-test-apksigner.log
           python3 qa/verify_chme3_android_assets.py "$APK"
-          python3 qa/verify_runtime_asset_paths.py buildsrc/RailBrakeCalculator/app/src/main/java buildsrc/RailBrakeCalculator/app/src/main/assets "$APK"
+          unzip -Z1 "$APK" > assistant-test-entries.txt
+          grep -Fxq 'assets/assistant_voice/silero_vad.onnx' assistant-test-entries.txt
+          for file in encoder.int8.onnx decoder.onnx joiner.int8.onnx tokens.txt; do
+            grep -Fxq "assets/assistant_voice/sherpa-onnx-zipformer-ru-int8-2025-04-20/$file" assistant-test-entries.txt
+          done
+          grep -Fxq 'lib/arm64-v8a/libsherpa-onnx-jni.so' assistant-test-entries.txt
 
-      - name: Upload signed release APK
+      - name: Upload updatable signed Test APK
         uses: actions/upload-artifact@v4
         with:
-          name: RailBrakeCalculator-dev14-beta53-ChME3-assistant-signed
+          name: railbrake-assistant-test-v0.23-chme3-signed-apk
           path: buildsrc/RailBrakeCalculator/app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 7
