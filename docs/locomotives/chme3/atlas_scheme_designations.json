@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "packageId": "chme3-family",
+  "updatedAt": "2026-10-01",
+  "electrical": {
+    "evidenceRefs": ["CHME3-SRC-NOTIK-1996", "CHME3-SRC-NOTIK-1990", "CHME3-SRC-LOKOMOTIV-1986-ELEMENTS", "CHME3-SRC-IOFFE-ELECTRIC-2023"],
+    "elements": [
+      {"designation":"Г","name":"Тяговый генератор","equipmentId":"CHME3-EQ-TRACTION-GENERATOR"},
+      {"designation":"1-6","name":"Тяговые электродвигатели","equipmentId":"CHME3-EQ-TRACTION-MOTORS"},
+      {"designation":"В","name":"Возбудитель","equipmentId":"CHME3-EQ-EXCITER"},
+      {"designation":"ВГ","name":"Вспомогательный генератор","equipmentId":"CHME3-EQ-AUX-GENERATOR"},
+      {"designation":"МН","name":"Электродвигатель маслопрокачивающего насоса","equipmentId":"CHME3-EQ-OIL-PRIME-PUMP"},
+      {"designation":"МВХ","name":"Электродвигатель вентилятора холодильника вспомогательного контура","equipmentId":"CHME3-EQ-COOLING-FANS"},
+      {"designation":"СМД","name":"Сервомотор регулятора дизеля","equipmentId":"CHME3-EQ-GOVERNOR-SERVOMOTOR"},
+      {"designation":"ОВ","name":"Рубильник аккумуляторной батареи","equipmentId":"CHME3-EQ-BATTERY-SWITCH"},
+      {"designation":"КП1-КП3","name":"Поездные контакторы","equipmentId":"CHME3-EQ-TRAIN-CONTACTORS"},
+      {"designation":"КВ","name":"Контактор возбуждения","equipmentId":"CHME3-EQ-CONTACTORS"},
+      {"designation":"РВ","name":"Реверсор","equipmentId":"CHME3-EQ-REVERSER"}
+    ],
+    "functionalLinks": [
+      {
+        "id":"CHME3-LINK-TRACTION-01",
+        "from":"CHME3-EQ-TRACTION-GENERATOR",
+        "to":["CHME3-EQ-TRAIN-CONTACTORS","CHME3-EQ-TRACTION-MOTORS"],
+        "relation":"силовая тяговая цепь",
+        "note":"Тяговый генератор питает шесть ТЭД через поездные контакторы; направление движения задаётся реверсированием цепей ТЭД."
+      },
+      {
+        "id":"CHME3-LINK-EXCITATION-01",
+        "from":"CHME3-EQ-EXCITER",
+        "to":["CHME3-EQ-TRACTION-GENERATOR","CHME3-EQ-CONTACTORS"],
+        "relation":"возбуждение тягового генератора",
+        "note":"Возбудитель обеспечивает независимое возбуждение тягового генератора через цепь контактора возбуждения."
+      },
+      {
+        "id":"CHME3-LINK-GOV-01",
+        "from":"CHME3-EQ-DRIVER-CONTROLLER",
+        "to":["CHME3-EQ-GOVERNOR-SERVOMOTOR","CHME3-EQ-GOVERNOR"],
+        "relation":"управление частотой вращения дизеля"
+      }
+    ]
+  },
+  "pneumatic": {
+    "evidenceRefs": ["CHME3-SRC-PNEUMATIC-PUBLIC", "CHME3-SRC-NOTIK-1996", "CHME3-SRC-SHVAINSHTEIN-1975"],
+    "elements": [
+      {"schemeNo":"16","name":"Кран машиниста №394","equipmentId":"CHME3-EQ-DRIVER-BRAKE-VALVE"},
+      {"schemeNo":"18","name":"Уравнительный резервуар","equipmentId":"CHME3-EQ-EQUALIZING-RESERVOIR"},
+      {"schemeNo":"20","name":"Электропневматический клапан автостопа ЭПК-150","equipmentId":"CHME3-EQ-EPC-AUTOSTOP"},
+      {"schemeNo":"23,25","name":"Кран вспомогательного тормоза №254","equipmentId":"CHME3-EQ-AUX-BRAKE-VALVE"},
+      {"schemeNo":"28","name":"Резервуар системы управления аппаратами","equipmentId":"CHME3-EQ-PNEUMATIC-CONTROL-RESERVOIR"},
+      {"schemeNo":"34","name":"Запасной резервуар","equipmentId":"CHME3-EQ-AIR-DISTRIBUTOR","note":"Хранится как связанный узел тормозной ветви; при детальном Атласе выделяется отдельным equipmentId."},
+      {"schemeNo":"35","name":"Воздухораспределитель №483М","equipmentId":"CHME3-EQ-AIR-DISTRIBUTOR"},
+      {"schemeNo":"37","name":"Маслоотделитель","equipmentId":"CHME3-EQ-AIR-DRY-SEPARATOR"},
+      {"schemeNo":"39","name":"Главные резервуары","equipmentId":"CHME3-EQ-MAIN-RESERVOIRS"},
+      {"schemeNo":"42","name":"Регулятор давления","equipmentId":"CHME3-EQ-PRESSURE-GOV"},
+      {"schemeNo":"44","name":"Компрессор","equipmentId":"CHME3-EQ-COMPRESSOR"},
+      {"schemeNo":"45","name":"Промежуточный холодильник компрессора","equipmentId":"CHME3-EQ-INTERCOOLER"},
+      {"schemeNo":"52,69","name":"Тормозные цилиндры","equipmentId":"CHME3-EQ-BRAKE-CYLINDERS"}
+    ],
+    "functionalLinks": [
+      {
+        "id":"CHME3-LINK-AIR-01",
+        "from":"CHME3-EQ-COMPRESSOR",
+        "to":["CHME3-EQ-INTERCOOLER","CHME3-EQ-MAIN-RESERVOIRS"],
+        "relation":"наполнение главных резервуаров"
+      },
+      {
+        "id":"CHME3-LINK-AIR-02",
+        "from":"CHME3-EQ-PRESSURE-GOV",
+        "to":["CHME3-EQ-COMPRESSOR","CHME3-EQ-COMPRESSOR-DRIVE"],
+        "relation":"разгрузка/включение компрессора",
+        "note":"В опубликованном описании для ЧМЭ3 привод компрессора связан с гидромеханическим редуктором; конкретные уставки и краны не использовать как действие без проверки исполнения."
+      },
+      {
+        "id":"CHME3-LINK-BRAKE-01",
+        "from":"CHME3-EQ-DRIVER-BRAKE-VALVE",
+        "to":["CHME3-EQ-AIR-DISTRIBUTOR","CHME3-EQ-AUX-BRAKE-VALVE","CHME3-EQ-BRAKE-CYLINDERS"],
+        "relation":"автоматическое торможение через тормозную магистраль и воздухораспределитель"
+      }
+    ]
+  },
+  "variantNotes": [
+    "ЧМЭ3Т имеет отдельный слой электродинамического тормоза; его реостатные цепи не приписываются базовому ЧМЭ3.",
+    "Пневматические приборы менялись по партиям и модернизациям; номер прибора хранится как атрибут исполнения, а не как вечное свойство всей серии.",
+    "Исторические схемы полезны для ранних исполнений, но не являются основанием для текущих эксплуатационных действий."
+  ]
+}
