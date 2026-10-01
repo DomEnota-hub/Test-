@@ -1,0 +1,160 @@
+{
+  "schemaVersion": 1,
+  "packageId": "chme3-family",
+  "updatedAt": "2026-10-01",
+  "policy": {
+    "principle": "Официальность источника не равна истинности. Каждое утверждение хранит происхождение, применимость, актуальность и уровень риска независимо.",
+    "sourceBoundActions": "Для действий, которые требуют нормативного или заводского основания, FIELD_PRACTICE, TRAINING и UNVERIFIED сами по себе не дают разрешения на действие.",
+    "conflicts": "Расхождение источников не скрывается и не разрешается по рангу автоматически. Оно фиксируется как CONFLICT до предметной сверки исполнения, редакции и условий применения."
+  },
+  "statusVocabulary": [
+    "996R_CONFIRMED",
+    "OFFICIAL_OTHER",
+    "MANUFACTURER_CONFIRMED",
+    "LOCAL_INSTRUCTION",
+    "TRAINING_REFERENCE",
+    "FIELD_PRACTICE",
+    "CONFLICT",
+    "UNVERIFIED",
+    "HISTORICAL_SUPERSEDED"
+  ],
+  "sources": [
+    {
+      "id": "CHME3-SRC-996R-2024",
+      "title": "Перечень действий локомотивных бригад по выявлению и устранению неисправностей на локомотивах при поездной и маневровой работе",
+      "kind": "NORMATIVE",
+      "status": "996R_CONFIRMED",
+      "documentId": "Распоряжение ОАО РЖД от 12.04.2022 № 996/р",
+      "revision": "в редакции распоряжения от 05.03.2024 № 592/р",
+      "applicability": ["ЧМЭ3"],
+      "purpose": ["diagnostics", "operational_actions"],
+      "authorityForAction": "CANDIDATE_REQUIRES_2026_RECHECK",
+      "url": "https://urizdat.ru/books/zheleznodorozhnyy-transport/lokomotivy-i-lokomotivnoe-hozyaystvo-ct-ctr/perechen-deystviy-lokomotivnyh-brigad-po-vyyavleniyu-i-ustraneniyu-neispravnostey-na-lokomotivah-pri-poezdnoy-i-manevrovoy-rabote-utverzhden-rasporyazheniem-oao-rzhd-ot-12-04-2022-996-r-v-redakcii-rasporyazheniya-oao-rzhd-ot-05-03-2024-592-r.html",
+      "notes": "Открытый источник подтверждает наличие отдельного порядка для ЧМЭ3 и редакцию 592/р. Перед пометкой CURRENT_CONFIRMED на 2026 год требуется сверка последующих изменений."
+    },
+    {
+      "id": "CHME3-SRC-671R-HIST",
+      "title": "Рекомендации локомотивной бригаде по обнаружению и устранению неисправностей на локомотивах в пути следования",
+      "kind": "NORMATIVE",
+      "status": "HISTORICAL_SUPERSEDED",
+      "documentId": "Распоряжение ОАО РЖД от 31.03.2010 № 671р",
+      "applicability": ["ЧМЭ3"],
+      "purpose": ["historical_diagnostics", "field_comparison"],
+      "authorityForAction": "NO",
+      "notes": "Утратило силу с вводом 996/р. Сохраняется для сравнения старых алгоритмов и поиска исчезнувших из нового порядка практических приёмов."
+    },
+    {
+      "id": "CHME3-SRC-NOTIK-1996",
+      "title": "Тепловозы ЧМЭ3, ЧМЭ3Т, ЧМЭ3Э. Пособие машинисту, 2-е изд.",
+      "authors": ["З. Х. Нотик"],
+      "year": 1996,
+      "kind": "TRAINING",
+      "status": "TRAINING_REFERENCE",
+      "applicability": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "purpose": ["atlas", "electrical_schemes", "diesel", "fuel", "oil", "water", "pneumatics", "equipment", "principles"],
+      "authorityForAction": "NO_BY_ITSELF",
+      "url": "https://zdsim.com/library/116/vkladysh_teplovozy_chmeh3_chmeh3t_chmeh3eh_notik_1",
+      "notes": "Ключевой опорный учебный источник для устройства и схем. Конкретные действия и уставки проверять по актуальным документам и исполнению."
+    },
+    {
+      "id": "CHME3-SRC-NOTIK-1990",
+      "title": "Тепловозы ЧМЭ3, ЧМЭ3Т. Пособие машинисту",
+      "authors": ["З. Х. Нотик"],
+      "year": 1990,
+      "kind": "TRAINING",
+      "status": "TRAINING_REFERENCE",
+      "applicability": ["ЧМЭ3", "ЧМЭ3Т"],
+      "purpose": ["atlas", "electrical_schemes", "equipment", "principles"],
+      "authorityForAction": "NO_BY_ITSELF",
+      "url": "https://zdsim.com/library/116/page/4"
+    },
+    {
+      "id": "CHME3-SRC-K6S310DR-1988",
+      "title": "Дизель K6S310DR. Инструкция по эксплуатации двигателя для тепловоза ЧМЭ3Т",
+      "authors": ["В. Пик", "И. Хертл", "Я. Штраус", "М. Прудек"],
+      "year": 1988,
+      "kind": "MANUFACTURER_CANDIDATE",
+      "status": "UNVERIFIED",
+      "applicability": ["ЧМЭ3Т"],
+      "purpose": ["diesel", "atlas", "normal_values", "diagnostics"],
+      "authorityForAction": "REQUIRES_PROVENANCE_CHECK",
+      "url": "https://djvu.online/file/FvKAjNcxzs2LG",
+      "notes": "Полезный первичный материал по K6S310DR; перед повышением статуса требуется подтвердить издательские/заводские реквизиты и соответствие конкретному исполнению."
+    },
+    {
+      "id": "CHME3-SRC-LOKOMOTIV-1991-SCHEME",
+      "title": "Схема электрооборудования тепловоза ЧМЭ3",
+      "kind": "TECHNICAL_PUBLICATION",
+      "status": "TRAINING_REFERENCE",
+      "year": 1991,
+      "applicability": ["ЧМЭ3"],
+      "purpose": ["electrical_schemes", "equipment", "cross_links"],
+      "authorityForAction": "NO_BY_ITSELF",
+      "notes": "Использовать для идентификации аппаратов и связей с обязательной проверкой исполнения."
+    },
+    {
+      "id": "CHME3-SRC-ERCHM-1987",
+      "title": "Регулятор дизеля тепловоза ЧМЭ3",
+      "kind": "TECHNICAL_PUBLICATION",
+      "status": "TRAINING_REFERENCE",
+      "year": 1987,
+      "applicability": ["ЧМЭ3"],
+      "purpose": ["diesel_governor", "atlas", "diagnostics"],
+      "authorityForAction": "NO_BY_ITSELF",
+      "url": "https://www.booksite.ru/tyaga/1987/1987_4.pdf"
+    },
+    {
+      "id": "CHME3-SRC-SCBIST-COLLECTION",
+      "title": "Сборник документации по тепловозу ЧМЭ3",
+      "kind": "ARCHIVE_INDEX",
+      "status": "UNVERIFIED",
+      "applicability": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э", "ЧМЭ3К"],
+      "purpose": ["source_discovery"],
+      "authorityForAction": "NO",
+      "url": "https://scbist.com/tyagovyi-podvizhnoi-sostav/12424-teplovoz-chme3-dokumentaciya-print.html",
+      "notes": "Индекс содержит РЭ/ТО-ТР, электрические и пневматические схемы, поиск неисправностей, аварийные схемы, памятки, УСТА, ЭРЧМ и другие материалы. Каждый вложенный документ получает собственную запись после проверки."
+    },
+    {
+      "id": "CHME3-SRC-SCBIST-FAULT-FINDING",
+      "title": "Поиск неисправностей ЧМЭ3",
+      "kind": "FIELD_OR_TRAINING",
+      "status": "UNVERIFIED",
+      "applicability": ["ЧМЭ3"],
+      "purpose": ["diagnostics", "field_practice"],
+      "authorityForAction": "NO_UNTIL_REVIEW",
+      "discoveredVia": "CHME3-SRC-SCBIST-COLLECTION"
+    },
+    {
+      "id": "CHME3-SRC-SCBIST-EMERGENCY-SCHEMES",
+      "title": "Основные аварийные схемы приведения тепловоза ЧМЭ3 в движение",
+      "kind": "FIELD_OR_TRAINING",
+      "status": "FIELD_PRACTICE",
+      "applicability": ["ЧМЭ3"],
+      "purpose": ["diagnostics", "emergency_schemes", "field_practice"],
+      "authorityForAction": "NO_UNTIL_CONFLICT_REVIEW",
+      "discoveredVia": "CHME3-SRC-SCBIST-COLLECTION",
+      "notes": "Высокоприоритетный материал для сравнения с 996/р. Любые перемычки, обходы защит и нестандартные действия размечать по риску и нормативному конфликту отдельно."
+    },
+    {
+      "id": "CHME3-SRC-SCBIST-TO-TR",
+      "title": "Руководство по ТО и ТР тепловоза ЧМЭ3",
+      "kind": "REPAIR_MANUAL_CANDIDATE",
+      "status": "UNVERIFIED",
+      "applicability": ["ЧМЭ3"],
+      "purpose": ["atlas", "acceptance", "maintenance", "normal_values"],
+      "authorityForAction": "REQUIRES_PROVENANCE_CHECK",
+      "discoveredVia": "CHME3-SRC-SCBIST-COLLECTION"
+    },
+    {
+      "id": "CHME3-SRC-FIELD-SLANG-01",
+      "title": "Железнодорожный жаргон: ЧМЭ3",
+      "kind": "FIELD_LANGUAGE",
+      "status": "FIELD_PRACTICE",
+      "applicability": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "purpose": ["assistant_search_vocabulary"],
+      "authorityForAction": "NO",
+      "url": "https://vgudok.com/light/ego-velichestvo-zhargon-prodolzhenie-zheleznodorozhnoy-slovarnoy-sagi-sergeya-vershinina",
+      "notes": "Подтверждает употребление разговорных названий серии; использовать только как поисковые алиасы."
+    }
+  ]
+}
