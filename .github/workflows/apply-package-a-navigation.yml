@@ -1,0 +1,216 @@
+name: Apply Package A navigation architecture
+
+on:
+  push:
+    branches:
+      - integration/chme3-assistant
+    paths:
+      - '.github/workflows/apply-package-a-navigation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Ensure integration branch has not moved
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin integration/chme3-assistant
+          test "$(git rev-parse origin/integration/chme3-assistant)" = "$GITHUB_SHA"
+
+      - name: Apply Package A architecture
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          roots = [Path('app/src/main/java/ru/railbrake/calculator'), Path('patch/app/src/main/java/ru/railbrake/calculator')]
+
+          def replace_once(path: Path, old: str, new: str):
+              text = path.read_text()
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f'{path}: expected exactly one match, got {count}: {old[:100]!r}')
+              path.write_text(text.replace(old, new, 1))
+
+          for root in roots:
+              # Home: working choices come from the same registry as browsing choices.
+              p = root / 'ui/HomeScreen.kt'
+              replace_once(p,
+                  'import ru.railbrake.calculator.core.WorkingLocomotive\n',
+                  'import ru.railbrake.calculator.core.LocomotiveCatalogRegistry\nimport ru.railbrake.calculator.core.WorkingLocomotive\n')
+              replace_once(p, 'items(WorkingLocomotive.entries) { option ->', 'items(LocomotiveCatalogRegistry.workingOptions) { option ->')
+
+              # Presentation boundary: embedded IDs are sanitized, not only whole-line IDs.
+              p = root / 'core/TechnicalPresentation.kt'
+              replace_once(p,
+                  'internal fun isInternalTechnicalReference(value: String): Boolean =\n    value.trim().matches(Regex("^(?:VL80|VL|ER)-[A-Z0-9][A-Z0-9_-]*$", RegexOption.IGNORE_CASE))',
+                  'internal fun isInternalTechnicalReference(value: String): Boolean =\n    UserFacingTechnicalPolicy.isInternalReference(value)')
+              replace_once(p,
+                  '    val cleaned = userFacingTechnicalText(value).trim()\n    if (cleaned.isBlank()) return null',
+                  '    val cleaned = UserFacingTechnicalPolicy.sanitize(userFacingTechnicalText(value))?.trim() ?: return null')
+
+              # Technical catalog: all supported families come from the registry and family changes are surfaced upward.
+              p = root / 'ui/TechnicalCatalogScreen.kt'
+              replace_once(p,
+                  'import ru.railbrake.calculator.core.TechnicalDataRepository\n',
+                  'import ru.railbrake.calculator.core.LocomotiveCatalogRegistry\nimport ru.railbrake.calculator.core.TechnicalDataRepository\n')
+              replace_once(p,
+                  '    onOpenLegacyArticle: ((String) -> Unit)? = null,\n    onOpenDiagnosticScenario: ((String, String, TechnicalSection) -> Unit)? = null\n) {',
+                  '    onOpenLegacyArticle: ((String) -> Unit)? = null,\n    onOpenDiagnosticScenario: ((String, String, TechnicalSection) -> Unit)? = null,\n    onFamilyChange: (TechnicalFamily) -> Unit = {}\n) {')
+              replace_once(p,
+                  '    var familyName by rememberSaveable { mutableStateOf(initialFamily.name) }',
+                  '    var familyName by rememberSaveable(initialFamily) { mutableStateOf(initialFamily.name) }')
+              replace_once(p,
+                  'items(if (lockFamily) listOf(family) else listOf(TechnicalFamily.VL80S, TechnicalFamily.ERMAK)) { option ->',
+                  'items(if (lockFamily) listOf(family) else LocomotiveCatalogRegistry.families) { option ->')
+              replace_once(p,
+                  '                            familyName = option.name\n                            if (!lockSection) {',
+                  '                            familyName = option.name\n                            onFamilyChange(option)\n                            if (!lockSection) {')
+
+              # Diagnostics: selector is registry-driven and does not lock to the working family.
+              p = root / 'ui/LocomotiveDiagnosticsScreen.kt'
+              replace_once(p,
+                  'import ru.railbrake.calculator.core.TechnicalFamily\n',
+                  'import ru.railbrake.calculator.core.LocomotiveCatalogRegistry\nimport ru.railbrake.calculator.core.TechnicalFamily\n')
+              replace_once(p,
+                  '    initialFamily: TechnicalFamily? = null,\n    workingFamily: TechnicalFamily? = null,\n    workingVariantId: String? = null\n) {',
+                  '    initialFamily: TechnicalFamily? = null,\n    workingFamily: TechnicalFamily? = null,\n    workingVariantId: String? = null,\n    onFamilyChange: (TechnicalFamily) -> Unit = {}\n) {')
+              replace_once(p, '            TechnicalFamily.entries.forEach { option ->', '            LocomotiveCatalogRegistry.families.forEach { option ->')
+              replace_once(p,
+                  '                FilterChip(family == option, { familyName = option.name },\n                    enabled = workingFamily == null || workingFamily == option,\n                    label = { Text(option.title) })',
+                  '                FilterChip(\n                    selected = family == option,\n                    onClick = { familyName = option.name; onFamilyChange(option) },\n                    label = { Text(option.title) }\n                )')
+              replace_once(p,
+                  '                workingVariantId = workingVariantId,',
+                  '                workingVariantId = workingVariantId.takeIf { family == workingFamily },')
+
+              # App root owns viewingFamily independently from persisted workingLocomotive.
+              p = root / 'ui/BrakeCalculatorApp.kt'
+              replace_once(p,
+                  'import ru.railbrake.calculator.core.LocomotiveDatabase\n',
+                  'import ru.railbrake.calculator.core.LocomotiveCatalogRegistry\nimport ru.railbrake.calculator.core.LocomotiveDatabase\n')
+              replace_once(p,
+                  '    val workingFamily = workingLocomotive?.family\n    var auxiliaryToolsVisible',
+                  '    val workingFamily = workingLocomotive?.family\n    var viewingFamilyName by rememberSaveable {\n        mutableStateOf(LocomotiveCatalogRegistry.initialViewingFamily(null, workingLocomotive).name)\n    }\n    val viewingFamily = LocomotiveCatalogRegistry.browsingFamilyOrDefault(\n        viewingFamilyName,\n        workingFamily ?: TechnicalFamily.VL80S\n    )\n    var auxiliaryToolsVisible')
+              replace_once(p,
+                  '                        workingLocomotive = selected\n                        diagnosticStartScenarioId = null',
+                  '                        workingLocomotive = selected\n                        selected?.family?.let { viewingFamilyName = it.name }\n                        diagnosticStartScenarioId = null')
+
+              # Atlas root receives the shared viewing context.
+              replace_once(p,
+                  '                    LocomotiveReferenceScreen(\n                        workingFamily = workingFamily,',
+                  '                    LocomotiveReferenceScreen(\n                        workingFamily = workingFamily,\n                        viewingFamily = viewingFamily,\n                        onViewingFamilyChange = { viewingFamilyName = it.name },')
+              replace_once(p,
+                  '                        onOpenTechnical = { family, section ->\n                            technicalFamilyName = family.name',
+                  '                        onOpenTechnical = { family, section ->\n                            viewingFamilyName = family.name\n                            technicalFamilyName = family.name')
+              replace_once(p,
+                  '                        onOpenInteractiveVl80s = {\n                            locomotiveMaterialQuery = null',
+                  '                        onOpenInteractiveVl80s = {\n                            viewingFamilyName = TechnicalFamily.VL80S.name\n                            locomotiveMaterialQuery = null')
+              replace_once(p,
+                  '                        onOpenInteractiveErmak = {\n                            technicalFamilyName = TechnicalFamily.ERMAK.name',
+                  '                        onOpenInteractiveErmak = {\n                            viewingFamilyName = TechnicalFamily.ERMAK.name\n                            technicalFamilyName = TechnicalFamily.ERMAK.name')
+              replace_once(p,
+                  '                        onOpenInteractiveChme3 = { family ->\n                            technicalFamilyName = family.name',
+                  '                        onOpenInteractiveChme3 = { family ->\n                            viewingFamilyName = family.name\n                            technicalFamilyName = family.name')
+
+              # Technical material selector is never locked by the working locomotive.
+              replace_once(p,
+                  '                    lockFamily = workingFamily != null,\n                    onSectionBack = { screenName = AppScreen.LOCOMOTIVES.name },',
+                  '                    lockFamily = false,\n                    onFamilyChange = { family ->\n                        viewingFamilyName = family.name\n                        technicalFamilyName = family.name\n                    },\n                    onSectionBack = { screenName = AppScreen.LOCOMOTIVES.name },')
+              replace_once(p,
+                  '                        technicalFamilyName = if (scenarioId.startsWith("CHME3")) technicalFamilyName else TechnicalFamily.ERMAK.name\n                        technicalSectionName = sourceSection.name',
+                  '                        technicalFamilyName = if (scenarioId.startsWith("CHME3")) technicalFamilyName else TechnicalFamily.ERMAK.name\n                        viewingFamilyName = technicalFamilyName\n                        technicalSectionName = sourceSection.name')
+
+              # Replace dedicated acceptance routing with the shared viewing family.
+              text = p.read_text()
+              start_marker = '                AppScreen.ACCEPTANCE -> key('
+              end_marker = '                AppScreen.DIAGNOSTICS -> key(diagnosticRootVersion) {'
+              start = text.find(start_marker)
+              end = text.find(end_marker, start)
+              if start < 0 or end < 0:
+                  raise SystemExit(f'{p}: acceptance block markers not found')
+              acceptance = '''                AppScreen.ACCEPTANCE -> key(acceptanceRootVersion, viewingFamily) {\n                    TechnicalCatalogScreen(\n                        initialFamily = viewingFamily,\n                        initialSection = TechnicalSection.ACCEPTANCE,\n                        sectionBackLabel = "Главная",\n                        onSectionBack = { screenName = AppScreen.HOME.name },\n                        lockFamily = false,\n                        lockSection = true,\n                        onFamilyChange = { family ->\n                            viewingFamilyName = family.name\n                            technicalFamilyName = family.name\n                        }\n                    )\n                }\n'''
+              p.write_text(text[:start] + acceptance + text[end:])
+
+              # Diagnostics starts from viewing context, but working variant stays scoped to the actual working family.
+              text = p.read_text()
+              old = '''                    LocomotiveDiagnosticsScreen(\n                        initialScenarioId = diagnosticStartScenarioId,\n                        initialEquipmentId = diagnosticStartEquipmentId,\n                        workingFamily = workingFamily,\n                        workingVariantId = workingLocomotive?.variantId\n                    )'''
+              new = '''                    LocomotiveDiagnosticsScreen(\n                        initialScenarioId = diagnosticStartScenarioId,\n                        initialEquipmentId = diagnosticStartEquipmentId,\n                        initialFamily = viewingFamily,\n                        workingFamily = workingFamily,\n                        workingVariantId = workingLocomotive?.variantId,\n                        onFamilyChange = { family -> viewingFamilyName = family.name }\n                    )'''
+              if text.count(old) != 1:
+                  raise SystemExit(f'{p}: diagnostics root block count {text.count(old)}')
+              p.write_text(text.replace(old, new, 1))
+
+              # Direct diagnostic deep links also set browsing context only, not working locomotive.
+              replace_once(p,
+                  '                    onOpenScenario = { scenarioId ->\n                        diagnosticStartScenarioId = scenarioId',
+                  '                    onOpenScenario = { scenarioId ->\n                        viewingFamilyName = diagnosticInitialFamily(scenarioId, null).name\n                        diagnosticStartScenarioId = scenarioId')
+              replace_once(p,
+                  '                    onOpenEquipment = { equipmentId ->\n                        diagnosticStartScenarioId = null',
+                  '                    onOpenEquipment = { equipmentId ->\n                        viewingFamilyName = diagnosticInitialFamily(null, equipmentId).name\n                        diagnosticStartScenarioId = null')
+
+              # Locomotive atlas uses shared browsing context and all registry families.
+              replace_once(p,
+                  'private fun LocomotiveReferenceScreen(\n    workingFamily: TechnicalFamily?,\n    onOpenTechnical:',
+                  'private fun LocomotiveReferenceScreen(\n    workingFamily: TechnicalFamily?,\n    viewingFamily: TechnicalFamily,\n    onViewingFamilyChange: (TechnicalFamily) -> Unit,\n    onOpenTechnical:')
+              replace_once(p,
+                  '    var browsingFamilyName by rememberSaveable(workingFamily) {\n        mutableStateOf(workingFamily?.name.orEmpty())\n    }',
+                  '    var browsingFamilyName by rememberSaveable(viewingFamily) {\n        mutableStateOf(viewingFamily.name)\n    }')
+              replace_once(p, '            TechnicalFamily.entries.forEach { option ->', '            LocomotiveCatalogRegistry.families.forEach { option ->')
+              replace_once(p,
+                  '                    onClick = { browsingFamilyName = option.name },\n                    enabled = workingFamily == null || workingFamily == option,',
+                  '                    onClick = {\n                        browsingFamilyName = option.name\n                        onViewingFamilyChange(option)\n                    },')
+              replace_once(p,
+                  '        if (workingFamily != null) Text("Другая серия доступна после смены рабочего локомотива на главной или через явный запрос помощнику.",\n            style = MaterialTheme.typography.bodySmall)',
+                  '        if (workingFamily != null && family != null && family != workingFamily) Text(\n            "Разовый просмотр ${family.title}. Рабочая серия ${workingFamily.title} не изменена.",\n            style = MaterialTheme.typography.bodySmall,\n            color = MaterialTheme.colorScheme.onSurfaceVariant\n        )')
+
+              # Old one-off acceptance state is no longer needed.
+              text = p.read_text()
+              text = text.replace('    var acceptanceBrowseFamily by rememberSaveable { mutableStateOf<TechnicalFamily?>(null) }\n', '')
+              text = text.replace('                                    acceptanceBrowseFamily = null\n', '')
+              p.write_text(text)
+
+          # app and patch must remain byte-identical for every touched production file.
+          for rel in [
+              'core/TechnicalPresentation.kt',
+              'ui/HomeScreen.kt',
+              'ui/TechnicalCatalogScreen.kt',
+              'ui/LocomotiveDiagnosticsScreen.kt',
+              'ui/BrakeCalculatorApp.kt',
+          ]:
+              a = (roots[0] / rel).read_text()
+              b = (roots[1] / rel).read_text()
+              if a != b:
+                  raise SystemExit(f'mirror divergence after Package A patch: {rel}')
+          PY
+
+          git diff --check
+
+      - name: Compile and unit test
+        shell: bash
+        run: |
+          set -euo pipefail
+          chmod +x gradlew
+          ./gradlew :app:testDebugUnitTest :app:compileDebugKotlin --no-daemon
+
+      - name: Commit Package A implementation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add app/src/main/java patch/app/src/main/java
+          git diff --cached --check
+          git config user.name "DomEnota-hub"
+          git config user.email "domenota6212@gmail.com"
+          git commit -m "feat: centralize locomotive viewing context"
+          git fetch origin integration/chme3-assistant
+          test "$(git rev-parse origin/integration/chme3-assistant)" = "$GITHUB_SHA"
+          git push origin HEAD:integration/chme3-assistant
