@@ -24,3 +24,5 @@ jobs:
           python-version: '3.12'
       - name: Require complete non-generic runtime diagnostics
         run: python qa/audit_chme3_diagnostic_semantics_v4.py --require-complete
+
+# Final pass intentionally requires all 56 source scenarios to have promoted runtime graphs.
