@@ -5,7 +5,7 @@
   "series": "ЧМЭ3Э",
   "tractionType": "diesel",
   "updatedAt": "2026-10-01",
-  "stage": "STAGE_1_FOUNDATION_COMPLETE",
+  "stage": "STAGE_2_ATLAS_SCHEMES_COMPLETE",
   "title": "ЧМЭ3Э — электронное исполнение без заводского реостатного тормоза",
   "sharedBase": "../common",
   "variantLayer": ".",
@@ -35,6 +35,14 @@
     "modernizationPolicy": "Actual installed equipment overrides assumptions from series/number for information routing, but does not grant authority for actions without current source support.",
     "unknownExecutionPolicy": "Fail closed for variant-dependent operational actions."
   },
+  "variantData": {
+    "inheritance": "inheritance.json",
+    "atlasIndex": "atlas_variant.json",
+    "atlasCards": ["atlas_cards_electronic.json", "atlas_cards_preheat_remote.json"],
+    "schemes": "schemes_variant.json",
+    "schemeDesignations": "scheme_designations.json",
+    "stage2Sources": "source_registry_stage2.json"
+  },
   "numberReference": {
     "status": "REFERENCE_ONLY_NOT_PROFILE_AUTHORITY",
     "knownPublishedRanges": ["5932", "6220-6244", "6665-6884"],
@@ -47,7 +55,6 @@
     "CHME3E-SRC-FLEET-RANGES-REFERENCE"
   ],
   "nextStages": [
-    "STAGE_2_ATLAS_SCHEMES",
     "STAGE_3_DIAGNOSTICS_ASSISTANT_SEMANTICS",
     "STAGE_4_ACCEPTANCE_CROSS_LAYER_QA"
   ]
