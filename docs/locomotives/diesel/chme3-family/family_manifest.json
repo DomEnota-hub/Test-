@@ -3,7 +3,7 @@
   "familyId": "chme3-family",
   "tractionType": "diesel",
   "updatedAt": "2026-10-01",
-  "migrationState": "STAGE_1_CHME3E_FOUNDATION",
+  "migrationState": "STAGE_2_CHME3E_ATLAS_SCHEMES",
   "legacyMigrationRoot": "docs/locomotives/chme3",
   "canonicalLayers": {
     "common": "common",
@@ -31,10 +31,11 @@
     {
       "profileId": "chme3e-electronic",
       "series": "ЧМЭ3Э",
-      "supportState": "STAGE_1_FOUNDATION_COMPLETE",
+      "supportState": "STAGE_2_ATLAS_SCHEMES_COMPLETE",
+      "completedStages": ["FOUNDATION", "ATLAS_SCHEMES"],
       "sharedBase": "common",
       "variantLayer": "chme3e",
-      "requiredBeforeIntegration": ["ATLAS_SCHEMES_COMPLETE", "DIAGNOSTICS_COMPLETE", "ACCEPTANCE_FINAL_QA_COMPLETE"]
+      "requiredBeforeIntegration": ["DIAGNOSTICS_COMPLETE", "ACCEPTANCE_FINAL_QA_COMPLETE"]
     }
   ],
   "inheritancePolicy": {
