@@ -1,0 +1,27 @@
+name: ChME3E stage 2 Atlas
+
+on:
+  push:
+    branches:
+      - feature/locomotive-knowledge-foundation
+    paths:
+      - 'docs/locomotives/diesel/chme3-family/**'
+      - 'docs/locomotives/manifests/**'
+      - 'docs/locomotives/chme3/**'
+      - 'qa/validate_chme3e_stage1.py'
+      - 'qa/validate_chme3e_stage2.py'
+      - '.github/workflows/chme3e-stage2-atlas.yml'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate completed foundation stage
+        run: python qa/validate_chme3e_stage1.py
+      - name: Validate Atlas and schemes stage
+        run: python qa/validate_chme3e_stage2.py
