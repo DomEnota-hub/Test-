@@ -1,0 +1,30 @@
+name: ChME3 diagnostics check v2
+
+on:
+  push:
+    branches:
+      - feature/locomotive-knowledge-foundation
+    paths:
+      - 'docs/locomotives/chme3/diagnostic_source_registry_addendum.json'
+      - 'docs/locomotives/chme3/diagnostics_*_pass3.json'
+      - 'docs/locomotives/chme3/search_vocabulary_diagnostics_pass3.json'
+      - 'docs/locomotives/chme3/atlas_index*.json'
+      - 'docs/locomotives/chme3/atlas_cards_*.json'
+      - 'qa/validate_chme3_diagnostics_v2.py'
+      - '.github/workflows/chme3-diagnostics-check-v2.yml'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate ChME3 diagnostic package v2
+        run: python qa/validate_chme3_diagnostics_v2.py
