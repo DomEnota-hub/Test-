@@ -1,0 +1,24 @@
+name: ChME3 knowledge check
+
+on:
+  push:
+    branches:
+      - feature/locomotive-knowledge-foundation
+    paths:
+      - 'docs/locomotives/chme3/**'
+      - 'qa/validate_chme3_atlas_checkpoint.py'
+      - '.github/workflows/chme3-knowledge-check.yml'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate ChME3 Atlas checkpoint
+        run: python qa/validate_chme3_atlas_checkpoint.py
