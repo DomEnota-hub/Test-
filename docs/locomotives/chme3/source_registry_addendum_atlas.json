@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "packageId": "chme3-family",
+  "updatedAt": "2026-10-01",
+  "scope": "atlas_and_schemes",
+  "sources": [
+    {
+      "id": "CHME3-SRC-LOKOMOTIV-1986-ELEMENTS",
+      "title": "Перечень элементов электрической схемы тепловоза ЧМЭ3",
+      "kind": "TECHNICAL_PUBLICATION",
+      "status": "TRAINING_REFERENCE",
+      "year": 1986,
+      "applicability": ["ЧМЭ3"],
+      "purpose": ["electrical_schemes", "scheme_designations", "equipment_cross_links"],
+      "authorityForAction": "NO_BY_ITSELF",
+      "url": "https://www.booksite.ru/tyaga/1986/1986_7.pdf",
+      "notes": "Используется как проверочный перечень схемных обозначений. Для вариантозависимых цепей требуется сверка с пособием/схемой конкретного исполнения."
+    },
+    {
+      "id": "CHME3-SRC-IOFFE-ELECTRIC-2023",
+      "title": "Электрическая схема тепловоза ЧМЭ3 — описание цепей",
+      "authors": ["А. Г. Иоффе"],
+      "kind": "TECHNICAL_PUBLICATION",
+      "status": "TRAINING_REFERENCE",
+      "applicability": ["ЧМЭ3"],
+      "purpose": ["electrical_schemes", "traction_circuit", "control_circuit", "cross_links"],
+      "authorityForAction": "NO_BY_ITSELF",
+      "url": "https://scbist.com/xx2/57922-12-2023-elektricheskaya-shema-teplovoza-chme3.html",
+      "notes": "Полезен для проверки функциональной последовательности силовой цепи: тяговый генератор, поездные контакторы, возбудитель и шесть ТЭД. Не трактовать публикацию как эксплуатационное разрешение."
+    },
+    {
+      "id": "CHME3-SRC-PNEUMATIC-PUBLIC",
+      "title": "Пневматическая схема тепловозов ЧМЭ3 и ЧМЭ3Т — описание элементов",
+      "kind": "TRAINING",
+      "status": "TRAINING_REFERENCE",
+      "applicability": ["ЧМЭ3", "ЧМЭ3Т"],
+      "purpose": ["pneumatic_schemes", "brake_equipment", "equipment_cross_links"],
+      "authorityForAction": "NO_BY_ITSELF",
+      "url": "https://mydocxru.com/11-32626.html",
+      "notes": "Содержит нумерованный перечень элементов пневматической схемы ЧМЭ3/ЧМЭ3Т. Конкретное исполнение тормозных приборов и кранов проверять по фактической машине и действующей тормозной документации."
+    },
+    {
+      "id": "CHME3-SRC-SHVAINSHTEIN-1975",
+      "title": "Тепловозы ЧМЭ3 и ЧМЭ2",
+      "authors": ["Б. С. Швайнштейн", "Э. Г. Майоров", "С. С. Шалаев"],
+      "year": 1975,
+      "kind": "TECHNICAL_PUBLICATION",
+      "status": "HISTORICAL_SUPERSEDED",
+      "applicability": ["ЧМЭ3"],
+      "purpose": ["historical_layout", "pneumatic_schemes", "variant_history"],
+      "authorityForAction": "NO",
+      "url": "https://ru.djvu.online/file/VXeW2m3anOL7i",
+      "notes": "Исторический источник полезен для ранних исполнений и истории замен приборов; нормативной силы для текущих действий не имеет."
+    }
+  ]
+}
