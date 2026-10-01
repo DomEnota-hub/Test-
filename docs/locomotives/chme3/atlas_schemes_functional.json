@@ -1,0 +1,180 @@
+{
+  "schemaVersion": 1,
+  "packageId": "chme3-family",
+  "updatedAt": "2026-10-01",
+  "state": "ATLAS_PASS_2",
+  "disclaimer": "Логические схемы предназначены для навигации Атласа. Они не заменяют принципиальную схему конкретного тепловоза; номера проводов, клемм и уставки добавляются только после проверки исполнения.",
+  "records": [
+    {
+      "id": "CHME3-SCH-DIESEL-SUPPORT",
+      "title": "Дизель — топливо, регулирование и защита",
+      "kind": "functional",
+      "applicability": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "nodes": ["CHME3-EQ-DIESEL", "CHME3-EQ-FUEL-PRIME-PUMP", "CHME3-EQ-FUEL-FILTER", "CHME3-EQ-INJECTION-PUMP", "CHME3-EQ-INJECTOR", "CHME3-EQ-GOVERNOR", "CHME3-EQ-OVERSPEED-GOV"],
+      "flows": [
+        ["CHME3-EQ-FUEL-PRIME-PUMP", "CHME3-EQ-FUEL-FILTER", "низкое давление топлива"],
+        ["CHME3-EQ-FUEL-FILTER", "CHME3-EQ-INJECTION-PUMP", "очищенное топливо"],
+        ["CHME3-EQ-INJECTION-PUMP", "CHME3-EQ-INJECTOR", "топливо высокого давления"],
+        ["CHME3-EQ-GOVERNOR", "CHME3-EQ-INJECTION-PUMP", "управление цикловой подачей"],
+        ["CHME3-EQ-OVERSPEED-GOV", "CHME3-EQ-DIESEL", "защита по превышению частоты вращения"]
+      ],
+      "evidenceRefs": ["CHME3-SRC-NOTIK-1996", "CHME3-SRC-K6S310DR-1988"],
+      "evidenceStatus": "TRAINING_REFERENCE",
+      "actionAuthority": "INFORMATION_ONLY"
+    },
+    {
+      "id": "CHME3-SCH-FUEL",
+      "title": "Топливная система — функциональный поток",
+      "kind": "fluid_functional",
+      "applicability": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "nodes": ["CHME3-EQ-FUEL-TANK", "CHME3-EQ-FUEL-PRIME-PUMP", "CHME3-EQ-FUEL-FILTER", "CHME3-EQ-INJECTION-PUMP", "CHME3-EQ-INJECTOR"],
+      "flows": [
+        ["CHME3-EQ-FUEL-TANK", "CHME3-EQ-FUEL-PRIME-PUMP", "забор топлива"],
+        ["CHME3-EQ-FUEL-PRIME-PUMP", "CHME3-EQ-FUEL-FILTER", "подача"],
+        ["CHME3-EQ-FUEL-FILTER", "CHME3-EQ-INJECTION-PUMP", "очищенное топливо"],
+        ["CHME3-EQ-INJECTION-PUMP", "CHME3-EQ-INJECTOR", "высокое давление"]
+      ],
+      "diagnosticAnchors": ["нет подкачки", "падение давления топлива", "завоздушивание", "не работает цилиндр"],
+      "evidenceRefs": ["CHME3-SRC-NOTIK-1996", "CHME3-SRC-K6S310DR-1988"],
+      "evidenceStatus": "TRAINING_REFERENCE",
+      "actionAuthority": "INFORMATION_ONLY"
+    },
+    {
+      "id": "CHME3-SCH-OIL",
+      "title": "Система смазки дизеля",
+      "kind": "fluid_functional",
+      "applicability": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "nodes": ["CHME3-EQ-OIL-PRIME-PUMP", "CHME3-EQ-OIL-PUMP", "CHME3-EQ-OIL-FILTER", "CHME3-EQ-OIL-WATER-HEX", "CHME3-EQ-DIESEL"],
+      "flows": [
+        ["CHME3-EQ-OIL-PRIME-PUMP", "CHME3-EQ-DIESEL", "предварительная прокачка перед запуском"],
+        ["CHME3-EQ-OIL-PUMP", "CHME3-EQ-OIL-FILTER", "рабочая циркуляция"],
+        ["CHME3-EQ-OIL-FILTER", "CHME3-EQ-OIL-WATER-HEX", "очищенное масло"],
+        ["CHME3-EQ-OIL-WATER-HEX", "CHME3-EQ-DIESEL", "охлаждённое масло к узлам смазки"]
+      ],
+      "diagnosticAnchors": ["нет давления масла", "масло не прокачивается", "перегрев масла", "вода в масле/масло в воде"],
+      "evidenceRefs": ["CHME3-SRC-NOTIK-1996", "CHME3-SRC-K6S310DR-1988"],
+      "evidenceStatus": "TRAINING_REFERENCE",
+      "actionAuthority": "INFORMATION_ONLY"
+    },
+    {
+      "id": "CHME3-SCH-WATER",
+      "title": "Водяная система и охлаждение",
+      "kind": "fluid_functional",
+      "applicability": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "nodes": ["CHME3-EQ-WATER-PUMP", "CHME3-EQ-DIESEL", "CHME3-EQ-OIL-WATER-HEX", "CHME3-EQ-CHARGE-AIR-COOLER", "CHME3-EQ-RADIATOR", "CHME3-EQ-COOLING-FANS"],
+      "flows": [
+        ["CHME3-EQ-WATER-PUMP", "CHME3-EQ-DIESEL", "циркуляция охлаждающей жидкости"],
+        ["CHME3-EQ-WATER-PUMP", "CHME3-EQ-OIL-WATER-HEX", "отвод тепла от масла"],
+        ["CHME3-EQ-WATER-PUMP", "CHME3-EQ-CHARGE-AIR-COOLER", "охлаждение наддувочного воздуха"],
+        ["CHME3-EQ-RADIATOR", "CHME3-EQ-COOLING-FANS", "отвод тепла в атмосферу"]
+      ],
+      "diagnosticAnchors": ["перегрев воды", "нет циркуляции", "вентилятор не работает", "течь радиатора"],
+      "evidenceRefs": ["CHME3-SRC-NOTIK-1996", "CHME3-SRC-K6S310DR-1988"],
+      "evidenceStatus": "TRAINING_REFERENCE",
+      "actionAuthority": "INFORMATION_ONLY"
+    },
+    {
+      "id": "CHME3-SCH-AIR",
+      "title": "Наддув и газообмен",
+      "kind": "gas_functional",
+      "applicability": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "nodes": ["CHME3-EQ-TURBO", "CHME3-EQ-CHARGE-AIR-COOLER", "CHME3-EQ-INTAKE-EXHAUST", "CHME3-EQ-DIESEL"],
+      "flows": [
+        ["CHME3-EQ-DIESEL", "CHME3-EQ-TURBO", "энергия выпускных газов"],
+        ["CHME3-EQ-TURBO", "CHME3-EQ-CHARGE-AIR-COOLER", "сжатый наддувочный воздух"],
+        ["CHME3-EQ-CHARGE-AIR-COOLER", "CHME3-EQ-DIESEL", "охлаждённый воздух"]
+      ],
+      "diagnosticAnchors": ["нет наддува", "чёрный дым под нагрузкой", "турбина воет/свистит", "масло в воздушном тракте"],
+      "evidenceRefs": ["CHME3-SRC-NOTIK-1996", "CHME3-SRC-K6S310DR-1988"],
+      "evidenceStatus": "TRAINING_REFERENCE",
+      "actionAuthority": "INFORMATION_ONLY"
+    },
+    {
+      "id": "CHME3-SCH-AUX-DRIVE",
+      "title": "Привод вспомогательных механизмов",
+      "kind": "mechanical_functional",
+      "applicability": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "nodes": ["CHME3-EQ-DIESEL", "CHME3-EQ-HYDRO-GEAR", "CHME3-EQ-COMPRESSOR-DRIVE", "CHME3-EQ-COMPRESSOR", "CHME3-EQ-COOLING-FANS"],
+      "flows": [
+        ["CHME3-EQ-DIESEL", "CHME3-EQ-HYDRO-GEAR", "механическая мощность"],
+        ["CHME3-EQ-HYDRO-GEAR", "CHME3-EQ-COMPRESSOR-DRIVE", "привод"],
+        ["CHME3-EQ-COMPRESSOR-DRIVE", "CHME3-EQ-COMPRESSOR", "вращение компрессора"],
+        ["CHME3-EQ-HYDRO-GEAR", "CHME3-EQ-COOLING-FANS", "привод охлаждения"]
+      ],
+      "evidenceRefs": ["CHME3-SRC-NOTIK-1996"],
+      "evidenceStatus": "TRAINING_REFERENCE",
+      "actionAuthority": "INFORMATION_ONLY"
+    },
+    {
+      "id": "CHME3-SCH-PNEUMATIC",
+      "title": "Пневматическая система — компрессор и тормозные магистрали",
+      "kind": "pneumatic_functional",
+      "applicability": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "nodes": ["CHME3-EQ-COMPRESSOR", "CHME3-EQ-PRESSURE-GOV", "CHME3-EQ-MAIN-RESERVOIRS", "CHME3-EQ-DRIVER-BRAKE-VALVE", "CHME3-EQ-AUX-BRAKE-VALVE"],
+      "flows": [
+        ["CHME3-EQ-COMPRESSOR", "CHME3-EQ-MAIN-RESERVOIRS", "нагнетание воздуха"],
+        ["CHME3-EQ-MAIN-RESERVOIRS", "CHME3-EQ-DRIVER-BRAKE-VALVE", "питание тормозной системы"],
+        ["CHME3-EQ-PRESSURE-GOV", "CHME3-EQ-COMPRESSOR", "управление режимом по давлению"]
+      ],
+      "diagnosticAnchors": ["не набирает давление", "давление быстро падает", "компрессор не отключается", "тормоза не отпускают"],
+      "evidenceRefs": ["CHME3-SRC-NOTIK-1996", "CHME3-SRC-SCBIST-COLLECTION"],
+      "evidenceStatus": "TRAINING_REFERENCE",
+      "actionAuthority": "INFORMATION_ONLY",
+      "notes": ["Точная схема арматуры и типы тормозных приборов должны подтверждаться по конкретному исполнению и действующим тормозным документам."]
+    },
+    {
+      "id": "CHME3-SCH-TRACTION",
+      "title": "Электрическая передача тяги — функциональная схема",
+      "kind": "electrical_functional",
+      "applicability": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "nodes": ["CHME3-EQ-DIESEL", "CHME3-EQ-TRACTION-GENERATOR", "CHME3-EQ-EXCITER", "CHME3-EQ-MAIN-CONTACTORS", "CHME3-EQ-REVERSER", "CHME3-EQ-TRACTION-MOTOR"],
+      "flows": [
+        ["CHME3-EQ-DIESEL", "CHME3-EQ-TRACTION-GENERATOR", "механическая мощность"],
+        ["CHME3-EQ-EXCITER", "CHME3-EQ-TRACTION-GENERATOR", "возбуждение"],
+        ["CHME3-EQ-TRACTION-GENERATOR", "CHME3-EQ-MAIN-CONTACTORS", "силовой ток"],
+        ["CHME3-EQ-MAIN-CONTACTORS", "CHME3-EQ-REVERSER", "коммутация тяги"],
+        ["CHME3-EQ-REVERSER", "CHME3-EQ-TRACTION-MOTOR", "силовая цепь к ТЭД"]
+      ],
+      "diagnosticAnchors": ["нет тяги", "нет возбуждения", "контактор не включается", "реверсор не переводится", "ТЭД искрит"],
+      "evidenceRefs": ["CHME3-SRC-NOTIK-1996", "CHME3-SRC-LOKOMOTIV-1991-SCHEME"],
+      "evidenceStatus": "TRAINING_REFERENCE",
+      "actionAuthority": "INFORMATION_ONLY",
+      "notes": ["Эта запись не кодирует номера проводов и контактов; они вариантозависимы."]
+    },
+    {
+      "id": "CHME3-SCH-CONTROL",
+      "title": "Цепи запуска и управления — навигационная схема",
+      "kind": "electrical_control_functional",
+      "applicability": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "nodes": ["CHME3-EQ-BATTERY", "CHME3-EQ-AUX-GENERATOR", "CHME3-EQ-GOVERNOR", "CHME3-EQ-MAIN-CONTACTORS", "CHME3-EQ-REVERSER"],
+      "flows": [
+        ["CHME3-EQ-BATTERY", "CHME3-EQ-DIESEL", "энергия запуска через фактическую стартерную схему"],
+        ["CHME3-EQ-AUX-GENERATOR", "CHME3-EQ-BATTERY", "заряд при работающем дизеле"],
+        ["CHME3-EQ-GOVERNOR", "CHME3-EQ-MAIN-CONTACTORS", "согласование режима мощности через цепи управления"]
+      ],
+      "diagnosticAnchors": ["дизель не запускается", "нет зарядки", "контакторы не включаются", "нет реверса"],
+      "evidenceRefs": ["CHME3-SRC-NOTIK-1996", "CHME3-SRC-LOKOMOTIV-1991-SCHEME"],
+      "evidenceStatus": "TRAINING_REFERENCE",
+      "actionAuthority": "INFORMATION_ONLY",
+      "notes": ["Фактические блокировки, реле и номера цепей будут выделены отдельными вариантными слоями после сверки схем ЧМЭ3/ЧМЭ3Т/ЧМЭ3Э."]
+    },
+    {
+      "id": "CHME3T-SCH-EDB",
+      "title": "ЧМЭ3Т — электродинамический (реостатный) тормоз",
+      "kind": "electrical_braking_functional",
+      "applicability": ["ЧМЭ3Т"],
+      "profileGate": "chme3t-rheostatic",
+      "nodes": ["CHME3-EQ-TRACTION-MOTOR", "CHME3T-EQ-EDB-CONTROL", "CHME3T-EQ-BRAKE-RESISTOR", "CHME3T-EQ-BRAKE-RESISTOR-FAN"],
+      "flows": [
+        ["CHME3-EQ-TRACTION-MOTOR", "CHME3T-EQ-EDB-CONTROL", "генераторный режим ТЭД"],
+        ["CHME3T-EQ-EDB-CONTROL", "CHME3T-EQ-BRAKE-RESISTOR", "направление тормозной энергии"],
+        ["CHME3T-EQ-BRAKE-RESISTOR-FAN", "CHME3T-EQ-BRAKE-RESISTOR", "охлаждение"]
+      ],
+      "diagnosticAnchors": ["реостатный тормоз не включается", "нет тормозного тока", "перегрев резисторов", "отключается ЭДТ"],
+      "evidenceRefs": ["CHME3-SRC-NOTIK-1996"],
+      "evidenceStatus": "TRAINING_REFERENCE",
+      "actionAuthority": "REQUIRES_PROFILE_CHECK",
+      "notes": ["Не применять эту схему к базовому ЧМЭ3 и ЧМЭ3Э как к штатному заводскому реостатному тормозу."]
+    }
+  ]
+}
