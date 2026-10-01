@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "profileId": "chme3e-electronic",
+  "updatedAt": "2026-10-01",
+  "policy": {
+    "officialityIsNotTruth": true,
+    "sourceBoundActionsRequireCurrentPrimaryConfirmation": true,
+    "trainingAndReferenceSourcesMayDefineArchitectureButNotCurrentOperationalAuthority": true
+  },
+  "sources": [
+    {
+      "id": "CHME3-SRC-NOTIK-1996",
+      "title": "Тепловозы ЧМЭ3, ЧМЭ3Т, ЧМЭ3Э. Пособие машинисту, 2-е изд.",
+      "author": "З. Х. Нотик",
+      "year": 1996,
+      "kind": "TRAINING",
+      "provenanceStatus": "TRAINING_REFERENCE",
+      "authorityForAction": "NO_BY_ITSELF",
+      "applicability": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "purpose": ["family_architecture", "equipment", "electrical_schemes", "operation_reference"],
+      "url": "https://scbist.com/kachegaroff-line/books/pages/ISBN_5-277-01904-9.HTML"
+    },
+    {
+      "id": "CHME3E-SRC-NOTIK-CH67",
+      "parentSourceId": "CHME3-SRC-NOTIK-1996",
+      "title": "Глава 67 — Особенности электрического оборудования тепловозов ЧМЭ3Т и ЧМЭ3Э",
+      "kind": "TRAINING_SECTION",
+      "provenanceStatus": "TRAINING_REFERENCE",
+      "authorityForAction": "NO_BY_ITSELF",
+      "applicability": ["ЧМЭ3Т", "ЧМЭ3Э"],
+      "claimsAllowed": [
+        "family-common mechanical/auxiliary/brake equipment relationship",
+        "presence of additional electronic equipment",
+        "presence of diesel preheating equipment",
+        "need for variant-specific electrical scheme"
+      ],
+      "url": "https://www.sinref.ru/000_uchebniki/05300_transport_jd_teplovozi/170_teplovozi_chme3_chme3t_chme3e_izdanie2_notik_1996/145.htm"
+    },
+    {
+      "id": "CHME3E-SRC-NOTIK-CH17",
+      "parentSourceId": "CHME3-SRC-NOTIK-1996",
+      "title": "Глава XVII — Электрическая схема тепловоза ЧМЭ3Э",
+      "kind": "TRAINING_SECTION",
+      "provenanceStatus": "TRAINING_REFERENCE",
+      "authorityForAction": "NO_BY_ITSELF",
+      "applicability": ["ЧМЭ3Э"],
+      "purpose": [
+        "diesel_start_circuit",
+        "aux_generator_and_battery_charge",
+        "remote_diesel_control",
+        "traction_control",
+        "field_weakening",
+        "protection",
+        "fault_signalling",
+        "cooling_control",
+        "one-person-control",
+        "auxiliary_and_lighting_circuits"
+      ],
+      "url": "https://raillook.com/materialy/transport/jeleznodorojniy/tyagoviy-podvijnoi-sostav/1996-teplovozy-chme3-chme3t-chme3e-izd-2-z-h-notik/"
+    },
+    {
+      "id": "CHME3E-SRC-FLEET-RANGES-REFERENCE",
+      "title": "ЧМЭ3 — список подвижного состава и диапазоны модификаций",
+      "kind": "PUBLIC_FLEET_REFERENCE",
+      "provenanceStatus": "REFERENCE",
+      "authorityForAction": "NO",
+      "applicability": ["ЧМЭ3Э"],
+      "purpose": ["factory_series_number_hint"],
+      "publishedRanges": ["5932", "6220-6244", "6665-6884"],
+      "url": "https://railgallery.ru/model/42/?lang=ru",
+      "notes": [
+        "Использовать только как справочную подсказку по заводской серии.",
+        "Номер не заменяет подтверждение фактического установленного оборудования после ремонтов и модернизаций."
+      ]
+    }
+  ],
+  "researchGaps": [
+    "primary/manufacturer electrical documentation specifically for CHME3E execution",
+    "current operational/repair documents that explicitly distinguish CHME3E from CHME3/CHME3T",
+    "unit-number/layout differences after depot modernization",
+    "current diagnostic source coverage for CHME3E-specific electronics"
+  ]
+}

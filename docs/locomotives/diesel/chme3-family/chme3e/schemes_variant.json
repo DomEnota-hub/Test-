@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "profileId": "chme3e-electronic",
+  "updatedAt": "2026-10-01",
+  "records": [
+    {
+      "id":"CHME3E-SCH-TRACTION-CONTROL",
+      "title":"ЧМЭ3Э — электронное регулирование тяги и мощности",
+      "kind":"electrical_functional",
+      "applicability":["ЧМЭ3Э"],
+      "nodes":[
+        "CHME3E-EQ-CONTROLLER-HH106","CHME3E-EQ-ER-YZJK9-YIND5","CHME3E-EQ-ER-YPSM5","CHME3E-EQ-TACHOMETER-SENSOR-BLOCK","CHME3E-EQ-CURRENT-SENSOR-DTG","CHME3E-EQ-VOLTAGE-SENSOR-DNG","CHME3E-EQ-ER-YZV9","CHME3E-EQ-ER-YRUI3","CHME3E-EQ-ER-YODU4","CHME3E-EQ-ER-YKA5","CHME3E-EQ-ER-YKS5","CHME3-EQ-EXCITER","CHME3-EQ-TRACTION-GENERATOR","CHME3-EQ-TRAIN-CONTACTORS","CHME3-EQ-TRACTION-MOTORS","CHME3E-EQ-MODE-SWITCH-PE","CHME3E-EQ-MODE-SWITCH-PDU","CHME3E-EQ-MODE-SWITCH-PEM","CHME3E-EQ-RELAY-REM","CHME3E-EQ-RELAY-RE"
+      ],
+      "flows":[
+        ["CHME3E-EQ-CONTROLLER-HH106","CHME3E-EQ-ER-YZJK9-YIND5","код позиции"],
+        ["CHME3E-EQ-ER-YZJK9-YIND5","CHME3E-EQ-ER-YZV9","задание мощности"],
+        ["CHME3E-EQ-TACHOMETER-SENSOR-BLOCK","CHME3E-EQ-ER-YPSM5","импульсы частоты вращения"],
+        ["CHME3E-EQ-ER-YPSM5","CHME3E-EQ-ER-YZV9","сигнал оборотов"],
+        ["CHME3E-EQ-CURRENT-SENSOR-DTG","CHME3E-EQ-ER-YZV9","обратная связь по току"],
+        ["CHME3E-EQ-VOLTAGE-SENSOR-DNG","CHME3E-EQ-ER-YRUI3","обратная связь по напряжению"],
+        ["CHME3E-EQ-ER-YZV9","CHME3E-EQ-ER-YKS5","команда регулирования возбуждения"],
+        ["CHME3E-EQ-ER-YKS5","CHME3-EQ-EXCITER","управление независимым возбуждением"],
+        ["CHME3-EQ-EXCITER","CHME3-EQ-TRACTION-GENERATOR","возбуждение тягового генератора"],
+        ["CHME3-EQ-TRACTION-GENERATOR","CHME3-EQ-TRAIN-CONTACTORS","силовой ток"],
+        ["CHME3-EQ-TRAIN-CONTACTORS","CHME3-EQ-TRACTION-MOTORS","питание трёх тяговых ветвей"],
+        ["CHME3E-EQ-MODE-SWITCH-PDU","CHME3E-EQ-ER-YODU4","выбор режима роста напряжения"],
+        ["CHME3E-EQ-ER-YKA5","CHME3E-EQ-ER-YODU4","ограничение при боксовании"],
+        ["CHME3E-EQ-MODE-SWITCH-PE","CHME3E-EQ-ER-YKS5","разрешение электронного режима"],
+        ["CHME3E-EQ-MODE-SWITCH-PEM","CHME3E-EQ-RELAY-REM","выбор Езда/Маневры"],
+        ["CHME3E-EQ-RELAY-RE","CHME3E-EQ-ELECTRONIC-REGULATOR-GC40P","признак режима езды"]
+      ],
+      "diagnosticAnchors":["позиция есть, мощности нет","ЭР не видит позицию","не растёт напряжение генератора","тяга ограничена электроникой","боксование не снижает возбуждение"],
+      "evidenceRefs":["CHME3E-SRC-NOTIK-EQUIPMENT-67","CHME3E-SRC-NOTIK-CH17","CHME3E-SRC-NOTIK-FIELD-WEAKENING-96"],
+      "actionAuthority":"INFORMATION_ONLY"
+    },
+    {
+      "id":"CHME3E-SCH-FIELD-WEAKENING",
+      "title":"ЧМЭ3Э — автоматическое ослабление возбуждения ТЭД",
+      "kind":"electrical_functional",
+      "applicability":["ЧМЭ3Э"],
+      "nodes":["CHME3E-EQ-CURRENT-SENSOR-DTG","CHME3E-EQ-VOLTAGE-SENSOR-DNG","CHME3E-EQ-ER-YSH11","CHME3E-EQ-ER-YOUT8","CHME3-EQ-CONTACTORS","CHME3-EQ-TRACTION-MOTORS","CHME3E-EQ-RELAY-RE"],
+      "flows":[
+        ["CHME3E-EQ-CURRENT-SENSOR-DTG","CHME3E-EQ-ER-YSH11","сигнал тока"],
+        ["CHME3E-EQ-VOLTAGE-SENSOR-DNG","CHME3E-EQ-ER-YSH11","сигнал напряжения"],
+        ["CHME3E-EQ-RELAY-RE","CHME3E-EQ-ER-YSH11","разрешение тягового режима"],
+        ["CHME3E-EQ-ER-YSH11","CHME3E-EQ-ER-YOUT8","команда ступени ослабления"],
+        ["CHME3E-EQ-ER-YOUT8","CHME3-EQ-CONTACTORS","управление контакторами КШ1—КШ6"],
+        ["CHME3-EQ-CONTACTORS","CHME3-EQ-TRACTION-MOTORS","шунтирование обмоток возбуждения"]
+      ],
+      "diagnosticAnchors":["не включается ослабление поля","КШ не включаются","не переходит на вторую ступень","ослабление возбуждения включается не вовремя"],
+      "evidenceRefs":["CHME3E-SRC-NOTIK-FIELD-WEAKENING-96"],
+      "actionAuthority":"INFORMATION_ONLY"
+    },
+    {
+      "id":"CHME3E-SCH-START-ELECTRONIC",
+      "title":"ЧМЭ3Э — электронная логика предварительной прокачки и пуска",
+      "kind":"electrical_control_functional",
+      "applicability":["ЧМЭ3Э"],
+      "nodes":["CHME3E-EQ-CONTROLLER-HH106","CHME3E-EQ-ER-YCRA1","CHME3-EQ-OIL-PRIME-PUMP","CHME3-EQ-CONTACTORS","CHME3-EQ-BATTERY","CHME3-EQ-TRACTION-GENERATOR","CHME3E-EQ-RELAY-RD"],
+      "flows":[
+        ["CHME3E-EQ-CONTROLLER-HH106","CHME3E-EQ-ER-YCRA1","команда пуска"],
+        ["CHME3E-EQ-ER-YCRA1","CHME3-EQ-OIL-PRIME-PUMP","предварительная прокачка масла"],
+        ["CHME3E-EQ-ER-YCRA1","CHME3-EQ-CONTACTORS","временная последовательность пусковых аппаратов"],
+        ["CHME3-EQ-BATTERY","CHME3-EQ-TRACTION-GENERATOR","питание генератора в стартерном режиме"],
+        ["CHME3-EQ-TRACTION-GENERATOR","CHME3E-EQ-RELAY-RD","переход к признаку работающего дизеля"]
+      ],
+      "diagnosticAnchors":["маслопрокачка не заканчивается","пуск не переходит на проворот","пусковая последовательность зависла","генератор не переходит в стартерный режим"],
+      "evidenceRefs":["CHME3E-SRC-NOTIK-EQUIPMENT-67","CHME3E-SRC-NOTIK-CH17"],
+      "actionAuthority":"INFORMATION_ONLY"
+    },
+    {
+      "id":"CHME3E-SCH-PREHEAT-RUNNING",
+      "title":"ЧМЭ3Э — обогрев водяной системы от тягового генератора",
+      "kind":"electrical_thermal_functional",
+      "applicability":["ЧМЭ3Э"],
+      "nodes":["CHME3E-EQ-MODE-SWITCH-PO","CHME3E-EQ-CONTACTOR-KOG1","CHME3E-EQ-CONTACTOR-KOG2","CHME3-EQ-TRACTION-GENERATOR","CHME3-EQ-EXCITER","CHME3E-EQ-HEATER-ELEMENTS-R85-R88","CHME3-EQ-WATER-PUMP"],
+      "flows":[
+        ["CHME3E-EQ-MODE-SWITCH-PO","CHME3E-EQ-CONTACTOR-KOG1","команда режима обогрева"],
+        ["CHME3E-EQ-MODE-SWITCH-PO","CHME3E-EQ-CONTACTOR-KOG2","команда режима обогрева"],
+        ["CHME3-EQ-EXCITER","CHME3-EQ-TRACTION-GENERATOR","возбуждение генератора"],
+        ["CHME3-EQ-TRACTION-GENERATOR","CHME3E-EQ-CONTACTOR-KOG1","силовое питание режима обогрева"],
+        ["CHME3E-EQ-CONTACTOR-KOG1","CHME3E-EQ-CONTACTOR-KOG2","сборка цепи нагревателей"],
+        ["CHME3E-EQ-CONTACTOR-KOG2","CHME3E-EQ-HEATER-ELEMENTS-R85-R88","питание нагревательных элементов"],
+        ["CHME3-EQ-WATER-PUMP","CHME3E-EQ-HEATER-ELEMENTS-R85-R88","циркуляция воды через нагреваемые участки"]
+      ],
+      "diagnosticAnchors":["обогрев включён, вода не греется","КОГ не включаются","нагреватели не получают питание"],
+      "evidenceRefs":["CHME3E-SRC-NOTIK-EQUIPMENT-67","CHME3E-SRC-NOTIK-WATER-47"],
+      "actionAuthority":"INFORMATION_ONLY"
+    },
+    {
+      "id":"CHME3E-SCH-PREHEAT-EXTERNAL",
+      "title":"ЧМЭ3Э — прогрев неработающего дизеля от внешней трёхфазной сети",
+      "kind":"electrical_thermal_functional",
+      "applicability":["ЧМЭ3Э"],
+      "nodes":["CHME3E-EQ-MODE-SWITCH-PO","CHME3E-EQ-CONTACTOR-KOP","CHME3E-EQ-HEATER-ELEMENTS-R85-R88","CHME3E-EQ-ELECTRIC-WATER-PUMPS","CHME3E-EQ-WATER-PUMP-MOTORS-DOV"],
+      "flows":[
+        ["CHME3E-EQ-MODE-SWITCH-PO","CHME3E-EQ-CONTACTOR-KOP","разрешение внешнего прогрева"],
+        ["CHME3E-EQ-CONTACTOR-KOP","CHME3E-EQ-HEATER-ELEMENTS-R85-R88","подключение нагревателей к внешнему источнику"],
+        ["CHME3E-EQ-CONTACTOR-KOP","CHME3E-EQ-WATER-PUMP-MOTORS-DOV","питание электроприводов насосов"],
+        ["CHME3E-EQ-WATER-PUMP-MOTORS-DOV","CHME3E-EQ-ELECTRIC-WATER-PUMPS","привод насосов 53—55"],
+        ["CHME3E-EQ-ELECTRIC-WATER-PUMPS","CHME3E-EQ-HEATER-ELEMENTS-R85-R88","принудительная циркуляция по контурам"]
+      ],
+      "diagnosticAnchors":["внешний обогрев не работает","насосы прогрева не запускаются","нагреватели горячие, циркуляции нет"],
+      "evidenceRefs":["CHME3E-SRC-NOTIK-EQUIPMENT-67","CHME3E-SRC-NOTIK-WATER-47"],
+      "actionAuthority":"INFORMATION_ONLY",
+      "safetyNote":"Схема описывает функциональные связи и не является инструкцией по подключению внешней трёхфазной сети."
+    },
+    {
+      "id":"CHME3E-SCH-REMOTE-CONTROL",
+      "title":"ЧМЭ3Э — управление в одно лицо",
+      "kind":"electrical_pneumatic_control_functional",
+      "applicability":["ЧМЭ3Э"],
+      "nodes":["CHME3E-EQ-PORTABLE-CONTROL-PANELS","CHME3E-EQ-CONTROLLER-HH106","CHME3E-EQ-ELECTRONIC-REGULATOR-GC40P","CHME3E-EQ-ROOF-SIGNAL-LAMPS","CHME3-EQ-PNEUMATIC-CONTROL-RESERVOIR"],
+      "flows":[
+        ["CHME3E-EQ-PORTABLE-CONTROL-PANELS","CHME3E-EQ-CONTROLLER-HH106","команды изменения режима/мощности"],
+        ["CHME3E-EQ-CONTROLLER-HH106","CHME3E-EQ-ELECTRONIC-REGULATOR-GC40P","электрическая логика команды"],
+        ["CHME3-EQ-PNEUMATIC-CONTROL-RESERVOIR","CHME3E-EQ-PORTABLE-CONTROL-PANELS","пневматическая энергия исполнительных команд"],
+        ["CHME3E-EQ-PORTABLE-CONTROL-PANELS","CHME3E-EQ-ROOF-SIGNAL-LAMPS","сигнализация режима"]
+      ],
+      "diagnosticAnchors":["переносной пульт не управляет","управление в одно лицо не работает","сигнальные лампы не соответствуют режиму"],
+      "evidenceRefs":["CHME3E-SRC-NOTIK-ONE-PERSON-99"],
+      "actionAuthority":"INFORMATION_ONLY"
+    }
+  ],
+  "inheritedSchemePolicy": {
+    "pneumatic":"Use family-common ChME3 pneumatic/brake schemes only when their applicability explicitly contains ЧМЭ3Э.",
+    "mechanical":"Use family-common mechanical/running-gear schemes only when applicability explicitly contains ЧМЭ3Э.",
+    "electrical":"Do not inherit base-ChME3 or ChME3T circuit topology as the ЧМЭ3Э variant electrical scheme; use these dedicated functional records plus confirmed family-common machines/apparatus."
+  }
+}

@@ -68,6 +68,8 @@ object AssistantConversation {
                         "3эс5к" in AssistantQueryParser.normalize(answer) -> "3ЭС5К"
                         else -> "Ермак"
                     }
+                    TechnicalFamily.CHME3, TechnicalFamily.CHME3T, TechnicalFamily.CHME3E ->
+                        AssistantQueryParser.familyFromAnswer(answer)?.title
                     null -> null
                 }
             }

@@ -137,7 +137,7 @@ fun TechnicalCatalogScreen(
         } else {
             withContext(Dispatchers.Default) {
                 acceptanceRepository.disabledIds(acceptanceFamilyKey)
-                    .mapNotNull { id -> repository.entry(id)?.let { id to it } }
+                    .mapNotNull { id -> repository.entry(id, family)?.let { id to it } }
                     .filter { (_, item) ->
                         acceptanceDisabledQuery.isBlank() ||
                             technicalEntryTitle(item).contains(acceptanceDisabledQuery, ignoreCase = true) ||
@@ -156,14 +156,14 @@ fun TechnicalCatalogScreen(
         value = if (id == null) {
             true to null
         } else {
-            withContext(Dispatchers.Default) { true to repository.entry(id) }
+            withContext(Dispatchers.Default) { true to repository.entry(id, family) }
         }
     }
     val selectedLoaded = selectedState.first
     val selected = selectedState.second?.takeIf { it.id == selectedId }
     val recentEntries = recentVersion.let {
         recentRepository.ids(family.name)
-            .mapNotNull(repository::entry)
+            .mapNotNull { repository.entry(it, family) }
             .filter { entry -> entry.family == family && entry.section != TechnicalSection.ACCEPTANCE }
     }
 
@@ -198,7 +198,7 @@ fun TechnicalCatalogScreen(
     }
 
     fun openAcceptanceRoute(routeId: String) {
-        val route = repository.entry(routeId)
+        val route = repository.entry(routeId, family)
         acceptanceRepository.startOrContinueSession(
             familyKey = family.name,
             routeId = routeId,
@@ -245,7 +245,7 @@ fun TechnicalCatalogScreen(
 
     if (selected != null) {
         val breadcrumbEntries = technicalNavigationIds(navigationPath)
-            .mapNotNull(repository::entry) + selected
+            .mapNotNull { repository.entry(it, family) } + selected
         TechnicalEntryDetail(
             entry = selected,
             repository = repository,
@@ -811,7 +811,7 @@ private fun TechnicalEntryDetail(
         } else {
             entry.relatedIds
                 .distinct()
-                .mapNotNull(repository::entry)
+                .mapNotNull { repository.entry(it, entry.family) }
                 .filterNot { it.id == entry.id || it.id in referencedIds }
                 .sortedWith(
                     compareBy<TechnicalEntry> { technicalRelatedSectionOrder(it.section) }
@@ -854,7 +854,7 @@ private fun TechnicalEntryDetail(
                 RailStatusPill(status, accent = accent)
             }
         }
-        if (entry.id.startsWith("ER-SCH-LAYOUT-") && entry.hotspots.isNotEmpty()) {
+        if ((entry.id.startsWith("ER-SCH-LAYOUT-") || entry.family.isChme3) && entry.hotspots.isNotEmpty()) {
             item { ErmakInteractiveAtlas(entry, repository, onOpen) }
         } else if (entry.section == TechnicalSection.ACCEPTANCE && entry.sequence.isNotEmpty()) {
             item { TechnicalSequence(entry, repository) }
@@ -1255,7 +1255,7 @@ private fun ErmakInteractiveAtlas(
             true to null
         } else {
             withContext(Dispatchers.Default) {
-                true to repository.entry(equipmentId)
+                true to repository.entry(equipmentId, entry.family)
             }
         }
     }
@@ -1620,7 +1620,7 @@ private fun TechnicalSequenceLinks(entry: TechnicalEntry, repository: TechnicalD
     var step by rememberSaveable(entry.id) { mutableIntStateOf(0) }
     var query by rememberSaveable(entry.id) { mutableStateOf("") }
     val steps = entry.sequence.map { id ->
-        val target = repository.entry(id)
+        val target = repository.entry(id, entry.family)
         val label = target?.let(::technicalEntryTitle)
             ?: entry.sequenceLabels[id]?.let(::technicalPresentationLine)
             ?: "Узел схемы"
@@ -1699,12 +1699,12 @@ private fun TechnicalSequence(entry: TechnicalEntry, repository: TechnicalDataRe
     val activeSequence = entry.sequence.filterNot(disabledIds::contains)
     val effectiveStep = if (activeSequence.isEmpty()) 0 else step.coerceIn(0, activeSequence.lastIndex)
     val currentId = activeSequence.getOrNull(effectiveStep)
-    val target = currentId?.let(repository::entry)
+    val target = currentId?.let { repository.entry(it, entry.family) }
     val accent = technicalSectionAccent(entry.section, entry.status)
     val currentState = currentId?.let { id -> stateVersion.let { acceptanceRepository.state(id) } }
         ?: AcceptanceCheckState.NOT_CHECKED
     val currentNote = currentId?.let { id -> stateVersion.let { acceptanceRepository.note(id) } }.orEmpty()
-    val checklistItems = activeSequence.mapNotNull { id -> repository.entry(id)?.let { id to it } }
+    val checklistItems = activeSequence.mapNotNull { id -> repository.entry(id, entry.family)?.let { id to it } }
     val states = stateVersion.let { activeSequence.map(acceptanceRepository::state) }
     val summary = acceptanceSummary(states)
     val savedNotes = stateVersion.let {

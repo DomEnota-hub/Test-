@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "familyId": "chme3-family",
+  "tractionType": "diesel",
+  "updatedAt": "2026-10-01",
+  "migrationState": "STAGE_4_FAMILY_FOUNDATION_COMPLETE_READY_FOR_APP_INTEGRATION",
+  "legacyMigrationRoot": "docs/locomotives/chme3",
+  "canonicalLayers": {
+    "common": "common",
+    "variants": {
+      "chme3-base": "chme3",
+      "chme3t-rheostatic": "chme3t",
+      "chme3e-electronic": "chme3e"
+    }
+  },
+  "profiles": [
+    {
+      "profileId": "chme3-base",
+      "series": "ЧМЭ3",
+      "supportState": "KNOWLEDGE_FOUNDATION_COMPLETE_READY_FOR_APP_INTEGRATION",
+      "completedStages": ["FOUNDATION", "ATLAS_SCHEMES", "INTERACTIVE_SCHEMES", "DIAGNOSTICS", "ACCEPTANCE_FINAL_QA"],
+      "sharedBase": "common",
+      "variantLayer": "chme3",
+      "interactiveSchemeFile": "chme3/interactive_schemes.json",
+      "diagnosticSource": "LEGACY_SHARED_RUNTIME_V2_56_SCENARIOS"
+    },
+    {
+      "profileId": "chme3t-rheostatic",
+      "series": "ЧМЭ3Т",
+      "supportState": "KNOWLEDGE_FOUNDATION_COMPLETE_READY_FOR_APP_INTEGRATION",
+      "completedStages": ["FOUNDATION", "ATLAS_SCHEMES", "INTERACTIVE_SCHEMES", "DIAGNOSTICS", "ACCEPTANCE_FINAL_QA"],
+      "sharedBase": "common",
+      "variantLayer": "chme3t",
+      "interactiveSchemeFile": "chme3t/interactive_schemes.json",
+      "diagnosticSource": "LEGACY_SHARED_RUNTIME_V2_56_SCENARIOS_WITH_PROFILE_GATED_EDB"
+    },
+    {
+      "profileId": "chme3e-electronic",
+      "series": "ЧМЭ3Э",
+      "supportState": "KNOWLEDGE_FOUNDATION_COMPLETE_READY_FOR_APP_INTEGRATION",
+      "completedStages": ["FOUNDATION", "ATLAS_SCHEMES", "INTERACTIVE_SCHEMES", "DIAGNOSTICS", "ACCEPTANCE_FINAL_QA"],
+      "sharedBase": "common",
+      "variantLayer": "chme3e",
+      "interactiveSchemeFile": "chme3e/interactive_schemes.json",
+      "diagnosticFiles": ["chme3e/diagnostics_stage3.json", "chme3e/diagnostic_runtime_graphs_v2.json", "chme3e/assistant_semantics_stage3.json"],
+      "acceptanceFile": "chme3e/acceptance_stage4.json",
+      "requiredBeforeIntegration": []
+    }
+  ],
+  "interactiveSchemePolicy": {
+    "contract": "common/interactive_scheme_contract.json",
+    "sharedViews": "common/interactive_shared_views.json",
+    "defaultRenderMode": "SEMANTIC_CANVAS",
+    "sourceOverlay": "OPTIONAL_REQUIRES_VERIFIED_IMAGE_MAPPING",
+    "rule": "Every supported profile must expose interactive electrical and pneumatic coverage; every directed flow endpoint must be clickable and profile-safe."
+  },
+  "diagnosticPolicy": {
+    "manifest": "common/diagnostics_manifest.json",
+    "legacySharedScenarios": 56,
+    "legacyRuntimeV2Coverage": 56,
+    "chme3eVariantScenarios": 12,
+    "chme3eVariantRuntimeV2Coverage": 12,
+    "assistantSemantics": "chme3e/assistant_semantics_stage3.json",
+    "sourceBoundActions": "FAIL_CLOSED_REQUIRES_CURRENT_AUTHORITY_AND_PROFILE_MATCH",
+    "fieldPracticeAuthority": "NO",
+    "profileIsolation": "CHME3T_EDB_MUST_NOT_ROUTE_TO_CHME3E"
+  },
+  "acceptancePolicy": {
+    "manifest": "common/acceptance_stage4_manifest.json",
+    "legacyCommonRequiredChecks": 20,
+    "chme3tProfileRequiredChecks": 1,
+    "chme3eProfileExtendedChecks": 4,
+    "legacyRoutes": 7,
+    "chme3eSharedExpandedEquipment": 67,
+    "chme3eVariantExpandedEquipment": 33,
+    "chme3eEffectiveExpandedEquipment": 100,
+    "sessionStates": ["NOT_CHECKED", "OK", "NOTE", "NOT_APPLICABLE"],
+    "profileExtendedAuthority": "OBSERVATION_AND_STATE_RECORDING_NOT_NETWORK_MANDATORY_BY_TRAINING_SOURCE_ALONE"
+  },
+  "inheritancePolicy": {
+    "commonContent": "Mechanical, diesel, fuel, oil, water, pneumatic and other content may be inherited only where applicability is explicitly confirmed for the profile.",
+    "variantOverrides": "Electrical/electronic control, layout and variant-only equipment must live in the variant layer when they differ.",
+    "noNegativeInheritance": "Absence of a variant-only feature is explicit. A profile must never inherit CHME3T rheostatic-brake equipment merely because it shares electronic equipment with CHME3T.",
+    "unknownExecution": "When actual equipment or modernization is unknown, variant-dependent actions fail closed."
+  },
+  "integrationBoundary": {
+    "foundationReady": true,
+    "androidRuntimeIntegrated": false,
+    "assistantEngineMerged": false,
+    "rule": "READY_FOR_APP_INTEGRATION means the knowledge foundation is internally complete and validated; it does not mean Android repositories, UI, assets or the production assistant index already consume this package."
+  }
+}

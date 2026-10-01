@@ -6,7 +6,12 @@ import org.json.JSONObject
 
 enum class TechnicalFamily(val title: String, val subtitle: String) {
     VL80S("ВЛ80С", "Техническая база локомотива"),
-    ERMAK("Ермак", "2ЭС5К / 3ЭС5К")
+    ERMAK("Ермак", "2ЭС5К / 3ЭС5К"),
+    CHME3("ЧМЭ3", "Маневровый тепловоз"),
+    CHME3T("ЧМЭ3Т", "Реостатное торможение"),
+    CHME3E("ЧМЭ3Э", "Электронное регулирование");
+
+    val isChme3: Boolean get() = this == CHME3 || this == CHME3T || this == CHME3E
 }
 
 enum class TechnicalSection(val title: String) {
@@ -170,6 +175,10 @@ class TechnicalDataRepository internal constructor(private val loadAsset: (Strin
         }
 
     fun sections(family: TechnicalFamily): List<TechnicalSection> = when (family) {
+        TechnicalFamily.CHME3, TechnicalFamily.CHME3T, TechnicalFamily.CHME3E -> listOf(
+            TechnicalSection.SYSTEMS, TechnicalSection.EQUIPMENT, TechnicalSection.KNOWLEDGE,
+            TechnicalSection.ELECTRICAL, TechnicalSection.PNEUMATIC
+        )
         TechnicalFamily.VL80S -> listOf(
             TechnicalSection.EQUIPMENT,
             TechnicalSection.SYSTEMS,
@@ -191,8 +200,13 @@ class TechnicalDataRepository internal constructor(private val loadAsset: (Strin
         return sectionEntries(family, section).filter { needle.isBlank() || needle in it.searchText }
     }
 
-    fun entry(id: String): TechnicalEntry? {
+    fun entry(id: String, familyHint: TechnicalFamily? = null): TechnicalEntry? {
         val canonicalId = legacyEquipmentIds[id.lowercase()] ?: id
+        if (canonicalId.startsWith("CHME3") && familyHint?.isChme3 == true) {
+            return TechnicalSection.entries.firstNotNullOfOrNull { section ->
+                sectionEntries(familyHint, section).firstOrNull { it.id == canonicalId }
+            }
+        }
         synchronized(sharedSectionCache) {
             sharedEntryCache[canonicalId]?.let { return it }
         }
@@ -232,6 +246,8 @@ class TechnicalDataRepository internal constructor(private val loadAsset: (Strin
     }
 
     private fun loadSection(family: TechnicalFamily, section: TechnicalSection): List<TechnicalEntry> = when (family) {
+        TechnicalFamily.CHME3, TechnicalFamily.CHME3T, TechnicalFamily.CHME3E ->
+            loadChme3Section(family, section)
         TechnicalFamily.VL80S -> when (section) {
             TechnicalSection.PROFILES -> loadVl80sProfiles()
             TechnicalSection.EQUIPMENT -> loadVl80sEquipment()
@@ -257,6 +273,8 @@ class TechnicalDataRepository internal constructor(private val loadAsset: (Strin
     }
 
     private fun candidateSections(id: String): List<Pair<TechnicalFamily, TechnicalSection>> = when {
+        id.startsWith("CHME3") -> listOf(TechnicalFamily.CHME3, TechnicalFamily.CHME3T, TechnicalFamily.CHME3E)
+            .flatMap { family -> TechnicalSection.entries.map { family to it } }
         id.startsWith("VL80-ACC-") || id.startsWith("VL80-REQ-") || id.startsWith("VL80-ROUTE-") || id.startsWith("route_") -> listOf(TechnicalFamily.VL80S to TechnicalSection.ACCEPTANCE)
         id.startsWith("VL-EQ-") -> listOf(TechnicalFamily.VL80S to TechnicalSection.EQUIPMENT)
         id.startsWith("VL-SYS-") -> listOf(TechnicalFamily.VL80S to TechnicalSection.SYSTEMS)
@@ -275,9 +293,36 @@ class TechnicalDataRepository internal constructor(private val loadAsset: (Strin
         else -> emptyList()
     }
 
+    private fun loadChme3Section(family: TechnicalFamily, section: TechnicalSection): List<TechnicalEntry> {
+        val name = "technical/chme3_${family.name.lowercase()}_catalog.json"
+        return json(name).array("entries").objects().filter { it.optString("section") == section.name }.map { raw ->
+            val title = raw.optString("title")
+            val subtitle = raw.optString("subtitle")
+            val blocks = raw.array("blocks").objects().map { block ->
+                TechnicalBlock(block.optString("title"), block.array("lines").strings())
+            }
+            val aliases = raw.array("searchAliases").strings()
+            TechnicalEntry(
+                id = raw.optString("id"), family = family, section = section,
+                title = title, subtitle = subtitle, status = raw.optString("status"),
+                blocks = blocks, relatedIds = raw.array("relatedIds").strings(),
+                sequence = raw.array("sequence").strings(),
+                hotspots = raw.array("hotspots").objects().map { hotspot ->
+                    TechnicalHotspot(
+                        equipmentId = hotspot.optString("equipmentId"), label = hotspot.optString("label"),
+                        x = hotspot.optInt("x"), y = hotspot.optInt("y"),
+                        width = hotspot.optInt("width"), height = hotspot.optInt("height")
+                    )
+                },
+                searchAliases = aliases,
+                searchText = raw.optString("searchText").lowercase()
+            )
+        }
+    }
+
     private fun looksLikeEntryId(value: String): Boolean {
         val id=value.trim()
-        return id.startsWith("VL-") || id.startsWith("VL80-") || id.startsWith("ER-") || id.startsWith("SYS-") || id.startsWith("SAFETY-") || id.startsWith("route_") || id.matches(Regex("^[a-z][a-z0-9]+(?:-[a-z0-9]+)+$"))
+        return id.startsWith("CHME3") || id.startsWith("VL-") || id.startsWith("VL80-") || id.startsWith("ER-") || id.startsWith("SYS-") || id.startsWith("SAFETY-") || id.startsWith("route_") || id.matches(Regex("^[a-z][a-z0-9]+(?:-[a-z0-9]+)+$"))
     }
 
     private fun json(asset: String): JSONObject = loadAsset(asset)

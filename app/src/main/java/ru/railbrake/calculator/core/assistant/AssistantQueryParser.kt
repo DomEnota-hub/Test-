@@ -10,11 +10,28 @@ object AssistantQueryParser {
         val vl80 = "вл80" in text
         val twoSections = "2эс5к" in text
         val threeSections = "3эс5к" in text
-        return (vl80 && ("ермак" in text || twoSections || threeSections)) ||
-            (twoSections && threeSections)
+        val chme3e = "чмэ3э" in text
+        val chme3t = "чмэ3т" in text
+        val chme3 = "чмэ3" in text && !chme3e && !chme3t
+        val ermak = "ермак" in text || twoSections || threeSections
+        return (vl80 && ermak) ||
+            (twoSections && threeSections) ||
+            listOf(vl80, twoSections, threeSections, chme3e, chme3t, chme3).count { it } > 1 ||
+            (ermak && (chme3e || chme3t || chme3))
     }
 
     private val replacements = listOf(
+        "чмэ три э" to "чмэ3э",
+        "чмэ три тэ" to "чмэ3т",
+        "чмэ три т" to "чмэ3т",
+        "чмэ три" to "чмэ3",
+        "чмэ 3 э" to "чмэ3э",
+        "чмэ 3 т" to "чмэ3т",
+        "чмэ 3" to "чмэ3",
+        "гц сорок п" to "gc40p",
+        "дэ тэ гэ" to "дтг",
+        "дэ эн гэ" to "днг",
+        "ка ша" to "кш",
         "вээл восемьдесят эс" to "вл80с",
         "вээл восемьдесят с" to "вл80с",
         "вээл 80 эс" to "вл80с",
@@ -148,6 +165,9 @@ object AssistantQueryParser {
     fun parse(rawText: String): AssistantParsedQuery {
         val normalized = normalize(rawText)
         val family = when {
+            "чмэ3э" in normalized -> TechnicalFamily.CHME3E
+            "чмэ3т" in normalized -> TechnicalFamily.CHME3T
+            "чмэ3" in normalized -> TechnicalFamily.CHME3
             "вл80с" in normalized || "вл80" in normalized -> TechnicalFamily.VL80S
             "ермак" in normalized || "2эс5к" in normalized || "3эс5к" in normalized -> TechnicalFamily.ERMAK
             else -> null
@@ -211,6 +231,9 @@ object AssistantQueryParser {
     fun familyFromAnswer(rawText: String): TechnicalFamily? {
         val normalized = normalize(rawText)
         return when {
+            "чмэ3э" in normalized -> TechnicalFamily.CHME3E
+            "чмэ3т" in normalized -> TechnicalFamily.CHME3T
+            "чмэ3" in normalized -> TechnicalFamily.CHME3
             normalized in setOf("вл", "вл80", "вл80с", "80с") ||
                 "вл80с" in normalized || "вл80" in normalized -> TechnicalFamily.VL80S
             normalized in setOf("ермак", "2эс5к", "3эс5к") ||

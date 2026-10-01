@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "profileId": "chme3e-electronic",
+  "updatedAt": "2026-10-01",
+  "sharedSource": "docs/locomotives/chme3",
+  "migrationMode": "BRIDGE_UNTIL_FAMILY_COMMON_IS_PHYSICALLY_MIGRATED",
+  "inheritance": {
+    "atlas": {
+      "strategy": "inherit only records whose applicability explicitly contains ЧМЭ3Э",
+      "indexFiles": ["atlas_index.json", "atlas_index_extension.json"],
+      "cardFiles": [
+        "atlas_cards_powerplant.json",
+        "atlas_cards_electric_brake.json",
+        "atlas_cards_scheme_equipment.json",
+        "atlas_cards_running_auxiliary.json",
+        "atlas_cards_engine_control_remaining.json"
+      ]
+    },
+    "schemes": {
+      "strategy": "inherit only family-common mechanical/diesel/fuel/oil/water/pneumatic functions explicitly applicable to ЧМЭ3Э; electrical circuit logic is overridden by the dedicated ЧМЭ3Э variant layer"
+    }
+  },
+  "explicitVariantOverrides": [
+    "driver_controller",
+    "electronic_regulation",
+    "traction_generator_control_logic",
+    "field_weakening_control_logic",
+    "diesel_preheating_electrical_logic",
+    "single_person_control_logic"
+  ],
+  "hardExclusions": [
+    "CHME3-SYS-EDB",
+    "CHME3T-EQ-BRAKE-RESISTORS",
+    "CHME3T-EQ-BRAKE-RESISTOR-FAN",
+    "CHME3T-EQ-EDB-CONTROL",
+    "CHME3T rheostatic-brake schemes and runtime actions"
+  ],
+  "integrationRule": "A consumer must resolve common records through applicability, then overlay chme3e variant records. It must never copy the entire chme3t layer and subtract EDB heuristically."
+}

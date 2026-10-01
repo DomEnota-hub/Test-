@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 2,
+  "packageId": "chme3-family",
+  "updatedAt": "2026-10-01",
+  "state": "RUNTIME_GRAPH_MIGRATION_BATCH_8_FIXED",
+  "scenarios": [
+    {
+      "scenarioId":"CHME3-DIAG-314",
+      "runtimeGraph":{"startNodeId":"q-water","nodes":[
+        {"id":"q-water","type":"question","text":"Одновременно с перегревом масла повышена температура охлаждающей жидкости?","choices":[{"label":"Да, греются обе среды","nextNodeId":"f-common"},{"label":"Нет, вода не перегрета","nextNodeId":"c-hex"}],"uncertainNextNodeId":"t-unknown"},
+        {"id":"c-hex","type":"check","text":"После безопасной остановки оценить доступные признаки циркуляции масла и воды через водомасляный теплообменник.","expected":"Циркуляция присутствует, явного нарушения теплоотвода нет.","ifAbnormal":"Нарушение циркуляции или теплообмена локализует масляный контур/теплообменник.","actionLevel":"SAFE_STOP","nextNodeId":"q-hex"},
+        {"id":"q-hex","type":"question","text":"Есть признак нарушения циркуляции/теплообмена именно масляного контура?","choices":[{"label":"Да","nextNodeId":"f-oil"},{"label":"Нет","nextNodeId":"f-hidden"}],"uncertainNextNodeId":"t-unknown"},
+        {"id":"f-common","type":"finding","text":"Перегрев обеих сред локализует общую систему охлаждения, а не только масляный теплообменник.","nextNodeId":"t-common"},
+        {"id":"f-oil","type":"finding","text":"Вода не перегрета, но масляный теплоотвод нарушен — локализована масляная ветвь охлаждения.","nextNodeId":"t-oil"},
+        {"id":"f-hidden","type":"finding","text":"Доступная циркуляция выглядит исправной, но масло перегревается — вероятен скрытый дефект теплообмена/состояния масла.","nextNodeId":"t-hidden"},
+        {"id":"t-common","type":"terminal","text":"Неисправность локализована как общая проблема охлаждения; перейти к `CHME3-DIAG-012`."},
+        {"id":"t-oil","type":"terminal","text":"Вероятна неисправность масляного охлаждения/теплообменника; нагрузку не увеличивать до восстановления режима."},
+        {"id":"t-hidden","type":"terminal","text":"Перегрев масла подтверждён без внешней локализации; требуется проверка масла и теплообменника по РЭ."},
+        {"id":"t-unknown","type":"terminal","text":"Недостаточно данных: нужны температуры масла/воды и признаки циркуляции."}
+      ]}
+    },
+    {
+      "scenarioId":"CHME3-DIAG-315",
+      "runtimeGraph":{"startNodeId":"q-leak","nodes":[
+        {"id":"q-leak","type":"question","text":"После безопасной остановки видна наружная течь охлаждающей жидкости?","choices":[{"label":"Да","nextNodeId":"f-external"},{"label":"Нет","nextNodeId":"q-discharge"}],"uncertainNextNodeId":"t-unknown"},
+        {"id":"q-discharge","type":"question","text":"Потеря уровня сопровождается выбросом жидкости/пара при перегреве?","choices":[{"label":"Да","nextNodeId":"f-overheat"},{"label":"Нет","nextNodeId":"q-mixing"}],"uncertainNextNodeId":"t-unknown"},
+        {"id":"q-mixing","type":"question","text":"Есть признаки воды/эмульсии в масле или иного смешения сред?","choices":[{"label":"Да","nextNodeId":"f-internal"},{"label":"Нет","nextNodeId":"f-hidden"}],"uncertainNextNodeId":"t-unknown"},
+        {"id":"f-external","type":"finding","text":"Потеря жидкости локализована наружной течью.","nextNodeId":"t-external"},
+        {"id":"f-overheat","type":"finding","text":"Жидкость теряется через выброс при перегреве — первична тепловая/циркуляционная причина.","nextNodeId":"t-overheat"},
+        {"id":"f-internal","type":"finding","text":"Потеря уровня без наружной течи сочетается со смешением сред — вероятна внутренняя негерметичность.","nextNodeId":"t-internal"},
+        {"id":"f-hidden","type":"finding","text":"Потеря уровня подтверждена без наружной течи, выброса и явного смешения — остаётся скрытая утечка.","nextNodeId":"t-hidden"},
+        {"id":"t-external","type":"terminal","text":"Неисправность локализована как наружная течь охлаждения; при быстром падении уровня нагрузку не продолжать."},
+        {"id":"t-overheat","type":"terminal","text":"Неисправность связана с перегревом/выбросом; перейти к `CHME3-DIAG-012` и не открывать горячую систему под давлением."},
+        {"id":"t-internal","type":"terminal","text":"Вероятна внутренняя межконтурная негерметичность; использовать `CHME3-DIAG-011`, нагрузку не продолжать."},
+        {"id":"t-hidden","type":"terminal","text":"Подтверждена скрытая потеря охлаждающей жидкости; требуется проверка герметичности по РЭ."},
+        {"id":"t-unknown","type":"terminal","text":"Недостаточно данных: нужны признаки наружной течи, выброса и смешения сред."}
+      ]}
+    },
+    {
+      "scenarioId":"CHME3-DIAG-316",
+      "runtimeGraph":{"startNodeId":"q-demand","nodes":[
+        {"id":"q-demand","type":"question","text":"Температурный режим действительно требует включения вентилятора по схеме/РЭ исполнения?","choices":[{"label":"Да","nextNodeId":"q-command"},{"label":"Нет/не подтверждено","nextNodeId":"f-no-demand"}],"uncertainNextNodeId":"t-unknown"},
+        {"id":"q-command","type":"question","text":"При требуемом режиме есть штатная команда на привод вентилятора?","choices":[{"label":"Нет","nextNodeId":"f-control"},{"label":"Да","nextNodeId":"q-drive"}],"uncertainNextNodeId":"t-unknown"},
+        {"id":"q-drive","type":"question","text":"Привод реагирует на команду?","choices":[{"label":"Да, но вращения/потока нет","nextNodeId":"f-mechanical"},{"label":"Нет реакции","nextNodeId":"f-actuator"}],"uncertainNextNodeId":"t-unknown"},
+        {"id":"f-no-demand","type":"finding","text":"Условие включения вентилятора не подтверждено — неисправность вентилятора не установлена.","nextNodeId":"t-no-demand"},
+        {"id":"f-control","type":"finding","text":"Тепловое условие есть, команды нет — локализована управляющая ветвь.","nextNodeId":"t-control"},
+        {"id":"f-mechanical","type":"finding","text":"Команда и реакция привода есть, но вращения нет — локализована механическая/гидромеханическая передача.","nextNodeId":"t-mechanical"},
+        {"id":"f-actuator","type":"finding","text":"Команда есть, привод не реагирует — локализован исполнительный привод вентилятора.","nextNodeId":"t-actuator"},
+        {"id":"t-no-demand","type":"terminal","text":"Неисправность вентилятора не подтверждена; сначала подтвердить условия включения."},
+        {"id":"t-control","type":"terminal","text":"Неисправность локализована в управлении вентилятором; временное принудительное включение не разрешается без current source-bound основания."},
+        {"id":"t-mechanical","type":"terminal","text":"Вероятна неисправность механического/гидромеханического привода; не выполнять принудительное воздействие."},
+        {"id":"t-actuator","type":"terminal","text":"Вероятна неисправность исполнительного привода при наличии команды; проверка — после безопасной остановки."},
+        {"id":"t-unknown","type":"terminal","text":"Недостаточно данных: нужны температура, команда и реакция привода."}
+      ]}
+    },
+    {
+      "scenarioId":"CHME3-DIAG-317",
+      "runtimeGraph":{"startNodeId":"q-knock","nodes":[
+        {"id":"q-knock","type":"question","text":"Есть новый сильный механический стук компрессора или резкая потеря производительности?","choices":[{"label":"Да","nextNodeId":"f-danger"},{"label":"Нет, доминируют перегрев/масляный признак","nextNodeId":"q-oil"}],"uncertainNextNodeId":"t-unknown"},
+        {"id":"q-oil","type":"question","text":"В нагнетательном тракте/маслоотделителе ненормально много масла?","choices":[{"label":"Да, компрессор гонит масло","nextNodeId":"f-oil"},{"label":"Нет, основное — перегрев","nextNodeId":"c-cooling"}],"uncertainNextNodeId":"t-unknown"},
+        {"id":"c-cooling","type":"check","text":"После безопасной остановки проверить доступное состояние промежуточного холодильника и воздушного/охлаждающего тракта компрессора.","expected":"Охлаждение исправно, явного перегрева/засорения тракта нет.","ifAbnormal":"Дефект охлаждения объясняет перегрев; при исправном охлаждении вероятна внутренняя неисправность компрессора.","actionLevel":"SAFE_STOP","nextNodeId":"q-cooling"},
+        {"id":"q-cooling","type":"question","text":"Обнаружен явный дефект охлаждения/промежуточного холодильника?","choices":[{"label":"Да","nextNodeId":"f-cooling"},{"label":"Нет","nextNodeId":"f-internal"}],"uncertainNextNodeId":"t-unknown"},
+        {"id":"f-danger","type":"finding","text":"Сильный стук/резкая потеря производительности подтверждают опасную механическую ветвь компрессора.","nextNodeId":"t-stop"},
+        {"id":"f-oil","type":"finding","text":"Подтверждён ненормальный масляный выброс компрессора — вероятна внутренняя неисправность смазки/ступеней/уплотнений.","nextNodeId":"t-oil"},
+        {"id":"f-cooling","type":"finding","text":"Перегрев локализован нарушением охлаждения/промежуточного холодильника.","nextNodeId":"t-cooling"},
+        {"id":"f-internal","type":"finding","text":"Охлаждение выглядит исправно, но компрессор перегревается — вероятна внутренняя компрессорная неисправность.","nextNodeId":"t-internal"},
+        {"id":"t-stop","type":"terminal","text":"Подтверждены опасные признаки механической неисправности компрессора; его работу не продолжать как при обычном отказе регулятора."},
+        {"id":"t-oil","type":"terminal","text":"Вероятна внутренняя неисправность компрессора с ненормальным выбросом масла; требуется ремонтная проверка."},
+        {"id":"t-cooling","type":"terminal","text":"Неисправность локализована в охлаждении компрессора; длительную работу до устранения не считать безопасной."},
+        {"id":"t-internal","type":"terminal","text":"Вероятна внутренняя неисправность компрессора при исправном охлаждении; зафиксировать температуру и производительность."},
+        {"id":"t-unknown","type":"terminal","text":"Недостаточно данных: нужны шум, производительность, масляный выброс и состояние охлаждения."}
+      ]}
+    },
+    {
+      "scenarioId":"CHME3-DIAG-318",
+      "runtimeGraph":{"startNodeId":"q-scope","nodes":[
+        {"id":"q-scope","type":"question","text":"Отклонение относится к одному ТЦ/тележке или к нескольким цилиндрам одновременно?","choices":[{"label":"Один ТЦ/группа","nextNodeId":"q-pressure"},{"label":"Несколько/все","nextNodeId":"f-common"}],"uncertainNextNodeId":"t-unknown"},
+        {"id":"q-pressure","type":"question","text":"К проблемному ТЦ при торможении поступает давление сопоставимо с исправной группой?","choices":[{"label":"Нет","nextNodeId":"f-feed"},{"label":"Да","nextNodeId":"c-motion"}],"uncertainNextNodeId":"t-unknown"},
+        {"id":"c-motion","type":"check","text":"После безопасной остановки и закрепления сравнить ход штока, утечку и движение рычажной передачи проблемной группы.","expected":"Ход и механика соответствуют исправной группе, явной утечки нет.","ifAbnormal":"Утечка локализует ТЦ; нормальное давление при неправильном ходе — цилиндр/рычажная передача.","actionLevel":"SAFE_STOP","nextNodeId":"q-motion"},
+        {"id":"q-motion","type":"question","text":"Что подтверждено?","choices":[{"label":"Явная утечка ТЦ","nextNodeId":"f-leak"},{"label":"Неправильный ход/заклинивание","nextNodeId":"f-rigging"}],"uncertainNextNodeId":"t-unknown"},
+        {"id":"f-common","type":"finding","text":"Несколько ТЦ отклоняются одновременно — локализована общая пневматическая/управляющая ветвь.","nextNodeId":"t-common"},
+        {"id":"f-feed","type":"finding","text":"К конкретному ТЦ не поступает требуемое давление — локализована его подводка/распределение воздуха.","nextNodeId":"t-feed"},
+        {"id":"f-leak","type":"finding","text":"Подтверждена утечка конкретного тормозного цилиндра.","nextNodeId":"t-leak"},
+        {"id":"f-rigging","type":"finding","text":"При нормальном давлении механическое действие отличается — локализован ТЦ/рычажная передача.","nextNodeId":"t-rigging"},
+        {"id":"t-common","type":"terminal","text":"Неисправность локализована в общей тормозной пневматике; использовать `CHME3-DIAG-204/205`."},
+        {"id":"t-feed","type":"terminal","text":"Неисправность локализована в подводке воздуха к конкретному ТЦ; после устранения нужна контрольная проверка тормозов."},
+        {"id":"t-leak","type":"terminal","text":"Подтверждена утечка конкретного ТЦ; тормозную систему не считать исправной до устранения и проверки."},
+        {"id":"t-rigging","type":"terminal","text":"Вероятна механическая неисправность ТЦ/рычажной передачи; движение — только после восстановления и проверки."},
+        {"id":"t-unknown","type":"terminal","text":"Недостаточно данных: нужны масштаб отказа, давление ТЦ, ход штока и утечка/заклинивание."}
+      ]}
+    },
+    {
+      "scenarioId":"CHME3-DIAG-319",
+      "runtimeGraph":{"startNodeId":"q-danger","nodes":[
+        {"id":"q-danger","type":"question","text":"Букса заметно горячее соседних и есть дым, запах, новый шум или быстрый рост температуры?","choices":[{"label":"Да, опасные признаки есть","nextNodeId":"f-danger"},{"label":"Нет, только умеренное отличие","nextNodeId":"c-compare"}],"uncertainNextNodeId":"t-unknown"},
+        {"id":"c-compare","type":"check","text":"После безопасной остановки сравнить буксу с соседними и исключить внешний нагрев от заторможенности/колёсного трения; буксу в пути не разбирать.","expected":"Нет устойчивого локального перегрева и внешнего источника трения.","ifAbnormal":"Внешний источник переводит поиск в тормоз/колёсную пару; локальный нагрев без него подтверждает буксовую ветвь.","actionLevel":"SAFE_STOP","nextNodeId":"q-compare"},
+        {"id":"q-compare","type":"question","text":"Есть внешний источник нагрева рядом?","choices":[{"label":"Да","nextNodeId":"f-external"},{"label":"Нет, греется сама букса","nextNodeId":"f-axlebox"}],"uncertainNextNodeId":"t-unknown"},
+        {"id":"f-danger","type":"finding","text":"Выраженный перегрев буксы с дымом/запахом/шумом подтверждает safety-событие ходовой части.","nextNodeId":"t-stop"},
+        {"id":"f-external","type":"finding","text":"Нагрев объясняется внешним трением/заторможенностью; букса не подтверждена первичной причиной.","nextNodeId":"t-external"},
+        {"id":"f-axlebox","type":"finding","text":"Подтверждён локальный нагрев буксы без внешней причины — вероятна внутренняя неисправность буксового узла.","nextNodeId":"t-axlebox"},
+        {"id":"t-stop","type":"terminal","text":"Подтверждены опасные признаки перегрева буксы; продолжение движения этим сценарием не разрешается."},
+        {"id":"t-external","type":"terminal","text":"Букса исключена как первичная причина; локализовать заторможенность/колёсную пару и повторно оценить нагрев."},
+        {"id":"t-axlebox","type":"terminal","text":"Вероятна внутренняя неисправность буксы; в пути её не разбирать без прямо предусмотренного порядка."},
+        {"id":"t-unknown","type":"terminal","text":"Недостаточно данных: нужны сравнение с соседними буксами и признаки внешнего трения/дыма/шума."}
+      ]}
+    },
+    {
+      "scenarioId":"CHME3-DIAG-320",
+      "runtimeGraph":{"startNodeId":"q-local","nodes":[
+        {"id":"q-local","type":"question","text":"Шум/вой изменяется со скоростью и локализуется у одного тягового редуктора?","choices":[{"label":"Да","nextNodeId":"q-danger"},{"label":"Нет, источник не локализован","nextNodeId":"f-not-local"}],"uncertainNextNodeId":"t-unknown"},
+        {"id":"q-danger","type":"question","text":"Есть перегрев, сильный новый стук или хруст?","choices":[{"label":"Да","nextNodeId":"f-danger"},{"label":"Нет, только устойчивый шум","nextNodeId":"c-external"}],"uncertainNextNodeId":"t-unknown"},
+        {"id":"c-external","type":"check","text":"После безопасной остановки осмотреть редуктор, подвеску ТЭД и колёсную пару на течь, ослабление, повреждение и следы трения; редуктор в пути не разбирать.","expected":"Явного внешнего дефекта нет.","ifAbnormal":"Дефект редуктора, подвески или колёсной пары разделяет дальнейшие ветви.","actionLevel":"SAFE_STOP","nextNodeId":"q-external"},
+        {"id":"q-external","type":"question","text":"Что обнаружено?","choices":[{"label":"Дефект/течь редуктора","nextNodeId":"f-gear"},{"label":"Дефект подвески ТЭД","nextNodeId":"f-suspension"},{"label":"Дефект колёсной пары","nextNodeId":"f-wheel"},{"label":"Внешнего дефекта нет","nextNodeId":"f-internal"}],"uncertainNextNodeId":"t-unknown"},
+        {"id":"f-not-local","type":"finding","text":"Источник шума не локализован у конкретного редуктора — преждевременно считать его причиной.","nextNodeId":"t-not-local"},
+        {"id":"f-danger","type":"finding","text":"Шум редуктора сопровождается перегревом/стуком/хрустом — вероятна опасная механическая неисправность.","nextNodeId":"t-stop"},
+        {"id":"f-gear","type":"finding","text":"Внешний дефект локализован на тяговом редукторе.","nextNodeId":"t-gear"},
+        {"id":"f-suspension","type":"finding","text":"Причина локализована в подвеске ТЭД, а не в зубчатой передаче.","nextNodeId":"t-suspension"},
+        {"id":"f-wheel","type":"finding","text":"Причина локализована в колёсной паре; редуктор не подтверждён первичным источником.","nextNodeId":"t-wheel"},
+        {"id":"f-internal","type":"finding","text":"Шум устойчиво локализован у редуктора без внешнего дефекта — вероятна внутренняя неисправность зубчатой передачи/подшипников.","nextNodeId":"t-internal"},
+        {"id":"t-not-local","type":"terminal","text":"Неисправность редуктора не подтверждена; требуется безопасно локализовать источник по колёсной паре/скорости."},
+        {"id":"t-stop","type":"terminal","text":"Подтверждены опасные признаки механической неисправности редуктора; скоростное/нагрузочное испытание не продолжать."},
+        {"id":"t-gear","type":"terminal","text":"Неисправность локализована на тяговом редукторе; дальнейший ремонт — в предусмотренных условиях."},
+        {"id":"t-suspension","type":"terminal","text":"Неисправность локализована в подвеске ТЭД; редуктор исключён как первичная причина."},
+        {"id":"t-wheel","type":"terminal","text":"Вероятная причина локализована в колёсной паре; перейти к профильному порядку осмотра ходовой части."},
+        {"id":"t-internal","type":"terminal","text":"Вероятна внутренняя неисправность редуктора; требуется ремонтная диагностика, а не дальнейшее движение для прослушивания."},
+        {"id":"t-unknown","type":"terminal","text":"Недостаточно данных: нужны локализация по скорости, температура и внешний осмотр редуктора/подвески/колеса."}
+      ]}
+    }
+  ]
+}

@@ -7,6 +7,7 @@ enum class AssistantDocumentKind {
     TECHNICAL_ENTRY,
     VL80_DIAGNOSTIC,
     ERMAK_DIAGNOSTIC,
+    CHME3_DIAGNOSTIC,
     KNOWLEDGE_ARTICLE,
     FIRST_AID
 }
@@ -23,6 +24,11 @@ sealed interface AssistantTarget {
     ) : AssistantTarget
 
     data class ErmakDiagnostic(
+        val scenarioId: String
+    ) : AssistantTarget
+
+    data class Chme3Diagnostic(
+        val family: TechnicalFamily,
         val scenarioId: String
     ) : AssistantTarget
 

@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "packageId": "chme3-family",
+  "updatedAt": "2026-10-01",
+  "state": "DIAGNOSTICS_PASS_3",
+  "sources": [
+    {
+      "id": "CHME3-SRC-996R-CURRENT-INDEX",
+      "title": "Перечень действий локомотивных бригад по выявлению и устранению неисправностей на локомотивах при поездной и маневровой работе",
+      "document": "Распоряжение ОАО РЖД от 12.04.2022 № 996/р",
+      "knownRevision": "редакция с изменениями по распоряжению от 05.03.2024 № 592/р; актуальность на 2026 год подтверждается вторичными издательскими каталогами, первичный текст текущей редакции требует отдельной сверки",
+      "sourceType": "OFFICIAL_SECONDARY_INDEX",
+      "provenanceStatus": "OFFICIAL_OTHER",
+      "authority": "SOURCE_INDEX_ONLY",
+      "url": "https://urizdat.ru/books/zheleznodorozhnyy-transport/lokomotivy-i-lokomotivnoe-hozyaystvo-ct-ctr/perechen-deystviy-lokomotivnyh-brigad-po-vyyavleniyu-i-ustraneniyu-neispravnostey-na-lokomotivah-pri-poezdnoy-i-manevrovoy-rabote-utverzhden-rasporyazheniem-oao-rzhd-ot-12-04-2022-996-r-v-redakcii-rasporyazheniya-oao-rzhd-ot-05-03-2024-592-r.html",
+      "notes": ["Содержит отдельный раздел по тепловозам серии ЧМЭ3.", "Не использовать как достаточное основание для точного шага без сверки текста соответствующего пункта."]
+    },
+    {
+      "id": "CHME3-SRC-CDOCKA-996R-CHME3",
+      "title": "Порядок действий локомотивных бригад по выявлению и устранению неисправностей на тепловозах серии ЧМЭ3",
+      "sourceType": "TRAINING_QA_DERIVED_FROM_996R",
+      "provenanceStatus": "996R_CONFIRMED_SECONDARY",
+      "authority": "SOURCE_BOUND_REQUIRES_PRIMARY_CONFIRMATION",
+      "url": "https://www.cdocka.ru/test/1034/",
+      "notes": ["Содержит конкретные вопросы и ответы по ЧМЭ3, привязанные к порядку действий локомотивных бригад."]
+    },
+    {
+      "id": "CHME3-SRC-SDO-996R-CHME3-2026",
+      "title": "Порядок действий локомотивных бригад по выявлению и устранению неисправностей на тепловозах серии ЧМЭ3",
+      "sourceType": "TRAINING_QA_DERIVED_FROM_996R",
+      "provenanceStatus": "996R_CONFIRMED_SECONDARY",
+      "authority": "SOURCE_BOUND_REQUIRES_PRIMARY_CONFIRMATION",
+      "url": "https://xn----8sbk4bhhej.xn--p1ai/порядок-действий-локомотивных-брига-9/",
+      "notes": ["Страница опубликована в 2026 году и содержит тестовые вопросы по разделу ЧМЭ3."]
+    },
+    {
+      "id": "CHME3-SRC-OLTEP-DIESEL",
+      "title": "Неисправности дизеля тепловоза ЧМЭ3",
+      "sourceType": "FIELD_GUIDE",
+      "provenanceStatus": "FIELD_PRACTICE",
+      "authority": "RESEARCH_ONLY",
+      "url": "https://oltep.narod.ru/neispr/neisp_diz.htm",
+      "notes": ["Ценный источник симптомов и машинистской лексики.", "Описанные способы устранения не считать разрешёнными без отдельной нормативной сверки."]
+    },
+    {
+      "id": "CHME3-SRC-SCBIST-PAM",
+      "title": "Тепловоз ЧМЭ3 — памятка по неисправностям",
+      "sourceType": "LEGACY_CREW_GUIDE",
+      "provenanceStatus": "FIELD_PRACTICE",
+      "authority": "RESEARCH_ONLY",
+      "url": "https://scbist.com/scb/uploaded/1_chme3_pam.pdf",
+      "notes": ["Содержит большой перечень симптомов, причин и методов устранения по дизелю, регулятору напряжения и цепям управления."]
+    },
+    {
+      "id": "CHME3-SRC-SCBIST-DOC-COLLECTION-DIAG",
+      "title": "Сборник документации по тепловозу ЧМЭ3",
+      "sourceType": "DOCUMENT_COLLECTION_INDEX",
+      "provenanceStatus": "UNVERIFIED",
+      "authority": "DISCOVERY_ONLY",
+      "url": "https://scbist.com/tyagovyi-podvizhnoi-sostav/12424-teplovoz-chme3-dokumentaciya-print.html",
+      "notes": ["Индекс содержит руководства по ТО/ТР, электрические и пневматические схемы, поиск неисправностей и аварийные схемы.", "Каждый вложенный документ должен получать отдельную карточку источника после проверки."]
+    },
+    {
+      "id": "CHME3-SRC-TCH11-VYBORG-2007",
+      "title": "Рекомендации локомотивной бригаде по устранению неисправностей на тепловозе ЧМЭ3",
+      "origin": "ТЧ-11 Выборг, 2007",
+      "sourceType": "LOCAL_LEGACY_GUIDE",
+      "provenanceStatus": "LOCAL_INSTRUCTION",
+      "authority": "RESEARCH_ONLY_OUTSIDE_ORIGINAL_SCOPE",
+      "url": "https://cyberpediasu.com/10x96a5.html",
+      "notes": ["Полезен для схемной логики, обозначений контактов и старых аварийных рекомендаций.", "Не распространять локальную практику ТЧ-11 как общесетевое разрешение."]
+    },
+    {
+      "id": "CHME3-SRC-SCBIST-ELECTRICAL-2018",
+      "title": "Тепловоз ЧМЭ3: основные электрические цепи. Поиск причин неисправностей",
+      "sourceType": "TECHNICAL_TRAINING_ARTICLE",
+      "provenanceStatus": "FIELD_PRACTICE",
+      "authority": "RESEARCH_ONLY",
+      "url": "https://scbist.com/xx2/51294-01-2018-teplovoz-chme3-osnovnye-elektricheskie-cepi-poisk-prichin-neispravnostei.html",
+      "notes": ["Даёт причинно-следственную логику цепей и ряд временных способов восстановления.", "Временные обходы сохранять только как research-only до нормативной сверки."]
+    },
+    {
+      "id": "CHME3-SRC-SCBIST-TROUBLE-2020",
+      "title": "Устранение неисправностей тепловозов ЧМЭ3",
+      "sourceType": "TECHNICAL_TRAINING_ARTICLE",
+      "provenanceStatus": "FIELD_PRACTICE",
+      "authority": "RESEARCH_ONLY",
+      "url": "https://scbist.com/xx2/52634-01-2020-ustranenie-neispravnostei-teplovozov-chme3.html"
+    },
+    {
+      "id": "CHME3-SRC-SCBIST-FORUM-RCHO-2014",
+      "title": "ЧМЭ3 — просадка оборотов, дизель глохнет",
+      "sourceType": "FORUM_CASE",
+      "provenanceStatus": "UNVERIFIED",
+      "authority": "HYPOTHESIS_ONLY",
+      "url": "https://scbist.com/remont-teplovozov/31895-chme-3-prosadka-oborotov-dizel-glohnet.html",
+      "notes": ["Использовать для корпуса симптомов и гипотез, не как источник разрешённых действий."]
+    }
+  ]
+}

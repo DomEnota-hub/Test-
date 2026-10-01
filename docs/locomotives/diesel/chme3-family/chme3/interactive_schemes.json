@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "profileId": "chme3-base",
+  "updatedAt": "2026-10-01",
+  "contractRef": "../common/interactive_scheme_contract.json",
+  "sharedViewRefs": [
+    "CHME3-INT-FUEL","CHME3-INT-OIL","CHME3-INT-WATER","CHME3-INT-AIR","CHME3-INT-AUX","CHME3-INT-PNEUMATIC","CHME3-INT-RUNNING","CHME3-INT-BRAKE-MECH","CHME3-INT-DIESEL-SUPPORT"
+  ],
+  "profileViews": [
+    {
+      "id":"CHME3-INT-TRACTION","title":"ЧМЭ3 — электрическая передача тяги","schemeType":"electrical","profileGate":"chme3-base","sourceSchemeRef":"CHME3-SCH-TRACTION",
+      "hotspotLayer":[
+        {"equipmentId":"CHME3-EQ-DIESEL","label":"Дизель","layoutHint":{"x":80,"y":360,"width":180,"height":76}},
+        {"equipmentId":"CHME3-EQ-TRACTION-GENERATOR","label":"Тяговый генератор","layoutHint":{"x":390,"y":360,"width":220,"height":76}},
+        {"equipmentId":"CHME3-EQ-EXCITER","label":"Возбудитель","layoutHint":{"x":390,"y":160,"width":190,"height":68}},
+        {"equipmentId":"CHME3-EQ-TRAIN-CONTACTORS","label":"Поездные контакторы","layoutHint":{"x":760,"y":360,"width":230,"height":76}},
+        {"equipmentId":"CHME3-EQ-REVERSER","label":"Реверсор","layoutHint":{"x":1110,"y":360,"width":180,"height":76}},
+        {"equipmentId":"CHME3-EQ-TRACTION-MOTORS","label":"Тяговые двигатели","layoutHint":{"x":1370,"y":360,"width":190,"height":76}}
+      ],
+      "flowLayer":[
+        {"from":"CHME3-EQ-DIESEL","to":"CHME3-EQ-TRACTION-GENERATOR","label":"механическая мощность"},
+        {"from":"CHME3-EQ-EXCITER","to":"CHME3-EQ-TRACTION-GENERATOR","label":"возбуждение"},
+        {"from":"CHME3-EQ-TRACTION-GENERATOR","to":"CHME3-EQ-TRAIN-CONTACTORS","label":"силовой ток"},
+        {"from":"CHME3-EQ-TRAIN-CONTACTORS","to":"CHME3-EQ-REVERSER","label":"сбор тяговой цепи"},
+        {"from":"CHME3-EQ-REVERSER","to":"CHME3-EQ-TRACTION-MOTORS","label":"направление тока"}
+      ],
+      "designationSource":"../../../chme3/atlas_scheme_designations.json"
+    },
+    {
+      "id":"CHME3-INT-CONTROL","title":"ЧМЭ3 — запуск и цепи управления","schemeType":"electrical_control","profileGate":"chme3-base","sourceSchemeRef":"CHME3-SCH-CONTROL",
+      "hotspotLayer":[
+        {"equipmentId":"CHME3-EQ-BATTERY","label":"АКБ","layoutHint":{"x":80,"y":180,"width":170,"height":68}},
+        {"equipmentId":"CHME3-EQ-BATTERY-SWITCH","label":"Рубильник АКБ","layoutHint":{"x":350,"y":180,"width":190,"height":68}},
+        {"equipmentId":"CHME3-EQ-DRIVER-CONTROLLER","label":"Контроллер машиниста","layoutHint":{"x":90,"y":540,"width":220,"height":68}},
+        {"equipmentId":"CHME3-EQ-GOVERNOR-SERVOMOTOR","label":"Сервомотор регулятора","layoutHint":{"x":440,"y":540,"width":230,"height":68}},
+        {"equipmentId":"CHME3-EQ-GOVERNOR","label":"Регулятор дизеля","layoutHint":{"x":790,"y":540,"width":210,"height":68}},
+        {"equipmentId":"CHME3-EQ-TRAIN-CONTACTORS","label":"Поездные контакторы","layoutHint":{"x":1120,"y":540,"width":230,"height":68}},
+        {"equipmentId":"CHME3-EQ-REVERSER","label":"Реверсор","layoutHint":{"x":1390,"y":540,"width":170,"height":68}},
+        {"equipmentId":"CHME3-EQ-AUX-GENERATOR","label":"Вспомогательный генератор","layoutHint":{"x":850,"y":180,"width":250,"height":68}}
+      ],
+      "flowLayer":[
+        {"from":"CHME3-EQ-BATTERY","to":"CHME3-EQ-BATTERY-SWITCH","label":"низковольтное питание"},
+        {"from":"CHME3-EQ-AUX-GENERATOR","to":"CHME3-EQ-BATTERY","label":"заряд"},
+        {"from":"CHME3-EQ-DRIVER-CONTROLLER","to":"CHME3-EQ-GOVERNOR-SERVOMOTOR","label":"команда позиции"},
+        {"from":"CHME3-EQ-GOVERNOR-SERVOMOTOR","to":"CHME3-EQ-GOVERNOR","label":"изменение режима дизеля"},
+        {"from":"CHME3-EQ-DRIVER-CONTROLLER","to":"CHME3-EQ-TRAIN-CONTACTORS","label":"разрешение тяги"},
+        {"from":"CHME3-EQ-DRIVER-CONTROLLER","to":"CHME3-EQ-REVERSER","label":"направление движения"}
+      ],
+      "designationSource":"../../../chme3/atlas_scheme_designations.json"
+    }
+  ],
+  "navigationPolicy":{"reverseIndex":"DERIVE_FROM_HOTSPOTS","diagnosticJoin":"BY_EQUIPMENT_ID","search":"DESIGNATION_AND_ALIAS_TO_EQUIPMENT"}
+}

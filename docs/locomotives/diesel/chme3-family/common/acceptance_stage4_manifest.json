@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "familyId": "chme3-family",
+  "updatedAt": "2026-10-01",
+  "stage": "STAGE_4_ACCEPTANCE_CROSS_LAYER_QA",
+  "sessionContract": {
+    "states": ["NOT_CHECKED", "OK", "NOTE", "NOT_APPLICABLE"],
+    "routeStateShared": true,
+    "notesPerPhysicalItem": true,
+    "resumeSupported": true
+  },
+  "legacyFoundation": {
+    "root": "docs/locomotives/chme3",
+    "acceptanceContract": "acceptance_contract_pass4.json",
+    "requiredItems": "acceptance_required_pass4.json",
+    "finalCheckpoint": "PASS_4_FINAL_CHECKPOINT.md",
+    "commonRequiredCount": 20,
+    "chme3tProfileRequiredCount": 1,
+    "legacyAtlasEquipmentCount": 70,
+    "legacyRoutesCount": 7
+  },
+  "profiles": [
+    {
+      "profileId": "chme3-base",
+      "series": "ЧМЭ3",
+      "requiredSource": "legacy_common",
+      "profileRequiredItems": 0,
+      "expandedAcceptance": "legacy_atlas_filtered_by_applicability",
+      "excludeSystems": ["CHME3-SYS-EDB"]
+    },
+    {
+      "profileId": "chme3t-rheostatic",
+      "series": "ЧМЭ3Т",
+      "requiredSource": "legacy_common_plus_chme3t_profile",
+      "profileRequiredItems": 1,
+      "expandedAcceptance": "legacy_atlas_filtered_by_applicability",
+      "includeSystems": ["CHME3-SYS-EDB"]
+    },
+    {
+      "profileId": "chme3e-electronic",
+      "series": "ЧМЭ3Э",
+      "requiredSource": "legacy_common_only",
+      "profileRequiredItems": 0,
+      "profileExtendedFile": "../chme3e/acceptance_stage4.json",
+      "profileExtendedCount": 4,
+      "expandedAcceptance": "legacy_applicable_shared_atlas_plus_chme3e_variant_atlas",
+      "excludeSystems": ["CHME3-SYS-EDB"],
+      "expectedSharedApplicableEquipment": 67,
+      "expectedVariantEquipment": 33,
+      "expectedExpandedEquipment": 100
+    }
+  ],
+  "crossLayerPolicy": {
+    "atlasToAcceptance": "Every equipment entity applicable to a profile must be represented by deterministic expanded acceptance or an explicit exclusion with reason.",
+    "acceptanceToDiagnostics": "Diagnostic links from acceptance must resolve to promoted runtime scenarios; absence of a diagnostic link is allowed only when the item is observational/reference-only.",
+    "acceptanceToSources": "Every required/profile-extended acceptance item must retain provenance. Training/reference sources may justify architecture and observation points but do not establish network-wide mandatory status by themselves.",
+    "profileIsolation": "CHME3T rheostatic equipment and diagnostic scenario CHME3-DIAG-110 must never become active ChME3E acceptance content.",
+    "unknownExecution": "Variant-dependent operational conclusions fail closed until installed equipment is confirmed."
+  },
+  "integrationDecision": "READY_FOR_APP_INTEGRATION only after Stage 4 validator, legacy final-package validator, Stage 3 validator, ChME3E Stage 2 validator and interactive validator all pass on the same head SHA."
+}

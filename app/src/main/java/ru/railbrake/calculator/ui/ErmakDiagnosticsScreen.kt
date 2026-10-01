@@ -45,6 +45,8 @@ import ru.railbrake.calculator.core.DiagnosticProfileContext
 import ru.railbrake.calculator.core.DiagnosticRepository
 import ru.railbrake.calculator.core.ErmakDiagnosticChoice
 import ru.railbrake.calculator.core.ErmakDiagnosticRepository
+import ru.railbrake.calculator.core.Chme3DiagnosticRepository
+import ru.railbrake.calculator.core.TechnicalFamily
 import ru.railbrake.calculator.core.ErmakDiagnosticScenario
 import ru.railbrake.calculator.core.assistant.availableForAssistantVariant
 import ru.railbrake.calculator.core.requiresPolicyEvaluation
@@ -71,6 +73,7 @@ private fun ermakScenarioText(scenario: ErmakDiagnosticScenario): String = listO
     scenario.category,
     scenario.title,
     scenario.symptom,
+    scenario.searchTerms.joinToString(" "),
     scenario.immediateActions.joinToString(" "),
     scenario.probableCauses.joinToString(" "),
     scenario.reportFields.joinToString(" ")
@@ -126,12 +129,15 @@ private fun ermakQuickCandidate(scenario: ErmakDiagnosticScenario): Boolean {
 fun ErmakDiagnosticsScreen(
     initialScenarioId: String? = null,
     initialEquipmentId: String? = null,
-    workingVariantId: String? = null
+    workingVariantId: String? = null,
+    family: TechnicalFamily = TechnicalFamily.ERMAK
 ) {
     val context = LocalContext.current
     val repository = remember { ErmakDiagnosticRepository(context.applicationContext) }
-    val scenarios by produceState<List<ErmakDiagnosticScenario>?>(null) {
-        value = withContext(Dispatchers.IO) { repository.scenarios() }
+    val scenarios by produceState<List<ErmakDiagnosticScenario>?>(null, family) {
+        value = withContext(Dispatchers.IO) {
+            if (family.isChme3) Chme3DiagnosticRepository(context).scenarios(family) else repository.scenarios()
+        }
     }
     var selectedId by rememberSaveable(initialScenarioId, initialEquipmentId) { mutableStateOf(initialScenarioId) }
     var query by rememberSaveable { mutableStateOf("") }
@@ -140,27 +146,27 @@ fun ErmakDiagnosticsScreen(
     var historyVersion by remember { mutableIntStateOf(0) }
     val sessionRepository = remember { DiagnosticSessionRepository(context) }
     val sessions = remember(historyVersion) {
-        sessionRepository.loadForProfile(DiagnosticSessionRepository.PROFILE_ERMAK)
+        sessionRepository.loadForProfile(if (family.isChme3) family.name else DiagnosticSessionRepository.PROFILE_ERMAK)
     }
     val selected = scenarios?.firstOrNull { it.id == selectedId }
 
     BackHandler(enabled = selected != null) { selectedId = null }
     if (selected != null) {
         Column(Modifier.fillMaxSize()) {
-            if (!selected.availableForAssistantVariant(workingVariantId)) {
+            if (!family.isChme3 && !selected.availableForAssistantVariant(workingVariantId)) {
                 Text("Материал другого варианта Ермака. Рабочий локомотив не изменён.",
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                     color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold)
             }
             androidx.compose.foundation.layout.Box(Modifier.weight(1f)) {
-                ErmakDiagnosticRoute(selected, onBack = { selectedId = null }, onSaved = { historyVersion++ })
+                ErmakDiagnosticRoute(selected, family, onBack = { selectedId = null }, onSaved = { historyVersion++ })
             }
         }
         return
     }
 
     val baseScenarios = scenarios.orEmpty().filter { scenario ->
-        scenario.availableForAssistantVariant(workingVariantId) &&
+        (family.isChme3 || scenario.availableForAssistantVariant(workingVariantId)) &&
             (initialEquipmentId == null || initialEquipmentId in scenario.equipmentIds) &&
             ermakMatchesQuery(scenario, query)
     }
@@ -176,7 +182,7 @@ fun ErmakDiagnosticsScreen(
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         item {
-            RailSectionHeader("Диагностика Ермак", "Выберите неисправность или наблюдаемый симптом")
+            RailSectionHeader("Диагностика ${family.title}", "Выберите неисправность или наблюдаемый симптом")
             DiagnosticSafetyNotice()
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 FilterChip(catalogMode == "scenarios", { catalogMode = "scenarios" }, label = { Text("Неисправность") })
@@ -227,10 +233,10 @@ fun ErmakDiagnosticsScreen(
         if (catalogMode == "history") {
             item {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text("Локальный журнал Ермака", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+                    Text("Локальный журнал ${family.title}", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
                     if (sessions.isNotEmpty()) {
                         TextButton(onClick = {
-                            sessionRepository.clearProfile(DiagnosticSessionRepository.PROFILE_ERMAK)
+                            sessionRepository.clearProfile(if (family.isChme3) family.name else DiagnosticSessionRepository.PROFILE_ERMAK)
                             historyVersion++
                         }) { Text("Очистить") }
                     }
@@ -240,7 +246,7 @@ fun ErmakDiagnosticsScreen(
                 item {
                     InfoCard(
                         "Пока пусто",
-                        listOf("Сохранённые результаты диагностики Ермака появятся здесь и останутся на устройстве."),
+                        listOf("Сохранённые результаты диагностики ${family.title} появятся здесь и останутся на устройстве."),
                         MaterialTheme.colorScheme.surfaceVariant
                     )
                 }
@@ -350,13 +356,14 @@ private fun ermakSeverityTitle(value: String): String = when (value.trim().upper
 
 private fun buildErmakDiagnosticReport(
     scenario: ErmakDiagnosticScenario,
+    family: TechnicalFamily,
     terminalText: String?,
     uncertain: Boolean,
     history: List<String>,
     observations: String,
     report: String
 ): String = buildString {
-    appendLine("Ермак — ${scenario.title}")
+    appendLine("${family.title} — ${scenario.title}")
     appendLine("Симптом: ${scenario.symptom}")
     appendLine("Результат: ${if (uncertain) "Недостаточно данных" else terminalText.orEmpty().ifBlank { "Маршрут завершён" }}")
     if (history.isNotEmpty()) {
@@ -418,7 +425,7 @@ private fun ErmakQuestionAnswers(
 }
 
 @Composable
-private fun ErmakDiagnosticRoute(scenario: ErmakDiagnosticScenario, onBack: () -> Unit, onSaved: () -> Unit) {
+private fun ErmakDiagnosticRoute(scenario: ErmakDiagnosticScenario, family: TechnicalFamily, onBack: () -> Unit, onSaved: () -> Unit) {
     var nodeId by rememberSaveable(scenario.id) { mutableStateOf(scenario.startNodeId) }
     var history by rememberSaveable(scenario.id) { mutableStateOf(emptyList<String>()) }
     var observations by rememberSaveable(scenario.id) { mutableStateOf("") }
@@ -478,14 +485,14 @@ private fun ErmakDiagnosticRoute(scenario: ErmakDiagnosticScenario, onBack: () -
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
-            ChildBackButton("Диагностика Ермак", onBack)
+            ChildBackButton("Диагностика ${family.title}", onBack)
             Text(scenario.title, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
             Text(scenario.symptom, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         item {
             InfoCard("Сначала", scenario.immediateActions.ifEmpty { listOf("Зафиксируйте наблюдаемые признаки до дальнейшей проверки.") }, MaterialTheme.colorScheme.tertiaryContainer)
         }
-        item {
+        if (!family.isChme3) item {
             ErmakProfileContextCard(
                 profile = profileContext,
                 applicability = scenario.applicability,
@@ -682,6 +689,7 @@ private fun ErmakDiagnosticRoute(scenario: ErmakDiagnosticScenario, onBack: () -
                 }
                 val savedReport = buildErmakDiagnosticReport(
                     scenario = scenario,
+                    family = family,
                     terminalText = node?.text,
                     uncertain = uncertain,
                     history = history,
@@ -693,8 +701,8 @@ private fun ErmakDiagnosticRoute(scenario: ErmakDiagnosticScenario, onBack: () -
                         sessionRepository.add(
                             DiagnosticSessionRecord(
                                 timestampMillis = System.currentTimeMillis(),
-                                profileId = DiagnosticSessionRepository.PROFILE_ERMAK,
-                                variantId = DiagnosticSessionRepository.VARIANT_ERMAK_GENERAL,
+                                profileId = if (family.isChme3) family.name else DiagnosticSessionRepository.PROFILE_ERMAK,
+                                variantId = if (family.isChme3) family.name else DiagnosticSessionRepository.VARIANT_ERMAK_GENERAL,
                                 scenarioId = scenario.id,
                                 scenarioTitle = scenario.title,
                                 severity = ermakSeverityTitle(scenario.severity),

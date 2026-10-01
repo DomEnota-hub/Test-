@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "packageId": "chme3-family",
+  "updatedAt": "2026-10-01",
+  "state": "DIAGNOSTICS_PASS_3",
+  "rules": [
+    {"term":"кд2 не встал","mapsTo":["CHME3-DIAG-321"],"kind":"DRIVER_TECH_SLANG","priority":"HIGH"},
+    {"term":"после рв2 нет кд2","mapsTo":["CHME3-DIAG-321"],"kind":"TECH_SYMPTOM","priority":"HIGH"},
+    {"term":"обороты растут через позицию","mapsTo":["CHME3-DIAG-322"],"kind":"COLLOQUIAL_SYMPTOM","priority":"HIGH"},
+    {"term":"четные позиции не работают","mapsTo":["CHME3-DIAG-322"],"kind":"COLLOQUIAL_SYMPTOM","priority":"HIGH"},
+    {"term":"ру5 есть первой позиции нет","mapsTo":["CHME3-DIAG-323"],"kind":"DRIVER_TECH_SLANG","priority":"HIGH"},
+    {"term":"нет контакта кв","mapsTo":["CHME3-DIAG-323"],"kind":"TECH_SYMPTOM","priority":"HIGH"},
+    {"term":"пуск только с кнопки","mapsTo":["CHME3-DIAG-324"],"kind":"COLLOQUIAL_SYMPTOM","priority":"HIGH"},
+    {"term":"держишь пуск работает отпустил прекратился","mapsTo":["CHME3-DIAG-324"],"kind":"COLLOQUIAL_SYMPTOM","priority":"HIGH"},
+    {"term":"впж1 не работает","mapsTo":["CHME3-DIAG-325"],"kind":"EQUIPMENT_DESIGNATION","priority":"HIGH"},
+    {"term":"боковые жалюзи не открылись","mapsTo":["CHME3-DIAG-325"],"kind":"COLLOQUIAL_SYMPTOM","priority":"HIGH"},
+    {"term":"ом12 ом22 ом32","mapsTo":["CHME3-DIAG-326"],"kind":"CONTACT_DESIGNATION","priority":"HIGH"},
+    {"term":"подгорели контакты ом","mapsTo":["CHME3-DIAG-326"],"kind":"DRIVER_TECH_SLANG","priority":"HIGH"}
+  ],
+  "negativeDisambiguation": [
+    {"pair":["кд2 не включается","кд2 включилось и не отпадает"],"reason":"failed pickup versus failed dropout"},
+    {"pair":["обороты не растут на четных","обороты сами растут на четных"],"reason":"missing commanded increase versus unintended increase"}
+  ]
+}

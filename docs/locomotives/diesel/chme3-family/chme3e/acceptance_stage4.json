@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "profileId": "chme3e-electronic",
+  "familyId": "chme3-family",
+  "updatedAt": "2026-10-01",
+  "stage": "STAGE_4_ACCEPTANCE_CROSS_LAYER_QA",
+  "integrationState": "FOUNDATION_FINAL_QA_PENDING",
+  "inheritance": {
+    "legacyContract": "docs/locomotives/chme3/acceptance_contract_pass4.json",
+    "legacyRequiredItems": "docs/locomotives/chme3/acceptance_required_pass4.json",
+    "inheritCommonRequiredItems": 20,
+    "excludeRequiredItemIds": ["CHME3T-REQ-21"],
+    "rule": "Common ChME3 acceptance checks are inherited only where their referenced equipment remains applicable to ChME3E. ChME3T rheostatic-brake acceptance never inherits into ChME3E."
+  },
+  "sessionContract": {
+    "states": ["NOT_CHECKED", "OK", "NOTE", "NOT_APPLICABLE"],
+    "oneSessionAcrossRoutes": true,
+    "preserveSharedPhysicalItemStateWhenRouteChanges": true,
+    "notesPerItem": true,
+    "resumeSupported": true
+  },
+  "requirednessPolicy": {
+    "commonRequired": "Inherited from the legacy ChME3 acceptance baseline subject to actual applicability and local approved work list.",
+    "profileExtended": "CHME3E-specific checks below are profile-aware extended checks derived from verified equipment architecture; they are not declared a universal network-wide mandatory TO-1 list without a current approved local/primary work list.",
+    "repairBoundary": "Acceptance records observed state. Repair, opening live equipment, protection bypasses, jumpers and work on energized/pressurized systems are outside this contract."
+  },
+  "profileExtendedChecks": [
+    {
+      "id": "CHME3E-ACC-EXT-01",
+      "title": "Электронный регулятор и тракт задания тяги",
+      "status": "PROFILE_EXTENDED_CHECK",
+      "phase": "CAB_AND_ENGINE_ROOM",
+      "check": "Проверить штатные органы выбора режима и доступные признаки готовности/реакции электронного регулятора, сопоставив команду контроллера с индикацией и поведением системы без вскрытия и обхода защит.",
+      "equipmentIds": ["CHME3E-EQ-CONTROLLER-HH106", "CHME3E-EQ-ELECTRONIC-REGULATOR-GC40P", "CHME3E-EQ-MODE-SWITCH-PE", "CHME3E-EQ-MODE-SWITCH-PDU", "CHME3E-EQ-MODE-SWITCH-PEM", "CHME3E-EQ-ER-YZJK9-YIND5", "CHME3E-EQ-ER-YZV9", "CHME3E-EQ-ER-YKS5", "CHME3E-EQ-ER-YRUI3", "CHME3E-EQ-ER-YOUT8"],
+      "diagnosticIds": ["CHME3E-DIAG-001", "CHME3E-DIAG-002", "CHME3E-DIAG-004", "CHME3E-DIAG-012"],
+      "sourceRefs": ["CHME3E-SRC-NOTIK-EQUIPMENT-67", "CHME3E-SRC-NOTIK-CH17", "CHME3-SRC-RZD-POT-2013R-2025"],
+      "evidenceStatus": "TRAINING_ARCHITECTURE_PLUS_CURRENT_SAFETY_BOUNDARY",
+      "actionBoundary": "Не вскрывать электронные блоки и не имитировать входные/выходные сигналы перемычками или внешним питанием."
+    },
+    {
+      "id": "CHME3E-ACC-EXT-02",
+      "title": "Датчики обратной связи и автоматическое ослабление возбуждения",
+      "status": "PROFILE_EXTENDED_CHECK",
+      "phase": "ENGINE_ROOM_AND_CAB_OBSERVATION",
+      "check": "Проверить отсутствие явных повреждений доступной аппаратуры и согласованность штатных показаний/срабатываний датчиков и электронных команд в допустимом эксплуатационном наблюдении.",
+      "equipmentIds": ["CHME3E-EQ-CURRENT-SENSOR-DTG", "CHME3E-EQ-VOLTAGE-SENSOR-DNG", "CHME3E-EQ-TACHOMETER-SENSOR-BLOCK", "CHME3E-EQ-ER-YSH11", "CHME3E-EQ-ER-YKA5", "CHME3E-EQ-ER-YODU4"],
+      "diagnosticIds": ["CHME3E-DIAG-003", "CHME3E-DIAG-005", "CHME3E-DIAG-006"],
+      "sourceRefs": ["CHME3E-SRC-NOTIK-FIELD-WEAKENING-96", "CHME3E-SRC-NOTIK-CH17", "CHME3-SRC-RZD-POT-2013R-2025"],
+      "evidenceStatus": "TRAINING_ARCHITECTURE_PLUS_CURRENT_SAFETY_BOUNDARY",
+      "actionBoundary": "Не изменять уставки и не подменять сигналы датчиков для получения требуемого режима."
+    },
+    {
+      "id": "CHME3E-ACC-EXT-03",
+      "title": "Электронная последовательность пуска и питание регулятора",
+      "status": "PROFILE_EXTENDED_CHECK",
+      "phase": "CAB_AND_ENGINE_ROOM",
+      "check": "При штатном запуске наблюдать корректный переход последовательности пуска и отсутствие зависания пускового режима; отдельно контролировать признаки штатного питания электронных блоков.",
+      "equipmentIds": ["CHME3E-EQ-ER-YCRA1", "CHME3E-EQ-ER-YSZ3", "CHME3E-EQ-RELAY-RD", "CHME3E-EQ-RELAY-RE", "CHME3E-EQ-RELAY-REM", "CHME3E-EQ-RELAY-RDE"],
+      "diagnosticIds": ["CHME3E-DIAG-007", "CHME3E-DIAG-008"],
+      "sourceRefs": ["CHME3E-SRC-NOTIK-EQUIPMENT-67", "CHME3E-SRC-NOTIK-CH17", "CHME3-SRC-RZD-POT-2013R-2025"],
+      "evidenceStatus": "TRAINING_ARCHITECTURE_PLUS_CURRENT_SAFETY_BOUNDARY",
+      "actionBoundary": "При неразобравшейся пусковой цепи не продолжать нормальную эксплуатацию и не шунтировать временные/защитные зависимости."
+    },
+    {
+      "id": "CHME3E-ACC-EXT-04",
+      "title": "Электрический прогрев и управление в одно лицо",
+      "status": "PROFILE_EXTENDED_CHECK",
+      "phase": "CAB_ENGINE_ROOM_OUTSIDE",
+      "check": "Проверить доступное состояние органов и аппаратов электрического прогрева, насосов, нагревателей, переносных пультов и предусмотренной сигнализации; применение внешнего питания оценивать только по действующему локальному технологическому порядку.",
+      "equipmentIds": ["CHME3E-EQ-MODE-SWITCH-PO", "CHME3E-EQ-CONTACTOR-KOG1", "CHME3E-EQ-CONTACTOR-KOG2", "CHME3E-EQ-CONTACTOR-KOP", "CHME3E-EQ-HEATER-ELEMENTS-R85-R88", "CHME3E-EQ-ELECTRIC-WATER-PUMPS", "CHME3E-EQ-WATER-PUMP-MOTORS-DOV", "CHME3E-EQ-PORTABLE-CONTROL-PANELS", "CHME3E-EQ-ROOF-SIGNAL-LAMPS"],
+      "diagnosticIds": ["CHME3E-DIAG-009", "CHME3E-DIAG-010", "CHME3E-DIAG-011"],
+      "sourceRefs": ["CHME3E-SRC-NOTIK-WATER-47", "CHME3E-SRC-NOTIK-ONE-PERSON-99", "CHME3E-SRC-NOTIK-CH17", "CHME3-SRC-RZD-POT-2013R-2025"],
+      "evidenceStatus": "TRAINING_ARCHITECTURE_PLUS_CURRENT_SAFETY_BOUNDARY",
+      "actionBoundary": "Не выдавать из этого чек-листа порядок подключения внешней трёхфазной сети; он требует отдельного действующего локального/первичного документа и безопасного технологического процесса."
+    }
+  ],
+  "expandedVariantItems": {
+    "mode": "DERIVE_FROM_CHME3E_ATLAS_VARIANT",
+    "atlasFile": "atlas_variant.json",
+    "expectedEquipmentCount": 33,
+    "idTemplate": "CHME3E-ACC-{equipmentIdWithoutPrefix}",
+    "status": "CHECK",
+    "fields": {
+      "title": "atlas.name",
+      "applicability": "atlas.applicability",
+      "searchTerms": "atlas.aliases",
+      "relatedIds": "[atlas.id] + diagnostics referencing atlas.id"
+    },
+    "actionBoundary": "Фиксировать состояние и признаки. Разборка, измерения на токоведущих частях и ремонт выполняются только в предусмотренном безопасном состоянии по действующей документации."
+  },
+  "phaseRules": {
+    "OUTSIDE": {
+      "alsoEquipmentIds": ["CHME3E-EQ-ROOF-SIGNAL-LAMPS"]
+    },
+    "ENGINE_ROOM": {
+      "systems": ["CHME3E-SYS-ELECTRONIC-CONTROL", "CHME3E-SYS-PREHEAT", "CHME3E-SYS-REMOTE-CONTROL"],
+      "excludeEquipmentIds": ["CHME3E-EQ-MODE-SWITCH-PE", "CHME3E-EQ-MODE-SWITCH-PO", "CHME3E-EQ-MODE-SWITCH-PDU", "CHME3E-EQ-MODE-SWITCH-PEM", "CHME3E-EQ-PORTABLE-CONTROL-PANELS", "CHME3E-EQ-ROOF-SIGNAL-LAMPS"]
+    },
+    "CAB": {
+      "alsoEquipmentIds": ["CHME3E-EQ-CONTROLLER-HH106", "CHME3E-EQ-MODE-SWITCH-PE", "CHME3E-EQ-MODE-SWITCH-PO", "CHME3E-EQ-MODE-SWITCH-PDU", "CHME3E-EQ-MODE-SWITCH-PEM", "CHME3E-EQ-PORTABLE-CONTROL-PANELS"]
+    },
+    "BRAKE_PNEUMATIC": {}
+  },
+  "routes": {
+    "inheritLegacyRouteIds": ["CHME3-ROUTE-required", "CHME3-ROUTE-route_canonical", "CHME3-ROUTE-route_from_outside", "CHME3-ROUTE-route_from_cab", "CHME3-ROUTE-route_engine_room", "CHME3-ROUTE-route_running_gear", "CHME3-ROUTE-route_brakes"],
+    "rule": "Variant items join the same physical acceptance session and are inserted into their mapped phase; route changes must preserve item state and notes."
+  }
+}

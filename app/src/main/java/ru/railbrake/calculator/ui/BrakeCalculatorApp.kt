@@ -388,6 +388,13 @@ fun BrakeCalculatorApp(
                             technicalSectionName = TechnicalSection.ELECTRICAL.name
                             technicalInitialEntryId = "ER-SCH-LAYOUT-2ES5K-BASE"
                             screenName = AppScreen.LOCOMOTIVE_MATERIAL.name
+                        },
+                        onOpenInteractiveChme3 = { family ->
+                            technicalFamilyName = family.name
+                            technicalSectionName = TechnicalSection.ELECTRICAL.name
+                            technicalInitialEntryId = if (family == TechnicalFamily.CHME3E)
+                                "CHME3E-INT-TRACTION-CONTROL" else "CHME3-INT-TRACTION"
+                            screenName = AppScreen.LOCOMOTIVE_MATERIAL.name
                         }
                     )
                 }
@@ -403,7 +410,7 @@ fun BrakeCalculatorApp(
                         screenName = AppScreen.LOCOMOTIVE_LEGACY.name
                     },
                     onOpenDiagnosticScenario = { scenarioId, sourceEntryId, sourceSection ->
-                        technicalFamilyName = TechnicalFamily.ERMAK.name
+                        technicalFamilyName = if (scenarioId.startsWith("CHME3")) technicalFamilyName else TechnicalFamily.ERMAK.name
                         technicalSectionName = sourceSection.name
                         technicalInitialEntryId = sourceEntryId
                         diagnosticStartScenarioId = scenarioId
@@ -1364,7 +1371,8 @@ private fun LocomotiveReferenceScreen(
     workingFamily: TechnicalFamily?,
     onOpenTechnical: (TechnicalFamily, TechnicalSection) -> Unit,
     onOpenInteractiveVl80s: () -> Unit,
-    onOpenInteractiveErmak: () -> Unit
+    onOpenInteractiveErmak: () -> Unit,
+    onOpenInteractiveChme3: (TechnicalFamily) -> Unit
 ) {
     var query by rememberSaveable { mutableStateOf("") }
     var seriesExpanded by rememberSaveable { mutableStateOf(false) }
@@ -1381,19 +1389,15 @@ private fun LocomotiveReferenceScreen(
             "Локомотивы / атлас",
             "Выберите серию и тип материала"
         )
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilterChip(
-                selected = family == TechnicalFamily.VL80S,
-                onClick = { browsingFamilyName = TechnicalFamily.VL80S.name },
-                enabled = workingFamily == null || workingFamily == TechnicalFamily.VL80S,
-                label = { Text("ВЛ80С") }
-            )
-            FilterChip(
-                selected = family == TechnicalFamily.ERMAK,
-                onClick = { browsingFamilyName = TechnicalFamily.ERMAK.name },
-                enabled = workingFamily == null || workingFamily == TechnicalFamily.ERMAK,
-                label = { Text("Ермак") }
-            )
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            TechnicalFamily.entries.forEach { option ->
+                FilterChip(
+                    selected = family == option,
+                    onClick = { browsingFamilyName = option.name },
+                    enabled = workingFamily == null || workingFamily == option,
+                    label = { Text(option.title) }
+                )
+            }
         }
         if (workingFamily != null) Text("Другая серия доступна после смены рабочего локомотива на главной или через явный запрос помощнику.",
             style = MaterialTheme.typography.bodySmall)
@@ -1402,7 +1406,11 @@ private fun LocomotiveReferenceScreen(
         else {
         Text(family.subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         val materials = buildList<Pair<String, () -> Unit>> {
-            add("Интерактивный атлас" to if (family == TechnicalFamily.VL80S) onOpenInteractiveVl80s else onOpenInteractiveErmak)
+            add("Интерактивный атлас" to when (family) {
+                TechnicalFamily.VL80S -> onOpenInteractiveVl80s
+                TechnicalFamily.ERMAK -> onOpenInteractiveErmak
+                else -> { { onOpenInteractiveChme3(family) } }
+            })
             add("Оборудование" to { onOpenTechnical(family, TechnicalSection.EQUIPMENT) })
             add("Системы" to { onOpenTechnical(family, TechnicalSection.SYSTEMS) })
             add("Статьи" to { onOpenTechnical(family, TechnicalSection.KNOWLEDGE) })

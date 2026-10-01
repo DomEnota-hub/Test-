@@ -1,0 +1,348 @@
+{
+  "schemaVersion": 1,
+  "packageId": "chme3-family",
+  "updatedAt": "2026-10-01",
+  "state": "DIAGNOSTICS_PASS_3",
+  "scenarios": [
+    {
+      "id": "CHME3-DIAG-301",
+      "title": "Тяговый генератор искрит или перегревается",
+      "profiles": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "equipmentIds": ["CHME3-EQ-TRACTION-GENERATOR", "CHME3-EQ-EXCITER"],
+      "symptoms": ["тяговый генератор искрит", "генератор греется", "запах гари от генератора"],
+      "queryTerms": ["тг искрит", "главный генератор греется", "генератор воняет гарью"],
+      "riskClass": "ELEVATED_ELECTRICAL",
+      "actionAuthority": "TRIAGE_ONLY_NO_REPAIR",
+      "evidenceRefs": ["CHME3-SRC-SCBIST-ELECTRICAL-2018", "CHME3-SRC-SCBIST-PAM"],
+      "evidenceStatus": "TECHNICAL_TRAINING_PLUS_FIELD",
+      "decisionTree": [
+        {"step": 1, "check": "Уточнить, искрение возникает только под нагрузкой или сохраняется без тяговой нагрузки."},
+        {"step": 2, "check": "Зафиксировать перегрев, запах, шум и состояние вентиляции; при выраженном искрении нагрузку не наращивать."},
+        {"step": 3, "check": "Разделить электрическую неисправность машины и ненормальное возбуждение/перегрузку по данным цепей возбуждения."}
+      ]
+    },
+    {
+      "id": "CHME3-DIAG-302",
+      "title": "Тяговый электродвигатель искрит или перегревается",
+      "profiles": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "equipmentIds": ["CHME3-EQ-TRACTION-MOTORS", "CHME3-EQ-TM-FANS", "CHME3-EQ-TRAIN-CONTACTORS"],
+      "symptoms": ["ТЭД искрит", "тяговый двигатель греется", "запах гари от ТЭД", "один мотор горячий"],
+      "queryTerms": ["тэд искрит", "мотор греется", "один тяговый горячий"],
+      "riskClass": "ELEVATED_ELECTRICAL",
+      "actionAuthority": "SAFETY_GATE_REQUIRED",
+      "evidenceRefs": ["CHME3-SRC-SCBIST-ELECTRICAL-2018", "CHME3-SRC-SCBIST-PAM"],
+      "evidenceStatus": "TECHNICAL_TRAINING_PLUS_FIELD",
+      "decisionTree": [
+        {"step": 1, "check": "Определить, какой ТЭД имеет отклонение и есть ли одновременно отказ его охлаждения."},
+        {"step": 2, "check": "Проверить признаки замыкания, ненормального искрения и перегрева без вскрытия под напряжением."},
+        {"step": 3, "action": "Решение об отключении конкретного ТЭД принимать только по подтверждённой схеме и действующему порядку для исполнения."}
+      ]
+    },
+    {
+      "id": "CHME3-DIAG-303",
+      "title": "Срабатывает электрическая защита / повторно выбивает защитный аппарат",
+      "profiles": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "equipmentIds": ["CHME3-EQ-PROTECTION", "CHME3-EQ-TRACTION-GENERATOR", "CHME3-EQ-TRACTION-MOTORS", "CHME3-EQ-CONTACTORS"],
+      "symptoms": ["выбило защиту", "защита срабатывает повторно", "после включения снова выбивает"],
+      "queryTerms": ["выбивает автомат", "защита не держит", "сразу снова выбило"],
+      "riskClass": "ELEVATED_ELECTRICAL",
+      "actionAuthority": "SAFETY_GATE_REQUIRED",
+      "evidenceRefs": ["CHME3-SRC-SCBIST-ELECTRICAL-2018", "CHME3-SRC-TCH11-VYBORG-2007"],
+      "evidenceStatus": "TECHNICAL_TRAINING_PLUS_LOCAL_LEGACY",
+      "decisionTree": [
+        {"step": 1, "check": "Зафиксировать, какой именно аппарат/защита сработал и при каком действии: пуск, набор тяги, реверс, зарядка или вспомогательная нагрузка."},
+        {"step": 2, "check": "Не выполнять многократное повторное включение до локализации защищаемой цепи."},
+        {"step": 3, "check": "Локализовать защищаемую ветвь по электрической схеме и связанным аппаратам; обход защиты не разрешается этим сценарием."}
+      ]
+    },
+    {
+      "id": "CHME3-DIAG-304",
+      "title": "Реверсор не переводится",
+      "profiles": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "equipmentIds": ["CHME3-EQ-REVERSER", "CHME3-EQ-PNEUMATIC-CONTROL-RESERVOIR", "CHME3-EQ-DRIVER-CONTROLLER"],
+      "symptoms": ["реверсор не переводится", "нет реверса", "не выбирается направление"],
+      "queryTerms": ["реверс не идет", "реверсор не повернулся", "направление не включается"],
+      "riskClass": "NORMAL_DIAGNOSTIC",
+      "actionAuthority": "TRIAGE_ONLY_NO_REPAIR",
+      "evidenceRefs": ["CHME3-SRC-SCBIST-ELECTRICAL-2018", "CHME3-SRC-TCH11-VYBORG-2007"],
+      "evidenceStatus": "TECHNICAL_TRAINING_PLUS_LOCAL_LEGACY",
+      "decisionTree": [
+        {"step": 1, "check": "Проверить наличие команды от контроллера и достаточного давления воздуха управления."},
+        {"step": 2, "when": "команда есть, воздуха управления недостаточно", "check": "Перейти в сценарий CHME3-DIAG-207."},
+        {"step": 3, "when": "команда и воздух есть", "check": "Локализовать электропневматический привод/механизм реверсора по схеме исполнения."}
+      ]
+    },
+    {
+      "id": "CHME3-DIAG-305",
+      "title": "Тепловоз движется только в одном направлении",
+      "profiles": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "equipmentIds": ["CHME3-EQ-REVERSER", "CHME3-EQ-DRIVER-CONTROLLER", "CHME3-EQ-TRAIN-CONTACTORS"],
+      "symptoms": ["вперед едет назад нет", "назад едет вперед нет", "нет тяги в одном направлении"],
+      "queryTerms": ["не идет вперед", "не идет назад", "тяга только в одну сторону"],
+      "riskClass": "NORMAL_DIAGNOSTIC",
+      "actionAuthority": "TRIAGE_ONLY_NO_REPAIR",
+      "evidenceRefs": ["CHME3-SRC-SCBIST-ELECTRICAL-2018", "CHME3-SRC-SCBIST-PAM"],
+      "evidenceStatus": "TECHNICAL_TRAINING_PLUS_FIELD",
+      "decisionTree": [
+        {"step": 1, "check": "Сравнить фактическое положение реверсора с командой в исправном и неисправном направлениях."},
+        {"step": 2, "check": "Проверить направленческую цепь управления и блок-контакты реверсора."},
+        {"step": 3, "when": "реверсор механически переводится", "check": "Проверить различающиеся по направлению контакты/цепи разрешения тяги."}
+      ]
+    },
+    {
+      "id": "CHME3-DIAG-306",
+      "title": "Контакторы или реле дребезжат / самопроизвольно отпадают",
+      "profiles": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "equipmentIds": ["CHME3-EQ-CONTACTORS", "CHME3-EQ-RELAYS", "CHME3-EQ-BATTERY", "CHME3-EQ-AUX-GENERATOR"],
+      "symptoms": ["контактор дребезжит", "реле отпадает", "аппараты щелкают", "контактор не держится"],
+      "queryTerms": ["контактор трещит", "реле щелкает", "аппараты отваливаются"],
+      "riskClass": "ELEVATED_ELECTRICAL",
+      "actionAuthority": "TRIAGE_ONLY_NO_REPAIR",
+      "evidenceRefs": ["CHME3-SRC-SCBIST-ELECTRICAL-2018", "CHME3-SRC-SCBIST-PAM"],
+      "evidenceStatus": "TECHNICAL_TRAINING_PLUS_FIELD",
+      "decisionTree": [
+        {"step": 1, "check": "Проверить напряжение цепей управления и наличие общей просадки питания."},
+        {"step": 2, "when": "несколько аппаратов отпадают одновременно", "check": "Искать общую причину питания/разрешения, а не несколько независимых отказов."},
+        {"step": 3, "when": "дребезжит один аппарат", "check": "Локализовать его катушку, контактную цепь и механическое состояние."}
+      ]
+    },
+    {
+      "id": "CHME3-DIAG-307",
+      "title": "Аккумуляторная батарея проседает при пуске",
+      "profiles": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "equipmentIds": ["CHME3-EQ-BATTERY", "CHME3-EQ-BATTERY-SWITCH", "CHME3-EQ-DIESEL"],
+      "symptoms": ["батарея проседает", "при пуске гаснет питание", "не хватает батареи на запуск"],
+      "queryTerms": ["акб просела", "на пуске все тухнет", "батарея не тянет стартер"],
+      "riskClass": "NORMAL_DIAGNOSTIC",
+      "actionAuthority": "TRIAGE_ONLY_NO_REPAIR",
+      "evidenceRefs": ["CHME3-SRC-SCBIST-PAM", "CHME3-SRC-TCH11-VYBORG-2007"],
+      "evidenceStatus": "LEGACY_TRAINING",
+      "decisionTree": [
+        {"step": 1, "check": "Сравнить напряжение до пуска и под пусковой нагрузкой."},
+        {"step": 2, "check": "Осмотреть соединения АКБ/рубильника на нагрев и плохой контакт."},
+        {"step": 3, "check": "Разделить недостаточную ёмкость АКБ и ненормально тяжёлый/длительный пуск как разные причины."}
+      ]
+    },
+    {
+      "id": "CHME3-DIAG-308",
+      "title": "Пониженное давление топлива под нагрузкой",
+      "profiles": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "equipmentIds": ["CHME3-EQ-FUEL-PRIME-PUMP", "CHME3-EQ-FUEL-FILTER", "CHME3-EQ-FUEL-TANK", "CHME3-EQ-INJECTION-PUMP"],
+      "symptoms": ["падает давление топлива", "не хватает топлива под нагрузкой", "на позициях давление топлива падает"],
+      "queryTerms": ["топливо проседает", "давление топлива падает", "на нагрузке не хватает солярки"],
+      "riskClass": "NORMAL_DIAGNOSTIC",
+      "actionAuthority": "TRIAGE_ONLY_NO_REPAIR",
+      "evidenceRefs": ["CHME3-SRC-OLTEP-DIESEL", "CHME3-SRC-SCBIST-PAM"],
+      "evidenceStatus": "FIELD_PRACTICE",
+      "decisionTree": [
+        {"step": 1, "check": "Сравнить давление на холостом ходу и под нагрузкой."},
+        {"step": 2, "check": "Проверить фильтры, топливоподкачку, подсос воздуха и свободный забор из бака."},
+        {"step": 3, "when": "низконапорная часть стабильна", "check": "Переходить к дозированию ТНВД/работе цилиндров, не менять сразу топливоподкачивающий насос."}
+      ]
+    },
+    {
+      "id": "CHME3-DIAG-309",
+      "title": "Один цилиндр не работает / дизель троит",
+      "profiles": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "equipmentIds": ["CHME3-EQ-INJECTION-PUMP", "CHME3-EQ-INJECTOR", "CHME3-EQ-PISTON", "CHME3-EQ-DIESEL"],
+      "symptoms": ["дизель троит", "один цилиндр не работает", "неравномерный выхлоп", "пропуски по цилиндру"],
+      "queryTerms": ["троит дизель", "мертвый цилиндр", "один горшок не работает"],
+      "riskClass": "NORMAL_DIAGNOSTIC",
+      "actionAuthority": "TRIAGE_ONLY_NO_REPAIR",
+      "evidenceRefs": ["CHME3-SRC-OLTEP-DIESEL", "CHME3-SRC-SCBIST-PAM"],
+      "evidenceStatus": "FIELD_PRACTICE",
+      "decisionTree": [
+        {"step": 1, "check": "Подтвердить неравномерность работы и наличие характерной дымности/звука."},
+        {"step": 2, "check": "Разделить отсутствие подачи топлива, неисправность форсунки и механическую проблему цилиндра."},
+        {"step": 3, "action": "Не переводить полевые способы отключения цилиндра в разрешённое действие без РЭ/действующего порядка."}
+      ]
+    },
+    {
+      "id": "CHME3-DIAG-310",
+      "title": "Ненормальный стук дизеля",
+      "profiles": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "equipmentIds": ["CHME3-EQ-DIESEL", "CHME3-EQ-CRANKSHAFT", "CHME3-EQ-CONROD", "CHME3-EQ-PISTON"],
+      "symptoms": ["дизель стучит", "металлический стук", "сильный удар в дизеле"],
+      "queryTerms": ["застучал дизель", "металл стучит", "дизель долбит"],
+      "riskClass": "MECHANICAL_EMERGENCY",
+      "actionAuthority": "SAFETY_GATE_REQUIRED",
+      "evidenceRefs": ["CHME3-SRC-OLTEP-DIESEL", "CHME3-SRC-SCBIST-PAM"],
+      "evidenceStatus": "FIELD_PRACTICE",
+      "decisionTree": [
+        {"step": 1, "action": "При резком новом металлическом стуке снять нагрузку и не продолжать эксплуатационные эксперименты до оценки причины."},
+        {"step": 2, "check": "Зафиксировать связь стука с оборотами, нагрузкой, температурой и давлением масла."},
+        {"step": 3, "check": "Механические причины кривошипно-шатунного механизма и топливное 'жёсткое' сгорание рассматривать раздельно."}
+      ]
+    },
+    {
+      "id": "CHME3-DIAG-311",
+      "title": "Белый или сизый дым из выхлопа",
+      "profiles": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "equipmentIds": ["CHME3-EQ-INJECTOR", "CHME3-EQ-INJECTION-PUMP", "CHME3-EQ-PISTON", "CHME3-EQ-TURBO"],
+      "symptoms": ["белый дым", "сизый дым", "синий дым", "дымит маслом"],
+      "queryTerms": ["белит выхлоп", "сизый дым", "жрет масло и дымит"],
+      "riskClass": "NORMAL_DIAGNOSTIC",
+      "actionAuthority": "TRIAGE_ONLY_NO_REPAIR",
+      "evidenceRefs": ["CHME3-SRC-OLTEP-DIESEL", "CHME3-SRC-SCBIST-PAM"],
+      "evidenceStatus": "FIELD_PRACTICE",
+      "decisionTree": [
+        {"step": 1, "check": "Уточнить цвет, температуру дизеля и режим появления дыма."},
+        {"step": 2, "when": "белый дым на холодном дизеле", "check": "Отделить неполное сгорание/температурный режим от устойчивого дефекта цилиндра."},
+        {"step": 3, "when": "сизый/синий дым и расход масла", "check": "Проверить признаки попадания масла через цилиндропоршневую группу или турбонагнетатель."}
+      ]
+    },
+    {
+      "id": "CHME3-DIAG-312",
+      "title": "Турбонагнетатель воет, свистит или выбрасывает масло",
+      "profiles": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "equipmentIds": ["CHME3-EQ-TURBO", "CHME3-EQ-CHARGE-AIR-COOLER", "CHME3-EQ-INTAKE-EXHAUST"],
+      "symptoms": ["турбина воет", "турбина свистит", "масло из турбины", "нет наддува"],
+      "queryTerms": ["турбина завыла", "турбак свистит", "масло в наддуве"],
+      "riskClass": "ELEVATED_MECHANICAL",
+      "actionAuthority": "TRIAGE_ONLY_NO_REPAIR",
+      "evidenceRefs": ["CHME3-SRC-OLTEP-DIESEL", "CHME3-SRC-SCBIST-PAM"],
+      "evidenceStatus": "FIELD_PRACTICE",
+      "decisionTree": [
+        {"step": 1, "check": "Разделить утечку воздуха в тракте и механический шум самого турбонагнетателя."},
+        {"step": 2, "check": "Проверить сочетание с чёрным дымом, потерей мощности и маслом в воздушном тракте."},
+        {"step": 3, "note": "Опасные полевые способы принудительного вмешательства в турбину исключены из исполняемого дерева."}
+      ]
+    },
+    {
+      "id": "CHME3-DIAG-313",
+      "title": "Давление масла падает после прогрева",
+      "profiles": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "equipmentIds": ["CHME3-EQ-OIL-PUMP", "CHME3-EQ-OIL-FILTER", "CHME3-EQ-OIL-VALVES", "CHME3-EQ-DIESEL"],
+      "symptoms": ["на горячую падает масло", "после прогрева низкое давление масла", "давление масла проседает"],
+      "queryTerms": ["масло падает на горячую", "горячий дизель низкое давление масла", "прогрелся давление ушло"],
+      "riskClass": "ELEVATED",
+      "actionAuthority": "SAFETY_GATE_REQUIRED",
+      "evidenceRefs": ["CHME3-SRC-OLTEP-DIESEL", "CHME3-SRC-SCBIST-PAM", "CHME3-SRC-CDOCKA-996R-CHME3"],
+      "evidenceStatus": "MIXED_996R_SECONDARY_AND_FIELD",
+      "decisionTree": [
+        {"step": 1, "check": "Сопоставить давление масла с его температурой и оборотами дизеля."},
+        {"step": 2, "check": "Проверить фильтры, клапаны и производительность масляного насоса как эксплуатационно доступные причины без регулировки уставок."},
+        {"step": 3, "when": "давление ниже допустимого для режима", "action": "Не увеличивать нагрузку; использовать действующий порядок ограничения режима/остановки."}
+      ]
+    },
+    {
+      "id": "CHME3-DIAG-314",
+      "title": "Перегрев масла дизеля",
+      "profiles": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "equipmentIds": ["CHME3-EQ-OIL-WATER-HEX", "CHME3-EQ-OIL-PUMP", "CHME3-EQ-WATER-PUMP", "CHME3-EQ-RADIATOR"],
+      "symptoms": ["масло перегревается", "температура масла высокая", "масло горячее нормы"],
+      "queryTerms": ["греется масло", "температура масла лезет", "масло перегрелось"],
+      "riskClass": "ELEVATED",
+      "actionAuthority": "TRIAGE_ONLY_NO_REPAIR",
+      "evidenceRefs": ["CHME3-SRC-OLTEP-DIESEL", "CHME3-SRC-SCBIST-PAM"],
+      "evidenceStatus": "FIELD_PRACTICE",
+      "decisionTree": [
+        {"step": 1, "check": "Сравнить температуру масла и охлаждающей жидкости: одновременный перегрев указывает на общую проблему охлаждения."},
+        {"step": 2, "when": "вода нормальная, масло перегрето", "check": "Приоритетно проверить водомасляный теплообменник, циркуляцию масла и его состояние."},
+        {"step": 3, "action": "Не компенсировать перегрев увеличением нагрузки/оборотов без устранения причины."}
+      ]
+    },
+    {
+      "id": "CHME3-DIAG-315",
+      "title": "Уходит охлаждающая жидкость / течь водяной системы",
+      "profiles": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "equipmentIds": ["CHME3-EQ-WATER-PUMP", "CHME3-EQ-RADIATOR", "CHME3-EQ-OIL-WATER-HEX", "CHME3-EQ-DIESEL"],
+      "symptoms": ["уходит вода", "течь охлаждения", "падает уровень воды", "выбрасывает воду"],
+      "queryTerms": ["вода уходит", "антифриз уходит", "выкидывает воду"],
+      "riskClass": "ELEVATED",
+      "actionAuthority": "TRIAGE_ONLY_NO_REPAIR",
+      "evidenceRefs": ["CHME3-SRC-OLTEP-DIESEL", "CHME3-SRC-SCBIST-PAM"],
+      "evidenceStatus": "FIELD_PRACTICE",
+      "decisionTree": [
+        {"step": 1, "check": "Разделить наружную течь, выброс через расширительный контур и внутреннюю утечку."},
+        {"step": 2, "check": "Проверить насос, радиатор/соединения и признаки попадания воды в масло."},
+        {"step": 3, "when": "уровень быстро падает или есть смешение с маслом", "action": "Не продолжать нагрузку до оценки по РЭ/ремонтному порядку."}
+      ]
+    },
+    {
+      "id": "CHME3-DIAG-316",
+      "title": "Вентилятор охлаждения не вращается при требуемом режиме",
+      "profiles": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "equipmentIds": ["CHME3-EQ-COOLING-FANS", "CHME3-EQ-HYDRO-GEAR", "CHME3-EQ-RADIATOR"],
+      "symptoms": ["вентилятор охлаждения не крутится", "вентилятор не включается", "охлаждение без вентилятора"],
+      "queryTerms": ["вентилятор стоит", "холодильник не крутит", "вентилятор охлаждения молчит"],
+      "riskClass": "ELEVATED",
+      "actionAuthority": "SOURCE_AND_PROFILE_REQUIRED",
+      "evidenceRefs": ["CHME3-SRC-SCBIST-PAM", "CHME3-SRC-CDOCKA-996R-CHME3"],
+      "evidenceStatus": "996R_SECONDARY_PLUS_FIELD",
+      "decisionTree": [
+        {"step": 1, "check": "Убедиться, что температурный режим действительно требует включения вентилятора."},
+        {"step": 2, "check": "Разделить отсутствие команды/пневмоуправления и неисправность механического/гидромеханического привода."},
+        {"step": 3, "action": "Временные способы принудительного включения/фиксации применять только после подтверждения текущего пункта 996/р и исполнения."}
+      ]
+    },
+    {
+      "id": "CHME3-DIAG-317",
+      "title": "Компрессор перегревается, стучит или выбрасывает масло",
+      "profiles": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "equipmentIds": ["CHME3-EQ-COMPRESSOR", "CHME3-EQ-INTERCOOLER", "CHME3-EQ-AIR-DRY-SEPARATOR", "CHME3-EQ-COMPRESSOR-DRIVE"],
+      "symptoms": ["компрессор греется", "компрессор стучит", "компрессор гонит масло", "масло в пневматике"],
+      "queryTerms": ["компрессор долбит", "компрессор плюется маслом", "компрессор раскалился"],
+      "riskClass": "BRAKE_SAFETY",
+      "actionAuthority": "SAFETY_GATE_REQUIRED",
+      "evidenceRefs": ["CHME3-SRC-SCBIST-PAM", "CHME3-SRC-SCBIST-TROUBLE-2020"],
+      "evidenceStatus": "LEGACY_FIELD",
+      "decisionTree": [
+        {"step": 1, "check": "Зафиксировать сочетание температуры, шума, производительности и наличия масла в нагнетательном тракте."},
+        {"step": 2, "check": "Проверить охлаждение/промежуточный холодильник и привод компрессора."},
+        {"step": 3, "when": "есть сильный механический стук или резкое падение производительности", "action": "Не продолжать работу компрессора как будто неисправность только в регуляторе давления."}
+      ]
+    },
+    {
+      "id": "CHME3-DIAG-318",
+      "title": "Тормозной цилиндр травит или действует неравномерно",
+      "profiles": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "equipmentIds": ["CHME3-EQ-BRAKE-CYLINDERS", "CHME3-EQ-BRAKE-RIGGING", "CHME3-EQ-AIR-DISTRIBUTOR"],
+      "symptoms": ["тормозной цилиндр травит", "один ТЦ не работает", "разный выход штоков", "неравномерный тормоз"],
+      "queryTerms": ["тц сифонит", "один цилиндр не тормозит", "штоки выходят по разному"],
+      "riskClass": "BRAKE_SAFETY",
+      "actionAuthority": "SAFETY_GATE_REQUIRED",
+      "evidenceRefs": ["CHME3-SRC-SCBIST-PAM"],
+      "evidenceStatus": "LEGACY_FIELD",
+      "decisionTree": [
+        {"step": 1, "check": "Сравнить наполнение и отпуск тормозных цилиндров."},
+        {"step": 2, "when": "давление поступает, механическое действие различается", "check": "Проверить ТЦ и рычажную передачу как механическую ветвь."},
+        {"step": 3, "when": "давление к конкретному ТЦ не поступает", "check": "Проверить пневматическую разводку/приборы управления тормозом."}
+      ]
+    },
+    {
+      "id": "CHME3-DIAG-319",
+      "title": "Греется буксовый узел",
+      "profiles": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "equipmentIds": ["CHME3-EQ-AXLEBOX", "CHME3-EQ-WHEELSET"],
+      "symptoms": ["греется букса", "горячая букса", "запах от буксы", "букса дымит"],
+      "queryTerms": ["букса горячая", "греется буксовый", "букса задымилась"],
+      "riskClass": "RUNNING_GEAR_SAFETY",
+      "actionAuthority": "SAFETY_GATE_REQUIRED",
+      "evidenceRefs": ["CHME3-SRC-SCBIST-DOC-COLLECTION-DIAG"],
+      "evidenceStatus": "DOCUMENT_INDEX_PENDING_EXACT_SOURCE",
+      "decisionTree": [
+        {"step": 1, "check": "Сравнить температуру с другими буксами и проверить наличие дыма/запаха/изменения шума."},
+        {"step": 2, "action": "При выраженном перегреве не продолжать движение как при обычной эксплуатационной неисправности; решение принимать по действующим правилам безопасности движения."},
+        {"step": 3, "check": "После безопасной остановки фиксировать состояние буксового узла и колёсной пары без разборки в пути, если это не предусмотрено инструкцией."}
+      ]
+    },
+    {
+      "id": "CHME3-DIAG-320",
+      "title": "Тяговый редуктор шумит, воет или перегревается",
+      "profiles": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "equipmentIds": ["CHME3-EQ-TRACTION-GEAR", "CHME3-EQ-WHEELSET", "CHME3-EQ-TM-SUSPENSION"],
+      "symptoms": ["редуктор воет", "редуктор греется", "стук в тяговом редукторе", "хруст при движении"],
+      "queryTerms": ["тяговый редуктор воет", "редуктор горячий", "снизу хрустит при движении"],
+      "riskClass": "RUNNING_GEAR_SAFETY",
+      "actionAuthority": "SAFETY_GATE_REQUIRED",
+      "evidenceRefs": ["CHME3-SRC-SCBIST-DOC-COLLECTION-DIAG"],
+      "evidenceStatus": "DOCUMENT_INDEX_PENDING_EXACT_SOURCE",
+      "decisionTree": [
+        {"step": 1, "check": "Связать шум с конкретной колёсной парой/скоростью и проверить наличие перегрева."},
+        {"step": 2, "check": "Разделить редукторный шум, подвеску ТЭД и дефект колёсной пары."},
+        {"step": 3, "action": "При сильном новом стуке, хрусте или перегреве использовать safety-порядок, а не продолжать нагрузочное испытание."}
+      ]
+    }
+  ]
+}

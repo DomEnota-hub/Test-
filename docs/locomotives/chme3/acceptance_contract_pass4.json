@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "packageId": "chme3-family",
+  "updatedAt": "2026-10-01",
+  "state": "ACCEPTANCE_PASS_4",
+  "sessionContract": {
+    "states": ["NOT_CHECKED", "OK", "NOTE", "NOT_APPLICABLE"],
+    "labels": ["Не проверено", "Проверено", "Замечание", "Не применяется"],
+    "oneSessionAcrossRoutes": true,
+    "preserveSharedPhysicalItemStateWhenRouteChanges": true,
+    "notesPerItem": true,
+    "resumeSupported": true,
+    "completionRule": "all enabled route items are not NOT_CHECKED",
+    "resultRule": "incomplete -> Проверка не завершена; complete with NOTE -> есть замечания; otherwise -> замечаний нет"
+  },
+  "expandedItems": {
+    "mode": "DERIVE_FROM_ATLAS",
+    "atlasFiles": ["atlas_index.json", "atlas_index_extension.json"],
+    "cardFilesGlob": "atlas_cards_*.json",
+    "idTemplate": "CHME3-ACC-{equipmentIdWithoutPrefix}",
+    "status": "CHECK",
+    "coveragePolicy": "EVERY_CANONICAL_ATLAS_EQUIPMENT_ID",
+    "fields": {
+      "title": "atlas.name",
+      "normalSigns": "atlas.normalState",
+      "possibleFaults": "atlas.deviationSigns",
+      "applicability": "atlas.applicability",
+      "searchTerms": "atlas.aliases + atlas.assistantTerms",
+      "sourceRefs": "atlas.evidenceRefs",
+      "relatedIds": "[atlas.id] + diagnostics referencing atlas.id"
+    },
+    "actionBoundary": "Приёмка фиксирует состояние. Разборка, обход защит, работа под напряжением/давлением и ремонтные операции выполняются только по действующим технологическим процессам и документам безопасности."
+  },
+  "phaseRules": {
+    "OUTSIDE": {
+      "systems": ["CHME3-SYS-RUNNING"],
+      "alsoEquipmentIds": ["CHME3-EQ-FUEL-TANK", "CHME3-EQ-RADIATOR", "CHME3-EQ-SAND", "CHME3-EQ-COUPLER", "CHME3-EQ-BRAKE-RIGGING", "CHME3-EQ-BRAKE-CYLINDERS"]
+    },
+    "ENGINE_ROOM": {
+      "systems": ["CHME3-SYS-DIESEL", "CHME3-SYS-FUEL", "CHME3-SYS-GOV", "CHME3-SYS-OIL", "CHME3-SYS-WATER", "CHME3-SYS-AIR", "CHME3-SYS-AUX", "CHME3-SYS-COOLING", "CHME3-SYS-ELECTRIC", "CHME3-SYS-EDB"],
+      "excludeEquipmentIds": ["CHME3-EQ-BATTERY-SWITCH"]
+    },
+    "CAB": {
+      "systems": ["CHME3-SYS-CONTROL"],
+      "alsoEquipmentIds": ["CHME3-EQ-DRIVER-BRAKE-VALVE", "CHME3-EQ-AUX-BRAKE-VALVE", "CHME3-EQ-EPC-AUTOSTOP", "CHME3-EQ-EQUALIZING-RESERVOIR", "CHME3-EQ-BATTERY-SWITCH", "CHME3-EQ-DRIVER-CONTROLLER"]
+    },
+    "BRAKE_PNEUMATIC": {
+      "systems": ["CHME3-SYS-BRAKE"],
+      "excludeEquipmentIds": ["CHME3-EQ-DRIVER-BRAKE-VALVE", "CHME3-EQ-AUX-BRAKE-VALVE", "CHME3-EQ-EPC-AUTOSTOP", "CHME3-EQ-EQUALIZING-RESERVOIR", "CHME3-EQ-BRAKE-CYLINDERS"]
+    }
+  },
+  "routes": [
+    {"id":"CHME3-ROUTE-required","title":"Обязательная / базовая приёмка","status":"ROUTE","mode":"required_only","sequenceSource":"acceptance_required_pass4.json"},
+    {"id":"CHME3-ROUTE-route_canonical","title":"Полный осмотр","status":"ROUTE","mode":"required_plus_expanded","phaseOrder":["OUTSIDE","BRAKE_PNEUMATIC","ENGINE_ROOM","CAB"]},
+    {"id":"CHME3-ROUTE-route_from_outside","title":"Полный осмотр — начать снаружи","status":"ROUTE_VARIANT","mode":"required_plus_expanded","phaseOrder":["OUTSIDE","BRAKE_PNEUMATIC","ENGINE_ROOM","CAB"]},
+    {"id":"CHME3-ROUTE-route_from_cab","title":"Полный осмотр — начать из кабины","status":"ROUTE_VARIANT","mode":"required_plus_expanded","phaseOrder":["CAB","ENGINE_ROOM","BRAKE_PNEUMATIC","OUTSIDE"]},
+    {"id":"CHME3-ROUTE-route_engine_room","title":"Машинное отделение","status":"ROUTE_VARIANT","mode":"expanded_area","phaseOrder":["ENGINE_ROOM"]},
+    {"id":"CHME3-ROUTE-route_running_gear","title":"Экипажная часть и наружный осмотр","status":"ROUTE_VARIANT","mode":"expanded_area","phaseOrder":["OUTSIDE"]},
+    {"id":"CHME3-ROUTE-route_brakes","title":"Тормозное и пневматическое оборудование","status":"ROUTE_VARIANT","mode":"expanded_area","phaseOrder":["BRAKE_PNEUMATIC","CAB"]}
+  ],
+  "profileRules": [
+    {"profile":"ЧМЭ3Т","includeSystems":["CHME3-SYS-EDB"],"includeEquipmentIds":["CHME3T-EQ-BRAKE-RESISTORS","CHME3T-EQ-BRAKE-RESISTOR-FAN","CHME3T-EQ-EDB-CONTROL"]},
+    {"profile":"ЧМЭ3","excludeSystems":["CHME3-SYS-EDB"]},
+    {"profile":"ЧМЭ3Э","excludeSystems":["CHME3-SYS-EDB"]}
+  ],
+  "sourceRefs": ["CHME3-SRC-CHME3-IO-2004-CURRENT-INDEX", "CHME3-SRC-BRAKE-RULES-2025-P83", "CHME3-SRC-RZD-POT-2013R-2025"]
+}

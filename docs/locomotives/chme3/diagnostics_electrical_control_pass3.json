@@ -1,0 +1,181 @@
+{
+  "schemaVersion": 1,
+  "packageId": "chme3-family",
+  "updatedAt": "2026-10-01",
+  "state": "DIAGNOSTICS_PASS_3",
+  "scenarios": [
+    {
+      "id": "CHME3-DIAG-101",
+      "title": "При включении управления не включается контактор управления",
+      "profiles": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "equipmentIds": ["CHME3-EQ-BATTERY", "CHME3-EQ-BATTERY-SWITCH", "CHME3-EQ-CONTACTORS", "CHME3-EQ-PROTECTION"],
+      "symptoms": ["управление не включается", "КУ не включается", "после автомата управления тишина", "нет питания управления"],
+      "queryTerms": ["ку не включился", "включил управление ничего", "автомат 220 включен а управления нет"],
+      "riskClass": "NORMAL_DIAGNOSTIC",
+      "actionAuthority": "TRIAGE_ONLY_NO_REPAIR",
+      "evidenceRefs": ["CHME3-SRC-TCH11-VYBORG-2007", "CHME3-SRC-SCBIST-ELECTRICAL-2018"],
+      "evidenceStatus": "LOCAL_LEGACY_PLUS_TRAINING",
+      "decisionTree": [
+        {"step": 1, "check": "Подтвердить наличие питания низковольтных цепей и включение рубильника АКБ."},
+        {"step": 2, "check": "Проверить автомат/защиту цепи управления и наличие напряжения до катушки КУ по схеме конкретного исполнения."},
+        {"step": 3, "check": "Если питание приходит, локализовать катушку/контакты КУ; если не приходит — идти назад по цепи разрешений."}
+      ]
+    },
+    {
+      "id": "CHME3-DIAG-102",
+      "title": "Не включается РУ5",
+      "profiles": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "equipmentIds": ["CHME3-EQ-RELAYS", "CHME3-EQ-DRIVER-CONTROLLER", "CHME3-EQ-GOVERNOR-SERVOMOTOR"],
+      "symptoms": ["РУ5 не включается", "нет РУ5", "не идет команда на регулирование"],
+      "queryTerms": ["ру5 не встал", "ру5 не собирается", "нет ру5"],
+      "riskClass": "NORMAL_DIAGNOSTIC",
+      "actionAuthority": "SOURCE_AND_PROFILE_REQUIRED",
+      "evidenceRefs": ["CHME3-SRC-SDO-996R-CHME3-2026", "CHME3-SRC-TCH11-VYBORG-2007"],
+      "evidenceStatus": "996R_SECONDARY_PLUS_LOCAL_LEGACY",
+      "decisionTree": [
+        {"step": 1, "check": "Уточнить положение реверсивной и главной рукояток контроллера, при котором ожидается включение РУ5."},
+        {"step": 2, "check": "Проверить цепь разрешающих контактов перед РУ5 по актуальной схеме исполнения."},
+        {"step": 3, "note": "Старые местные рекомендации содержат перемычки по номерам проводов. Эти сведения сохраняются как research-only и не выдаются как действие без сверки 996/р и схемы конкретного тепловоза."}
+      ]
+    },
+    {
+      "id": "CHME3-DIAG-103",
+      "title": "Не включается РУ3, обороты не увеличиваются на 5-й и выше позициях",
+      "profiles": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "equipmentIds": ["CHME3-EQ-RELAYS", "CHME3-EQ-DRIVER-CONTROLLER", "CHME3-EQ-GOVERNOR-SERVOMOTOR"],
+      "symptoms": ["РУ3 не включается", "после четвертой обороты не растут", "на пятой нет увеличения оборотов"],
+      "queryTerms": ["ру3 не встал", "с пятой не набирает", "пятая позиция без оборотов"],
+      "riskClass": "NORMAL_DIAGNOSTIC",
+      "actionAuthority": "SOURCE_AND_PROFILE_REQUIRED",
+      "evidenceRefs": ["CHME3-SRC-CDOCKA-996R-CHME3", "CHME3-SRC-SDO-996R-CHME3-2026"],
+      "evidenceStatus": "996R_CONFIRMED_SECONDARY",
+      "decisionTree": [
+        {"step": 1, "check": "Проверить факт включения РУ3 на 5-й позиции."},
+        {"step": 2, "when": "РУ3 не включается", "check": "Вторичный материал 996/р указывает на контактную цепь ступени; точные обозначения контактов брать только из подтверждённого пункта и схемы исполнения."},
+        {"step": 3, "when": "РУ3 включается", "check": "Перейти к цепи сервомотора и регулятора дизеля, не продолжать поиск в цепи РУ3."}
+      ]
+    },
+    {
+      "id": "CHME3-DIAG-104",
+      "title": "Не включается один из поездных контакторов",
+      "profiles": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "equipmentIds": ["CHME3-EQ-TRAIN-CONTACTORS", "CHME3-EQ-TRACTION-MOTORS", "CHME3-EQ-RELAYS", "CHME3-EQ-PROTECTION"],
+      "symptoms": ["не включается поездной контактор", "КП1 не встал", "КП2 не встал", "КП3 не встал", "один контактор не собирается"],
+      "queryTerms": ["поездной контактор не включается", "кп1 не включился", "кп2 не включился", "кп3 не включился"],
+      "riskClass": "ELEVATED_ELECTRICAL",
+      "actionAuthority": "SOURCE_AND_PROFILE_REQUIRED",
+      "evidenceRefs": ["CHME3-SRC-996R-CURRENT-INDEX", "CHME3-SRC-SCBIST-ELECTRICAL-2018", "CHME3-SRC-TCH11-VYBORG-2007"],
+      "evidenceStatus": "OFFICIAL_INDEX_PLUS_LEGACY_LOGIC",
+      "decisionTree": [
+        {"step": 1, "check": "Определить, какой именно КП не включается и включены ли остальные."},
+        {"step": 2, "check": "Проверить разрешающие блокировки, цепь катушки конкретного контактора и состояние отключателей соответствующих ТЭД."},
+        {"step": 3, "when": "катушка получает питание, аппарат не включается", "check": "Локализовать механическую/катушечную неисправность аппарата; обходы не разрешать без source-bound подтверждения."}
+      ]
+    },
+    {
+      "id": "CHME3-DIAG-105",
+      "title": "Не происходит ослабление возбуждения тяговых электродвигателей",
+      "profiles": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "equipmentIds": ["CHME3-EQ-TRACTION-MOTORS", "CHME3-EQ-CONTACTORS", "CHME3-EQ-RELAYS", "CHME3-EQ-TRACTION-GENERATOR"],
+      "symptoms": ["не включается ослабление возбуждения", "нет ОП", "не переходит на ослабленное поле", "ослабление поля не работает"],
+      "queryTerms": ["не включается оп", "нет ослабления поля", "не ослабляет возбуждение тэд"],
+      "riskClass": "ELEVATED_ELECTRICAL",
+      "actionAuthority": "SOURCE_AND_PROFILE_REQUIRED",
+      "evidenceRefs": ["CHME3-SRC-SDO-996R-CHME3-2026", "CHME3-SRC-TCH11-VYBORG-2007"],
+      "evidenceStatus": "996R_SECONDARY_PLUS_LOCAL_LEGACY",
+      "decisionTree": [
+        {"step": 1, "check": "Подтвердить, что условия включения ослабления возбуждения достигнуты и тяговая цепь работает штатно до этой ступени."},
+        {"step": 2, "check": "Проверить соответствующие контакторы/реле ослабления возбуждения и их цепи управления по варианту схемы."},
+        {"step": 3, "check": "Если аппарат включается, но режим не меняется — проверить силовые контакты и резистивные ветви без обхода защит."}
+      ]
+    },
+    {
+      "id": "CHME3-DIAG-106",
+      "title": "После пуска цепь пуска не разбирается",
+      "profiles": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "equipmentIds": ["CHME3-EQ-CONTACTORS", "CHME3-EQ-DIESEL", "CHME3-EQ-BATTERY"],
+      "symptoms": ["пусковая цепь не разбирается", "КД1 не отпадает", "КД2 не отпадает", "после запуска остаются пусковые контакторы"],
+      "queryTerms": ["после пуска не отпали кд", "кд1 кд2 залипли", "пуск не разобрался"],
+      "riskClass": "EMERGENCY_ELECTRICAL",
+      "actionAuthority": "SAFETY_GATE_REQUIRED",
+      "evidenceRefs": ["CHME3-SRC-SCBIST-TROUBLE-2020", "CHME3-SRC-TCH11-VYBORG-2007"],
+      "evidenceStatus": "LEGACY_FIELD",
+      "decisionTree": [
+        {"step": 1, "action": "Не продолжать нормальную работу при неразобравшейся пусковой цепи; исключить длительное удержание пускового режима."},
+        {"step": 2, "check": "Проверить, отпали ли КД1/КД2 и нет ли признаков сваривания силовых контактов/неисправности цепи их отключения."},
+        {"step": 3, "note": "Старые рекомендации описывают механическое разделение контактов. В продукте это остаётся только research-only до проверки текущего официального порядка."}
+      ]
+    },
+    {
+      "id": "CHME3-DIAG-107",
+      "title": "Нет зарядки аккумуляторной батареи",
+      "profiles": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "equipmentIds": ["CHME3-EQ-AUX-GENERATOR", "CHME3-EQ-VOLTAGE-REG", "CHME3-EQ-BATTERY", "CHME3-EQ-PROTECTION"],
+      "symptoms": ["нет зарядки", "амперметр не показывает заряд", "батарея разряжается", "ВГ не заряжает"],
+      "queryTerms": ["нет зарядки акб", "батарея не заряжается", "вг не дает заряд"],
+      "riskClass": "NORMAL_DIAGNOSTIC",
+      "actionAuthority": "TRIAGE_ONLY_NO_REPAIR",
+      "evidenceRefs": ["CHME3-SRC-SCBIST-PAM", "CHME3-SRC-TCH11-VYBORG-2007"],
+      "evidenceStatus": "LEGACY_TRAINING",
+      "decisionTree": [
+        {"step": 1, "check": "Уточнить: зарядки нет на всех оборотах или только на отдельных позициях."},
+        {"step": 2, "check": "Проверить вспомогательный генератор, предохранительные элементы и регулятор напряжения как отдельные ветви."},
+        {"step": 3, "when": "напряжение ВГ есть, зарядного тока нет", "check": "Локализовать регулятор/цепь зарядки; не приписывать неисправность автоматически АКБ."}
+      ]
+    },
+    {
+      "id": "CHME3-DIAG-108",
+      "title": "Регулятор напряжения работает неустойчиво / большой зарядный ток",
+      "profiles": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "equipmentIds": ["CHME3-EQ-VOLTAGE-REG", "CHME3-EQ-AUX-GENERATOR", "CHME3-EQ-BATTERY"],
+      "symptoms": ["регулятор напряжения дергается", "большой зарядный ток", "стрелку амперметра забрасывает", "перезаряд"],
+      "queryTerms": ["рн работает неустойчиво", "амперметр зашкаливает", "слишком большой заряд"],
+      "riskClass": "ELEVATED_ELECTRICAL",
+      "actionAuthority": "TRIAGE_ONLY_NO_REPAIR",
+      "evidenceRefs": ["CHME3-SRC-SCBIST-PAM", "CHME3-SRC-TCH11-VYBORG-2007"],
+      "evidenceStatus": "LEGACY_TRAINING",
+      "decisionTree": [
+        {"step": 1, "check": "Разделить нестабильность регулирования и устойчиво завышенный зарядный ток."},
+        {"step": 2, "check": "Проверить контактную часть регулятора, цепи подвижной катушки и добавочные сопротивления по схеме исполнения."},
+        {"step": 3, "check": "Отдельно оценить состояние АКБ: малая фактическая ёмкость может создавать повышенный зарядный ток и не должна смешиваться с неисправностью РН."}
+      ]
+    },
+    {
+      "id": "CHME3-DIAG-109",
+      "title": "Нет тяги при работающем дизеле",
+      "profiles": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "equipmentIds": ["CHME3-EQ-TRACTION-GENERATOR", "CHME3-EQ-EXCITER", "CHME3-EQ-TRAIN-CONTACTORS", "CHME3-EQ-REVERSER", "CHME3-EQ-TRACTION-MOTORS"],
+      "symptoms": ["дизель работает тяги нет", "не едет", "нет нагрузки", "амперметр тяги ноль"],
+      "queryTerms": ["чмэ3 не тянет", "дизель работает но не едет", "нет нагрузки тягового генератора"],
+      "riskClass": "ELEVATED_ELECTRICAL",
+      "actionAuthority": "TRIAGE_ONLY_NO_REPAIR",
+      "evidenceRefs": ["CHME3-SRC-SCBIST-ELECTRICAL-2018", "CHME3-SRC-TCH11-VYBORG-2007", "CHME3-SRC-SCBIST-PAM"],
+      "evidenceStatus": "MIXED_TECHNICAL_TRAINING",
+      "decisionTree": [
+        {"step": 1, "check": "Проверить выбранное направление и фактическое положение реверсора."},
+        {"step": 2, "check": "Проверить сбор поездных контакторов и разрешающую цепь тяги."},
+        {"step": 3, "when": "силовая схема собирается", "check": "Проверить наличие возбуждения тягового генератора и работу возбудителя."},
+        {"step": 4, "when": "возбуждение и генерация есть", "check": "Локализовать силовую цепь ТЭД/отключатели/контакты соответствующего исполнения."}
+      ]
+    },
+    {
+      "id": "CHME3-DIAG-110",
+      "title": "ЧМЭ3Т — не работает реостатный тормоз",
+      "profiles": ["ЧМЭ3Т"],
+      "profileGate": "chme3t-rheostatic",
+      "equipmentIds": ["CHME3T-EQ-EDB-CONTROL", "CHME3T-EQ-BRAKE-RESISTORS", "CHME3T-EQ-BRAKE-RESISTOR-FAN", "CHME3-EQ-TRACTION-MOTORS"],
+      "symptoms": ["реостатный тормоз не работает", "ЭДТ не включается", "нет тормозного тока", "отключается электрический тормоз"],
+      "queryTerms": ["чмэ3т нет реостатного", "эдт не включается", "электрический тормоз отпадает"],
+      "riskClass": "PROFILE_CRITICAL",
+      "actionAuthority": "SOURCE_AND_PROFILE_REQUIRED",
+      "evidenceRefs": ["CHME3-SRC-SCBIST-DOC-COLLECTION-DIAG"],
+      "evidenceStatus": "DOCUMENT_INDEX_PENDING_EXACT_SOURCE",
+      "decisionTree": [
+        {"step": 1, "check": "Сначала подтвердить профиль ЧМЭ3Т с реостатным тормозом; не применять этот сценарий к базовому ЧМЭ3/ЧМЭ3Э."},
+        {"step": 2, "check": "Разделить: ЭДТ не включается вообще, включается без тормозного тока, либо отключается защитой."},
+        {"step": 3, "when": "не включается", "check": "Проверить разрешающие условия и аппаратуру управления ЭДТ."},
+        {"step": 4, "when": "ток появляется и тормоз отключается", "check": "Проверить охлаждение тормозных резисторов и признаки перегрева/защиты."}
+      ]
+    }
+  ]
+}

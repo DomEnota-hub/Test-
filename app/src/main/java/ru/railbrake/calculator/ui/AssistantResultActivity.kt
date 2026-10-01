@@ -83,6 +83,9 @@ class AssistantResultActivity : ComponentActivity() {
         val targetFamily = when (kind) {
             KIND_VL80_DIAGNOSTIC -> TechnicalFamily.VL80S
             KIND_ERMAK_DIAGNOSTIC -> TechnicalFamily.ERMAK
+            KIND_CHME3_DIAGNOSTIC -> TechnicalFamily.entries.firstOrNull {
+                it.name == intent.getStringExtra(EXTRA_FAMILY)
+            }
             KIND_TECHNICAL -> TechnicalFamily.entries.firstOrNull {
                 it.name == intent.getStringExtra(EXTRA_FAMILY)
             }
@@ -107,9 +110,13 @@ class AssistantResultActivity : ComponentActivity() {
                               workingVariantId: String?) {
         when (kind) {
             KIND_VL80_DIAGNOSTIC,
-            KIND_ERMAK_DIAGNOSTIC -> {
+            KIND_ERMAK_DIAGNOSTIC,
+            KIND_CHME3_DIAGNOSTIC -> {
                 LocomotiveDiagnosticsScreen(initialScenarioId = id, workingFamily = workingFamily,
-                    workingVariantId = workingVariantId)
+                    workingVariantId = workingVariantId,
+                    initialFamily = if (kind == KIND_CHME3_DIAGNOSTIC) TechnicalFamily.entries.firstOrNull {
+                        it.name == intent.getStringExtra(EXTRA_FAMILY)
+                    } else null)
             }
 
             KIND_FIRST_AID -> {
@@ -151,7 +158,9 @@ class AssistantResultActivity : ComponentActivity() {
                         startActivity(createIntent(this, AssistantTarget.Knowledge(articleId)))
                     },
                     onOpenDiagnosticScenario = { scenarioId, _, _ ->
-                        val target = if (
+                        val target = if (family.isChme3) {
+                            AssistantTarget.Chme3Diagnostic(family, scenarioId)
+                        } else if (
                             family == TechnicalFamily.ERMAK || scenarioId.startsWith("ER-DIAG-")
                         ) {
                             AssistantTarget.ErmakDiagnostic(scenarioId)
@@ -199,6 +208,7 @@ class AssistantResultActivity : ComponentActivity() {
         private const val KIND_TECHNICAL = "technical"
         private const val KIND_VL80_DIAGNOSTIC = "vl80_diagnostic"
         private const val KIND_ERMAK_DIAGNOSTIC = "ermak_diagnostic"
+        private const val KIND_CHME3_DIAGNOSTIC = "chme3_diagnostic"
         private const val KIND_KNOWLEDGE = "knowledge"
         private const val KIND_FIRST_AID = "first_aid"
 
@@ -222,6 +232,12 @@ class AssistantResultActivity : ComponentActivity() {
                     is AssistantTarget.ErmakDiagnostic -> {
                         putExtra(EXTRA_KIND, KIND_ERMAK_DIAGNOSTIC)
                         putExtra(EXTRA_ID, target.scenarioId)
+                    }
+
+                    is AssistantTarget.Chme3Diagnostic -> {
+                        putExtra(EXTRA_KIND, KIND_CHME3_DIAGNOSTIC)
+                        putExtra(EXTRA_ID, target.scenarioId)
+                        putExtra(EXTRA_FAMILY, target.family.name)
                     }
 
                     is AssistantTarget.Knowledge -> {

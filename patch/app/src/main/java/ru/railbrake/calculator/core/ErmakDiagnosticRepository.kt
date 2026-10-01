@@ -43,7 +43,8 @@ data class ErmakDiagnosticScenario(
     val applicability: DiagnosticApplicability = DiagnosticApplicability(),
     val informationConfidence: String = "",
     val sourceAgeNote: String = "",
-    val sourceRefs: List<DiagnosticSourceReference> = emptyList()
+    val sourceRefs: List<DiagnosticSourceReference> = emptyList(),
+    val searchTerms: List<String> = emptyList()
 )
 
 class ErmakDiagnosticRepository(context: Context) {
@@ -128,6 +129,7 @@ internal fun parseErmakDiagnostics(root: JSONObject): List<ErmakDiagnosticScenar
                         item.optString("informationConfidence")
                     ),
                     sourceAgeNote = item.optString("sourceAgeNote").trim(),
+                    searchTerms = item.optJSONArray("searchTerms").stringList(),
                     sourceRefs = item.optJSONArray("sourceRefs").sourceReferences()
                 )
             )

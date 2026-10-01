@@ -71,7 +71,7 @@ internal fun HomeScreen(
                     items(WorkingLocomotive.entries) { option ->
                         FilterChip(
                             selected = option == workingLocomotive,
-                            onClick = { onWorkingLocomotiveChange(option) },
+                            onClick = { onWorkingLocomotiveChange(if (option == workingLocomotive) null else option) },
                             label = { Text(option.title) }
                         )
                     }
@@ -86,7 +86,7 @@ internal fun HomeScreen(
 
         RailHeroCard(
             title = "Диагностика",
-            subtitle = "${workingLocomotive?.title ?: "ВЛ80С и Ермак"}: поиск неисправности по наблюдаемым признакам и безопасные проверки.",
+            subtitle = "${workingLocomotive?.title ?: "Выбранная серия"}: поиск неисправности по наблюдаемым признакам и безопасные проверки.",
             action = "НАЧАТЬ ДИАГНОСТИКУ  →",
             onClick = onDiagnostics
         )
@@ -101,7 +101,7 @@ internal fun HomeScreen(
             )
             RailNavCard(
                 title = "Локомотив / атлас",
-                subtitle = "ВЛ80С и Ермак: оборудование, статьи и схемы",
+                subtitle = "Оборудование, статьи и схемы выбранной серии",
                 marker = "⚡",
                 onClick = onLocomotives,
                 modifier = Modifier.weight(1f).fillMaxHeight()

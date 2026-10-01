@@ -1,6 +1,8 @@
 package ru.railbrake.calculator.ui
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -13,13 +15,14 @@ import ru.railbrake.calculator.core.TechnicalFamily
 fun LocomotiveDiagnosticsScreen(
     initialScenarioId: String? = null,
     initialEquipmentId: String? = null,
+    initialFamily: TechnicalFamily? = null,
     workingFamily: TechnicalFamily? = null,
     workingVariantId: String? = null
 ) {
     val linkedFamily = if (initialScenarioId != null || initialEquipmentId != null)
         diagnosticInitialFamily(initialScenarioId, initialEquipmentId) else null
-    var familyName by rememberSaveable(workingFamily, initialScenarioId, initialEquipmentId) {
-        mutableStateOf((linkedFamily ?: workingFamily)?.name.orEmpty())
+    var familyName by rememberSaveable(workingFamily, initialFamily, initialScenarioId, initialEquipmentId) {
+        mutableStateOf((initialFamily ?: linkedFamily ?: workingFamily)?.name.orEmpty())
     }
     val family = TechnicalFamily.entries.firstOrNull { it.name == familyName }
     Column(Modifier.fillMaxSize()) {
@@ -27,14 +30,13 @@ fun LocomotiveDiagnosticsScreen(
             Text("Выберите серию для диагностики. Это разовый просмотр; рабочий локомотив не изменится.",
                 modifier = Modifier.padding(16.dp), style = MaterialTheme.typography.bodyMedium)
         }
-        Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+        Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilterChip(family == TechnicalFamily.VL80S, { familyName = TechnicalFamily.VL80S.name },
-                enabled = workingFamily == null || workingFamily == TechnicalFamily.VL80S,
-                label = { Text("ВЛ80С") })
-            FilterChip(family == TechnicalFamily.ERMAK, { familyName = TechnicalFamily.ERMAK.name },
-                enabled = workingFamily == null || workingFamily == TechnicalFamily.ERMAK,
-                label = { Text("Ермак") })
+            TechnicalFamily.entries.forEach { option ->
+                FilterChip(family == option, { familyName = option.name },
+                    enabled = workingFamily == null || workingFamily == option,
+                    label = { Text(option.title) })
+            }
         }
         if (workingFamily != null && family != null && family != workingFamily) {
             Text("Материал другой серии. Рабочий локомотив не изменён.",
@@ -48,22 +50,30 @@ fun LocomotiveDiagnosticsScreen(
             else ErmakDiagnosticsScreen(
                 initialScenarioId = diagnosticScenarioForFamily(initialScenarioId, family),
                 initialEquipmentId = diagnosticEquipmentForFamily(initialEquipmentId, family),
-                workingVariantId = workingVariantId
+                workingVariantId = workingVariantId,
+                family = family
             )
         }
     }
 }
 
 internal fun diagnosticInitialFamily(scenarioId: String?, equipmentId: String?): TechnicalFamily =
-    if (scenarioId?.startsWith("ER-DIAG-") == true || equipmentId?.startsWith("ER-EQ-") == true)
-        TechnicalFamily.ERMAK else TechnicalFamily.VL80S
+    when {
+        scenarioId?.startsWith("CHME3E-") == true || equipmentId?.startsWith("CHME3E-") == true -> TechnicalFamily.CHME3E
+        scenarioId?.startsWith("CHME3T-") == true || equipmentId?.startsWith("CHME3T-") == true -> TechnicalFamily.CHME3T
+        scenarioId?.startsWith("CHME3-") == true || equipmentId?.startsWith("CHME3-") == true -> TechnicalFamily.CHME3
+        scenarioId?.startsWith("ER-DIAG-") == true || equipmentId?.startsWith("ER-EQ-") == true -> TechnicalFamily.ERMAK
+        else -> TechnicalFamily.VL80S
+    }
 
 internal fun diagnosticScenarioForFamily(id: String?, family: TechnicalFamily): String? = when (family) {
     TechnicalFamily.VL80S -> id?.takeUnless { it.startsWith("ER-") }
     TechnicalFamily.ERMAK -> id?.takeIf { it.startsWith("ER-DIAG-") }
+    TechnicalFamily.CHME3, TechnicalFamily.CHME3T, TechnicalFamily.CHME3E -> id?.takeIf { it.startsWith("CHME3") }
 }
 
 internal fun diagnosticEquipmentForFamily(id: String?, family: TechnicalFamily): String? = when (family) {
     TechnicalFamily.VL80S -> id?.takeUnless { it.startsWith("ER-") }
     TechnicalFamily.ERMAK -> id?.takeIf { it.startsWith("ER-EQ-") }
+    TechnicalFamily.CHME3, TechnicalFamily.CHME3T, TechnicalFamily.CHME3E -> id?.takeIf { it.startsWith("CHME3") }
 }

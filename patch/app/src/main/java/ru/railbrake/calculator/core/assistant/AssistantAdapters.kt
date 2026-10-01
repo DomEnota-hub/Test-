@@ -166,6 +166,26 @@ object ErmakDiagnosticAssistantAdapter {
     }
 }
 
+object Chme3DiagnosticAssistantAdapter {
+    fun adapt(scenario: ErmakDiagnosticScenario, family: TechnicalFamily): AssistantDocument = AssistantDocument(
+        key = "diagnostic:${family.name}:${scenario.id}",
+        canonicalId = scenario.id,
+        kind = AssistantDocumentKind.CHME3_DIAGNOSTIC,
+        family = family,
+        section = TechnicalSection.DIAGNOSTICS,
+        title = scenario.title,
+        summary = scenario.symptom,
+        body = scenario.nodes.values.joinToString(" ") { it.text },
+        aliases = (scenario.searchTerms + scenario.title + family.title).toSet(),
+        componentIds = scenario.equipmentIds,
+        symptomTerms = (scenario.symptom.split(';') + scenario.searchTerms).toSet(),
+        tags = setOf(scenario.category, scenario.severity, family.title),
+        relatedIds = scenario.equipmentIds,
+        safetyCritical = true,
+        target = AssistantTarget.Chme3Diagnostic(family, scenario.id)
+    )
+}
+
 object KnowledgeArticleAssistantAdapter {
     fun adapt(article: KnowledgeArticle): AssistantDocument = AssistantDocument(
         key = "knowledge:${article.id}",

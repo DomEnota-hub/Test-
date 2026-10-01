@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "packageId": "chme3-family",
+  "updatedAt": "2026-10-01",
+  "state": "ATLAS_PASS_2_SCHEME_EXTENSION",
+  "records": [
+    {
+      "id":"CHME3-SCH-RUNNING",
+      "title":"Экипажная часть — механические связи",
+      "kind":"mechanical_functional",
+      "applicability":["ЧМЭ3","ЧМЭ3Т","ЧМЭ3Э"],
+      "nodes":["CHME3-EQ-MAIN-FRAME","CHME3-EQ-BOGIE","CHME3-EQ-SPRING","CHME3-EQ-AXLEBOX","CHME3-EQ-WHEELSET","CHME3-EQ-TM-SUSPENSION","CHME3-EQ-TRACTION-MOTORS","CHME3-EQ-TRACTION-GEAR","CHME3-EQ-COUPLER","CHME3-EQ-SAND"],
+      "flows":[
+        ["CHME3-EQ-MAIN-FRAME","CHME3-EQ-BOGIE","передача вертикальной и продольной нагрузки"],
+        ["CHME3-EQ-BOGIE","CHME3-EQ-SPRING","рессорное подвешивание"],
+        ["CHME3-EQ-SPRING","CHME3-EQ-AXLEBOX","передача нагрузки к колёсной паре"],
+        ["CHME3-EQ-AXLEBOX","CHME3-EQ-WHEELSET","опора и вращение оси"],
+        ["CHME3-EQ-TRACTION-MOTORS","CHME3-EQ-TRACTION-GEAR","вращающий момент"],
+        ["CHME3-EQ-TRACTION-GEAR","CHME3-EQ-WHEELSET","тяговый момент на колёсную пару"]
+      ],
+      "diagnosticAnchors":["стук в тележке","греется букса","редуктор воет","ползун","сломана рессора","вибрация тэд"],
+      "evidenceRefs":["CHME3-SRC-NOTIK-1996","CHME3-SRC-NOTIK-1990"],
+      "evidenceStatus":"TRAINING_REFERENCE",
+      "actionAuthority":"INFORMATION_ONLY"
+    },
+    {
+      "id":"CHME3-SCH-BRAKE-MECHANICAL",
+      "title":"Тормозные цилиндры и рычажная передача",
+      "kind":"brake_mechanical_functional",
+      "applicability":["ЧМЭ3","ЧМЭ3Т","ЧМЭ3Э"],
+      "nodes":["CHME3-EQ-BRAKE-CYLINDERS","CHME3-EQ-BRAKE-RIGGING","CHME3-EQ-WHEELSET","CHME3-EQ-AUX-BRAKE-VALVE","CHME3-EQ-AIR-DISTRIBUTOR"],
+      "flows":[
+        ["CHME3-EQ-AIR-DISTRIBUTOR","CHME3-EQ-BRAKE-CYLINDERS","автоматическое пневматическое управление"],
+        ["CHME3-EQ-AUX-BRAKE-VALVE","CHME3-EQ-BRAKE-CYLINDERS","вспомогательное торможение"],
+        ["CHME3-EQ-BRAKE-CYLINDERS","CHME3-EQ-BRAKE-RIGGING","механическое усилие"],
+        ["CHME3-EQ-BRAKE-RIGGING","CHME3-EQ-WHEELSET","прижатие тормозных колодок"]
+      ],
+      "diagnosticAnchors":["тормоз не отпускает","колодка не отходит","тормоз зажат","нет выхода штока","обрыв рычажки"],
+      "evidenceRefs":["CHME3-SRC-PNEUMATIC-PUBLIC","CHME3-SRC-NOTIK-1996"],
+      "evidenceStatus":"TRAINING_REFERENCE",
+      "actionAuthority":"INFORMATION_ONLY",
+      "notes":["Предельные размеры, нормы износа и порядок проверки берутся только из действующей тормозной/эксплуатационной документации и не кодируются из учебного источника как актуальные нормативы."]
+    }
+  ]
+}
