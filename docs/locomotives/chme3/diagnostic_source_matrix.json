@@ -1,0 +1,148 @@
+{
+  "schemaVersion": 1,
+  "packageId": "chme3-family",
+  "updatedAt": "2026-10-01",
+  "state": "DIAGNOSTICS_PASS_3_RESEARCH",
+  "policy": {
+    "normativeBaseline": "996R",
+    "rule": "Нормативный маршрут, техническая причина и полевая практика хранятся отдельными слоями. Совпадение по симптому не означает равную допустимость действия.",
+    "unsafeFieldActionRule": "Нестандартные обходы, перемычки, механические подпорки/вставки и иные способы изменения штатной схемы до предметной проверки получают INFORMATION_ONLY или PROHIBITED_OR_UNSAFE и не выдаются как source-bound действие.",
+    "currentStatusNote": "Открытые издательские каталоги 2026 года подтверждают, что Перечень по распоряжению 996/р продолжает издаваться как действующий и включает отдельный порядок для ЧМЭ3. Точный текст применимой редакции каждого диагностического пункта всё равно сверяется отдельно."
+  },
+  "sourceLayers": [
+    {
+      "id":"DIAG-LAYER-996R",
+      "title":"996/р — действующий нормативный baseline",
+      "sourceRefs":["CHME3-SRC-996R-2024"],
+      "status":"996R_CONFIRMED",
+      "actionAuthority":"SOURCE_BOUND_CANDIDATE_REQUIRES_ITEM_LEVEL_RECHECK",
+      "notes":"Издательские сведения подтверждают приложение/раздел ЧМЭ3 и действующий статус Перечня в 2026 году; перед SOURCE_BOUND_OK каждый конкретный шаг должен быть сверен с актуальным текстом/изменениями."
+    },
+    {
+      "id":"DIAG-LAYER-MANUAL",
+      "title":"РЭ, двигатель, ТО/ТР и технические публикации",
+      "sourceRefs":["CHME3-SRC-K6S310DR-1988","CHME3-SRC-NOTIK-1996","CHME3-SRC-SCBIST-TO-TR","CHME3-SRC-ERCHM-1987"],
+      "status":"MIXED_MANUFACTURER_TRAINING_UNVERIFIED",
+      "actionAuthority":"INFORMATION_ONLY_UNTIL_PROVENANCE_AND_VERSION_CHECK"
+    },
+    {
+      "id":"DIAG-LAYER-HISTORICAL",
+      "title":"671р и старые рекомендации",
+      "sourceRefs":["CHME3-SRC-671R-HIST"],
+      "status":"HISTORICAL_SUPERSEDED",
+      "actionAuthority":"NO",
+      "purpose":"Сравнить, какие практические ветви присутствовали раньше и исчезли/изменились в 996/р."
+    },
+    {
+      "id":"DIAG-LAYER-FIELD",
+      "title":"Полевые и аварийные способы",
+      "sourceRefs":["CHME3-SRC-SCBIST-FAULT-FINDING","CHME3-SRC-SCBIST-EMERGENCY-SCHEMES"],
+      "status":"FIELD_PRACTICE_UNDER_REVIEW",
+      "actionAuthority":"NO_UNTIL_CONFLICT_REVIEW"
+    }
+  ],
+  "coverageClusters": [
+    {
+      "id":"CHME3-DIAG-CLUSTER-START",
+      "title":"Дизель не запускается / запуск прерывается / запустился и заглох",
+      "equipmentIds":["CHME3-EQ-DIESEL","CHME3-EQ-BATTERY","CHME3-EQ-BATTERY-SWITCH","CHME3-EQ-OIL-PRIME-PUMP","CHME3-EQ-FUEL-PRIME-PUMP","CHME3-EQ-GOVERNOR","CHME3-EQ-GOVERNOR-SERVOMOTOR","CHME3-EQ-OVERSPEED-GOV"],
+      "assistantTerms":["дизель не запускается","не заводится","стартер не крутит","схватывает и глохнет","запустился и заглох","дизель встал","сработал предельник"],
+      "failureModesToPreserve":["NO_START","SPONTANEOUS_ENGINE_STOP","OVERSPEED"],
+      "researchPriority":"HIGH"
+    },
+    {
+      "id":"CHME3-DIAG-CLUSTER-RPM",
+      "title":"Не набирает / не держит обороты, обороты плавают или завышены",
+      "equipmentIds":["CHME3-EQ-GOVERNOR","CHME3-EQ-GOVERNOR-SERVOMOTOR","CHME3-EQ-INJECTION-PUMP","CHME3-EQ-FUEL-FILTER","CHME3-EQ-FUEL-PRIME-PUMP"],
+      "assistantTerms":["не набирает обороты","не держит обороты","обороты плавают","позиция есть оборотов нет","обороты завышены","дизель идет в разнос"],
+      "failureModesToPreserve":["NO_RPM_RISE","UNSTABLE_RPM","OVERSPEED"],
+      "researchPriority":"HIGH"
+    },
+    {
+      "id":"CHME3-DIAG-CLUSTER-OIL",
+      "title":"Нет / падает давление масла, перегрев масла",
+      "equipmentIds":["CHME3-EQ-OIL-PRIME-PUMP","CHME3-EQ-OIL-PUMP","CHME3-EQ-OIL-FILTER","CHME3-EQ-OIL-VALVES","CHME3-EQ-OIL-WATER-HEX","CHME3-EQ-DIESEL"],
+      "assistantTerms":["нет давления масла","давление масла упало","масло не качает","давление масла плавает","масло греется","вода в масле"],
+      "researchPriority":"HIGH"
+    },
+    {
+      "id":"CHME3-DIAG-CLUSTER-FUEL",
+      "title":"Нарушение подачи топлива / завоздушивание / цилиндр не работает",
+      "equipmentIds":["CHME3-EQ-FUEL-TANK","CHME3-EQ-FUEL-PRIME-PUMP","CHME3-EQ-FUEL-HAND-PUMP","CHME3-EQ-FUEL-FILTER","CHME3-EQ-INJECTION-PUMP","CHME3-EQ-INJECTOR","CHME3-EQ-FUEL-MANIFOLD"],
+      "assistantTerms":["топливо не идет","нет подкачки","завоздушило","дизель троит","цилиндр не работает","форсунка льет","секция тнвд не качает"],
+      "researchPriority":"HIGH"
+    },
+    {
+      "id":"CHME3-DIAG-CLUSTER-COOLING",
+      "title":"Перегрев дизеля / охлаждающей жидкости / нет циркуляции",
+      "equipmentIds":["CHME3-EQ-WATER-PUMP","CHME3-EQ-RADIATOR","CHME3-EQ-COOLING-FANS","CHME3-EQ-HYDRO-GEAR","CHME3-EQ-CHARGE-AIR-COOLER"],
+      "assistantTerms":["греется дизель","вода кипит","температура воды растет","нет циркуляции","вентилятор не крутится","радиатор течет"],
+      "researchPriority":"HIGH"
+    },
+    {
+      "id":"CHME3-DIAG-CLUSTER-AIR",
+      "title":"Нет наддува / дымность / ненормальный шум турбонагнетателя",
+      "equipmentIds":["CHME3-EQ-TURBO","CHME3-EQ-CHARGE-AIR-COOLER","CHME3-EQ-INTAKE-EXHAUST","CHME3-EQ-DIESEL"],
+      "assistantTerms":["нет наддува","турбина не дует","черный дым","дымит под нагрузкой","турбина воет","турбина свистит"],
+      "researchPriority":"MEDIUM_HIGH"
+    },
+    {
+      "id":"CHME3-DIAG-CLUSTER-AIR-BRAKE",
+      "title":"Компрессор и пневматика — не набирает, не разгружается, утечки",
+      "equipmentIds":["CHME3-EQ-COMPRESSOR","CHME3-EQ-COMPRESSOR-DRIVE","CHME3-EQ-PRESSURE-GOV","CHME3-EQ-MAIN-RESERVOIRS","CHME3-EQ-INTERCOOLER","CHME3-EQ-AIR-DRY-SEPARATOR"],
+      "assistantTerms":["компрессор не качает","медленно качает","компрессор не выключается","не разгружается","воздух уходит","давление падает","компрессор греется"],
+      "failureModesToPreserve":["NO_BUILD_PRESSURE","NO_STOP","PRESSURE_LEAK","OVERHEAT"],
+      "fieldConflictFlag":true,
+      "notes":"В открытых полевых материалах обнаружены нестандартные вмешательства в привод/пневмогидравлическую часть компрессора. До сверки с действующим порядком хранить только как FIELD_PRACTICE/CONFLICT, без выдачи пошаговой инструкции.",
+      "researchPriority":"HIGH"
+    },
+    {
+      "id":"CHME3-DIAG-CLUSTER-TRACTION",
+      "title":"Нет тяги / нет возбуждения / отпадают поездные контакторы",
+      "equipmentIds":["CHME3-EQ-TRACTION-GENERATOR","CHME3-EQ-EXCITER","CHME3-EQ-TRAIN-CONTACTORS","CHME3-EQ-REVERSER","CHME3-EQ-TRACTION-MOTORS","CHME3-EQ-GOVERNOR"],
+      "assistantTerms":["нет тяги","не берет нагрузку","нет возбуждения","контакторы не собираются","поездные отпали","не идет вперед","не идет назад"],
+      "researchPriority":"HIGH"
+    },
+    {
+      "id":"CHME3-DIAG-CLUSTER-CHARGE",
+      "title":"Нет зарядки / нестабильное напряжение низковольтной сети",
+      "equipmentIds":["CHME3-EQ-AUX-GENERATOR","CHME3-EQ-VOLTAGE-REG","CHME3-EQ-BATTERY","CHME3-EQ-BATTERY-SWITCH"],
+      "assistantTerms":["нет зарядки","батарея не заряжается","напряжение скачет","перезаряд","акб садится"],
+      "researchPriority":"MEDIUM_HIGH"
+    },
+    {
+      "id":"CHME3-DIAG-CLUSTER-BRAKE",
+      "title":"Пневматический тормоз — не тормозит / не отпускает / сам срабатывает",
+      "equipmentIds":["CHME3-EQ-DRIVER-BRAKE-VALVE","CHME3-EQ-AUX-BRAKE-VALVE","CHME3-EQ-AIR-DISTRIBUTOR","CHME3-EQ-BRAKE-CYLINDERS","CHME3-EQ-EPC-AUTOSTOP","CHME3-EQ-BRAKE-RIGGING"],
+      "assistantTerms":["не тормозит","тормоза не отпускают","сам затормозил","эпк травит","тц не отпускает","колодка зажата"],
+      "failureModesToPreserve":["NO_BRAKE","NO_RELEASE","SPONTANEOUS_BRAKE","PRESSURE_LEAK"],
+      "researchPriority":"HIGH"
+    },
+    {
+      "id":"CHME3T-DIAG-CLUSTER-EDB",
+      "title":"ЧМЭ3Т — не работает / отключается электродинамический тормоз",
+      "profileGate":"chme3t-rheostatic",
+      "equipmentIds":["CHME3-EQ-TRACTION-MOTORS","CHME3T-EQ-EDB-CONTROL","CHME3T-EQ-BRAKE-RESISTORS","CHME3T-EQ-BRAKE-RESISTOR-FAN"],
+      "assistantTerms":["реостатный тормоз не работает","нет электрического тормоза","нет тормозного тока","эдт отключается","резисторы греются"],
+      "researchPriority":"HIGH"
+    }
+  ],
+  "fieldMaterialCandidates": [
+    {
+      "id":"CHME3-FIELD-CANDIDATE-COMPRESSOR-01",
+      "topic":"привод компрессора запускается только при повышенных оборотах дизеля",
+      "sourceUrl":"https://oltep.narod.ru/neispr/neisp_diz.htm",
+      "sourceStatus":"FIELD_PRACTICE_UNVERIFIED",
+      "actionAuthority":"PROHIBITED_OR_UNSAFE_UNTIL_REVIEW",
+      "reason":"Опубликованный способ предполагает нештатное механическое изменение соединения привода. Сохраняется как материал для сравнения, но не как рекомендация."
+    },
+    {
+      "id":"CHME3-FIELD-CANDIDATE-COOLING-01",
+      "topic":"аварийная схема охлаждения вспомогательного контура",
+      "sourceUrl":"https://oltep.narod.ru/neispr/neisp_diz.htm",
+      "sourceStatus":"FIELD_PRACTICE_UNVERIFIED",
+      "actionAuthority":"REQUIRES_CONFLICT_REVIEW",
+      "reason":"Есть детальный полевой алгоритм вмешательства в привод жалюзи/охлаждение; требуется сверка с 996/р, РЭ и профилем машины до переноса в пользовательскую диагностику."
+    }
+  ]
+}
