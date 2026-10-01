@@ -1,0 +1,37 @@
+name: ChME3 final package check
+
+on:
+  push:
+    branches:
+      - feature/locomotive-knowledge-foundation
+    paths:
+      - 'docs/locomotives/chme3/**'
+      - 'docs/diagnostics/LOCOMOTIVE_DIAGNOSTIC_RUNTIME_CONTRACT_V2.md'
+      - 'qa/validate_chme3_atlas_checkpoint.py'
+      - 'qa/validate_chme3_diagnostics_v3.py'
+      - 'qa/audit_chme3_diagnostic_semantics_v4.py'
+      - 'qa/validate_chme3_acceptance.py'
+      - 'qa/validate_chme3_final_package.py'
+      - '.github/workflows/chme3-final-package-check.yml'
+  workflow_dispatch:
+
+jobs:
+  final-package:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate Atlas checkpoint
+        run: python qa/validate_chme3_atlas_checkpoint.py
+      - name: Validate diagnostic content and vocabulary
+        run: python qa/validate_chme3_diagnostics_v3.py
+      - name: Require 56 of 56 non-generic runtime diagnostic graphs
+        run: python qa/audit_chme3_diagnostic_semantics_v4.py --require-complete
+      - name: Validate acceptance contract
+        run: python qa/validate_chme3_acceptance.py
+      - name: Validate cross-layer final package
+        run: python qa/validate_chme3_final_package.py
