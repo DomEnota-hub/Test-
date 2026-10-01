@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "profileId": "chme3e-electronic",
+  "familyId": "chme3-family",
+  "series": "ЧМЭ3Э",
+  "tractionType": "diesel",
+  "updatedAt": "2026-10-01",
+  "stage": "STAGE_1_FOUNDATION_COMPLETE",
+  "title": "ЧМЭ3Э — электронное исполнение без заводского реостатного тормоза",
+  "sharedBase": "../common",
+  "variantLayer": ".",
+  "confirmedFamilyTraits": [
+    "diesel_k6s310dr_family",
+    "dc_electric_transmission",
+    "six_traction_motors",
+    "mechanical_and_pneumatic_family_commonality"
+  ],
+  "variantTraits": [
+    "additional_electronic_control",
+    "diesel_preheating_device",
+    "no_factory_rheostatic_brake"
+  ],
+  "explicitExclusions": [
+    "CHME3T rheostatic brake equipment",
+    "CHME3T braking resistor bank",
+    "CHME3T braking resistor cooling",
+    "CHME3T EDB runtime actions"
+  ],
+  "profileRules": {
+    "inheritCommonMechanicalContent": true,
+    "inheritCommonDieselFuelOilWaterPneumaticContent": "ONLY_WITH_CONFIRMED_APPLICABILITY",
+    "inheritChme3tElectronicContent": "NO_AUTOMATIC_INHERITANCE",
+    "electricalSchemePolicy": "Use a dedicated CHME3E electrical layer; shared apparatus may reference family-common entities, but circuit logic must follow CHME3E-specific evidence.",
+    "edbPolicy": "Factory rheostatic-brake content is excluded unless a specific non-factory modernization is independently confirmed for the physical locomotive.",
+    "modernizationPolicy": "Actual installed equipment overrides assumptions from series/number for information routing, but does not grant authority for actions without current source support.",
+    "unknownExecutionPolicy": "Fail closed for variant-dependent operational actions."
+  },
+  "numberReference": {
+    "status": "REFERENCE_ONLY_NOT_PROFILE_AUTHORITY",
+    "knownPublishedRanges": ["5932", "6220-6244", "6665-6884"],
+    "rule": "Number may suggest the factory series but must not be the sole authority after repairs or modernization."
+  },
+  "evidenceRefs": [
+    "CHME3-SRC-NOTIK-1996",
+    "CHME3E-SRC-NOTIK-CH67",
+    "CHME3E-SRC-NOTIK-CH17",
+    "CHME3E-SRC-FLEET-RANGES-REFERENCE"
+  ],
+  "nextStages": [
+    "STAGE_2_ATLAS_SCHEMES",
+    "STAGE_3_DIAGNOSTICS_ASSISTANT_SEMANTICS",
+    "STAGE_4_ACCEPTANCE_CROSS_LAYER_QA"
+  ]
+}
