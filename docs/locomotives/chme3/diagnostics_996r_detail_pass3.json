@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "packageId": "chme3-family",
+  "updatedAt": "2026-10-01",
+  "state": "DIAGNOSTICS_PASS_3",
+  "sourceScope": "Secondary 996/r-derived ChME3 training material; exact action authority remains gated pending current primary text and locomotive execution confirmation.",
+  "scenarios": [
+    {
+      "id": "CHME3-DIAG-321",
+      "title": "После РВ2 не включается КД2",
+      "profiles": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "equipmentIds": ["CHME3-EQ-CONTACTORS", "CHME3-EQ-RELAYS", "CHME3-EQ-BATTERY", "CHME3-EQ-DIESEL"],
+      "symptoms": ["КД2 не включается", "РВ2 включилось КД2 нет", "пусковая цепь не собирается после РВ2"],
+      "queryTerms": ["кд2 не встал", "после рв2 нет кд2", "рв2 есть кд2 нет"],
+      "riskClass": "STARTING_CIRCUIT_SAFETY",
+      "actionAuthority": "SOURCE_AND_PROFILE_REQUIRED",
+      "evidenceRefs": ["CHME3-SRC-CDOCKA-996R-CHME3"],
+      "evidenceStatus": "996R_CONFIRMED_SECONDARY",
+      "decisionTree": [
+        {"step": 1, "check": "Подтвердить, что РВ2 включилось, а КД2 не включилось."},
+        {"step": 2, "check": "Проверить цепь катушки КД2 на обрыв/отсутствие питания по схеме конкретного исполнения."},
+        {"step": 3, "action": "Не переводить ручное воздействие на пусковые контакторы в runtime-инструкцию до проверки текущего первичного текста 996/р и условий безопасности."}
+      ],
+      "researchOnlyActions": [
+        {"status":"SOURCE_BOUND_SECONDARY_NOT_RUNTIME","summary":"Вторичный материал 996/р описывает прямой запуск ручным воздействием изолирующими деревянными предметами на якоря КД1 и КД2 с соблюдением требований безопасности.","requires":["current primary 996/r clause","execution-specific starter circuit","safety prerequisites"]}
+      ]
+    },
+    {
+      "id": "CHME3-DIAG-322",
+      "title": "Обороты не увеличиваются на чётных позициях",
+      "profiles": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "equipmentIds": ["CHME3-EQ-DRIVER-CONTROLLER", "CHME3-EQ-GOVERNOR-SERVOMOTOR", "CHME3-EQ-GOVERNOR"],
+      "symptoms": ["на четных позициях обороты не растут", "2 4 6 позиции без прибавки оборотов", "обороты растут через позицию"],
+      "queryTerms": ["на четных не набирает", "обороты растут через позицию", "четные позиции не работают"],
+      "riskClass": "NORMAL_DIAGNOSTIC",
+      "actionAuthority": "SOURCE_AND_PROFILE_REQUIRED",
+      "evidenceRefs": ["CHME3-SRC-CDOCKA-996R-CHME3"],
+      "evidenceStatus": "996R_CONFIRMED_SECONDARY",
+      "decisionTree": [
+        {"step": 1, "check": "Подтвердить закономерность: нечётные позиции изменяют режим, а чётные не дают ожидаемого увеличения оборотов."},
+        {"step": 2, "check": "Проверить механическую часть барабана контроллера и палец КМЗ; вторичный материал 996/р называет его излом возможной причиной."},
+        {"step": 3, "check": "Если механика контроллера исправна, перейти к цепям команд сервомотора/регулятора."}
+      ]
+    },
+    {
+      "id": "CHME3-DIAG-323",
+      "title": "РУ5 включено на «Пуск», но на 1-й позиции тяга не собирается",
+      "profiles": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "equipmentIds": ["CHME3-EQ-RELAYS", "CHME3-EQ-DRIVER-CONTROLLER", "CHME3-EQ-TRAIN-CONTACTORS"],
+      "symptoms": ["РУ5 на пуске есть на первой нет тяги", "РУ5 включено а первая позиция не собирается", "нет контакта КВ"],
+      "queryTerms": ["ру5 есть первой позиции нет", "нет контакта кв", "на пуске ру5 включено а тяги нет"],
+      "riskClass": "ELEVATED_ELECTRICAL",
+      "actionAuthority": "SOURCE_AND_PROFILE_REQUIRED",
+      "evidenceRefs": ["CHME3-SRC-CDOCKA-996R-CHME3"],
+      "evidenceStatus": "996R_CONFIRMED_SECONDARY",
+      "decisionTree": [
+        {"step": 1, "check": "Подтвердить состояние РУ5 при положении реверсивной рукоятки «Пуск» и отсутствие ожидаемого включения на 1-й позиции."},
+        {"step": 2, "check": "Проверить состояние замыкающего контакта КВ и цепи между соответствующими точками по схеме исполнения."},
+        {"step": 3, "action": "Перемычку из вторичного материала не выдавать как runtime-действие до первичной сверки 996/р и схемы конкретной машины."}
+      ],
+      "researchOnlyActions": [
+        {"status":"SOURCE_BOUND_SECONDARY_NOT_RUNTIME","summary":"Во вторичном 996/р-derived ответе указана перемычка между проводами 202 и 261 на минусовой рейке РШ4.","requires":["current primary 996/r clause","wire numbering match","locomotive execution confirmation","safety gate"]}
+      ]
+    },
+    {
+      "id": "CHME3-DIAG-324",
+      "title": "Пуск идёт только пока нажата кнопка — нет автоматического продолжения пуска",
+      "profiles": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "equipmentIds": ["CHME3-EQ-CONTACTORS", "CHME3-EQ-RELAYS", "CHME3-EQ-DRIVER-CONTROLLER", "CHME3-EQ-DIESEL"],
+      "symptoms": ["после отпускания кнопки пуск прекращается", "нет автоматического пуска", "пуск работает только пока держишь кнопку"],
+      "queryTerms": ["держишь пуск работает отпустил прекратился", "нет автоматического пуска", "пуск только с кнопки"],
+      "riskClass": "NORMAL_DIAGNOSTIC",
+      "actionAuthority": "SOURCE_AND_PROFILE_REQUIRED",
+      "evidenceRefs": ["CHME3-SRC-CDOCKA-996R-CHME3"],
+      "evidenceStatus": "996R_CONFIRMED_SECONDARY",
+      "decisionTree": [
+        {"step": 1, "check": "Подтвердить: первоначальная часть запуска выполняется нормально, отказ появляется именно после отпускания кнопки «Пуск дизеля»."},
+        {"step": 2, "check": "Проверить цепь самоподхвата/автоматического продолжения пуска; вторичный материал указывает на контакт КМН2 между проводами 208 и 247."},
+        {"step": 3, "check": "Если обозначения или номера проводов не совпадают с машиной, остановить схемную диагностику и выбрать профиль исполнения."}
+      ]
+    },
+    {
+      "id": "CHME3-DIAG-325",
+      "title": "Не открываются боковые жалюзи основного контура — ВПЖ1",
+      "profiles": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "equipmentIds": ["CHME3-EQ-RADIATOR", "CHME3-EQ-PNEUMATIC-CONTROL-RESERVOIR", "CHME3-EQ-COOLING-FANS"],
+      "symptoms": ["не открываются боковые жалюзи", "ВПЖ1 не работает", "основной контур без жалюзи"],
+      "queryTerms": ["впж1 не работает", "боковые жалюзи не открылись", "жалюзи основного контура стоят"],
+      "riskClass": "ELEVATED",
+      "actionAuthority": "SOURCE_AND_PROFILE_REQUIRED",
+      "evidenceRefs": ["CHME3-SRC-CDOCKA-996R-CHME3"],
+      "evidenceStatus": "996R_CONFIRMED_SECONDARY",
+      "decisionTree": [
+        {"step": 1, "check": "Подтвердить неисправность именно боковых жалюзи основного контура и отсутствие срабатывания ВПЖ1."},
+        {"step": 2, "check": "Проверить наличие управляющего воздуха и электрической команды на ВПЖ1."},
+        {"step": 3, "action": "Временную механическую фиксацию вентиля не выдавать как runtime-действие до сверки текущего первичного пункта 996/р."}
+      ],
+      "researchOnlyActions": [
+        {"status":"SOURCE_BOUND_SECONDARY_NOT_RUNTIME","summary":"Вторичный 996/р-derived ответ описывает подключение/фиксацию электропневматического вентиля деревянным клином.","requires":["current primary 996/r clause","cooling circuit profile","safety gate"]}
+      ]
+    },
+    {
+      "id": "CHME3-DIAG-326",
+      "title": "С 5-й позиции не растут обороты — РУ3 не включается из-за цепи ОМ12/ОМ22/ОМ32",
+      "profiles": ["ЧМЭ3", "ЧМЭ3Т", "ЧМЭ3Э"],
+      "equipmentIds": ["CHME3-EQ-RELAYS", "CHME3-EQ-DRIVER-CONTROLLER", "CHME3-EQ-GOVERNOR-SERVOMOTOR"],
+      "symptoms": ["РУ3 не включается", "с пятой позиции обороты не растут", "подгорели контакты ОМ"],
+      "queryTerms": ["ом12 ом22 ом32", "ру3 не встал с пятой", "подгорели контакты ом"],
+      "riskClass": "NORMAL_DIAGNOSTIC",
+      "actionAuthority": "SOURCE_AND_PROFILE_REQUIRED",
+      "evidenceRefs": ["CHME3-SRC-CDOCKA-996R-CHME3"],
+      "evidenceStatus": "996R_CONFIRMED_SECONDARY",
+      "decisionTree": [
+        {"step": 1, "check": "Подтвердить, что начиная с 5-й позиции не увеличивается частота вращения и РУ3 не включается."},
+        {"step": 2, "check": "Вторичный материал 996/р указывает на подгорание контактов ОМ12, ОМ22 и ОМ32 как возможную причину; сверить обозначения с фактической схемой."},
+        {"step": 3, "check": "Если РУ3 включается, перейти к сервомотору/регулятору, а не продолжать ветвь ОМ-контактов."}
+      ]
+    }
+  ]
+}
