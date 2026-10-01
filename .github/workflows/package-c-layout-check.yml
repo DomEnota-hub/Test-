@@ -1,0 +1,57 @@
+name: Package C layout interaction palette check
+
+on:
+  push:
+    branches:
+      - integration/chme3-assistant
+    paths:
+      - 'qa/build_package_c_layout_interaction_palette.py'
+      - 'qa/validate_package_c_layout_interaction_palette.py'
+      - 'app/src/main/assets/technical/stepwise_scheme_flows.json'
+      - 'app/src/main/assets/technical/scheme_layout_metadata.json'
+      - 'app/src/main/assets/technical/scheme_view_contract.json'
+      - 'app/src/main/assets/technical/scheme_semantic_palette.json'
+      - 'patch/app/src/main/assets/technical/scheme_layout_metadata.json'
+      - 'patch/app/src/main/assets/technical/scheme_view_contract.json'
+      - 'patch/app/src/main/assets/technical/scheme_semantic_palette.json'
+      - 'app/src/main/assets/technical/ermak_schemes.json.gz'
+      - 'docs/locomotives/diesel/chme3-family/**/interactive_schemes.json'
+      - 'docs/locomotives/diesel/chme3-family/common/interactive_shared_views.json'
+      - '.github/workflows/package-c-layout-check.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Validate committed Package C assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 qa/validate_package_c_layout_interaction_palette.py
+          cmp -s app/src/main/assets/technical/scheme_layout_metadata.json patch/app/src/main/assets/technical/scheme_layout_metadata.json
+          cmp -s app/src/main/assets/technical/scheme_view_contract.json patch/app/src/main/assets/technical/scheme_view_contract.json
+          cmp -s app/src/main/assets/technical/scheme_semantic_palette.json patch/app/src/main/assets/technical/scheme_semantic_palette.json
+
+      - name: Prove deterministic regeneration
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 qa/build_package_c_layout_interaction_palette.py
+          python3 qa/validate_package_c_layout_interaction_palette.py
+          git diff --check
+          git diff --exit-code -- \
+            app/src/main/assets/technical/scheme_layout_metadata.json \
+            app/src/main/assets/technical/scheme_view_contract.json \
+            app/src/main/assets/technical/scheme_semantic_palette.json \
+            patch/app/src/main/assets/technical/scheme_layout_metadata.json \
+            patch/app/src/main/assets/technical/scheme_view_contract.json \
+            patch/app/src/main/assets/technical/scheme_semantic_palette.json \
+            docs/integration/PACKAGE_C_LAYOUT_INTERACTION_PALETTE_CHECKPOINT.md
