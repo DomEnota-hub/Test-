@@ -1,0 +1,53 @@
+name: Package A navigation and presentation check
+
+on:
+  push:
+    branches:
+      - integration/chme3-assistant
+    paths:
+      - 'app/src/main/java/ru/railbrake/calculator/core/LocomotiveCatalogRegistry.kt'
+      - 'app/src/main/java/ru/railbrake/calculator/core/UserFacingTechnicalPolicy.kt'
+      - 'app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt'
+      - 'app/src/main/java/ru/railbrake/calculator/core/TechnicalPresentation.kt'
+      - 'app/src/main/java/ru/railbrake/calculator/ui/HomeScreen.kt'
+      - 'app/src/main/java/ru/railbrake/calculator/ui/BrakeCalculatorApp.kt'
+      - 'app/src/main/java/ru/railbrake/calculator/ui/TechnicalCatalogScreen.kt'
+      - 'app/src/main/java/ru/railbrake/calculator/ui/LocomotiveDiagnosticsScreen.kt'
+      - 'app/src/test/java/ru/railbrake/calculator/core/LocomotiveCatalogRegistryTest.kt'
+      - 'app/src/test/java/ru/railbrake/calculator/core/UserFacingTechnicalPolicyTest.kt'
+      - '.github/workflows/package-a-navigation-check.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Verify app/patch mirrors used by integration handoff
+        shell: bash
+        run: |
+          set -euo pipefail
+          for rel in \
+            core/LocomotiveCatalogRegistry.kt \
+            core/UserFacingTechnicalPolicy.kt \
+            core/TechnicalDataRepository.kt \
+            core/TechnicalPresentation.kt \
+            ui/HomeScreen.kt \
+            ui/BrakeCalculatorApp.kt \
+            ui/TechnicalCatalogScreen.kt \
+            ui/LocomotiveDiagnosticsScreen.kt
+          do
+            cmp "app/src/main/java/ru/railbrake/calculator/$rel" "patch/app/src/main/java/ru/railbrake/calculator/$rel"
+          done
+      - name: Unit tests
+        shell: bash
+        run: |
+          chmod +x gradlew
+          ./gradlew :app:testDebugUnitTest --no-daemon
