@@ -3,7 +3,7 @@
   "familyId": "chme3-family",
   "tractionType": "diesel",
   "updatedAt": "2026-10-01",
-  "migrationState": "STAGE_3_FAMILY_DIAGNOSTICS_ASSISTANT_SEMANTICS_COMPLETE",
+  "migrationState": "STAGE_4_FAMILY_FOUNDATION_COMPLETE_READY_FOR_APP_INTEGRATION",
   "legacyMigrationRoot": "docs/locomotives/chme3",
   "canonicalLayers": {
     "common": "common",
@@ -17,7 +17,7 @@
     {
       "profileId": "chme3-base",
       "series": "ЧМЭ3",
-      "supportState": "KNOWLEDGE_FOUNDATION_INTERACTIVE_COMPLETE",
+      "supportState": "KNOWLEDGE_FOUNDATION_COMPLETE_READY_FOR_APP_INTEGRATION",
       "completedStages": ["FOUNDATION", "ATLAS_SCHEMES", "INTERACTIVE_SCHEMES", "DIAGNOSTICS", "ACCEPTANCE_FINAL_QA"],
       "sharedBase": "common",
       "variantLayer": "chme3",
@@ -27,7 +27,7 @@
     {
       "profileId": "chme3t-rheostatic",
       "series": "ЧМЭ3Т",
-      "supportState": "KNOWLEDGE_FOUNDATION_INTERACTIVE_COMPLETE",
+      "supportState": "KNOWLEDGE_FOUNDATION_COMPLETE_READY_FOR_APP_INTEGRATION",
       "completedStages": ["FOUNDATION", "ATLAS_SCHEMES", "INTERACTIVE_SCHEMES", "DIAGNOSTICS", "ACCEPTANCE_FINAL_QA"],
       "sharedBase": "common",
       "variantLayer": "chme3t",
@@ -37,13 +37,14 @@
     {
       "profileId": "chme3e-electronic",
       "series": "ЧМЭ3Э",
-      "supportState": "STAGE_3_DIAGNOSTICS_ASSISTANT_SEMANTICS_COMPLETE",
-      "completedStages": ["FOUNDATION", "ATLAS_SCHEMES", "INTERACTIVE_SCHEMES", "DIAGNOSTICS"],
+      "supportState": "KNOWLEDGE_FOUNDATION_COMPLETE_READY_FOR_APP_INTEGRATION",
+      "completedStages": ["FOUNDATION", "ATLAS_SCHEMES", "INTERACTIVE_SCHEMES", "DIAGNOSTICS", "ACCEPTANCE_FINAL_QA"],
       "sharedBase": "common",
       "variantLayer": "chme3e",
       "interactiveSchemeFile": "chme3e/interactive_schemes.json",
       "diagnosticFiles": ["chme3e/diagnostics_stage3.json", "chme3e/diagnostic_runtime_graphs_v2.json", "chme3e/assistant_semantics_stage3.json"],
-      "requiredBeforeIntegration": ["ACCEPTANCE_FINAL_QA_COMPLETE"]
+      "acceptanceFile": "chme3e/acceptance_stage4.json",
+      "requiredBeforeIntegration": []
     }
   ],
   "interactiveSchemePolicy": {
@@ -64,10 +65,28 @@
     "fieldPracticeAuthority": "NO",
     "profileIsolation": "CHME3T_EDB_MUST_NOT_ROUTE_TO_CHME3E"
   },
+  "acceptancePolicy": {
+    "manifest": "common/acceptance_stage4_manifest.json",
+    "legacyCommonRequiredChecks": 20,
+    "chme3tProfileRequiredChecks": 1,
+    "chme3eProfileExtendedChecks": 4,
+    "legacyRoutes": 7,
+    "chme3eSharedExpandedEquipment": 67,
+    "chme3eVariantExpandedEquipment": 33,
+    "chme3eEffectiveExpandedEquipment": 100,
+    "sessionStates": ["NOT_CHECKED", "OK", "NOTE", "NOT_APPLICABLE"],
+    "profileExtendedAuthority": "OBSERVATION_AND_STATE_RECORDING_NOT_NETWORK_MANDATORY_BY_TRAINING_SOURCE_ALONE"
+  },
   "inheritancePolicy": {
     "commonContent": "Mechanical, diesel, fuel, oil, water, pneumatic and other content may be inherited only where applicability is explicitly confirmed for the profile.",
     "variantOverrides": "Electrical/electronic control, layout and variant-only equipment must live in the variant layer when they differ.",
     "noNegativeInheritance": "Absence of a variant-only feature is explicit. A profile must never inherit CHME3T rheostatic-brake equipment merely because it shares electronic equipment with CHME3T.",
     "unknownExecution": "When actual equipment or modernization is unknown, variant-dependent actions fail closed."
+  },
+  "integrationBoundary": {
+    "foundationReady": true,
+    "androidRuntimeIntegrated": false,
+    "assistantEngineMerged": false,
+    "rule": "READY_FOR_APP_INTEGRATION means the knowledge foundation is internally complete and validated; it does not mean Android repositories, UI, assets or the production assistant index already consume this package."
   }
 }
