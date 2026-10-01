@@ -1,0 +1,26 @@
+name: ChME3 semantic diagnostics audit
+
+on:
+  push:
+    branches:
+      - feature/locomotive-knowledge-foundation
+    paths:
+      - 'docs/locomotives/chme3/diagnostics_*_pass3.json'
+      - 'docs/locomotives/chme3/diagnostic_runtime_graphs_v2*.json'
+      - 'docs/diagnostics/LOCOMOTIVE_DIAGNOSTIC_RUNTIME_CONTRACT_V2.md'
+      - 'qa/audit_chme3_diagnostic_semantics_v4.py'
+      - '.github/workflows/chme3-semantic-diagnostic-check.yml'
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Audit promoted runtime graphs and report migration coverage
+        run: python qa/audit_chme3_diagnostic_semantics_v4.py
