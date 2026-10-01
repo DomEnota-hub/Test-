@@ -1,0 +1,5446 @@
+{
+  "schemaVersion": 1,
+  "packageId": "test-stepwise-scheme-flows-v1",
+  "updatedAt": "2026-10-01",
+  "state": "PACKAGE_B_DATA_READY_FOR_RENDERER_INTEGRATION",
+  "contract": {
+    "representationKinds": [
+      "SOURCE_BACKED_FUNCTIONAL"
+    ],
+    "domains": [
+      "ELECTRICAL",
+      "PNEUMATIC"
+    ],
+    "rules": [
+      "Каждая последовательность имеет явную применимость и источник.",
+      "SOURCE_BACKED_FUNCTIONAL описывает функциональный путь и не выдается за монтажную или принципиальную трассировку проводов/труб.",
+      "Силовой ток, питание управления, команда, обратная связь и давление кодируются разными flowKind.",
+      "Смысл шага передается подписью и типом линии; цвет не является единственным носителем смысла.",
+      "Профильные узлы ЧМЭ3Т и ЧМЭ3Э запрещено переносить на другие исполнения без отдельного подтверждения.",
+      "Данные INFORMATION_ONLY не создают права на подключение внешних источников, обход защиты или ремонтное вмешательство."
+    ],
+    "legend": [
+      {
+        "flowKind": "HIGH_VOLTAGE_POWER",
+        "label": "Высоковольтное питание",
+        "lineStyle": "solid-heavy"
+      },
+      {
+        "flowKind": "TRACTION_CURRENT",
+        "label": "Тяговый ток",
+        "lineStyle": "solid-heavy-arrow"
+      },
+      {
+        "flowKind": "REGENERATIVE_CURRENT",
+        "label": "Ток рекуперации",
+        "lineStyle": "solid-heavy-reverse"
+      },
+      {
+        "flowKind": "BRAKING_CURRENT",
+        "label": "Тормозной ток / энергия",
+        "lineStyle": "solid-heavy-brake"
+      },
+      {
+        "flowKind": "AUXILIARY_POWER",
+        "label": "Питание собственных нужд",
+        "lineStyle": "solid-medium"
+      },
+      {
+        "flowKind": "CONTROL_POWER",
+        "label": "Питание цепей управления",
+        "lineStyle": "solid-thin"
+      },
+      {
+        "flowKind": "COMMAND",
+        "label": "Команда / разрешение",
+        "lineStyle": "dashed-arrow"
+      },
+      {
+        "flowKind": "CONTROL_SIGNAL",
+        "label": "Управляющий сигнал",
+        "lineStyle": "dashed-arrow"
+      },
+      {
+        "flowKind": "FEEDBACK_SIGNAL",
+        "label": "Сигнал обратной связи",
+        "lineStyle": "dotted-arrow"
+      },
+      {
+        "flowKind": "EXCITATION",
+        "label": "Ток / воздействие возбуждения",
+        "lineStyle": "dash-dot-arrow"
+      },
+      {
+        "flowKind": "STATUS_SIGNAL",
+        "label": "Сигнал состояния",
+        "lineStyle": "dotted-arrow"
+      },
+      {
+        "flowKind": "SAFETY_COMMAND",
+        "label": "Команда системы безопасности",
+        "lineStyle": "double-dashed-arrow"
+      },
+      {
+        "flowKind": "FIRE_SIGNAL",
+        "label": "Сигнал пожарной системы",
+        "lineStyle": "dotted-alert"
+      },
+      {
+        "flowKind": "AIR_SUPPLY",
+        "label": "Подача сжатого воздуха",
+        "lineStyle": "solid-pneumatic"
+      },
+      {
+        "flowKind": "CONTROL_PRESSURE",
+        "label": "Управляющее давление",
+        "lineStyle": "dashed-pneumatic"
+      },
+      {
+        "flowKind": "BRAKE_PIPE_PRESSURE_CHANGE",
+        "label": "Изменение давления тормозной магистрали",
+        "lineStyle": "double-pneumatic"
+      },
+      {
+        "flowKind": "BRAKE_CYLINDER_CONTROL",
+        "label": "Наполнение / отпуск тормозных цилиндров",
+        "lineStyle": "solid-pneumatic-brake"
+      },
+      {
+        "flowKind": "EXHAUST_RELEASE",
+        "label": "Разрядка / выпуск в атмосферу",
+        "lineStyle": "dotted-pneumatic-out"
+      },
+      {
+        "flowKind": "COOLANT_FLOW",
+        "label": "Циркуляция теплоносителя",
+        "lineStyle": "wave-arrow"
+      },
+      {
+        "flowKind": "STARTER_CURRENT",
+        "label": "Пусковой ток",
+        "lineStyle": "solid-heavy-start"
+      }
+    ]
+  },
+  "sequences": [
+    {
+      "id": "STEP-ER-SCH-EL-BASE-POWER-HV-PATH",
+      "family": "ERMAK",
+      "title": "Базовая силовая схема 2ЭС5К/3ЭС5К — Путь высокого напряжения",
+      "domain": "ELECTRICAL",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная подсветка, не монтажная трассировка.",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "base_early"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": false,
+        "notes": ""
+      },
+      "sourceSchemeRef": "ER-SCH-EL-BASE-POWER",
+      "sourcePresentations": [
+        {
+          "sourceId": "ER-SRC-002",
+          "title": "Электрические схемы",
+          "documentDetails": "ИДМБ.661142.009РЭ1",
+          "locator": "РЭ1, раздел 4, рисунок 5 и связанные листы",
+          "role": "canonical",
+          "url": "https://rcit.su/techinfoV51.html"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "ERMAK_FLOW_LAYER",
+        "flowRecordId": "hv_path",
+        "confidence": "source_backed_functional"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Токоприёмник → Дроссель помехоподавления",
+          "activeHotspotIds": [
+            "HS-ER-EQ-HV-001",
+            "HS-ER-EQ-HV-002"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-HV-001",
+            "ER-EQ-HV-002"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-HV-001",
+              "toAnchor": "HS-ER-EQ-HV-002",
+              "flowKind": "HIGH_VOLTAGE_POWER",
+              "label": "Путь высокого напряжения"
+            }
+          ],
+          "explanation": "Путь высокого напряжения"
+        },
+        {
+          "step": 2,
+          "title": "Дроссель помехоподавления → Высоковольтный разъединитель",
+          "activeHotspotIds": [
+            "HS-ER-EQ-HV-002",
+            "HS-ER-EQ-HV-003"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-HV-002",
+            "ER-EQ-HV-003"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-HV-002",
+              "toAnchor": "HS-ER-EQ-HV-003",
+              "flowKind": "HIGH_VOLTAGE_POWER",
+              "label": "Путь высокого напряжения"
+            }
+          ],
+          "explanation": "Путь высокого напряжения"
+        },
+        {
+          "step": 3,
+          "title": "Высоковольтный разъединитель → Главный выключатель",
+          "activeHotspotIds": [
+            "HS-ER-EQ-HV-003",
+            "HS-ER-EQ-HV-004"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-HV-003",
+            "ER-EQ-HV-004"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-HV-003",
+              "toAnchor": "HS-ER-EQ-HV-004",
+              "flowKind": "HIGH_VOLTAGE_POWER",
+              "label": "Путь высокого напряжения"
+            }
+          ],
+          "explanation": "Путь высокого напряжения"
+        },
+        {
+          "step": 4,
+          "title": "Главный выключатель → Фильтр первичной цепи",
+          "activeHotspotIds": [
+            "HS-ER-EQ-HV-004",
+            "HS-ER-EQ-HV-005"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-HV-004",
+            "ER-EQ-HV-005"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-HV-004",
+              "toAnchor": "HS-ER-EQ-HV-005",
+              "flowKind": "HIGH_VOLTAGE_POWER",
+              "label": "Путь высокого напряжения"
+            }
+          ],
+          "explanation": "Путь высокого напряжения"
+        },
+        {
+          "step": 5,
+          "title": "Фильтр первичной цепи → Трансформатор тока первичной цепи",
+          "activeHotspotIds": [
+            "HS-ER-EQ-HV-005",
+            "HS-ER-EQ-HV-006"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-HV-005",
+            "ER-EQ-HV-006"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-HV-005",
+              "toAnchor": "HS-ER-EQ-HV-006",
+              "flowKind": "HIGH_VOLTAGE_POWER",
+              "label": "Путь высокого напряжения"
+            }
+          ],
+          "explanation": "Путь высокого напряжения"
+        },
+        {
+          "step": 6,
+          "title": "Трансформатор тока первичной цепи → Тяговый трансформатор",
+          "activeHotspotIds": [
+            "HS-ER-EQ-HV-006",
+            "HS-ER-EQ-HV-008"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-HV-006",
+            "ER-EQ-HV-008"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-HV-006",
+              "toAnchor": "HS-ER-EQ-HV-008",
+              "flowKind": "HIGH_VOLTAGE_POWER",
+              "label": "Путь высокого напряжения"
+            }
+          ],
+          "explanation": "Путь высокого напряжения"
+        }
+      ]
+    },
+    {
+      "id": "STEP-ER-SCH-EL-BASE-POWER-TRACTION",
+      "family": "ERMAK",
+      "title": "Базовая силовая схема 2ЭС5К/3ЭС5К — Тяга",
+      "domain": "ELECTRICAL",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная подсветка, не монтажная трассировка.",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "base_early"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": false,
+        "notes": ""
+      },
+      "sourceSchemeRef": "ER-SCH-EL-BASE-POWER",
+      "sourcePresentations": [
+        {
+          "sourceId": "ER-SRC-002",
+          "title": "Электрические схемы",
+          "documentDetails": "ИДМБ.661142.009РЭ1",
+          "locator": "РЭ1, раздел 4, рисунок 5 и связанные листы",
+          "role": "canonical",
+          "url": "https://rcit.su/techinfoV51.html"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "ERMAK_FLOW_LAYER",
+        "flowRecordId": "traction",
+        "confidence": "source_backed_functional"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Тяговый трансформатор → Выпрямительно-инверторный преобразователь",
+          "activeHotspotIds": [
+            "HS-ER-EQ-HV-008",
+            "HS-ER-EQ-TR-001"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-HV-008",
+            "ER-EQ-TR-001"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-HV-008",
+              "toAnchor": "HS-ER-EQ-TR-001",
+              "flowKind": "TRACTION_CURRENT",
+              "label": "Тяга"
+            }
+          ],
+          "explanation": "Тяга"
+        },
+        {
+          "step": 2,
+          "title": "Выпрямительно-инверторный преобразователь → Сглаживающий реактор",
+          "activeHotspotIds": [
+            "HS-ER-EQ-TR-001",
+            "HS-ER-EQ-TR-003"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-TR-001",
+            "ER-EQ-TR-003"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-TR-001",
+              "toAnchor": "HS-ER-EQ-TR-003",
+              "flowKind": "TRACTION_CURRENT",
+              "label": "Тяга"
+            }
+          ],
+          "explanation": "Тяга"
+        },
+        {
+          "step": 3,
+          "title": "Сглаживающий реактор → Быстродействующий выключатель ТЭД",
+          "activeHotspotIds": [
+            "HS-ER-EQ-TR-003",
+            "HS-ER-EQ-TR-004"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-TR-003",
+            "ER-EQ-TR-004"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-TR-003",
+              "toAnchor": "HS-ER-EQ-TR-004",
+              "flowKind": "TRACTION_CURRENT",
+              "label": "Тяга"
+            }
+          ],
+          "explanation": "Тяга"
+        },
+        {
+          "step": 4,
+          "title": "Быстродействующий выключатель ТЭД → Реверсивный переключатель",
+          "activeHotspotIds": [
+            "HS-ER-EQ-TR-004",
+            "HS-ER-EQ-TR-006"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-TR-004",
+            "ER-EQ-TR-006"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-TR-004",
+              "toAnchor": "HS-ER-EQ-TR-006",
+              "flowKind": "TRACTION_CURRENT",
+              "label": "Тяга"
+            }
+          ],
+          "explanation": "Тяга"
+        },
+        {
+          "step": 5,
+          "title": "Реверсивный переключатель → Тягово-тормозной переключатель",
+          "activeHotspotIds": [
+            "HS-ER-EQ-TR-006",
+            "HS-ER-EQ-TR-007"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-TR-006",
+            "ER-EQ-TR-007"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-TR-006",
+              "toAnchor": "HS-ER-EQ-TR-007",
+              "flowKind": "TRACTION_CURRENT",
+              "label": "Тяга"
+            }
+          ],
+          "explanation": "Тяга"
+        },
+        {
+          "step": 6,
+          "title": "Тягово-тормозной переключатель → Тяговый электродвигатель",
+          "activeHotspotIds": [
+            "HS-ER-EQ-TR-007",
+            "HS-ER-EQ-TR-005"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-TR-007",
+            "ER-EQ-TR-005"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-TR-007",
+              "toAnchor": "HS-ER-EQ-TR-005",
+              "flowKind": "TRACTION_CURRENT",
+              "label": "Тяга"
+            }
+          ],
+          "explanation": "Тяга"
+        }
+      ]
+    },
+    {
+      "id": "STEP-ER-SCH-EL-BASE-POWER-REGENERATION",
+      "family": "ERMAK",
+      "title": "Базовая силовая схема 2ЭС5К/3ЭС5К — Рекуперация, функциональный путь",
+      "domain": "ELECTRICAL",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная подсветка, не монтажная трассировка.",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "base_early"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": false,
+        "notes": ""
+      },
+      "sourceSchemeRef": "ER-SCH-EL-BASE-POWER",
+      "sourcePresentations": [
+        {
+          "sourceId": "ER-SRC-002",
+          "title": "Электрические схемы",
+          "documentDetails": "ИДМБ.661142.009РЭ1",
+          "locator": "РЭ1, раздел 4, рисунок 5 и связанные листы",
+          "role": "canonical",
+          "url": "https://rcit.su/techinfoV51.html"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "ERMAK_FLOW_LAYER",
+        "flowRecordId": "regeneration",
+        "confidence": "source_backed_functional"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Тяговый электродвигатель → Тягово-тормозной переключатель",
+          "activeHotspotIds": [
+            "HS-ER-EQ-TR-005",
+            "HS-ER-EQ-TR-007"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-TR-005",
+            "ER-EQ-TR-007"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-TR-005",
+              "toAnchor": "HS-ER-EQ-TR-007",
+              "flowKind": "REGENERATIVE_CURRENT",
+              "label": "Рекуперация, функциональный путь"
+            }
+          ],
+          "explanation": "Рекуперация, функциональный путь"
+        },
+        {
+          "step": 2,
+          "title": "Тягово-тормозной переключатель → Выпрямительно-инверторный преобразователь",
+          "activeHotspotIds": [
+            "HS-ER-EQ-TR-007",
+            "HS-ER-EQ-TR-001"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-TR-007",
+            "ER-EQ-TR-001"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-TR-007",
+              "toAnchor": "HS-ER-EQ-TR-001",
+              "flowKind": "REGENERATIVE_CURRENT",
+              "label": "Рекуперация, функциональный путь"
+            }
+          ],
+          "explanation": "Рекуперация, функциональный путь"
+        },
+        {
+          "step": 3,
+          "title": "Выпрямительно-инверторный преобразователь → Тяговый трансформатор",
+          "activeHotspotIds": [
+            "HS-ER-EQ-TR-001",
+            "HS-ER-EQ-HV-008"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-TR-001",
+            "ER-EQ-HV-008"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-TR-001",
+              "toAnchor": "HS-ER-EQ-HV-008",
+              "flowKind": "REGENERATIVE_CURRENT",
+              "label": "Рекуперация, функциональный путь"
+            }
+          ],
+          "explanation": "Рекуперация, функциональный путь"
+        }
+      ]
+    },
+    {
+      "id": "STEP-ER-SCH-EL-BASE-AUX-AUX-SUPPLY",
+      "family": "ERMAK",
+      "title": "Базовые цепи собственных нужд — Питание собственных нужд",
+      "domain": "ELECTRICAL",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная подсветка, не монтажная трассировка.",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "base_early"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": false,
+        "notes": ""
+      },
+      "sourceSchemeRef": "ER-SCH-EL-BASE-AUX",
+      "sourcePresentations": [
+        {
+          "sourceId": "ER-SRC-002",
+          "title": "Электрические схемы",
+          "documentDetails": "ИДМБ.661142.009РЭ1",
+          "locator": "РЭ1, раздел 5, рисунок 9 и связанные листы",
+          "role": "canonical",
+          "url": "https://rcit.su/techinfoV51.html"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "ERMAK_FLOW_LAYER",
+        "flowRecordId": "aux_supply",
+        "confidence": "source_backed_functional"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Тяговый трансформатор → Обмотка собственных нужд тягового трансформатора",
+          "activeHotspotIds": [
+            "HS-ER-EQ-HV-008",
+            "HS-ER-EQ-AU-001"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-HV-008",
+            "ER-EQ-AU-001"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-HV-008",
+              "toAnchor": "HS-ER-EQ-AU-001",
+              "flowKind": "AUXILIARY_POWER",
+              "label": "Питание собственных нужд"
+            }
+          ],
+          "explanation": "Питание собственных нужд"
+        },
+        {
+          "step": 2,
+          "title": "Обмотка собственных нужд тягового трансформатора → Преобразователь частоты и числа фаз",
+          "activeHotspotIds": [
+            "HS-ER-EQ-AU-001",
+            "HS-ER-EQ-AU-006"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-AU-001",
+            "ER-EQ-AU-006"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-AU-001",
+              "toAnchor": "HS-ER-EQ-AU-006",
+              "flowKind": "AUXILIARY_POWER",
+              "label": "Питание собственных нужд"
+            }
+          ],
+          "explanation": "Питание собственных нужд"
+        }
+      ]
+    },
+    {
+      "id": "STEP-ER-SCH-EL-BASE-AUX-COOLING",
+      "family": "ERMAK",
+      "title": "Базовые цепи собственных нужд — Охлаждение",
+      "domain": "ELECTRICAL",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная подсветка, не монтажная трассировка.",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "base_early"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": false,
+        "notes": ""
+      },
+      "sourceSchemeRef": "ER-SCH-EL-BASE-AUX",
+      "sourcePresentations": [
+        {
+          "sourceId": "ER-SRC-002",
+          "title": "Электрические схемы",
+          "documentDetails": "ИДМБ.661142.009РЭ1",
+          "locator": "РЭ1, раздел 5, рисунок 9 и связанные листы",
+          "role": "canonical",
+          "url": "https://rcit.su/techinfoV51.html"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "ERMAK_FLOW_LAYER",
+        "flowRecordId": "cooling",
+        "confidence": "source_backed_functional"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Тяговый трансформатор → Обмотка собственных нужд тягового трансформатора",
+          "activeHotspotIds": [
+            "HS-ER-EQ-HV-008",
+            "HS-ER-EQ-AU-001"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-HV-008",
+            "ER-EQ-AU-001"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-HV-008",
+              "toAnchor": "HS-ER-EQ-AU-001",
+              "flowKind": "AUXILIARY_POWER",
+              "label": "Охлаждение"
+            }
+          ],
+          "explanation": "Охлаждение"
+        },
+        {
+          "step": 2,
+          "title": "Обмотка собственных нужд тягового трансформатора → Вентиляторы охлаждения ТЭД",
+          "activeHotspotIds": [
+            "HS-ER-EQ-AU-001",
+            "HS-ER-EQ-AU-002"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-AU-001",
+            "ER-EQ-AU-002"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-AU-001",
+              "toAnchor": "HS-ER-EQ-AU-002",
+              "flowKind": "AUXILIARY_POWER",
+              "label": "Охлаждение"
+            }
+          ],
+          "explanation": "Охлаждение"
+        },
+        {
+          "step": 3,
+          "title": "Вентиляторы охлаждения ТЭД → Электронасос охлаждения тягового трансформатора",
+          "activeHotspotIds": [
+            "HS-ER-EQ-AU-002",
+            "HS-ER-EQ-AU-004"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-AU-002",
+            "ER-EQ-AU-004"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-AU-002",
+              "toAnchor": "HS-ER-EQ-AU-004",
+              "flowKind": "AUXILIARY_POWER",
+              "label": "Охлаждение"
+            }
+          ],
+          "explanation": "Охлаждение"
+        },
+        {
+          "step": 4,
+          "title": "Электронасос охлаждения тягового трансформатора → Вентилятор блока балластных резисторов",
+          "activeHotspotIds": [
+            "HS-ER-EQ-AU-004",
+            "HS-ER-EQ-AU-005"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-AU-004",
+            "ER-EQ-AU-005"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-AU-004",
+              "toAnchor": "HS-ER-EQ-AU-005",
+              "flowKind": "AUXILIARY_POWER",
+              "label": "Охлаждение"
+            }
+          ],
+          "explanation": "Охлаждение"
+        }
+      ]
+    },
+    {
+      "id": "STEP-ER-SCH-EL-BASE-AUX-COMPRESSOR",
+      "family": "ERMAK",
+      "title": "Базовые цепи собственных нужд — Главный компрессор",
+      "domain": "ELECTRICAL",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная подсветка, не монтажная трассировка.",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "base_early"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": false,
+        "notes": ""
+      },
+      "sourceSchemeRef": "ER-SCH-EL-BASE-AUX",
+      "sourcePresentations": [
+        {
+          "sourceId": "ER-SRC-002",
+          "title": "Электрические схемы",
+          "documentDetails": "ИДМБ.661142.009РЭ1",
+          "locator": "РЭ1, раздел 5, рисунок 9 и связанные листы",
+          "role": "canonical",
+          "url": "https://rcit.su/techinfoV51.html"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "ERMAK_FLOW_LAYER",
+        "flowRecordId": "compressor",
+        "confidence": "source_backed_functional"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Тяговый трансформатор → Обмотка собственных нужд тягового трансформатора",
+          "activeHotspotIds": [
+            "HS-ER-EQ-HV-008",
+            "HS-ER-EQ-AU-001"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-HV-008",
+            "ER-EQ-AU-001"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-HV-008",
+              "toAnchor": "HS-ER-EQ-AU-001",
+              "flowKind": "AUXILIARY_POWER",
+              "label": "Главный компрессор"
+            }
+          ],
+          "explanation": "Главный компрессор"
+        },
+        {
+          "step": 2,
+          "title": "Обмотка собственных нужд тягового трансформатора → Блок мотор-компрессора",
+          "activeHotspotIds": [
+            "HS-ER-EQ-AU-001",
+            "HS-ER-EQ-AU-007"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-AU-001",
+            "ER-EQ-AU-007"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-AU-001",
+              "toAnchor": "HS-ER-EQ-AU-007",
+              "flowKind": "AUXILIARY_POWER",
+              "label": "Главный компрессор"
+            }
+          ],
+          "explanation": "Главный компрессор"
+        }
+      ]
+    },
+    {
+      "id": "STEP-ER-SCH-EL-BASE-CONTROL-CONTROL-POWER",
+      "family": "ERMAK",
+      "title": "Цепи управления, МСУД-Н — Питание и управление",
+      "domain": "ELECTRICAL",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная подсветка, не монтажная трассировка.",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "base_early"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": false,
+        "notes": ""
+      },
+      "sourceSchemeRef": "ER-SCH-EL-BASE-CONTROL",
+      "sourcePresentations": [
+        {
+          "sourceId": "ER-SRC-002",
+          "title": "Электрические схемы",
+          "documentDetails": "ИДМБ.661142.009РЭ1",
+          "locator": "РЭ1, раздел 6, рисунки 10–14",
+          "role": "canonical",
+          "url": "https://rcit.su/techinfoV51.html"
+        },
+        {
+          "sourceId": "ER-SRC-006",
+          "title": "Электронное оборудование и преобразователи",
+          "documentDetails": "ИДМБ.661142.009РЭ5",
+          "locator": "РЭ5, МСУД-Н",
+          "role": "supporting",
+          "url": "https://rcit.su/techinfoV55.html"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "ERMAK_FLOW_LAYER",
+        "flowRecordId": "control_power",
+        "confidence": "source_backed_functional"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Аккумуляторная батарея → Шкаф питания цепей управления",
+          "activeHotspotIds": [
+            "HS-ER-EQ-CT-006",
+            "HS-ER-EQ-CT-005"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-CT-006",
+            "ER-EQ-CT-005"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-CT-006",
+              "toAnchor": "HS-ER-EQ-CT-005",
+              "flowKind": "CONTROL_POWER",
+              "label": "Питание и управление"
+            }
+          ],
+          "explanation": "Питание и управление"
+        },
+        {
+          "step": 2,
+          "title": "Шкаф питания цепей управления → МСУД-Н",
+          "activeHotspotIds": [
+            "HS-ER-EQ-CT-005",
+            "HS-ER-EQ-CT-001"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-CT-005",
+            "ER-EQ-CT-001"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-CT-005",
+              "toAnchor": "HS-ER-EQ-CT-001",
+              "flowKind": "CONTROL_POWER",
+              "label": "Питание и управление"
+            }
+          ],
+          "explanation": "Питание и управление"
+        },
+        {
+          "step": 3,
+          "title": "МСУД-Н → Блок управления МСУД-Н",
+          "activeHotspotIds": [
+            "HS-ER-EQ-CT-001",
+            "HS-ER-EQ-CT-002"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-CT-001",
+            "ER-EQ-CT-002"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-CT-001",
+              "toAnchor": "HS-ER-EQ-CT-002",
+              "flowKind": "CONTROL_POWER",
+              "label": "Питание и управление"
+            }
+          ],
+          "explanation": "Питание и управление"
+        }
+      ]
+    },
+    {
+      "id": "STEP-ER-SCH-EL-BASE-CONTROL-DRIVER-COMMAND",
+      "family": "ERMAK",
+      "title": "Цепи управления, МСУД-Н — Команда машиниста",
+      "domain": "ELECTRICAL",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная подсветка, не монтажная трассировка.",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "base_early"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": false,
+        "notes": ""
+      },
+      "sourceSchemeRef": "ER-SCH-EL-BASE-CONTROL",
+      "sourcePresentations": [
+        {
+          "sourceId": "ER-SRC-002",
+          "title": "Электрические схемы",
+          "documentDetails": "ИДМБ.661142.009РЭ1",
+          "locator": "РЭ1, раздел 6, рисунки 10–14",
+          "role": "canonical",
+          "url": "https://rcit.su/techinfoV51.html"
+        },
+        {
+          "sourceId": "ER-SRC-006",
+          "title": "Электронное оборудование и преобразователи",
+          "documentDetails": "ИДМБ.661142.009РЭ5",
+          "locator": "РЭ5, МСУД-Н",
+          "role": "supporting",
+          "url": "https://rcit.su/techinfoV55.html"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "ERMAK_FLOW_LAYER",
+        "flowRecordId": "driver_command",
+        "confidence": "source_backed_functional"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Контроллер машиниста → МСУД-Н",
+          "activeHotspotIds": [
+            "HS-ER-EQ-CT-007",
+            "HS-ER-EQ-CT-001"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-CT-007",
+            "ER-EQ-CT-001"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-CT-007",
+              "toAnchor": "HS-ER-EQ-CT-001",
+              "flowKind": "COMMAND",
+              "label": "Команда машиниста"
+            }
+          ],
+          "explanation": "Команда машиниста"
+        },
+        {
+          "step": 2,
+          "title": "МСУД-Н → Межсекционная линия управления и диагностики",
+          "activeHotspotIds": [
+            "HS-ER-EQ-CT-001",
+            "HS-ER-EQ-CT-008"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-CT-001",
+            "ER-EQ-CT-008"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-CT-001",
+              "toAnchor": "HS-ER-EQ-CT-008",
+              "flowKind": "COMMAND",
+              "label": "Команда машиниста"
+            }
+          ],
+          "explanation": "Команда машиниста"
+        }
+      ]
+    },
+    {
+      "id": "STEP-ER-SCH-EL-AXLE-MODERN-AXLE-CONTROL",
+      "family": "ERMAK",
+      "title": "Поосное регулирование тяги, функциональный слой — Поосное регулирование",
+      "domain": "ELECTRICAL",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная подсветка, не монтажная трассировка.",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "traction_axle_control_modern",
+          "msud_015_extended"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": true,
+        "notes": "Не является полной монтажной схемой позднего исполнения."
+      },
+      "sourceSchemeRef": "ER-SCH-EL-AXLE-MODERN",
+      "sourcePresentations": [
+        {
+          "sourceId": "ER-SRC-019",
+          "title": "Ермак с поосным регулированием",
+          "documentDetails": "ТМХ, 19.07.2019",
+          "locator": "официальное сообщение ТМХ о поосном регулировании",
+          "role": "canonical",
+          "url": "https://tmholding.ru/"
+        },
+        {
+          "sourceId": "ER-SRC-029",
+          "title": "МСУД-015",
+          "documentDetails": "АО «Локомотивные электронные системы» / ТМХ ИС",
+          "locator": "карточка МСУД-015",
+          "role": "supporting",
+          "url": "https://zaoles.ru/catalog/msud-015/"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "ERMAK_FLOW_LAYER",
+        "flowRecordId": "axle_control",
+        "confidence": "source_backed_functional"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Контроллер машиниста → МСУД-015",
+          "activeHotspotIds": [
+            "HS-ER-EQ-CT-007",
+            "HS-ER-EQ-CT-009"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-CT-007",
+            "ER-EQ-CT-009"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-CT-007",
+              "toAnchor": "HS-ER-EQ-CT-009",
+              "flowKind": "COMMAND",
+              "label": "Поосное регулирование"
+            }
+          ],
+          "explanation": "Поосное регулирование"
+        },
+        {
+          "step": 2,
+          "title": "МСУД-015 → Поосный канал регулирования тяги",
+          "activeHotspotIds": [
+            "HS-ER-EQ-CT-009",
+            "HS-ER-EQ-TR-013"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-CT-009",
+            "ER-EQ-TR-013"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-CT-009",
+              "toAnchor": "HS-ER-EQ-TR-013",
+              "flowKind": "COMMAND",
+              "label": "Поосное регулирование"
+            }
+          ],
+          "explanation": "Поосное регулирование"
+        },
+        {
+          "step": 3,
+          "title": "Поосный канал регулирования тяги → Тяговый электродвигатель",
+          "activeHotspotIds": [
+            "HS-ER-EQ-TR-013",
+            "HS-ER-EQ-TR-005"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-TR-013",
+            "ER-EQ-TR-005"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-TR-013",
+              "toAnchor": "HS-ER-EQ-TR-005",
+              "flowKind": "COMMAND",
+              "label": "Поосное регулирование"
+            }
+          ],
+          "explanation": "Поосное регулирование"
+        }
+      ]
+    },
+    {
+      "id": "STEP-ER-SCH-EL-AXLE-MODERN-FEEDBACK",
+      "family": "ERMAK",
+      "title": "Поосное регулирование тяги, функциональный слой — Обратная связь по оси",
+      "domain": "ELECTRICAL",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная подсветка, не монтажная трассировка.",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "traction_axle_control_modern",
+          "msud_015_extended"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": true,
+        "notes": "Не является полной монтажной схемой позднего исполнения."
+      },
+      "sourceSchemeRef": "ER-SCH-EL-AXLE-MODERN",
+      "sourcePresentations": [
+        {
+          "sourceId": "ER-SRC-019",
+          "title": "Ермак с поосным регулированием",
+          "documentDetails": "ТМХ, 19.07.2019",
+          "locator": "официальное сообщение ТМХ о поосном регулировании",
+          "role": "canonical",
+          "url": "https://tmholding.ru/"
+        },
+        {
+          "sourceId": "ER-SRC-029",
+          "title": "МСУД-015",
+          "documentDetails": "АО «Локомотивные электронные системы» / ТМХ ИС",
+          "locator": "карточка МСУД-015",
+          "role": "supporting",
+          "url": "https://zaoles.ru/catalog/msud-015/"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "ERMAK_FLOW_LAYER",
+        "flowRecordId": "feedback",
+        "confidence": "source_backed_functional"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Датчик скорости колёсной пары → МСУД-015",
+          "activeHotspotIds": [
+            "HS-ER-EQ-MC-006",
+            "HS-ER-EQ-CT-009"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-MC-006",
+            "ER-EQ-CT-009"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-MC-006",
+              "toAnchor": "HS-ER-EQ-CT-009",
+              "flowKind": "FEEDBACK_SIGNAL",
+              "label": "Обратная связь по оси"
+            }
+          ],
+          "explanation": "Обратная связь по оси"
+        },
+        {
+          "step": 2,
+          "title": "МСУД-015 → Поосный канал регулирования тяги",
+          "activeHotspotIds": [
+            "HS-ER-EQ-CT-009",
+            "HS-ER-EQ-TR-013"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-CT-009",
+            "ER-EQ-TR-013"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-CT-009",
+              "toAnchor": "HS-ER-EQ-TR-013",
+              "flowKind": "FEEDBACK_SIGNAL",
+              "label": "Обратная связь по оси"
+            }
+          ],
+          "explanation": "Обратная связь по оси"
+        }
+      ]
+    },
+    {
+      "id": "STEP-ER-SCH-EL-MSUD015-COMMAND",
+      "family": "ERMAK",
+      "title": "МСУД-015, функциональный контур — Команда и регулирование",
+      "domain": "ELECTRICAL",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная подсветка, не монтажная трассировка.",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "msud_015_extended",
+          "traction_axle_control_modern"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": true,
+        "notes": "Внутренняя блок-схема и версии ПО не домысливаются."
+      },
+      "sourceSchemeRef": "ER-SCH-EL-MSUD015",
+      "sourcePresentations": [
+        {
+          "sourceId": "ER-SRC-029",
+          "title": "МСУД-015",
+          "documentDetails": "АО «Локомотивные электронные системы» / ТМХ ИС",
+          "locator": "карточка системы МСУД-015",
+          "role": "canonical",
+          "url": "https://zaoles.ru/catalog/msud-015/"
+        },
+        {
+          "sourceId": "ER-SRC-019",
+          "title": "Ермак с поосным регулированием",
+          "documentDetails": "ТМХ, 19.07.2019",
+          "locator": "официальное сообщение ТМХ",
+          "role": "supporting",
+          "url": "https://tmholding.ru/"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "ERMAK_FLOW_LAYER",
+        "flowRecordId": "command",
+        "confidence": "source_backed_functional"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Контроллер машиниста → МСУД-015",
+          "activeHotspotIds": [
+            "HS-ER-EQ-CT-007",
+            "HS-ER-EQ-CT-009"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-CT-007",
+            "ER-EQ-CT-009"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-CT-007",
+              "toAnchor": "HS-ER-EQ-CT-009",
+              "flowKind": "COMMAND",
+              "label": "Команда и регулирование"
+            }
+          ],
+          "explanation": "Команда и регулирование"
+        },
+        {
+          "step": 2,
+          "title": "МСУД-015 → Поосный канал регулирования тяги",
+          "activeHotspotIds": [
+            "HS-ER-EQ-CT-009",
+            "HS-ER-EQ-TR-013"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-CT-009",
+            "ER-EQ-TR-013"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-CT-009",
+              "toAnchor": "HS-ER-EQ-TR-013",
+              "flowKind": "COMMAND",
+              "label": "Команда и регулирование"
+            }
+          ],
+          "explanation": "Команда и регулирование"
+        }
+      ]
+    },
+    {
+      "id": "STEP-ER-SCH-EL-MSUD015-FEEDBACK",
+      "family": "ERMAK",
+      "title": "МСУД-015, функциональный контур — Ток/скорость → МСУД-015",
+      "domain": "ELECTRICAL",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная подсветка, не монтажная трассировка.",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "msud_015_extended",
+          "traction_axle_control_modern"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": true,
+        "notes": "Внутренняя блок-схема и версии ПО не домысливаются."
+      },
+      "sourceSchemeRef": "ER-SCH-EL-MSUD015",
+      "sourcePresentations": [
+        {
+          "sourceId": "ER-SRC-029",
+          "title": "МСУД-015",
+          "documentDetails": "АО «Локомотивные электронные системы» / ТМХ ИС",
+          "locator": "карточка системы МСУД-015",
+          "role": "canonical",
+          "url": "https://zaoles.ru/catalog/msud-015/"
+        },
+        {
+          "sourceId": "ER-SRC-019",
+          "title": "Ермак с поосным регулированием",
+          "documentDetails": "ТМХ, 19.07.2019",
+          "locator": "официальное сообщение ТМХ",
+          "role": "supporting",
+          "url": "https://tmholding.ru/"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "ERMAK_FLOW_LAYER",
+        "flowRecordId": "feedback",
+        "confidence": "source_backed_functional"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Датчик тока тяговой цепи → Датчик скорости колёсной пары",
+          "activeHotspotIds": [
+            "HS-ER-EQ-TR-011",
+            "HS-ER-EQ-MC-006"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-TR-011",
+            "ER-EQ-MC-006"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-TR-011",
+              "toAnchor": "HS-ER-EQ-MC-006",
+              "flowKind": "FEEDBACK_SIGNAL",
+              "label": "Ток/скорость → МСУД-015"
+            }
+          ],
+          "explanation": "Ток/скорость → МСУД-015"
+        },
+        {
+          "step": 2,
+          "title": "Датчик скорости колёсной пары → МСУД-015",
+          "activeHotspotIds": [
+            "HS-ER-EQ-MC-006",
+            "HS-ER-EQ-CT-009"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-MC-006",
+            "ER-EQ-CT-009"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-MC-006",
+              "toAnchor": "HS-ER-EQ-CT-009",
+              "flowKind": "FEEDBACK_SIGNAL",
+              "label": "Ток/скорость → МСУД-015"
+            }
+          ],
+          "explanation": "Ток/скорость → МСУД-015"
+        }
+      ]
+    },
+    {
+      "id": "STEP-ER-SCH-SAFETY-BASE-SAFETY-CONTROL",
+      "family": "ERMAK",
+      "title": "Комплекс безопасности базового исполнения — Контроль безопасности",
+      "domain": "ELECTRICAL",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная подсветка, не монтажная трассировка.",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "base_early"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": false,
+        "notes": ""
+      },
+      "sourceSchemeRef": "ER-SCH-SAFETY-BASE",
+      "sourcePresentations": [
+        {
+          "sourceId": "ER-SRC-002",
+          "title": "Электрические схемы",
+          "documentDetails": "ИДМБ.661142.009РЭ1",
+          "locator": "РЭ1, цепи устройств безопасности",
+          "role": "canonical",
+          "url": "https://rcit.su/techinfoV51.html"
+        },
+        {
+          "sourceId": "ER-SRC-031",
+          "title": "Комплексы безопасности",
+          "documentDetails": "Каталог НПО САУТ",
+          "locator": "материалы НПО САУТ",
+          "role": "supporting",
+          "url": "https://saut.ru/about/history/"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "ERMAK_FLOW_LAYER",
+        "flowRecordId": "safety_control",
+        "confidence": "source_backed_functional"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Приёмные катушки локомотивной сигнализации → КЛУБ-У",
+          "activeHotspotIds": [
+            "HS-ER-EQ-SF-007",
+            "HS-ER-EQ-SF-001"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-SF-007",
+            "ER-EQ-SF-001"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-SF-007",
+              "toAnchor": "HS-ER-EQ-SF-001",
+              "flowKind": "SAFETY_COMMAND",
+              "label": "Контроль безопасности"
+            }
+          ],
+          "explanation": "Контроль безопасности"
+        },
+        {
+          "step": 2,
+          "title": "КЛУБ-У → САУТ-ЦМ/485",
+          "activeHotspotIds": [
+            "HS-ER-EQ-SF-001",
+            "HS-ER-EQ-SF-004"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-SF-001",
+            "ER-EQ-SF-004"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-SF-001",
+              "toAnchor": "HS-ER-EQ-SF-004",
+              "flowKind": "SAFETY_COMMAND",
+              "label": "Контроль безопасности"
+            }
+          ],
+          "explanation": "Контроль безопасности"
+        },
+        {
+          "step": 3,
+          "title": "САУТ-ЦМ/485 → Электропневматический клапан автостопа",
+          "activeHotspotIds": [
+            "HS-ER-EQ-SF-004",
+            "HS-ER-EQ-BR-012"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-SF-004",
+            "ER-EQ-BR-012"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-SF-004",
+              "toAnchor": "HS-ER-EQ-BR-012",
+              "flowKind": "SAFETY_COMMAND",
+              "label": "Контроль безопасности"
+            }
+          ],
+          "explanation": "Контроль безопасности"
+        }
+      ]
+    },
+    {
+      "id": "STEP-ER-SCH-SAFETY-BLOK-BLOK-BRAKE",
+      "family": "ERMAK",
+      "title": "БЛОК / БЛОК-М, подтверждённый профиль 2ЭС5К — БЛОК → автостоп/тормозной контур",
+      "domain": "ELECTRICAL",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная подсветка, не монтажная трассировка.",
+      "applicability": {
+        "models": [
+          "2ES5K"
+        ],
+        "includeProfiles": [
+          "safety_blok_confirmed_2es5k"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": true,
+        "notes": "Не переносить на 3ЭС5К и на все 2ЭС5К без подтверждения."
+      },
+      "sourceSchemeRef": "ER-SCH-SAFETY-BLOK",
+      "sourcePresentations": [
+        {
+          "sourceId": "ER-SRC-031",
+          "title": "Комплексы безопасности",
+          "documentDetails": "Каталог НПО САУТ",
+          "locator": "история/каталог НПО САУТ: эксплуатация БЛОК на 2ЭС5К",
+          "role": "canonical",
+          "url": "https://saut.ru/about/history/"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "ERMAK_FLOW_LAYER",
+        "flowRecordId": "blok_brake",
+        "confidence": "source_backed_functional"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "БЛОК / БЛОК-М → Электропневматический клапан автостопа",
+          "activeHotspotIds": [
+            "HS-ER-EQ-SF-010",
+            "HS-ER-EQ-BR-012"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-SF-010",
+            "ER-EQ-BR-012"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-SF-010",
+              "toAnchor": "HS-ER-EQ-BR-012",
+              "flowKind": "SAFETY_COMMAND",
+              "label": "БЛОК → автостоп/тормозной контур"
+            }
+          ],
+          "explanation": "БЛОК → автостоп/тормозной контур"
+        }
+      ]
+    },
+    {
+      "id": "STEP-ER-SCH-FIRE-BASE-FIRE-DETECT",
+      "family": "ERMAK",
+      "title": "КТС-УАСП и стационарное пожаротушение — Обнаружение пожара",
+      "domain": "ELECTRICAL",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная подсветка, не монтажная трассировка.",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "base_early"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": false,
+        "notes": ""
+      },
+      "sourceSchemeRef": "ER-SCH-FIRE-BASE",
+      "sourcePresentations": [
+        {
+          "sourceId": "ER-SRC-002",
+          "title": "Электрические схемы",
+          "documentDetails": "ИДМБ.661142.009РЭ1",
+          "locator": "РЭ1, раздел 8 «Цепи КТС-УАСП»",
+          "role": "canonical",
+          "url": "https://rcit.su/techinfoV51.html"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "ERMAK_FLOW_LAYER",
+        "flowRecordId": "fire_detect",
+        "confidence": "source_backed_functional"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Пожарные извещатели → Приёмно-контрольный прибор пожарной системы",
+          "activeHotspotIds": [
+            "HS-ER-EQ-FR-002",
+            "HS-ER-EQ-FR-004"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-FR-002",
+            "ER-EQ-FR-004"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-FR-002",
+              "toAnchor": "HS-ER-EQ-FR-004",
+              "flowKind": "FIRE_SIGNAL",
+              "label": "Обнаружение пожара"
+            }
+          ],
+          "explanation": "Обнаружение пожара"
+        },
+        {
+          "step": 2,
+          "title": "Приёмно-контрольный прибор пожарной системы → КТС-УАСП",
+          "activeHotspotIds": [
+            "HS-ER-EQ-FR-004",
+            "HS-ER-EQ-FR-001"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-FR-004",
+            "ER-EQ-FR-001"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-FR-004",
+              "toAnchor": "HS-ER-EQ-FR-001",
+              "flowKind": "FIRE_SIGNAL",
+              "label": "Обнаружение пожара"
+            }
+          ],
+          "explanation": "Обнаружение пожара"
+        }
+      ]
+    },
+    {
+      "id": "STEP-ER-SCH-FIRE-BASE-FIRE-SUPPRESS",
+      "family": "ERMAK",
+      "title": "КТС-УАСП и стационарное пожаротушение — Стационарное пожаротушение",
+      "domain": "ELECTRICAL",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная подсветка, не монтажная трассировка.",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "base_early"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": false,
+        "notes": ""
+      },
+      "sourceSchemeRef": "ER-SCH-FIRE-BASE",
+      "sourcePresentations": [
+        {
+          "sourceId": "ER-SRC-002",
+          "title": "Электрические схемы",
+          "documentDetails": "ИДМБ.661142.009РЭ1",
+          "locator": "РЭ1, раздел 8 «Цепи КТС-УАСП»",
+          "role": "canonical",
+          "url": "https://rcit.su/techinfoV51.html"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "ERMAK_FLOW_LAYER",
+        "flowRecordId": "fire_suppress",
+        "confidence": "source_backed_functional"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "КТС-УАСП → Генераторы огнетушащего аэрозоля",
+          "activeHotspotIds": [
+            "HS-ER-EQ-FR-001",
+            "HS-ER-EQ-FR-003"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-FR-001",
+            "ER-EQ-FR-003"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-FR-001",
+              "toAnchor": "HS-ER-EQ-FR-003",
+              "flowKind": "FIRE_SIGNAL",
+              "label": "Стационарное пожаротушение"
+            }
+          ],
+          "explanation": "Стационарное пожаротушение"
+        }
+      ]
+    },
+    {
+      "id": "STEP-ER-SCH-PN-2ES5K-BASE-AIR-SUPPLY",
+      "family": "ERMAK",
+      "title": "Пневматическая система 2ЭС5К, базовый контур — Создание запаса воздуха",
+      "domain": "PNEUMATIC",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная подсветка, не монтажная трассировка.",
+      "applicability": {
+        "models": [
+          "2ES5K"
+        ],
+        "includeProfiles": [
+          "base_early"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": true,
+        "notes": "Тормозной приборный слой выбирается отдельно."
+      },
+      "sourceSchemeRef": "ER-SCH-PN-2ES5K-BASE",
+      "sourcePresentations": [
+        {
+          "sourceId": "ER-SRC-013",
+          "title": "Пневматическая схема",
+          "documentDetails": "Описание пневматической схемы 3ЭС5К",
+          "locator": "пневматическая схема/описание 2ЭС5К",
+          "role": "canonical",
+          "url": "https://rcit.su/techinfoV8.html"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "ERMAK_FLOW_LAYER",
+        "flowRecordId": "air_supply",
+        "confidence": "source_backed_functional"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Блок мотор-компрессора → Обратный клапан компрессора",
+          "activeHotspotIds": [
+            "HS-ER-EQ-AU-007",
+            "HS-ER-EQ-PN-005"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-AU-007",
+            "ER-EQ-PN-005"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-AU-007",
+              "toAnchor": "HS-ER-EQ-PN-005",
+              "flowKind": "AIR_SUPPLY",
+              "label": "Создание запаса воздуха"
+            }
+          ],
+          "explanation": "Создание запаса воздуха"
+        },
+        {
+          "step": 2,
+          "title": "Обратный клапан компрессора → Маслоотделители пневмосистемы",
+          "activeHotspotIds": [
+            "HS-ER-EQ-PN-005",
+            "HS-ER-EQ-PN-007"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-PN-005",
+            "ER-EQ-PN-007"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-PN-005",
+              "toAnchor": "HS-ER-EQ-PN-007",
+              "flowKind": "AIR_SUPPLY",
+              "label": "Создание запаса воздуха"
+            }
+          ],
+          "explanation": "Создание запаса воздуха"
+        },
+        {
+          "step": 3,
+          "title": "Маслоотделители пневмосистемы → Группа главных резервуаров",
+          "activeHotspotIds": [
+            "HS-ER-EQ-PN-007",
+            "HS-ER-EQ-PN-001"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-PN-007",
+            "ER-EQ-PN-001"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-PN-007",
+              "toAnchor": "HS-ER-EQ-PN-001",
+              "flowKind": "AIR_SUPPLY",
+              "label": "Создание запаса воздуха"
+            }
+          ],
+          "explanation": "Создание запаса воздуха"
+        },
+        {
+          "step": 4,
+          "title": "Группа главных резервуаров → Питательная магистраль",
+          "activeHotspotIds": [
+            "HS-ER-EQ-PN-001",
+            "HS-ER-EQ-PN-002"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-PN-001",
+            "ER-EQ-PN-002"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-PN-001",
+              "toAnchor": "HS-ER-EQ-PN-002",
+              "flowKind": "AIR_SUPPLY",
+              "label": "Создание запаса воздуха"
+            }
+          ],
+          "explanation": "Создание запаса воздуха"
+        }
+      ]
+    },
+    {
+      "id": "STEP-ER-SCH-PN-2ES5K-BASE-PANTOGRAPH-GV",
+      "family": "ERMAK",
+      "title": "Пневматическая система 2ЭС5К, базовый контур — Пневмопитание токоприёмника и ГВ",
+      "domain": "PNEUMATIC",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная подсветка, не монтажная трассировка.",
+      "applicability": {
+        "models": [
+          "2ES5K"
+        ],
+        "includeProfiles": [
+          "base_early"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": true,
+        "notes": "Тормозной приборный слой выбирается отдельно."
+      },
+      "sourceSchemeRef": "ER-SCH-PN-2ES5K-BASE",
+      "sourcePresentations": [
+        {
+          "sourceId": "ER-SRC-013",
+          "title": "Пневматическая схема",
+          "documentDetails": "Описание пневматической схемы 3ЭС5К",
+          "locator": "пневматическая схема/описание 2ЭС5К",
+          "role": "canonical",
+          "url": "https://rcit.su/techinfoV8.html"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "ERMAK_FLOW_LAYER",
+        "flowRecordId": "pantograph_gv",
+        "confidence": "source_backed_functional"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Вспомогательный компрессор с электроприводом → Магистраль токоприёмника и главного выключателя",
+          "activeHotspotIds": [
+            "HS-ER-EQ-AU-008",
+            "HS-ER-EQ-PN-010"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-AU-008",
+            "ER-EQ-PN-010"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-AU-008",
+              "toAnchor": "HS-ER-EQ-PN-010",
+              "flowKind": "CONTROL_PRESSURE",
+              "label": "Пневмопитание токоприёмника и ГВ"
+            }
+          ],
+          "explanation": "Пневмопитание токоприёмника и ГВ"
+        },
+        {
+          "step": 2,
+          "title": "Магистраль токоприёмника и главного выключателя → Клапан токоприёмника",
+          "activeHotspotIds": [
+            "HS-ER-EQ-PN-010",
+            "HS-ER-EQ-PN-011"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-PN-010",
+            "ER-EQ-PN-011"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-PN-010",
+              "toAnchor": "HS-ER-EQ-PN-011",
+              "flowKind": "CONTROL_PRESSURE",
+              "label": "Пневмопитание токоприёмника и ГВ"
+            }
+          ],
+          "explanation": "Пневмопитание токоприёмника и ГВ"
+        }
+      ]
+    },
+    {
+      "id": "STEP-ER-SCH-PN-3ES5K-BASE-AIR-SUPPLY",
+      "family": "ERMAK",
+      "title": "Пневматическая система 3ЭС5К, базовый контур — Создание запаса воздуха",
+      "domain": "PNEUMATIC",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная подсветка, не монтажная трассировка.",
+      "applicability": {
+        "models": [
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "base_early"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": true,
+        "notes": "Тормозной приборный слой выбирается отдельно."
+      },
+      "sourceSchemeRef": "ER-SCH-PN-3ES5K-BASE",
+      "sourcePresentations": [
+        {
+          "sourceId": "ER-SRC-013",
+          "title": "Пневматическая схема",
+          "documentDetails": "Описание пневматической схемы 3ЭС5К",
+          "locator": "пневматическая схема/описание 3ЭС5К",
+          "role": "canonical",
+          "url": "https://rcit.su/techinfoV8.html"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "ERMAK_FLOW_LAYER",
+        "flowRecordId": "air_supply",
+        "confidence": "source_backed_functional"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Блок мотор-компрессора → Обратный клапан компрессора",
+          "activeHotspotIds": [
+            "HS-ER-EQ-AU-007",
+            "HS-ER-EQ-PN-005"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-AU-007",
+            "ER-EQ-PN-005"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-AU-007",
+              "toAnchor": "HS-ER-EQ-PN-005",
+              "flowKind": "AIR_SUPPLY",
+              "label": "Создание запаса воздуха"
+            }
+          ],
+          "explanation": "Создание запаса воздуха"
+        },
+        {
+          "step": 2,
+          "title": "Обратный клапан компрессора → Маслоотделители пневмосистемы",
+          "activeHotspotIds": [
+            "HS-ER-EQ-PN-005",
+            "HS-ER-EQ-PN-007"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-PN-005",
+            "ER-EQ-PN-007"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-PN-005",
+              "toAnchor": "HS-ER-EQ-PN-007",
+              "flowKind": "AIR_SUPPLY",
+              "label": "Создание запаса воздуха"
+            }
+          ],
+          "explanation": "Создание запаса воздуха"
+        },
+        {
+          "step": 3,
+          "title": "Маслоотделители пневмосистемы → Группа главных резервуаров",
+          "activeHotspotIds": [
+            "HS-ER-EQ-PN-007",
+            "HS-ER-EQ-PN-001"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-PN-007",
+            "ER-EQ-PN-001"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-PN-007",
+              "toAnchor": "HS-ER-EQ-PN-001",
+              "flowKind": "AIR_SUPPLY",
+              "label": "Создание запаса воздуха"
+            }
+          ],
+          "explanation": "Создание запаса воздуха"
+        },
+        {
+          "step": 4,
+          "title": "Группа главных резервуаров → Питательная магистраль",
+          "activeHotspotIds": [
+            "HS-ER-EQ-PN-001",
+            "HS-ER-EQ-PN-002"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-PN-001",
+            "ER-EQ-PN-002"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-PN-001",
+              "toAnchor": "HS-ER-EQ-PN-002",
+              "flowKind": "AIR_SUPPLY",
+              "label": "Создание запаса воздуха"
+            }
+          ],
+          "explanation": "Создание запаса воздуха"
+        }
+      ]
+    },
+    {
+      "id": "STEP-ER-SCH-PN-3ES5K-BASE-PANTOGRAPH-GV",
+      "family": "ERMAK",
+      "title": "Пневматическая система 3ЭС5К, базовый контур — Пневмопитание токоприёмника и ГВ",
+      "domain": "PNEUMATIC",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная подсветка, не монтажная трассировка.",
+      "applicability": {
+        "models": [
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "base_early"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": true,
+        "notes": "Тормозной приборный слой выбирается отдельно."
+      },
+      "sourceSchemeRef": "ER-SCH-PN-3ES5K-BASE",
+      "sourcePresentations": [
+        {
+          "sourceId": "ER-SRC-013",
+          "title": "Пневматическая схема",
+          "documentDetails": "Описание пневматической схемы 3ЭС5К",
+          "locator": "пневматическая схема/описание 3ЭС5К",
+          "role": "canonical",
+          "url": "https://rcit.su/techinfoV8.html"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "ERMAK_FLOW_LAYER",
+        "flowRecordId": "pantograph_gv",
+        "confidence": "source_backed_functional"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Вспомогательный компрессор с электроприводом → Магистраль токоприёмника и главного выключателя",
+          "activeHotspotIds": [
+            "HS-ER-EQ-AU-008",
+            "HS-ER-EQ-PN-010"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-AU-008",
+            "ER-EQ-PN-010"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-AU-008",
+              "toAnchor": "HS-ER-EQ-PN-010",
+              "flowKind": "CONTROL_PRESSURE",
+              "label": "Пневмопитание токоприёмника и ГВ"
+            }
+          ],
+          "explanation": "Пневмопитание токоприёмника и ГВ"
+        },
+        {
+          "step": 2,
+          "title": "Магистраль токоприёмника и главного выключателя → Клапан токоприёмника",
+          "activeHotspotIds": [
+            "HS-ER-EQ-PN-010",
+            "HS-ER-EQ-PN-011"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-PN-010",
+            "ER-EQ-PN-011"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-PN-010",
+              "toAnchor": "HS-ER-EQ-PN-011",
+              "flowKind": "CONTROL_PRESSURE",
+              "label": "Пневмопитание токоприёмника и ГВ"
+            }
+          ],
+          "explanation": "Пневмопитание токоприёмника и ГВ"
+        }
+      ]
+    },
+    {
+      "id": "STEP-ER-SCH-PN-BRAKE-395-CHARGING",
+      "family": "ERMAK",
+      "title": "Тормозной профиль с краном машиниста №395 — Зарядка",
+      "domain": "PNEUMATIC",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная подсветка, не монтажная трассировка.",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "brake_395"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": true,
+        "notes": ""
+      },
+      "sourceSchemeRef": "ER-SCH-PN-BRAKE-395",
+      "sourcePresentations": [
+        {
+          "sourceId": "ER-SRC-013",
+          "title": "Пневматическая схема",
+          "documentDetails": "Описание пневматической схемы 3ЭС5К",
+          "locator": "описание пневматической схемы, вариант №395",
+          "role": "canonical",
+          "url": "https://rcit.su/techinfoV8.html"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "ERMAK_FLOW_LAYER",
+        "flowRecordId": "charging",
+        "confidence": "source_backed_functional"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Группа главных резервуаров → Питательная магистраль",
+          "activeHotspotIds": [
+            "HS-ER-EQ-PN-001",
+            "HS-ER-EQ-PN-002"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-PN-001",
+            "ER-EQ-PN-002"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-PN-001",
+              "toAnchor": "HS-ER-EQ-PN-002",
+              "flowKind": "AIR_SUPPLY",
+              "label": "Зарядка"
+            }
+          ],
+          "explanation": "Зарядка"
+        },
+        {
+          "step": 2,
+          "title": "Питательная магистраль → Кран машиниста №395",
+          "activeHotspotIds": [
+            "HS-ER-EQ-PN-002",
+            "HS-ER-EQ-BR-014"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-PN-002",
+            "ER-EQ-BR-014"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-PN-002",
+              "toAnchor": "HS-ER-EQ-BR-014",
+              "flowKind": "AIR_SUPPLY",
+              "label": "Зарядка"
+            }
+          ],
+          "explanation": "Зарядка"
+        },
+        {
+          "step": 3,
+          "title": "Кран машиниста №395 → Тормозная магистраль",
+          "activeHotspotIds": [
+            "HS-ER-EQ-BR-014",
+            "HS-ER-EQ-BR-001"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-BR-014",
+            "ER-EQ-BR-001"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-BR-014",
+              "toAnchor": "HS-ER-EQ-BR-001",
+              "flowKind": "AIR_SUPPLY",
+              "label": "Зарядка"
+            }
+          ],
+          "explanation": "Зарядка"
+        },
+        {
+          "step": 4,
+          "title": "Тормозная магистраль → Воздухораспределитель грузового типа",
+          "activeHotspotIds": [
+            "HS-ER-EQ-BR-001",
+            "HS-ER-EQ-BR-004"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-BR-001",
+            "ER-EQ-BR-004"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-BR-001",
+              "toAnchor": "HS-ER-EQ-BR-004",
+              "flowKind": "AIR_SUPPLY",
+              "label": "Зарядка"
+            }
+          ],
+          "explanation": "Зарядка"
+        }
+      ]
+    },
+    {
+      "id": "STEP-ER-SCH-PN-BRAKE-395-SERVICE-BRAKE",
+      "family": "ERMAK",
+      "title": "Тормозной профиль с краном машиниста №395 — Служебное торможение",
+      "domain": "PNEUMATIC",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная подсветка, не монтажная трассировка.",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "brake_395"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": true,
+        "notes": ""
+      },
+      "sourceSchemeRef": "ER-SCH-PN-BRAKE-395",
+      "sourcePresentations": [
+        {
+          "sourceId": "ER-SRC-013",
+          "title": "Пневматическая схема",
+          "documentDetails": "Описание пневматической схемы 3ЭС5К",
+          "locator": "описание пневматической схемы, вариант №395",
+          "role": "canonical",
+          "url": "https://rcit.su/techinfoV8.html"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "ERMAK_FLOW_LAYER",
+        "flowRecordId": "service_brake",
+        "confidence": "source_backed_functional"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Кран машиниста №395 → Тормозная магистраль",
+          "activeHotspotIds": [
+            "HS-ER-EQ-BR-014",
+            "HS-ER-EQ-BR-001"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-BR-014",
+            "ER-EQ-BR-001"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-BR-014",
+              "toAnchor": "HS-ER-EQ-BR-001",
+              "flowKind": "BRAKE_PIPE_PRESSURE_CHANGE",
+              "label": "Служебное торможение"
+            }
+          ],
+          "explanation": "Служебное торможение"
+        },
+        {
+          "step": 2,
+          "title": "Тормозная магистраль → Воздухораспределитель грузового типа",
+          "activeHotspotIds": [
+            "HS-ER-EQ-BR-001",
+            "HS-ER-EQ-BR-004"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-BR-001",
+            "ER-EQ-BR-004"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-BR-001",
+              "toAnchor": "HS-ER-EQ-BR-004",
+              "flowKind": "BRAKE_PIPE_PRESSURE_CHANGE",
+              "label": "Служебное торможение"
+            }
+          ],
+          "explanation": "Служебное торможение"
+        },
+        {
+          "step": 3,
+          "title": "Воздухораспределитель грузового типа → Реле давления тормозных цилиндров",
+          "activeHotspotIds": [
+            "HS-ER-EQ-BR-004",
+            "HS-ER-EQ-BR-005"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-BR-004",
+            "ER-EQ-BR-005"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-BR-004",
+              "toAnchor": "HS-ER-EQ-BR-005",
+              "flowKind": "BRAKE_PIPE_PRESSURE_CHANGE",
+              "label": "Служебное торможение"
+            }
+          ],
+          "explanation": "Служебное торможение"
+        },
+        {
+          "step": 4,
+          "title": "Реле давления тормозных цилиндров → Тормозные цилиндры",
+          "activeHotspotIds": [
+            "HS-ER-EQ-BR-005",
+            "HS-ER-EQ-BR-006"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-BR-005",
+            "ER-EQ-BR-006"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-BR-005",
+              "toAnchor": "HS-ER-EQ-BR-006",
+              "flowKind": "BRAKE_PIPE_PRESSURE_CHANGE",
+              "label": "Служебное торможение"
+            }
+          ],
+          "explanation": "Служебное торможение"
+        }
+      ]
+    },
+    {
+      "id": "STEP-ER-SCH-PN-BRAKE-395-ELECTRIC-SUBSTITUTION",
+      "family": "ERMAK",
+      "title": "Тормозной профиль с краном машиниста №395 — Замещение электрического тормоза",
+      "domain": "PNEUMATIC",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная подсветка, не монтажная трассировка.",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "brake_395"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": true,
+        "notes": ""
+      },
+      "sourceSchemeRef": "ER-SCH-PN-BRAKE-395",
+      "sourcePresentations": [
+        {
+          "sourceId": "ER-SRC-013",
+          "title": "Пневматическая схема",
+          "documentDetails": "Описание пневматической схемы 3ЭС5К",
+          "locator": "описание пневматической схемы, вариант №395",
+          "role": "canonical",
+          "url": "https://rcit.su/techinfoV8.html"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "ERMAK_FLOW_LAYER",
+        "flowRecordId": "electric_substitution",
+        "confidence": "source_backed_functional"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Клапан замещения электрического тормоза → Реле давления тормозных цилиндров",
+          "activeHotspotIds": [
+            "HS-ER-EQ-BR-013",
+            "HS-ER-EQ-BR-005"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-BR-013",
+            "ER-EQ-BR-005"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-BR-013",
+              "toAnchor": "HS-ER-EQ-BR-005",
+              "flowKind": "BRAKE_CYLINDER_CONTROL",
+              "label": "Замещение электрического тормоза"
+            }
+          ],
+          "explanation": "Замещение электрического тормоза"
+        },
+        {
+          "step": 2,
+          "title": "Реле давления тормозных цилиндров → Тормозные цилиндры",
+          "activeHotspotIds": [
+            "HS-ER-EQ-BR-005",
+            "HS-ER-EQ-BR-006"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-BR-005",
+            "ER-EQ-BR-006"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-BR-005",
+              "toAnchor": "HS-ER-EQ-BR-006",
+              "flowKind": "BRAKE_CYLINDER_CONTROL",
+              "label": "Замещение электрического тормоза"
+            }
+          ],
+          "explanation": "Замещение электрического тормоза"
+        }
+      ]
+    },
+    {
+      "id": "STEP-ER-SCH-PN-BRAKE-130-REMOTE-BRAKE",
+      "family": "ERMAK",
+      "title": "Тормозной профиль УКТОЛ / №130 — Дистанционное управление тормозами",
+      "domain": "PNEUMATIC",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная подсветка, не монтажная трассировка.",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "brake_130_uktol",
+          "base_remote_brake_control"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": true,
+        "notes": ""
+      },
+      "sourceSchemeRef": "ER-SCH-PN-BRAKE-130",
+      "sourcePresentations": [
+        {
+          "sourceId": "ER-SRC-022",
+          "title": "УКТОЛ",
+          "documentDetails": "АО «МТЗ ТРАНСМАШ»",
+          "locator": "УКТОЛ: №130 + блок 010",
+          "role": "canonical",
+          "url": "https://www.mtz-transmash.ru/files/presscentr/publikacii/2010/UKTOL.pdf"
+        },
+        {
+          "sourceId": "ER-SRC-013",
+          "title": "Пневматическая схема",
+          "documentDetails": "Описание пневматической схемы 3ЭС5К",
+          "locator": "пневматическая схема",
+          "role": "supporting",
+          "url": "https://rcit.su/techinfoV8.html"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "ERMAK_FLOW_LAYER",
+        "flowRecordId": "remote_brake",
+        "confidence": "source_backed_functional"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Контроллер крана машиниста дистанционного управления → Блок электропневматических приборов",
+          "activeHotspotIds": [
+            "HS-ER-EQ-BR-008",
+            "HS-ER-EQ-BR-003"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-BR-008",
+            "ER-EQ-BR-003"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-BR-008",
+              "toAnchor": "HS-ER-EQ-BR-003",
+              "flowKind": "CONTROL_PRESSURE",
+              "label": "Дистанционное управление тормозами"
+            }
+          ],
+          "explanation": "Дистанционное управление тормозами"
+        },
+        {
+          "step": 2,
+          "title": "Блок электропневматических приборов → УКТОЛ с краном №130/130-2",
+          "activeHotspotIds": [
+            "HS-ER-EQ-BR-003",
+            "HS-ER-EQ-BR-015"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-BR-003",
+            "ER-EQ-BR-015"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-BR-003",
+              "toAnchor": "HS-ER-EQ-BR-015",
+              "flowKind": "CONTROL_PRESSURE",
+              "label": "Дистанционное управление тормозами"
+            }
+          ],
+          "explanation": "Дистанционное управление тормозами"
+        },
+        {
+          "step": 3,
+          "title": "УКТОЛ с краном №130/130-2 → Тормозная магистраль",
+          "activeHotspotIds": [
+            "HS-ER-EQ-BR-015",
+            "HS-ER-EQ-BR-001"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-BR-015",
+            "ER-EQ-BR-001"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-BR-015",
+              "toAnchor": "HS-ER-EQ-BR-001",
+              "flowKind": "CONTROL_PRESSURE",
+              "label": "Дистанционное управление тормозами"
+            }
+          ],
+          "explanation": "Дистанционное управление тормозами"
+        }
+      ]
+    },
+    {
+      "id": "STEP-ER-SCH-PN-BRAKE-130-SERVICE-BRAKE",
+      "family": "ERMAK",
+      "title": "Тормозной профиль УКТОЛ / №130 — Служебное торможение",
+      "domain": "PNEUMATIC",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная подсветка, не монтажная трассировка.",
+      "applicability": {
+        "models": [
+          "2ES5K",
+          "3ES5K"
+        ],
+        "includeProfiles": [
+          "brake_130_uktol",
+          "base_remote_brake_control"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": true,
+        "notes": ""
+      },
+      "sourceSchemeRef": "ER-SCH-PN-BRAKE-130",
+      "sourcePresentations": [
+        {
+          "sourceId": "ER-SRC-022",
+          "title": "УКТОЛ",
+          "documentDetails": "АО «МТЗ ТРАНСМАШ»",
+          "locator": "УКТОЛ: №130 + блок 010",
+          "role": "canonical",
+          "url": "https://www.mtz-transmash.ru/files/presscentr/publikacii/2010/UKTOL.pdf"
+        },
+        {
+          "sourceId": "ER-SRC-013",
+          "title": "Пневматическая схема",
+          "documentDetails": "Описание пневматической схемы 3ЭС5К",
+          "locator": "пневматическая схема",
+          "role": "supporting",
+          "url": "https://rcit.su/techinfoV8.html"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "ERMAK_FLOW_LAYER",
+        "flowRecordId": "service_brake",
+        "confidence": "source_backed_functional"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "УКТОЛ с краном №130/130-2 → Тормозная магистраль",
+          "activeHotspotIds": [
+            "HS-ER-EQ-BR-015",
+            "HS-ER-EQ-BR-001"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-BR-015",
+            "ER-EQ-BR-001"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-BR-015",
+              "toAnchor": "HS-ER-EQ-BR-001",
+              "flowKind": "BRAKE_PIPE_PRESSURE_CHANGE",
+              "label": "Служебное торможение"
+            }
+          ],
+          "explanation": "Служебное торможение"
+        },
+        {
+          "step": 2,
+          "title": "Тормозная магистраль → Воздухораспределитель грузового типа",
+          "activeHotspotIds": [
+            "HS-ER-EQ-BR-001",
+            "HS-ER-EQ-BR-004"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-BR-001",
+            "ER-EQ-BR-004"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-BR-001",
+              "toAnchor": "HS-ER-EQ-BR-004",
+              "flowKind": "BRAKE_PIPE_PRESSURE_CHANGE",
+              "label": "Служебное торможение"
+            }
+          ],
+          "explanation": "Служебное торможение"
+        },
+        {
+          "step": 3,
+          "title": "Воздухораспределитель грузового типа → Реле давления тормозных цилиндров",
+          "activeHotspotIds": [
+            "HS-ER-EQ-BR-004",
+            "HS-ER-EQ-BR-005"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-BR-004",
+            "ER-EQ-BR-005"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-BR-004",
+              "toAnchor": "HS-ER-EQ-BR-005",
+              "flowKind": "BRAKE_PIPE_PRESSURE_CHANGE",
+              "label": "Служебное торможение"
+            }
+          ],
+          "explanation": "Служебное торможение"
+        },
+        {
+          "step": 4,
+          "title": "Реле давления тормозных цилиндров → Тормозные цилиндры",
+          "activeHotspotIds": [
+            "HS-ER-EQ-BR-005",
+            "HS-ER-EQ-BR-006"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-BR-005",
+            "ER-EQ-BR-006"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-BR-005",
+              "toAnchor": "HS-ER-EQ-BR-006",
+              "flowKind": "BRAKE_PIPE_PRESSURE_CHANGE",
+              "label": "Служебное торможение"
+            }
+          ],
+          "explanation": "Служебное торможение"
+        }
+      ]
+    },
+    {
+      "id": "STEP-ER-SCH-PN-BRAKE-130-2-REMOTE-BRAKE",
+      "family": "ERMAK",
+      "title": "Тормозной профиль №130-2 / БТО-010-3 — №130-2 / БТО-010-3",
+      "domain": "PNEUMATIC",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная подсветка, не монтажная трассировка.",
+      "applicability": {
+        "models": [
+          "2ES5K"
+        ],
+        "includeProfiles": [
+          "brake_130_2_uktol"
+        ],
+        "excludeProfiles": [],
+        "selectionRequired": true,
+        "notes": "Не объединять с №130."
+      },
+      "sourceSchemeRef": "ER-SCH-PN-BRAKE-130-2",
+      "sourcePresentations": [
+        {
+          "sourceId": "ER-SRC-022",
+          "title": "УКТОЛ",
+          "documentDetails": "АО «МТЗ ТРАНСМАШ»",
+          "locator": "эволюция УКТОЛ: №130-2 + блок №010-3",
+          "role": "canonical",
+          "url": "https://www.mtz-transmash.ru/files/presscentr/publikacii/2010/UKTOL.pdf"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "ERMAK_FLOW_LAYER",
+        "flowRecordId": "remote_brake",
+        "confidence": "source_backed_functional"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "УКТОЛ с краном №130/130-2 → Тормозная магистраль",
+          "activeHotspotIds": [
+            "HS-ER-EQ-BR-015",
+            "HS-ER-EQ-BR-001"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-BR-015",
+            "ER-EQ-BR-001"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-BR-015",
+              "toAnchor": "HS-ER-EQ-BR-001",
+              "flowKind": "CONTROL_PRESSURE",
+              "label": "№130-2 / БТО-010-3"
+            }
+          ],
+          "explanation": "№130-2 / БТО-010-3"
+        },
+        {
+          "step": 2,
+          "title": "Тормозная магистраль → Воздухораспределитель грузового типа",
+          "activeHotspotIds": [
+            "HS-ER-EQ-BR-001",
+            "HS-ER-EQ-BR-004"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-BR-001",
+            "ER-EQ-BR-004"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-BR-001",
+              "toAnchor": "HS-ER-EQ-BR-004",
+              "flowKind": "CONTROL_PRESSURE",
+              "label": "№130-2 / БТО-010-3"
+            }
+          ],
+          "explanation": "№130-2 / БТО-010-3"
+        },
+        {
+          "step": 3,
+          "title": "Воздухораспределитель грузового типа → Реле давления тормозных цилиндров",
+          "activeHotspotIds": [
+            "HS-ER-EQ-BR-004",
+            "HS-ER-EQ-BR-005"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-BR-004",
+            "ER-EQ-BR-005"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-BR-004",
+              "toAnchor": "HS-ER-EQ-BR-005",
+              "flowKind": "CONTROL_PRESSURE",
+              "label": "№130-2 / БТО-010-3"
+            }
+          ],
+          "explanation": "№130-2 / БТО-010-3"
+        },
+        {
+          "step": 4,
+          "title": "Реле давления тормозных цилиндров → Тормозные цилиндры",
+          "activeHotspotIds": [
+            "HS-ER-EQ-BR-005",
+            "HS-ER-EQ-BR-006"
+          ],
+          "activeEquipmentIds": [
+            "ER-EQ-BR-005",
+            "ER-EQ-BR-006"
+          ],
+          "edges": [
+            {
+              "fromAnchor": "HS-ER-EQ-BR-005",
+              "toAnchor": "HS-ER-EQ-BR-006",
+              "flowKind": "CONTROL_PRESSURE",
+              "label": "№130-2 / БТО-010-3"
+            }
+          ],
+          "explanation": "№130-2 / БТО-010-3"
+        }
+      ]
+    },
+    {
+      "id": "CHME3-STEP-TRACTION-CURRENT",
+      "family": "CHME3",
+      "title": "CHME3 — путь тягового тока",
+      "domain": "ELECTRICAL",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная последовательность по проверенным связям Атласа; не является монтажной трассировкой проводов, клемм или трубопроводов.",
+      "applicability": {
+        "families": [
+          "CHME3"
+        ],
+        "profileIds": [
+          "chme3-base"
+        ],
+        "selectionRequired": false
+      },
+      "sourceSchemeRef": "CHME3-SCH-TRACTION",
+      "sourcePresentations": [
+        {
+          "sourceId": "CHME3-SRC-NOTIK-1996",
+          "title": "Тепловозы ЧМЭ3, ЧМЭ3Т, ЧМЭ3Э. Пособие машинисту, 2-е изд.",
+          "documentDetails": "1996",
+          "provenanceStatus": "TRAINING",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://zdsim.com/library/116/vkladysh_teplovozy_chmeh3_chmeh3t_chmeh3eh_notik_1"
+        },
+        {
+          "sourceId": "CHME3-SRC-LOKOMOTIV-1986-ELEMENTS",
+          "title": "Перечень элементов электрической схемы тепловоза ЧМЭ3",
+          "documentDetails": "1986",
+          "provenanceStatus": "TECHNICAL_PUBLICATION",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://www.booksite.ru/tyaga/1986/1986_7.pdf"
+        },
+        {
+          "sourceId": "CHME3-SRC-IOFFE-ELECTRIC-2023",
+          "title": "Электрическая схема тепловоза ЧМЭ3 — описание цепей",
+          "documentDetails": "",
+          "provenanceStatus": "TECHNICAL_PUBLICATION",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://scbist.com/xx2/57922-12-2023-elektricheskaya-shema-teplovoza-chme3.html"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "CHME_ATLAS_FUNCTIONAL_SCHEME",
+        "evidenceStatus": "TRAINING_REFERENCE"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Тяговый генератор → поездные контакторы",
+          "activeEquipmentIds": [
+            "CHME3-EQ-TRACTION-GENERATOR",
+            "CHME3-EQ-TRAIN-CONTACTORS"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-TRACTION-GENERATOR",
+              "toEquipmentId": "CHME3-EQ-TRAIN-CONTACTORS",
+              "flowKind": "TRACTION_CURRENT",
+              "label": "Силовой ток"
+            }
+          ],
+          "explanation": "Тяговый генератор → поездные контакторы"
+        },
+        {
+          "step": 2,
+          "title": "Поездные контакторы → реверсор",
+          "activeEquipmentIds": [
+            "CHME3-EQ-TRAIN-CONTACTORS",
+            "CHME3-EQ-REVERSER"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-TRAIN-CONTACTORS",
+              "toEquipmentId": "CHME3-EQ-REVERSER",
+              "flowKind": "TRACTION_CURRENT",
+              "label": "Коммутация тяговой цепи"
+            }
+          ],
+          "explanation": "Поездные контакторы → реверсор"
+        },
+        {
+          "step": 3,
+          "title": "Реверсор → тяговые двигатели",
+          "activeEquipmentIds": [
+            "CHME3-EQ-REVERSER",
+            "CHME3-EQ-TRACTION-MOTORS"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-REVERSER",
+              "toEquipmentId": "CHME3-EQ-TRACTION-MOTORS",
+              "flowKind": "TRACTION_CURRENT",
+              "label": "Ток к ТЭД"
+            }
+          ],
+          "explanation": "Реверсор → тяговые двигатели"
+        }
+      ]
+    },
+    {
+      "id": "CHME3-STEP-TRACTION-EXCITATION",
+      "family": "CHME3",
+      "title": "CHME3 — возбуждение тягового генератора",
+      "domain": "ELECTRICAL",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная последовательность по проверенным связям Атласа; не является монтажной трассировкой проводов, клемм или трубопроводов.",
+      "applicability": {
+        "families": [
+          "CHME3"
+        ],
+        "profileIds": [
+          "chme3-base"
+        ],
+        "selectionRequired": false
+      },
+      "sourceSchemeRef": "CHME3-SCH-TRACTION",
+      "sourcePresentations": [
+        {
+          "sourceId": "CHME3-SRC-NOTIK-1996",
+          "title": "Тепловозы ЧМЭ3, ЧМЭ3Т, ЧМЭ3Э. Пособие машинисту, 2-е изд.",
+          "documentDetails": "1996",
+          "provenanceStatus": "TRAINING",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://zdsim.com/library/116/vkladysh_teplovozy_chmeh3_chmeh3t_chmeh3eh_notik_1"
+        },
+        {
+          "sourceId": "CHME3-SRC-LOKOMOTIV-1986-ELEMENTS",
+          "title": "Перечень элементов электрической схемы тепловоза ЧМЭ3",
+          "documentDetails": "1986",
+          "provenanceStatus": "TECHNICAL_PUBLICATION",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://www.booksite.ru/tyaga/1986/1986_7.pdf"
+        },
+        {
+          "sourceId": "CHME3-SRC-IOFFE-ELECTRIC-2023",
+          "title": "Электрическая схема тепловоза ЧМЭ3 — описание цепей",
+          "documentDetails": "",
+          "provenanceStatus": "TECHNICAL_PUBLICATION",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://scbist.com/xx2/57922-12-2023-elektricheskaya-shema-teplovoza-chme3.html"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "CHME_ATLAS_FUNCTIONAL_SCHEME",
+        "evidenceStatus": "TRAINING_REFERENCE"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Возбудитель → тяговый генератор",
+          "activeEquipmentIds": [
+            "CHME3-EQ-EXCITER",
+            "CHME3-EQ-TRACTION-GENERATOR"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-EXCITER",
+              "toEquipmentId": "CHME3-EQ-TRACTION-GENERATOR",
+              "flowKind": "EXCITATION",
+              "label": "Возбуждение"
+            }
+          ],
+          "explanation": "Возбудитель → тяговый генератор"
+        }
+      ]
+    },
+    {
+      "id": "CHME3-STEP-CONTROL-POWER",
+      "family": "CHME3",
+      "title": "CHME3 — питание и согласование цепей управления",
+      "domain": "ELECTRICAL",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная последовательность по проверенным связям Атласа; не является монтажной трассировкой проводов, клемм или трубопроводов.",
+      "applicability": {
+        "families": [
+          "CHME3"
+        ],
+        "profileIds": [
+          "chme3-base"
+        ],
+        "selectionRequired": false
+      },
+      "sourceSchemeRef": "CHME3-SCH-CONTROL",
+      "sourcePresentations": [
+        {
+          "sourceId": "CHME3-SRC-NOTIK-1996",
+          "title": "Тепловозы ЧМЭ3, ЧМЭ3Т, ЧМЭ3Э. Пособие машинисту, 2-е изд.",
+          "documentDetails": "1996",
+          "provenanceStatus": "TRAINING",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://zdsim.com/library/116/vkladysh_teplovozy_chmeh3_chmeh3t_chmeh3eh_notik_1"
+        },
+        {
+          "sourceId": "CHME3-SRC-LOKOMOTIV-1986-ELEMENTS",
+          "title": "Перечень элементов электрической схемы тепловоза ЧМЭ3",
+          "documentDetails": "1986",
+          "provenanceStatus": "TECHNICAL_PUBLICATION",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://www.booksite.ru/tyaga/1986/1986_7.pdf"
+        },
+        {
+          "sourceId": "CHME3-SRC-IOFFE-ELECTRIC-2023",
+          "title": "Электрическая схема тепловоза ЧМЭ3 — описание цепей",
+          "documentDetails": "",
+          "provenanceStatus": "TECHNICAL_PUBLICATION",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://scbist.com/xx2/57922-12-2023-elektricheskaya-shema-teplovoza-chme3.html"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "CHME_ATLAS_FUNCTIONAL_SCHEME",
+        "evidenceStatus": "TRAINING_REFERENCE"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "АКБ → рубильник аккумуляторной батареи",
+          "activeEquipmentIds": [
+            "CHME3-EQ-BATTERY",
+            "CHME3-EQ-BATTERY-SWITCH"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-BATTERY",
+              "toEquipmentId": "CHME3-EQ-BATTERY-SWITCH",
+              "flowKind": "CONTROL_POWER",
+              "label": "Низковольтное питание"
+            }
+          ],
+          "explanation": "АКБ → рубильник аккумуляторной батареи"
+        },
+        {
+          "step": 2,
+          "title": "Сервомотор → регулятор дизеля",
+          "activeEquipmentIds": [
+            "CHME3-EQ-GOVERNOR-SERVOMOTOR",
+            "CHME3-EQ-GOVERNOR"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-GOVERNOR-SERVOMOTOR",
+              "toEquipmentId": "CHME3-EQ-GOVERNOR",
+              "flowKind": "COMMAND",
+              "label": "Изменение режима дизеля"
+            }
+          ],
+          "explanation": "Сервомотор → регулятор дизеля"
+        },
+        {
+          "step": 3,
+          "title": "Регулятор дизеля → цепи поездных контакторов",
+          "activeEquipmentIds": [
+            "CHME3-EQ-GOVERNOR",
+            "CHME3-EQ-TRAIN-CONTACTORS"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-GOVERNOR",
+              "toEquipmentId": "CHME3-EQ-TRAIN-CONTACTORS",
+              "flowKind": "COMMAND",
+              "label": "Согласование режима мощности"
+            }
+          ],
+          "explanation": "Регулятор дизеля → цепи поездных контакторов"
+        }
+      ],
+      "researchNotes": [
+        "Фактические блокировки, номера проводов и контактов остаются вариантозависимыми и здесь не домысливаются."
+      ]
+    },
+    {
+      "id": "CHME3T-STEP-TRACTION-CURRENT",
+      "family": "CHME3T",
+      "title": "CHME3T — путь тягового тока",
+      "domain": "ELECTRICAL",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная последовательность по проверенным связям Атласа; не является монтажной трассировкой проводов, клемм или трубопроводов.",
+      "applicability": {
+        "families": [
+          "CHME3T"
+        ],
+        "profileIds": [
+          "chme3t-rheostatic"
+        ],
+        "selectionRequired": true
+      },
+      "sourceSchemeRef": "CHME3-SCH-TRACTION",
+      "sourcePresentations": [
+        {
+          "sourceId": "CHME3-SRC-NOTIK-1996",
+          "title": "Тепловозы ЧМЭ3, ЧМЭ3Т, ЧМЭ3Э. Пособие машинисту, 2-е изд.",
+          "documentDetails": "1996",
+          "provenanceStatus": "TRAINING",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://zdsim.com/library/116/vkladysh_teplovozy_chmeh3_chmeh3t_chmeh3eh_notik_1"
+        },
+        {
+          "sourceId": "CHME3-SRC-LOKOMOTIV-1986-ELEMENTS",
+          "title": "Перечень элементов электрической схемы тепловоза ЧМЭ3",
+          "documentDetails": "1986",
+          "provenanceStatus": "TECHNICAL_PUBLICATION",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://www.booksite.ru/tyaga/1986/1986_7.pdf"
+        },
+        {
+          "sourceId": "CHME3-SRC-IOFFE-ELECTRIC-2023",
+          "title": "Электрическая схема тепловоза ЧМЭ3 — описание цепей",
+          "documentDetails": "",
+          "provenanceStatus": "TECHNICAL_PUBLICATION",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://scbist.com/xx2/57922-12-2023-elektricheskaya-shema-teplovoza-chme3.html"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "CHME_ATLAS_FUNCTIONAL_SCHEME",
+        "evidenceStatus": "TRAINING_REFERENCE"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Тяговый генератор → поездные контакторы",
+          "activeEquipmentIds": [
+            "CHME3-EQ-TRACTION-GENERATOR",
+            "CHME3-EQ-TRAIN-CONTACTORS"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-TRACTION-GENERATOR",
+              "toEquipmentId": "CHME3-EQ-TRAIN-CONTACTORS",
+              "flowKind": "TRACTION_CURRENT",
+              "label": "Силовой ток"
+            }
+          ],
+          "explanation": "Тяговый генератор → поездные контакторы"
+        },
+        {
+          "step": 2,
+          "title": "Поездные контакторы → реверсор",
+          "activeEquipmentIds": [
+            "CHME3-EQ-TRAIN-CONTACTORS",
+            "CHME3-EQ-REVERSER"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-TRAIN-CONTACTORS",
+              "toEquipmentId": "CHME3-EQ-REVERSER",
+              "flowKind": "TRACTION_CURRENT",
+              "label": "Коммутация тяговой цепи"
+            }
+          ],
+          "explanation": "Поездные контакторы → реверсор"
+        },
+        {
+          "step": 3,
+          "title": "Реверсор → тяговые двигатели",
+          "activeEquipmentIds": [
+            "CHME3-EQ-REVERSER",
+            "CHME3-EQ-TRACTION-MOTORS"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-REVERSER",
+              "toEquipmentId": "CHME3-EQ-TRACTION-MOTORS",
+              "flowKind": "TRACTION_CURRENT",
+              "label": "Ток к ТЭД"
+            }
+          ],
+          "explanation": "Реверсор → тяговые двигатели"
+        }
+      ]
+    },
+    {
+      "id": "CHME3T-STEP-TRACTION-EXCITATION",
+      "family": "CHME3T",
+      "title": "CHME3T — возбуждение тягового генератора",
+      "domain": "ELECTRICAL",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная последовательность по проверенным связям Атласа; не является монтажной трассировкой проводов, клемм или трубопроводов.",
+      "applicability": {
+        "families": [
+          "CHME3T"
+        ],
+        "profileIds": [
+          "chme3t-rheostatic"
+        ],
+        "selectionRequired": true
+      },
+      "sourceSchemeRef": "CHME3-SCH-TRACTION",
+      "sourcePresentations": [
+        {
+          "sourceId": "CHME3-SRC-NOTIK-1996",
+          "title": "Тепловозы ЧМЭ3, ЧМЭ3Т, ЧМЭ3Э. Пособие машинисту, 2-е изд.",
+          "documentDetails": "1996",
+          "provenanceStatus": "TRAINING",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://zdsim.com/library/116/vkladysh_teplovozy_chmeh3_chmeh3t_chmeh3eh_notik_1"
+        },
+        {
+          "sourceId": "CHME3-SRC-LOKOMOTIV-1986-ELEMENTS",
+          "title": "Перечень элементов электрической схемы тепловоза ЧМЭ3",
+          "documentDetails": "1986",
+          "provenanceStatus": "TECHNICAL_PUBLICATION",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://www.booksite.ru/tyaga/1986/1986_7.pdf"
+        },
+        {
+          "sourceId": "CHME3-SRC-IOFFE-ELECTRIC-2023",
+          "title": "Электрическая схема тепловоза ЧМЭ3 — описание цепей",
+          "documentDetails": "",
+          "provenanceStatus": "TECHNICAL_PUBLICATION",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://scbist.com/xx2/57922-12-2023-elektricheskaya-shema-teplovoza-chme3.html"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "CHME_ATLAS_FUNCTIONAL_SCHEME",
+        "evidenceStatus": "TRAINING_REFERENCE"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Возбудитель → тяговый генератор",
+          "activeEquipmentIds": [
+            "CHME3-EQ-EXCITER",
+            "CHME3-EQ-TRACTION-GENERATOR"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-EXCITER",
+              "toEquipmentId": "CHME3-EQ-TRACTION-GENERATOR",
+              "flowKind": "EXCITATION",
+              "label": "Возбуждение"
+            }
+          ],
+          "explanation": "Возбудитель → тяговый генератор"
+        }
+      ]
+    },
+    {
+      "id": "CHME3T-STEP-CONTROL-POWER",
+      "family": "CHME3T",
+      "title": "CHME3T — питание и согласование цепей управления",
+      "domain": "ELECTRICAL",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная последовательность по проверенным связям Атласа; не является монтажной трассировкой проводов, клемм или трубопроводов.",
+      "applicability": {
+        "families": [
+          "CHME3T"
+        ],
+        "profileIds": [
+          "chme3t-rheostatic"
+        ],
+        "selectionRequired": true
+      },
+      "sourceSchemeRef": "CHME3-SCH-CONTROL",
+      "sourcePresentations": [
+        {
+          "sourceId": "CHME3-SRC-NOTIK-1996",
+          "title": "Тепловозы ЧМЭ3, ЧМЭ3Т, ЧМЭ3Э. Пособие машинисту, 2-е изд.",
+          "documentDetails": "1996",
+          "provenanceStatus": "TRAINING",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://zdsim.com/library/116/vkladysh_teplovozy_chmeh3_chmeh3t_chmeh3eh_notik_1"
+        },
+        {
+          "sourceId": "CHME3-SRC-LOKOMOTIV-1986-ELEMENTS",
+          "title": "Перечень элементов электрической схемы тепловоза ЧМЭ3",
+          "documentDetails": "1986",
+          "provenanceStatus": "TECHNICAL_PUBLICATION",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://www.booksite.ru/tyaga/1986/1986_7.pdf"
+        },
+        {
+          "sourceId": "CHME3-SRC-IOFFE-ELECTRIC-2023",
+          "title": "Электрическая схема тепловоза ЧМЭ3 — описание цепей",
+          "documentDetails": "",
+          "provenanceStatus": "TECHNICAL_PUBLICATION",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://scbist.com/xx2/57922-12-2023-elektricheskaya-shema-teplovoza-chme3.html"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "CHME_ATLAS_FUNCTIONAL_SCHEME",
+        "evidenceStatus": "TRAINING_REFERENCE"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "АКБ → рубильник аккумуляторной батареи",
+          "activeEquipmentIds": [
+            "CHME3-EQ-BATTERY",
+            "CHME3-EQ-BATTERY-SWITCH"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-BATTERY",
+              "toEquipmentId": "CHME3-EQ-BATTERY-SWITCH",
+              "flowKind": "CONTROL_POWER",
+              "label": "Низковольтное питание"
+            }
+          ],
+          "explanation": "АКБ → рубильник аккумуляторной батареи"
+        },
+        {
+          "step": 2,
+          "title": "Сервомотор → регулятор дизеля",
+          "activeEquipmentIds": [
+            "CHME3-EQ-GOVERNOR-SERVOMOTOR",
+            "CHME3-EQ-GOVERNOR"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-GOVERNOR-SERVOMOTOR",
+              "toEquipmentId": "CHME3-EQ-GOVERNOR",
+              "flowKind": "COMMAND",
+              "label": "Изменение режима дизеля"
+            }
+          ],
+          "explanation": "Сервомотор → регулятор дизеля"
+        },
+        {
+          "step": 3,
+          "title": "Регулятор дизеля → цепи поездных контакторов",
+          "activeEquipmentIds": [
+            "CHME3-EQ-GOVERNOR",
+            "CHME3-EQ-TRAIN-CONTACTORS"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-GOVERNOR",
+              "toEquipmentId": "CHME3-EQ-TRAIN-CONTACTORS",
+              "flowKind": "COMMAND",
+              "label": "Согласование режима мощности"
+            }
+          ],
+          "explanation": "Регулятор дизеля → цепи поездных контакторов"
+        }
+      ],
+      "researchNotes": [
+        "Фактические блокировки, номера проводов и контактов остаются вариантозависимыми и здесь не домысливаются."
+      ]
+    },
+    {
+      "id": "CHME3-STEP-PNEUMATIC-AIR-SUPPLY",
+      "family": "CHME3",
+      "title": "CHME3 — создание запаса и подача воздуха",
+      "domain": "PNEUMATIC",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная последовательность по проверенным связям Атласа; не является монтажной трассировкой проводов, клемм или трубопроводов.",
+      "applicability": {
+        "families": [
+          "CHME3"
+        ],
+        "profileIds": [
+          "chme3-base"
+        ],
+        "selectionRequired": false
+      },
+      "sourceSchemeRef": "CHME3-SCH-PNEUMATIC",
+      "sourcePresentations": [
+        {
+          "sourceId": "CHME3-SRC-NOTIK-1996",
+          "title": "Тепловозы ЧМЭ3, ЧМЭ3Т, ЧМЭ3Э. Пособие машинисту, 2-е изд.",
+          "documentDetails": "1996",
+          "provenanceStatus": "TRAINING",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://zdsim.com/library/116/vkladysh_teplovozy_chmeh3_chmeh3t_chmeh3eh_notik_1"
+        },
+        {
+          "sourceId": "CHME3-SRC-PNEUMATIC-PUBLIC",
+          "title": "Пневматическая схема тепловозов ЧМЭ3 и ЧМЭ3Т — описание элементов",
+          "documentDetails": "",
+          "provenanceStatus": "TRAINING",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://mydocxru.com/11-32626.html"
+        },
+        {
+          "sourceId": "CHME3-SRC-SCBIST-COLLECTION",
+          "title": "Сборник документации по тепловозу ЧМЭ3",
+          "documentDetails": "",
+          "provenanceStatus": "ARCHIVE_INDEX",
+          "authorityForAction": "NO",
+          "url": "https://scbist.com/tyagovyi-podvizhnoi-sostav/12424-teplovoz-chme3-dokumentaciya-print.html"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "CHME_ATLAS_FUNCTIONAL_SCHEME",
+        "evidenceStatus": "TRAINING_REFERENCE"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Компрессор → холодильник",
+          "activeEquipmentIds": [
+            "CHME3-EQ-COMPRESSOR",
+            "CHME3-EQ-INTERCOOLER"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-COMPRESSOR",
+              "toEquipmentId": "CHME3-EQ-INTERCOOLER",
+              "flowKind": "AIR_SUPPLY",
+              "label": "Сжатый воздух"
+            }
+          ],
+          "explanation": "Компрессор → холодильник"
+        },
+        {
+          "step": 2,
+          "title": "Холодильник → главные резервуары",
+          "activeEquipmentIds": [
+            "CHME3-EQ-INTERCOOLER",
+            "CHME3-EQ-MAIN-RESERVOIRS"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-INTERCOOLER",
+              "toEquipmentId": "CHME3-EQ-MAIN-RESERVOIRS",
+              "flowKind": "AIR_SUPPLY",
+              "label": "Охлаждённый сжатый воздух"
+            }
+          ],
+          "explanation": "Холодильник → главные резервуары"
+        },
+        {
+          "step": 3,
+          "title": "Главные резервуары → кран машиниста",
+          "activeEquipmentIds": [
+            "CHME3-EQ-MAIN-RESERVOIRS",
+            "CHME3-EQ-DRIVER-BRAKE-VALVE"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-MAIN-RESERVOIRS",
+              "toEquipmentId": "CHME3-EQ-DRIVER-BRAKE-VALVE",
+              "flowKind": "AIR_SUPPLY",
+              "label": "Питание тормозной системы"
+            }
+          ],
+          "explanation": "Главные резервуары → кран машиниста"
+        }
+      ]
+    },
+    {
+      "id": "CHME3-STEP-PNEUMATIC-AUTO-BRAKE",
+      "family": "CHME3",
+      "title": "CHME3 — автоматическое торможение и отпуск",
+      "domain": "PNEUMATIC",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная последовательность по проверенным связям Атласа; не является монтажной трассировкой проводов, клемм или трубопроводов.",
+      "applicability": {
+        "families": [
+          "CHME3"
+        ],
+        "profileIds": [
+          "chme3-base"
+        ],
+        "selectionRequired": false
+      },
+      "sourceSchemeRef": "CHME3-SCH-PNEUMATIC",
+      "sourcePresentations": [
+        {
+          "sourceId": "CHME3-SRC-NOTIK-1996",
+          "title": "Тепловозы ЧМЭ3, ЧМЭ3Т, ЧМЭ3Э. Пособие машинисту, 2-е изд.",
+          "documentDetails": "1996",
+          "provenanceStatus": "TRAINING",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://zdsim.com/library/116/vkladysh_teplovozy_chmeh3_chmeh3t_chmeh3eh_notik_1"
+        },
+        {
+          "sourceId": "CHME3-SRC-PNEUMATIC-PUBLIC",
+          "title": "Пневматическая схема тепловозов ЧМЭ3 и ЧМЭ3Т — описание элементов",
+          "documentDetails": "",
+          "provenanceStatus": "TRAINING",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://mydocxru.com/11-32626.html"
+        },
+        {
+          "sourceId": "CHME3-SRC-SCBIST-COLLECTION",
+          "title": "Сборник документации по тепловозу ЧМЭ3",
+          "documentDetails": "",
+          "provenanceStatus": "ARCHIVE_INDEX",
+          "authorityForAction": "NO",
+          "url": "https://scbist.com/tyagovyi-podvizhnoi-sostav/12424-teplovoz-chme3-dokumentaciya-print.html"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "CHME_ATLAS_FUNCTIONAL_SCHEME",
+        "evidenceStatus": "TRAINING_REFERENCE"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Кран машиниста изменяет давление тормозной магистрали",
+          "activeEquipmentIds": [
+            "CHME3-EQ-DRIVER-BRAKE-VALVE",
+            "CHME3-EQ-AIR-DISTRIBUTOR"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-DRIVER-BRAKE-VALVE",
+              "toEquipmentId": "CHME3-EQ-AIR-DISTRIBUTOR",
+              "flowKind": "BRAKE_PIPE_PRESSURE_CHANGE",
+              "label": "Изменение давления ТМ"
+            }
+          ],
+          "explanation": "Кран машиниста изменяет давление тормозной магистрали"
+        },
+        {
+          "step": 2,
+          "title": "Воздухораспределитель управляет тормозными цилиндрами",
+          "activeEquipmentIds": [
+            "CHME3-EQ-AIR-DISTRIBUTOR",
+            "CHME3-EQ-BRAKE-CYLINDERS"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-AIR-DISTRIBUTOR",
+              "toEquipmentId": "CHME3-EQ-BRAKE-CYLINDERS",
+              "flowKind": "BRAKE_CYLINDER_CONTROL",
+              "label": "Торможение / отпуск"
+            }
+          ],
+          "explanation": "Воздухораспределитель управляет тормозными цилиндрами"
+        }
+      ],
+      "researchNotes": [
+        "Точный маршрут выпуска в атмосферу и внутренняя арматура приборов не показываются, пока соответствующие узлы не заведены в канонический Атлас."
+      ]
+    },
+    {
+      "id": "CHME3-STEP-PNEUMATIC-INDEPENDENT-BRAKE",
+      "family": "CHME3",
+      "title": "CHME3 — вспомогательное торможение локомотива",
+      "domain": "PNEUMATIC",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная последовательность по проверенным связям Атласа; не является монтажной трассировкой проводов, клемм или трубопроводов.",
+      "applicability": {
+        "families": [
+          "CHME3"
+        ],
+        "profileIds": [
+          "chme3-base"
+        ],
+        "selectionRequired": false
+      },
+      "sourceSchemeRef": "CHME3-SCH-PNEUMATIC",
+      "sourcePresentations": [
+        {
+          "sourceId": "CHME3-SRC-NOTIK-1996",
+          "title": "Тепловозы ЧМЭ3, ЧМЭ3Т, ЧМЭ3Э. Пособие машинисту, 2-е изд.",
+          "documentDetails": "1996",
+          "provenanceStatus": "TRAINING",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://zdsim.com/library/116/vkladysh_teplovozy_chmeh3_chmeh3t_chmeh3eh_notik_1"
+        },
+        {
+          "sourceId": "CHME3-SRC-PNEUMATIC-PUBLIC",
+          "title": "Пневматическая схема тепловозов ЧМЭ3 и ЧМЭ3Т — описание элементов",
+          "documentDetails": "",
+          "provenanceStatus": "TRAINING",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://mydocxru.com/11-32626.html"
+        },
+        {
+          "sourceId": "CHME3-SRC-SCBIST-COLLECTION",
+          "title": "Сборник документации по тепловозу ЧМЭ3",
+          "documentDetails": "",
+          "provenanceStatus": "ARCHIVE_INDEX",
+          "authorityForAction": "NO",
+          "url": "https://scbist.com/tyagovyi-podvizhnoi-sostav/12424-teplovoz-chme3-dokumentaciya-print.html"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "CHME_ATLAS_FUNCTIONAL_SCHEME",
+        "evidenceStatus": "TRAINING_REFERENCE"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Кран вспомогательного тормоза → тормозные цилиндры",
+          "activeEquipmentIds": [
+            "CHME3-EQ-AUX-BRAKE-VALVE",
+            "CHME3-EQ-BRAKE-CYLINDERS"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-AUX-BRAKE-VALVE",
+              "toEquipmentId": "CHME3-EQ-BRAKE-CYLINDERS",
+              "flowKind": "CONTROL_PRESSURE",
+              "label": "Управляющее давление"
+            }
+          ],
+          "explanation": "Кран вспомогательного тормоза → тормозные цилиндры"
+        }
+      ]
+    },
+    {
+      "id": "CHME3-STEP-PNEUMATIC-COMPRESSOR-CONTROL",
+      "family": "CHME3",
+      "title": "CHME3 — управление работой компрессора по давлению",
+      "domain": "PNEUMATIC",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная последовательность по проверенным связям Атласа; не является монтажной трассировкой проводов, клемм или трубопроводов.",
+      "applicability": {
+        "families": [
+          "CHME3"
+        ],
+        "profileIds": [
+          "chme3-base"
+        ],
+        "selectionRequired": false
+      },
+      "sourceSchemeRef": "CHME3-SCH-PNEUMATIC",
+      "sourcePresentations": [
+        {
+          "sourceId": "CHME3-SRC-NOTIK-1996",
+          "title": "Тепловозы ЧМЭ3, ЧМЭ3Т, ЧМЭ3Э. Пособие машинисту, 2-е изд.",
+          "documentDetails": "1996",
+          "provenanceStatus": "TRAINING",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://zdsim.com/library/116/vkladysh_teplovozy_chmeh3_chmeh3t_chmeh3eh_notik_1"
+        },
+        {
+          "sourceId": "CHME3-SRC-PNEUMATIC-PUBLIC",
+          "title": "Пневматическая схема тепловозов ЧМЭ3 и ЧМЭ3Т — описание элементов",
+          "documentDetails": "",
+          "provenanceStatus": "TRAINING",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://mydocxru.com/11-32626.html"
+        },
+        {
+          "sourceId": "CHME3-SRC-SCBIST-COLLECTION",
+          "title": "Сборник документации по тепловозу ЧМЭ3",
+          "documentDetails": "",
+          "provenanceStatus": "ARCHIVE_INDEX",
+          "authorityForAction": "NO",
+          "url": "https://scbist.com/tyagovyi-podvizhnoi-sostav/12424-teplovoz-chme3-dokumentaciya-print.html"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "CHME_ATLAS_FUNCTIONAL_SCHEME",
+        "evidenceStatus": "TRAINING_REFERENCE"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Регулятор давления → компрессор",
+          "activeEquipmentIds": [
+            "CHME3-EQ-PRESSURE-GOV",
+            "CHME3-EQ-COMPRESSOR"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-PRESSURE-GOV",
+              "toEquipmentId": "CHME3-EQ-COMPRESSOR",
+              "flowKind": "CONTROL_PRESSURE",
+              "label": "Управление режимом компрессора"
+            }
+          ],
+          "explanation": "Регулятор давления → компрессор"
+        }
+      ]
+    },
+    {
+      "id": "CHME3T-STEP-PNEUMATIC-AIR-SUPPLY",
+      "family": "CHME3T",
+      "title": "CHME3T — создание запаса и подача воздуха",
+      "domain": "PNEUMATIC",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная последовательность по проверенным связям Атласа; не является монтажной трассировкой проводов, клемм или трубопроводов.",
+      "applicability": {
+        "families": [
+          "CHME3T"
+        ],
+        "profileIds": [
+          "chme3t-rheostatic"
+        ],
+        "selectionRequired": true
+      },
+      "sourceSchemeRef": "CHME3-SCH-PNEUMATIC",
+      "sourcePresentations": [
+        {
+          "sourceId": "CHME3-SRC-NOTIK-1996",
+          "title": "Тепловозы ЧМЭ3, ЧМЭ3Т, ЧМЭ3Э. Пособие машинисту, 2-е изд.",
+          "documentDetails": "1996",
+          "provenanceStatus": "TRAINING",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://zdsim.com/library/116/vkladysh_teplovozy_chmeh3_chmeh3t_chmeh3eh_notik_1"
+        },
+        {
+          "sourceId": "CHME3-SRC-PNEUMATIC-PUBLIC",
+          "title": "Пневматическая схема тепловозов ЧМЭ3 и ЧМЭ3Т — описание элементов",
+          "documentDetails": "",
+          "provenanceStatus": "TRAINING",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://mydocxru.com/11-32626.html"
+        },
+        {
+          "sourceId": "CHME3-SRC-SCBIST-COLLECTION",
+          "title": "Сборник документации по тепловозу ЧМЭ3",
+          "documentDetails": "",
+          "provenanceStatus": "ARCHIVE_INDEX",
+          "authorityForAction": "NO",
+          "url": "https://scbist.com/tyagovyi-podvizhnoi-sostav/12424-teplovoz-chme3-dokumentaciya-print.html"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "CHME_ATLAS_FUNCTIONAL_SCHEME",
+        "evidenceStatus": "TRAINING_REFERENCE"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Компрессор → холодильник",
+          "activeEquipmentIds": [
+            "CHME3-EQ-COMPRESSOR",
+            "CHME3-EQ-INTERCOOLER"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-COMPRESSOR",
+              "toEquipmentId": "CHME3-EQ-INTERCOOLER",
+              "flowKind": "AIR_SUPPLY",
+              "label": "Сжатый воздух"
+            }
+          ],
+          "explanation": "Компрессор → холодильник"
+        },
+        {
+          "step": 2,
+          "title": "Холодильник → главные резервуары",
+          "activeEquipmentIds": [
+            "CHME3-EQ-INTERCOOLER",
+            "CHME3-EQ-MAIN-RESERVOIRS"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-INTERCOOLER",
+              "toEquipmentId": "CHME3-EQ-MAIN-RESERVOIRS",
+              "flowKind": "AIR_SUPPLY",
+              "label": "Охлаждённый сжатый воздух"
+            }
+          ],
+          "explanation": "Холодильник → главные резервуары"
+        },
+        {
+          "step": 3,
+          "title": "Главные резервуары → кран машиниста",
+          "activeEquipmentIds": [
+            "CHME3-EQ-MAIN-RESERVOIRS",
+            "CHME3-EQ-DRIVER-BRAKE-VALVE"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-MAIN-RESERVOIRS",
+              "toEquipmentId": "CHME3-EQ-DRIVER-BRAKE-VALVE",
+              "flowKind": "AIR_SUPPLY",
+              "label": "Питание тормозной системы"
+            }
+          ],
+          "explanation": "Главные резервуары → кран машиниста"
+        }
+      ]
+    },
+    {
+      "id": "CHME3T-STEP-PNEUMATIC-AUTO-BRAKE",
+      "family": "CHME3T",
+      "title": "CHME3T — автоматическое торможение и отпуск",
+      "domain": "PNEUMATIC",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная последовательность по проверенным связям Атласа; не является монтажной трассировкой проводов, клемм или трубопроводов.",
+      "applicability": {
+        "families": [
+          "CHME3T"
+        ],
+        "profileIds": [
+          "chme3t-rheostatic"
+        ],
+        "selectionRequired": true
+      },
+      "sourceSchemeRef": "CHME3-SCH-PNEUMATIC",
+      "sourcePresentations": [
+        {
+          "sourceId": "CHME3-SRC-NOTIK-1996",
+          "title": "Тепловозы ЧМЭ3, ЧМЭ3Т, ЧМЭ3Э. Пособие машинисту, 2-е изд.",
+          "documentDetails": "1996",
+          "provenanceStatus": "TRAINING",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://zdsim.com/library/116/vkladysh_teplovozy_chmeh3_chmeh3t_chmeh3eh_notik_1"
+        },
+        {
+          "sourceId": "CHME3-SRC-PNEUMATIC-PUBLIC",
+          "title": "Пневматическая схема тепловозов ЧМЭ3 и ЧМЭ3Т — описание элементов",
+          "documentDetails": "",
+          "provenanceStatus": "TRAINING",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://mydocxru.com/11-32626.html"
+        },
+        {
+          "sourceId": "CHME3-SRC-SCBIST-COLLECTION",
+          "title": "Сборник документации по тепловозу ЧМЭ3",
+          "documentDetails": "",
+          "provenanceStatus": "ARCHIVE_INDEX",
+          "authorityForAction": "NO",
+          "url": "https://scbist.com/tyagovyi-podvizhnoi-sostav/12424-teplovoz-chme3-dokumentaciya-print.html"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "CHME_ATLAS_FUNCTIONAL_SCHEME",
+        "evidenceStatus": "TRAINING_REFERENCE"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Кран машиниста изменяет давление тормозной магистрали",
+          "activeEquipmentIds": [
+            "CHME3-EQ-DRIVER-BRAKE-VALVE",
+            "CHME3-EQ-AIR-DISTRIBUTOR"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-DRIVER-BRAKE-VALVE",
+              "toEquipmentId": "CHME3-EQ-AIR-DISTRIBUTOR",
+              "flowKind": "BRAKE_PIPE_PRESSURE_CHANGE",
+              "label": "Изменение давления ТМ"
+            }
+          ],
+          "explanation": "Кран машиниста изменяет давление тормозной магистрали"
+        },
+        {
+          "step": 2,
+          "title": "Воздухораспределитель управляет тормозными цилиндрами",
+          "activeEquipmentIds": [
+            "CHME3-EQ-AIR-DISTRIBUTOR",
+            "CHME3-EQ-BRAKE-CYLINDERS"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-AIR-DISTRIBUTOR",
+              "toEquipmentId": "CHME3-EQ-BRAKE-CYLINDERS",
+              "flowKind": "BRAKE_CYLINDER_CONTROL",
+              "label": "Торможение / отпуск"
+            }
+          ],
+          "explanation": "Воздухораспределитель управляет тормозными цилиндрами"
+        }
+      ],
+      "researchNotes": [
+        "Точный маршрут выпуска в атмосферу и внутренняя арматура приборов не показываются, пока соответствующие узлы не заведены в канонический Атлас."
+      ]
+    },
+    {
+      "id": "CHME3T-STEP-PNEUMATIC-INDEPENDENT-BRAKE",
+      "family": "CHME3T",
+      "title": "CHME3T — вспомогательное торможение локомотива",
+      "domain": "PNEUMATIC",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная последовательность по проверенным связям Атласа; не является монтажной трассировкой проводов, клемм или трубопроводов.",
+      "applicability": {
+        "families": [
+          "CHME3T"
+        ],
+        "profileIds": [
+          "chme3t-rheostatic"
+        ],
+        "selectionRequired": true
+      },
+      "sourceSchemeRef": "CHME3-SCH-PNEUMATIC",
+      "sourcePresentations": [
+        {
+          "sourceId": "CHME3-SRC-NOTIK-1996",
+          "title": "Тепловозы ЧМЭ3, ЧМЭ3Т, ЧМЭ3Э. Пособие машинисту, 2-е изд.",
+          "documentDetails": "1996",
+          "provenanceStatus": "TRAINING",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://zdsim.com/library/116/vkladysh_teplovozy_chmeh3_chmeh3t_chmeh3eh_notik_1"
+        },
+        {
+          "sourceId": "CHME3-SRC-PNEUMATIC-PUBLIC",
+          "title": "Пневматическая схема тепловозов ЧМЭ3 и ЧМЭ3Т — описание элементов",
+          "documentDetails": "",
+          "provenanceStatus": "TRAINING",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://mydocxru.com/11-32626.html"
+        },
+        {
+          "sourceId": "CHME3-SRC-SCBIST-COLLECTION",
+          "title": "Сборник документации по тепловозу ЧМЭ3",
+          "documentDetails": "",
+          "provenanceStatus": "ARCHIVE_INDEX",
+          "authorityForAction": "NO",
+          "url": "https://scbist.com/tyagovyi-podvizhnoi-sostav/12424-teplovoz-chme3-dokumentaciya-print.html"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "CHME_ATLAS_FUNCTIONAL_SCHEME",
+        "evidenceStatus": "TRAINING_REFERENCE"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Кран вспомогательного тормоза → тормозные цилиндры",
+          "activeEquipmentIds": [
+            "CHME3-EQ-AUX-BRAKE-VALVE",
+            "CHME3-EQ-BRAKE-CYLINDERS"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-AUX-BRAKE-VALVE",
+              "toEquipmentId": "CHME3-EQ-BRAKE-CYLINDERS",
+              "flowKind": "CONTROL_PRESSURE",
+              "label": "Управляющее давление"
+            }
+          ],
+          "explanation": "Кран вспомогательного тормоза → тормозные цилиндры"
+        }
+      ]
+    },
+    {
+      "id": "CHME3T-STEP-PNEUMATIC-COMPRESSOR-CONTROL",
+      "family": "CHME3T",
+      "title": "CHME3T — управление работой компрессора по давлению",
+      "domain": "PNEUMATIC",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная последовательность по проверенным связям Атласа; не является монтажной трассировкой проводов, клемм или трубопроводов.",
+      "applicability": {
+        "families": [
+          "CHME3T"
+        ],
+        "profileIds": [
+          "chme3t-rheostatic"
+        ],
+        "selectionRequired": true
+      },
+      "sourceSchemeRef": "CHME3-SCH-PNEUMATIC",
+      "sourcePresentations": [
+        {
+          "sourceId": "CHME3-SRC-NOTIK-1996",
+          "title": "Тепловозы ЧМЭ3, ЧМЭ3Т, ЧМЭ3Э. Пособие машинисту, 2-е изд.",
+          "documentDetails": "1996",
+          "provenanceStatus": "TRAINING",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://zdsim.com/library/116/vkladysh_teplovozy_chmeh3_chmeh3t_chmeh3eh_notik_1"
+        },
+        {
+          "sourceId": "CHME3-SRC-PNEUMATIC-PUBLIC",
+          "title": "Пневматическая схема тепловозов ЧМЭ3 и ЧМЭ3Т — описание элементов",
+          "documentDetails": "",
+          "provenanceStatus": "TRAINING",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://mydocxru.com/11-32626.html"
+        },
+        {
+          "sourceId": "CHME3-SRC-SCBIST-COLLECTION",
+          "title": "Сборник документации по тепловозу ЧМЭ3",
+          "documentDetails": "",
+          "provenanceStatus": "ARCHIVE_INDEX",
+          "authorityForAction": "NO",
+          "url": "https://scbist.com/tyagovyi-podvizhnoi-sostav/12424-teplovoz-chme3-dokumentaciya-print.html"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "CHME_ATLAS_FUNCTIONAL_SCHEME",
+        "evidenceStatus": "TRAINING_REFERENCE"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Регулятор давления → компрессор",
+          "activeEquipmentIds": [
+            "CHME3-EQ-PRESSURE-GOV",
+            "CHME3-EQ-COMPRESSOR"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-PRESSURE-GOV",
+              "toEquipmentId": "CHME3-EQ-COMPRESSOR",
+              "flowKind": "CONTROL_PRESSURE",
+              "label": "Управление режимом компрессора"
+            }
+          ],
+          "explanation": "Регулятор давления → компрессор"
+        }
+      ]
+    },
+    {
+      "id": "CHME3E-STEP-PNEUMATIC-AIR-SUPPLY",
+      "family": "CHME3E",
+      "title": "CHME3E — создание запаса и подача воздуха",
+      "domain": "PNEUMATIC",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная последовательность по проверенным связям Атласа; не является монтажной трассировкой проводов, клемм или трубопроводов.",
+      "applicability": {
+        "families": [
+          "CHME3E"
+        ],
+        "profileIds": [
+          "chme3e-electronic"
+        ],
+        "selectionRequired": true
+      },
+      "sourceSchemeRef": "CHME3-SCH-PNEUMATIC",
+      "sourcePresentations": [
+        {
+          "sourceId": "CHME3-SRC-NOTIK-1996",
+          "title": "Тепловозы ЧМЭ3, ЧМЭ3Т, ЧМЭ3Э. Пособие машинисту, 2-е изд.",
+          "documentDetails": "1996",
+          "provenanceStatus": "TRAINING",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://zdsim.com/library/116/vkladysh_teplovozy_chmeh3_chmeh3t_chmeh3eh_notik_1"
+        },
+        {
+          "sourceId": "CHME3-SRC-PNEUMATIC-PUBLIC",
+          "title": "Пневматическая схема тепловозов ЧМЭ3 и ЧМЭ3Т — описание элементов",
+          "documentDetails": "",
+          "provenanceStatus": "TRAINING",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://mydocxru.com/11-32626.html"
+        },
+        {
+          "sourceId": "CHME3-SRC-SCBIST-COLLECTION",
+          "title": "Сборник документации по тепловозу ЧМЭ3",
+          "documentDetails": "",
+          "provenanceStatus": "ARCHIVE_INDEX",
+          "authorityForAction": "NO",
+          "url": "https://scbist.com/tyagovyi-podvizhnoi-sostav/12424-teplovoz-chme3-dokumentaciya-print.html"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "CHME_ATLAS_FUNCTIONAL_SCHEME",
+        "evidenceStatus": "TRAINING_REFERENCE"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Компрессор → холодильник",
+          "activeEquipmentIds": [
+            "CHME3-EQ-COMPRESSOR",
+            "CHME3-EQ-INTERCOOLER"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-COMPRESSOR",
+              "toEquipmentId": "CHME3-EQ-INTERCOOLER",
+              "flowKind": "AIR_SUPPLY",
+              "label": "Сжатый воздух"
+            }
+          ],
+          "explanation": "Компрессор → холодильник"
+        },
+        {
+          "step": 2,
+          "title": "Холодильник → главные резервуары",
+          "activeEquipmentIds": [
+            "CHME3-EQ-INTERCOOLER",
+            "CHME3-EQ-MAIN-RESERVOIRS"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-INTERCOOLER",
+              "toEquipmentId": "CHME3-EQ-MAIN-RESERVOIRS",
+              "flowKind": "AIR_SUPPLY",
+              "label": "Охлаждённый сжатый воздух"
+            }
+          ],
+          "explanation": "Холодильник → главные резервуары"
+        },
+        {
+          "step": 3,
+          "title": "Главные резервуары → кран машиниста",
+          "activeEquipmentIds": [
+            "CHME3-EQ-MAIN-RESERVOIRS",
+            "CHME3-EQ-DRIVER-BRAKE-VALVE"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-MAIN-RESERVOIRS",
+              "toEquipmentId": "CHME3-EQ-DRIVER-BRAKE-VALVE",
+              "flowKind": "AIR_SUPPLY",
+              "label": "Питание тормозной системы"
+            }
+          ],
+          "explanation": "Главные резервуары → кран машиниста"
+        }
+      ]
+    },
+    {
+      "id": "CHME3E-STEP-PNEUMATIC-AUTO-BRAKE",
+      "family": "CHME3E",
+      "title": "CHME3E — автоматическое торможение и отпуск",
+      "domain": "PNEUMATIC",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная последовательность по проверенным связям Атласа; не является монтажной трассировкой проводов, клемм или трубопроводов.",
+      "applicability": {
+        "families": [
+          "CHME3E"
+        ],
+        "profileIds": [
+          "chme3e-electronic"
+        ],
+        "selectionRequired": true
+      },
+      "sourceSchemeRef": "CHME3-SCH-PNEUMATIC",
+      "sourcePresentations": [
+        {
+          "sourceId": "CHME3-SRC-NOTIK-1996",
+          "title": "Тепловозы ЧМЭ3, ЧМЭ3Т, ЧМЭ3Э. Пособие машинисту, 2-е изд.",
+          "documentDetails": "1996",
+          "provenanceStatus": "TRAINING",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://zdsim.com/library/116/vkladysh_teplovozy_chmeh3_chmeh3t_chmeh3eh_notik_1"
+        },
+        {
+          "sourceId": "CHME3-SRC-PNEUMATIC-PUBLIC",
+          "title": "Пневматическая схема тепловозов ЧМЭ3 и ЧМЭ3Т — описание элементов",
+          "documentDetails": "",
+          "provenanceStatus": "TRAINING",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://mydocxru.com/11-32626.html"
+        },
+        {
+          "sourceId": "CHME3-SRC-SCBIST-COLLECTION",
+          "title": "Сборник документации по тепловозу ЧМЭ3",
+          "documentDetails": "",
+          "provenanceStatus": "ARCHIVE_INDEX",
+          "authorityForAction": "NO",
+          "url": "https://scbist.com/tyagovyi-podvizhnoi-sostav/12424-teplovoz-chme3-dokumentaciya-print.html"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "CHME_ATLAS_FUNCTIONAL_SCHEME",
+        "evidenceStatus": "TRAINING_REFERENCE"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Кран машиниста изменяет давление тормозной магистрали",
+          "activeEquipmentIds": [
+            "CHME3-EQ-DRIVER-BRAKE-VALVE",
+            "CHME3-EQ-AIR-DISTRIBUTOR"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-DRIVER-BRAKE-VALVE",
+              "toEquipmentId": "CHME3-EQ-AIR-DISTRIBUTOR",
+              "flowKind": "BRAKE_PIPE_PRESSURE_CHANGE",
+              "label": "Изменение давления ТМ"
+            }
+          ],
+          "explanation": "Кран машиниста изменяет давление тормозной магистрали"
+        },
+        {
+          "step": 2,
+          "title": "Воздухораспределитель управляет тормозными цилиндрами",
+          "activeEquipmentIds": [
+            "CHME3-EQ-AIR-DISTRIBUTOR",
+            "CHME3-EQ-BRAKE-CYLINDERS"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-AIR-DISTRIBUTOR",
+              "toEquipmentId": "CHME3-EQ-BRAKE-CYLINDERS",
+              "flowKind": "BRAKE_CYLINDER_CONTROL",
+              "label": "Торможение / отпуск"
+            }
+          ],
+          "explanation": "Воздухораспределитель управляет тормозными цилиндрами"
+        }
+      ],
+      "researchNotes": [
+        "Точный маршрут выпуска в атмосферу и внутренняя арматура приборов не показываются, пока соответствующие узлы не заведены в канонический Атлас."
+      ]
+    },
+    {
+      "id": "CHME3E-STEP-PNEUMATIC-INDEPENDENT-BRAKE",
+      "family": "CHME3E",
+      "title": "CHME3E — вспомогательное торможение локомотива",
+      "domain": "PNEUMATIC",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная последовательность по проверенным связям Атласа; не является монтажной трассировкой проводов, клемм или трубопроводов.",
+      "applicability": {
+        "families": [
+          "CHME3E"
+        ],
+        "profileIds": [
+          "chme3e-electronic"
+        ],
+        "selectionRequired": true
+      },
+      "sourceSchemeRef": "CHME3-SCH-PNEUMATIC",
+      "sourcePresentations": [
+        {
+          "sourceId": "CHME3-SRC-NOTIK-1996",
+          "title": "Тепловозы ЧМЭ3, ЧМЭ3Т, ЧМЭ3Э. Пособие машинисту, 2-е изд.",
+          "documentDetails": "1996",
+          "provenanceStatus": "TRAINING",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://zdsim.com/library/116/vkladysh_teplovozy_chmeh3_chmeh3t_chmeh3eh_notik_1"
+        },
+        {
+          "sourceId": "CHME3-SRC-PNEUMATIC-PUBLIC",
+          "title": "Пневматическая схема тепловозов ЧМЭ3 и ЧМЭ3Т — описание элементов",
+          "documentDetails": "",
+          "provenanceStatus": "TRAINING",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://mydocxru.com/11-32626.html"
+        },
+        {
+          "sourceId": "CHME3-SRC-SCBIST-COLLECTION",
+          "title": "Сборник документации по тепловозу ЧМЭ3",
+          "documentDetails": "",
+          "provenanceStatus": "ARCHIVE_INDEX",
+          "authorityForAction": "NO",
+          "url": "https://scbist.com/tyagovyi-podvizhnoi-sostav/12424-teplovoz-chme3-dokumentaciya-print.html"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "CHME_ATLAS_FUNCTIONAL_SCHEME",
+        "evidenceStatus": "TRAINING_REFERENCE"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Кран вспомогательного тормоза → тормозные цилиндры",
+          "activeEquipmentIds": [
+            "CHME3-EQ-AUX-BRAKE-VALVE",
+            "CHME3-EQ-BRAKE-CYLINDERS"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-AUX-BRAKE-VALVE",
+              "toEquipmentId": "CHME3-EQ-BRAKE-CYLINDERS",
+              "flowKind": "CONTROL_PRESSURE",
+              "label": "Управляющее давление"
+            }
+          ],
+          "explanation": "Кран вспомогательного тормоза → тормозные цилиндры"
+        }
+      ]
+    },
+    {
+      "id": "CHME3E-STEP-PNEUMATIC-COMPRESSOR-CONTROL",
+      "family": "CHME3E",
+      "title": "CHME3E — управление работой компрессора по давлению",
+      "domain": "PNEUMATIC",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная последовательность по проверенным связям Атласа; не является монтажной трассировкой проводов, клемм или трубопроводов.",
+      "applicability": {
+        "families": [
+          "CHME3E"
+        ],
+        "profileIds": [
+          "chme3e-electronic"
+        ],
+        "selectionRequired": true
+      },
+      "sourceSchemeRef": "CHME3-SCH-PNEUMATIC",
+      "sourcePresentations": [
+        {
+          "sourceId": "CHME3-SRC-NOTIK-1996",
+          "title": "Тепловозы ЧМЭ3, ЧМЭ3Т, ЧМЭ3Э. Пособие машинисту, 2-е изд.",
+          "documentDetails": "1996",
+          "provenanceStatus": "TRAINING",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://zdsim.com/library/116/vkladysh_teplovozy_chmeh3_chmeh3t_chmeh3eh_notik_1"
+        },
+        {
+          "sourceId": "CHME3-SRC-PNEUMATIC-PUBLIC",
+          "title": "Пневматическая схема тепловозов ЧМЭ3 и ЧМЭ3Т — описание элементов",
+          "documentDetails": "",
+          "provenanceStatus": "TRAINING",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://mydocxru.com/11-32626.html"
+        },
+        {
+          "sourceId": "CHME3-SRC-SCBIST-COLLECTION",
+          "title": "Сборник документации по тепловозу ЧМЭ3",
+          "documentDetails": "",
+          "provenanceStatus": "ARCHIVE_INDEX",
+          "authorityForAction": "NO",
+          "url": "https://scbist.com/tyagovyi-podvizhnoi-sostav/12424-teplovoz-chme3-dokumentaciya-print.html"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "CHME_ATLAS_FUNCTIONAL_SCHEME",
+        "evidenceStatus": "TRAINING_REFERENCE"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Регулятор давления → компрессор",
+          "activeEquipmentIds": [
+            "CHME3-EQ-PRESSURE-GOV",
+            "CHME3-EQ-COMPRESSOR"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-PRESSURE-GOV",
+              "toEquipmentId": "CHME3-EQ-COMPRESSOR",
+              "flowKind": "CONTROL_PRESSURE",
+              "label": "Управление режимом компрессора"
+            }
+          ],
+          "explanation": "Регулятор давления → компрессор"
+        }
+      ]
+    },
+    {
+      "id": "CHME3T-STEP-EDB-BRAKING-ENERGY",
+      "family": "CHME3T",
+      "title": "ЧМЭ3Т — путь энергии при реостатном торможении",
+      "domain": "ELECTRICAL",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная последовательность по проверенным связям Атласа; не является монтажной трассировкой проводов, клемм или трубопроводов.",
+      "applicability": {
+        "families": [
+          "CHME3T"
+        ],
+        "profileIds": [
+          "chme3t-rheostatic"
+        ],
+        "selectionRequired": true
+      },
+      "sourceSchemeRef": "CHME3T-SCH-EDB",
+      "sourcePresentations": [
+        {
+          "sourceId": "CHME3-SRC-NOTIK-1996",
+          "title": "Тепловозы ЧМЭ3, ЧМЭ3Т, ЧМЭ3Э. Пособие машинисту, 2-е изд.",
+          "documentDetails": "1996",
+          "provenanceStatus": "TRAINING",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://zdsim.com/library/116/vkladysh_teplovozy_chmeh3_chmeh3t_chmeh3eh_notik_1"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "CHME_ATLAS_FUNCTIONAL_SCHEME",
+        "evidenceStatus": "TRAINING_REFERENCE"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Тяговые двигатели переходят в генераторный режим",
+          "activeEquipmentIds": [
+            "CHME3-EQ-TRACTION-MOTORS",
+            "CHME3T-EQ-EDB-CONTROL"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-TRACTION-MOTORS",
+              "toEquipmentId": "CHME3T-EQ-EDB-CONTROL",
+              "flowKind": "BRAKING_CURRENT",
+              "label": "Генераторный режим ТЭД"
+            }
+          ],
+          "explanation": "Тяговые двигатели переходят в генераторный режим"
+        },
+        {
+          "step": 2,
+          "title": "Тормозная энергия направляется в резисторы",
+          "activeEquipmentIds": [
+            "CHME3T-EQ-EDB-CONTROL",
+            "CHME3T-EQ-BRAKE-RESISTORS"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3T-EQ-EDB-CONTROL",
+              "toEquipmentId": "CHME3T-EQ-BRAKE-RESISTORS",
+              "flowKind": "BRAKING_CURRENT",
+              "label": "Тормозная энергия"
+            }
+          ],
+          "explanation": "Тормозная энергия направляется в резисторы"
+        }
+      ],
+      "researchNotes": [
+        "Охлаждение тормозных резисторов отображается отдельной связью и не выдается за путь тормозного тока."
+      ]
+    },
+    {
+      "id": "CHME3E-STEP-TRACTION-SETPOINT",
+      "family": "CHME3E",
+      "title": "ЧМЭ3Э — формирование задания мощности",
+      "domain": "ELECTRICAL",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная последовательность по проверенным связям Атласа; не является монтажной трассировкой проводов, клемм или трубопроводов.",
+      "applicability": {
+        "families": [
+          "CHME3E"
+        ],
+        "profileIds": [
+          "chme3e-electronic"
+        ],
+        "selectionRequired": true
+      },
+      "sourceSchemeRef": "CHME3E-SCH-TRACTION-CONTROL",
+      "sourcePresentations": [
+        {
+          "sourceId": "CHME3E-SRC-NOTIK-EQUIPMENT-67",
+          "title": "§67 — Особенности электрического оборудования ЧМЭ3Т и ЧМЭ3Э",
+          "documentDetails": "",
+          "provenanceStatus": "TRAINING_REFERENCE",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://www.sinref.ru/000_uchebniki/05300_transport_jd_teplovozi/170_teplovozi_chme3_chme3t_chme3e_izdanie2_notik_1996/146.htm"
+        },
+        {
+          "sourceId": "CHME3E-SRC-NOTIK-CH17",
+          "title": "Глава XVII — Электрическая схема тепловоза ЧМЭ3Э",
+          "documentDetails": "",
+          "provenanceStatus": "TRAINING_REFERENCE",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://raillook.com/materialy/transport/jeleznodorojniy/tyagoviy-podvijnoi-sostav/1996-teplovozy-chme3-chme3t-chme3e-izd-2-z-h-notik/"
+        },
+        {
+          "sourceId": "CHME3E-SRC-NOTIK-FIELD-WEAKENING-96",
+          "title": "§96 — Ослабление возбуждения тяговых электродвигателей ЧМЭ3Э",
+          "documentDetails": "",
+          "provenanceStatus": "TRAINING_REFERENCE",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://sinref.ru/000_uchebniki/05300_transport_jd_teplovozi/170_teplovozi_chme3_chme3t_chme3e_izdanie2_notik_1996/191.htm"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "CHME_ATLAS_FUNCTIONAL_SCHEME",
+        "evidenceStatus": "TRAINING_REFERENCE"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "НН106 → YZJK9 / YIND5",
+          "activeEquipmentIds": [
+            "CHME3E-EQ-CONTROLLER-HH106",
+            "CHME3E-EQ-ER-YZJK9-YIND5"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3E-EQ-CONTROLLER-HH106",
+              "toEquipmentId": "CHME3E-EQ-ER-YZJK9-YIND5",
+              "flowKind": "COMMAND",
+              "label": "Код позиции"
+            }
+          ],
+          "explanation": "НН106 → YZJK9 / YIND5"
+        },
+        {
+          "step": 2,
+          "title": "YZJK9 / YIND5 → YZV9",
+          "activeEquipmentIds": [
+            "CHME3E-EQ-ER-YZJK9-YIND5",
+            "CHME3E-EQ-ER-YZV9"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3E-EQ-ER-YZJK9-YIND5",
+              "toEquipmentId": "CHME3E-EQ-ER-YZV9",
+              "flowKind": "CONTROL_SIGNAL",
+              "label": "Задание мощности"
+            }
+          ],
+          "explanation": "YZJK9 / YIND5 → YZV9"
+        }
+      ]
+    },
+    {
+      "id": "CHME3E-STEP-TRACTION-FEEDBACK",
+      "family": "CHME3E",
+      "title": "ЧМЭ3Э — обратные связи электронного регулирования",
+      "domain": "ELECTRICAL",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная последовательность по проверенным связям Атласа; не является монтажной трассировкой проводов, клемм или трубопроводов.",
+      "applicability": {
+        "families": [
+          "CHME3E"
+        ],
+        "profileIds": [
+          "chme3e-electronic"
+        ],
+        "selectionRequired": true
+      },
+      "sourceSchemeRef": "CHME3E-SCH-TRACTION-CONTROL",
+      "sourcePresentations": [
+        {
+          "sourceId": "CHME3E-SRC-NOTIK-EQUIPMENT-67",
+          "title": "§67 — Особенности электрического оборудования ЧМЭ3Т и ЧМЭ3Э",
+          "documentDetails": "",
+          "provenanceStatus": "TRAINING_REFERENCE",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://www.sinref.ru/000_uchebniki/05300_transport_jd_teplovozi/170_teplovozi_chme3_chme3t_chme3e_izdanie2_notik_1996/146.htm"
+        },
+        {
+          "sourceId": "CHME3E-SRC-NOTIK-CH17",
+          "title": "Глава XVII — Электрическая схема тепловоза ЧМЭ3Э",
+          "documentDetails": "",
+          "provenanceStatus": "TRAINING_REFERENCE",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://raillook.com/materialy/transport/jeleznodorojniy/tyagoviy-podvijnoi-sostav/1996-teplovozy-chme3-chme3t-chme3e-izd-2-z-h-notik/"
+        },
+        {
+          "sourceId": "CHME3E-SRC-NOTIK-FIELD-WEAKENING-96",
+          "title": "§96 — Ослабление возбуждения тяговых электродвигателей ЧМЭ3Э",
+          "documentDetails": "",
+          "provenanceStatus": "TRAINING_REFERENCE",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://sinref.ru/000_uchebniki/05300_transport_jd_teplovozi/170_teplovozi_chme3_chme3t_chme3e_izdanie2_notik_1996/191.htm"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "CHME_ATLAS_FUNCTIONAL_SCHEME",
+        "evidenceStatus": "TRAINING_REFERENCE"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Датчик оборотов → YPSM5 → YZV9",
+          "activeEquipmentIds": [
+            "CHME3E-EQ-TACHOMETER-SENSOR-BLOCK",
+            "CHME3E-EQ-ER-YPSM5",
+            "CHME3E-EQ-ER-YZV9"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3E-EQ-TACHOMETER-SENSOR-BLOCK",
+              "toEquipmentId": "CHME3E-EQ-ER-YPSM5",
+              "flowKind": "FEEDBACK_SIGNAL",
+              "label": "Импульсы частоты вращения"
+            },
+            {
+              "fromEquipmentId": "CHME3E-EQ-ER-YPSM5",
+              "toEquipmentId": "CHME3E-EQ-ER-YZV9",
+              "flowKind": "FEEDBACK_SIGNAL",
+              "label": "Сигнал оборотов"
+            }
+          ],
+          "explanation": "Датчик оборотов → YPSM5 → YZV9"
+        },
+        {
+          "step": 2,
+          "title": "ДТГ → YZV9",
+          "activeEquipmentIds": [
+            "CHME3E-EQ-CURRENT-SENSOR-DTG",
+            "CHME3E-EQ-ER-YZV9"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3E-EQ-CURRENT-SENSOR-DTG",
+              "toEquipmentId": "CHME3E-EQ-ER-YZV9",
+              "flowKind": "FEEDBACK_SIGNAL",
+              "label": "Обратная связь по току"
+            }
+          ],
+          "explanation": "ДТГ → YZV9"
+        },
+        {
+          "step": 3,
+          "title": "ДНГ → YRUI3",
+          "activeEquipmentIds": [
+            "CHME3E-EQ-VOLTAGE-SENSOR-DNG",
+            "CHME3E-EQ-ER-YRUI3"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3E-EQ-VOLTAGE-SENSOR-DNG",
+              "toEquipmentId": "CHME3E-EQ-ER-YRUI3",
+              "flowKind": "FEEDBACK_SIGNAL",
+              "label": "Обратная связь по напряжению"
+            }
+          ],
+          "explanation": "ДНГ → YRUI3"
+        }
+      ]
+    },
+    {
+      "id": "CHME3E-STEP-TRACTION-EXCITATION",
+      "family": "CHME3E",
+      "title": "ЧМЭ3Э — управление возбуждением тягового генератора",
+      "domain": "ELECTRICAL",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная последовательность по проверенным связям Атласа; не является монтажной трассировкой проводов, клемм или трубопроводов.",
+      "applicability": {
+        "families": [
+          "CHME3E"
+        ],
+        "profileIds": [
+          "chme3e-electronic"
+        ],
+        "selectionRequired": true
+      },
+      "sourceSchemeRef": "CHME3E-SCH-TRACTION-CONTROL",
+      "sourcePresentations": [
+        {
+          "sourceId": "CHME3E-SRC-NOTIK-EQUIPMENT-67",
+          "title": "§67 — Особенности электрического оборудования ЧМЭ3Т и ЧМЭ3Э",
+          "documentDetails": "",
+          "provenanceStatus": "TRAINING_REFERENCE",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://www.sinref.ru/000_uchebniki/05300_transport_jd_teplovozi/170_teplovozi_chme3_chme3t_chme3e_izdanie2_notik_1996/146.htm"
+        },
+        {
+          "sourceId": "CHME3E-SRC-NOTIK-CH17",
+          "title": "Глава XVII — Электрическая схема тепловоза ЧМЭ3Э",
+          "documentDetails": "",
+          "provenanceStatus": "TRAINING_REFERENCE",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://raillook.com/materialy/transport/jeleznodorojniy/tyagoviy-podvijnoi-sostav/1996-teplovozy-chme3-chme3t-chme3e-izd-2-z-h-notik/"
+        },
+        {
+          "sourceId": "CHME3E-SRC-NOTIK-FIELD-WEAKENING-96",
+          "title": "§96 — Ослабление возбуждения тяговых электродвигателей ЧМЭ3Э",
+          "documentDetails": "",
+          "provenanceStatus": "TRAINING_REFERENCE",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://sinref.ru/000_uchebniki/05300_transport_jd_teplovozi/170_teplovozi_chme3_chme3t_chme3e_izdanie2_notik_1996/191.htm"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "CHME_ATLAS_FUNCTIONAL_SCHEME",
+        "evidenceStatus": "TRAINING_REFERENCE"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "YZV9 → YKS5",
+          "activeEquipmentIds": [
+            "CHME3E-EQ-ER-YZV9",
+            "CHME3E-EQ-ER-YKS5"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3E-EQ-ER-YZV9",
+              "toEquipmentId": "CHME3E-EQ-ER-YKS5",
+              "flowKind": "CONTROL_SIGNAL",
+              "label": "Команда регулирования возбуждения"
+            }
+          ],
+          "explanation": "YZV9 → YKS5"
+        },
+        {
+          "step": 2,
+          "title": "YKS5 → возбудитель",
+          "activeEquipmentIds": [
+            "CHME3E-EQ-ER-YKS5",
+            "CHME3-EQ-EXCITER"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3E-EQ-ER-YKS5",
+              "toEquipmentId": "CHME3-EQ-EXCITER",
+              "flowKind": "EXCITATION",
+              "label": "Управление независимым возбуждением"
+            }
+          ],
+          "explanation": "YKS5 → возбудитель"
+        },
+        {
+          "step": 3,
+          "title": "Возбудитель → тяговый генератор",
+          "activeEquipmentIds": [
+            "CHME3-EQ-EXCITER",
+            "CHME3-EQ-TRACTION-GENERATOR"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-EXCITER",
+              "toEquipmentId": "CHME3-EQ-TRACTION-GENERATOR",
+              "flowKind": "EXCITATION",
+              "label": "Возбуждение генератора"
+            }
+          ],
+          "explanation": "Возбудитель → тяговый генератор"
+        }
+      ]
+    },
+    {
+      "id": "CHME3E-STEP-TRACTION-CURRENT",
+      "family": "CHME3E",
+      "title": "ЧМЭ3Э — путь тягового тока",
+      "domain": "ELECTRICAL",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная последовательность по проверенным связям Атласа; не является монтажной трассировкой проводов, клемм или трубопроводов.",
+      "applicability": {
+        "families": [
+          "CHME3E"
+        ],
+        "profileIds": [
+          "chme3e-electronic"
+        ],
+        "selectionRequired": true
+      },
+      "sourceSchemeRef": "CHME3E-SCH-TRACTION-CONTROL",
+      "sourcePresentations": [
+        {
+          "sourceId": "CHME3E-SRC-NOTIK-EQUIPMENT-67",
+          "title": "§67 — Особенности электрического оборудования ЧМЭ3Т и ЧМЭ3Э",
+          "documentDetails": "",
+          "provenanceStatus": "TRAINING_REFERENCE",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://www.sinref.ru/000_uchebniki/05300_transport_jd_teplovozi/170_teplovozi_chme3_chme3t_chme3e_izdanie2_notik_1996/146.htm"
+        },
+        {
+          "sourceId": "CHME3E-SRC-NOTIK-CH17",
+          "title": "Глава XVII — Электрическая схема тепловоза ЧМЭ3Э",
+          "documentDetails": "",
+          "provenanceStatus": "TRAINING_REFERENCE",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://raillook.com/materialy/transport/jeleznodorojniy/tyagoviy-podvijnoi-sostav/1996-teplovozy-chme3-chme3t-chme3e-izd-2-z-h-notik/"
+        },
+        {
+          "sourceId": "CHME3E-SRC-NOTIK-FIELD-WEAKENING-96",
+          "title": "§96 — Ослабление возбуждения тяговых электродвигателей ЧМЭ3Э",
+          "documentDetails": "",
+          "provenanceStatus": "TRAINING_REFERENCE",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://sinref.ru/000_uchebniki/05300_transport_jd_teplovozi/170_teplovozi_chme3_chme3t_chme3e_izdanie2_notik_1996/191.htm"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "CHME_ATLAS_FUNCTIONAL_SCHEME",
+        "evidenceStatus": "TRAINING_REFERENCE"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Тяговый генератор → поездные контакторы",
+          "activeEquipmentIds": [
+            "CHME3-EQ-TRACTION-GENERATOR",
+            "CHME3-EQ-TRAIN-CONTACTORS"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-TRACTION-GENERATOR",
+              "toEquipmentId": "CHME3-EQ-TRAIN-CONTACTORS",
+              "flowKind": "TRACTION_CURRENT",
+              "label": "Силовой ток"
+            }
+          ],
+          "explanation": "Тяговый генератор → поездные контакторы"
+        },
+        {
+          "step": 2,
+          "title": "Поездные контакторы → тяговые двигатели",
+          "activeEquipmentIds": [
+            "CHME3-EQ-TRAIN-CONTACTORS",
+            "CHME3-EQ-TRACTION-MOTORS"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-TRAIN-CONTACTORS",
+              "toEquipmentId": "CHME3-EQ-TRACTION-MOTORS",
+              "flowKind": "TRACTION_CURRENT",
+              "label": "Питание тяговых ветвей"
+            }
+          ],
+          "explanation": "Поездные контакторы → тяговые двигатели"
+        }
+      ]
+    },
+    {
+      "id": "CHME3E-STEP-FIELD-WEAKENING",
+      "family": "CHME3E",
+      "title": "ЧМЭ3Э — автоматическое ослабление возбуждения ТЭД",
+      "domain": "ELECTRICAL",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная последовательность по проверенным связям Атласа; не является монтажной трассировкой проводов, клемм или трубопроводов.",
+      "applicability": {
+        "families": [
+          "CHME3E"
+        ],
+        "profileIds": [
+          "chme3e-electronic"
+        ],
+        "selectionRequired": true
+      },
+      "sourceSchemeRef": "CHME3E-SCH-FIELD-WEAKENING",
+      "sourcePresentations": [
+        {
+          "sourceId": "CHME3E-SRC-NOTIK-FIELD-WEAKENING-96",
+          "title": "§96 — Ослабление возбуждения тяговых электродвигателей ЧМЭ3Э",
+          "documentDetails": "",
+          "provenanceStatus": "TRAINING_REFERENCE",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://sinref.ru/000_uchebniki/05300_transport_jd_teplovozi/170_teplovozi_chme3_chme3t_chme3e_izdanie2_notik_1996/191.htm"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "CHME_ATLAS_FUNCTIONAL_SCHEME",
+        "evidenceStatus": "TRAINING_REFERENCE"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Сигналы условий поступают в YSH11",
+          "activeEquipmentIds": [
+            "CHME3E-EQ-CURRENT-SENSOR-DTG",
+            "CHME3E-EQ-ER-YSH11",
+            "CHME3E-EQ-VOLTAGE-SENSOR-DNG",
+            "CHME3E-EQ-RELAY-RE"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3E-EQ-CURRENT-SENSOR-DTG",
+              "toEquipmentId": "CHME3E-EQ-ER-YSH11",
+              "flowKind": "FEEDBACK_SIGNAL",
+              "label": "Сигнал тока"
+            },
+            {
+              "fromEquipmentId": "CHME3E-EQ-VOLTAGE-SENSOR-DNG",
+              "toEquipmentId": "CHME3E-EQ-ER-YSH11",
+              "flowKind": "FEEDBACK_SIGNAL",
+              "label": "Сигнал напряжения"
+            },
+            {
+              "fromEquipmentId": "CHME3E-EQ-RELAY-RE",
+              "toEquipmentId": "CHME3E-EQ-ER-YSH11",
+              "flowKind": "CONTROL_SIGNAL",
+              "label": "Разрешение тягового режима"
+            }
+          ],
+          "explanation": "Сигналы условий поступают в YSH11"
+        },
+        {
+          "step": 2,
+          "title": "YSH11 → YOUT8",
+          "activeEquipmentIds": [
+            "CHME3E-EQ-ER-YSH11",
+            "CHME3E-EQ-ER-YOUT8"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3E-EQ-ER-YSH11",
+              "toEquipmentId": "CHME3E-EQ-ER-YOUT8",
+              "flowKind": "COMMAND",
+              "label": "Команда ступени ослабления"
+            }
+          ],
+          "explanation": "YSH11 → YOUT8"
+        },
+        {
+          "step": 3,
+          "title": "YOUT8 → контакторы КШ",
+          "activeEquipmentIds": [
+            "CHME3E-EQ-ER-YOUT8",
+            "CHME3-EQ-CONTACTORS"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3E-EQ-ER-YOUT8",
+              "toEquipmentId": "CHME3-EQ-CONTACTORS",
+              "flowKind": "COMMAND",
+              "label": "Управление КШ1—КШ6"
+            }
+          ],
+          "explanation": "YOUT8 → контакторы КШ"
+        },
+        {
+          "step": 4,
+          "title": "Контакторы КШ изменяют возбуждение ТЭД",
+          "activeEquipmentIds": [
+            "CHME3-EQ-CONTACTORS",
+            "CHME3-EQ-TRACTION-MOTORS"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-CONTACTORS",
+              "toEquipmentId": "CHME3-EQ-TRACTION-MOTORS",
+              "flowKind": "EXCITATION",
+              "label": "Шунтирование обмоток возбуждения"
+            }
+          ],
+          "explanation": "Контакторы КШ изменяют возбуждение ТЭД"
+        }
+      ]
+    },
+    {
+      "id": "CHME3E-STEP-START",
+      "family": "CHME3E",
+      "title": "ЧМЭ3Э — электронная последовательность пуска",
+      "domain": "ELECTRICAL",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная последовательность по проверенным связям Атласа; не является монтажной трассировкой проводов, клемм или трубопроводов.",
+      "applicability": {
+        "families": [
+          "CHME3E"
+        ],
+        "profileIds": [
+          "chme3e-electronic"
+        ],
+        "selectionRequired": true
+      },
+      "sourceSchemeRef": "CHME3E-SCH-START-ELECTRONIC",
+      "sourcePresentations": [
+        {
+          "sourceId": "CHME3E-SRC-NOTIK-EQUIPMENT-67",
+          "title": "§67 — Особенности электрического оборудования ЧМЭ3Т и ЧМЭ3Э",
+          "documentDetails": "",
+          "provenanceStatus": "TRAINING_REFERENCE",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://www.sinref.ru/000_uchebniki/05300_transport_jd_teplovozi/170_teplovozi_chme3_chme3t_chme3e_izdanie2_notik_1996/146.htm"
+        },
+        {
+          "sourceId": "CHME3E-SRC-NOTIK-CH17",
+          "title": "Глава XVII — Электрическая схема тепловоза ЧМЭ3Э",
+          "documentDetails": "",
+          "provenanceStatus": "TRAINING_REFERENCE",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://raillook.com/materialy/transport/jeleznodorojniy/tyagoviy-podvijnoi-sostav/1996-teplovozy-chme3-chme3t-chme3e-izd-2-z-h-notik/"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "CHME_ATLAS_FUNCTIONAL_SCHEME",
+        "evidenceStatus": "TRAINING_REFERENCE"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "НН106 → YCRA1",
+          "activeEquipmentIds": [
+            "CHME3E-EQ-CONTROLLER-HH106",
+            "CHME3E-EQ-ER-YCRA1"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3E-EQ-CONTROLLER-HH106",
+              "toEquipmentId": "CHME3E-EQ-ER-YCRA1",
+              "flowKind": "COMMAND",
+              "label": "Команда пуска"
+            }
+          ],
+          "explanation": "НН106 → YCRA1"
+        },
+        {
+          "step": 2,
+          "title": "YCRA1 запускает предварительную маслопрокачку",
+          "activeEquipmentIds": [
+            "CHME3E-EQ-ER-YCRA1",
+            "CHME3-EQ-OIL-PRIME-PUMP"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3E-EQ-ER-YCRA1",
+              "toEquipmentId": "CHME3-EQ-OIL-PRIME-PUMP",
+              "flowKind": "COMMAND",
+              "label": "Предварительная прокачка"
+            }
+          ],
+          "explanation": "YCRA1 запускает предварительную маслопрокачку"
+        },
+        {
+          "step": 3,
+          "title": "YCRA1 управляет пусковыми аппаратами",
+          "activeEquipmentIds": [
+            "CHME3E-EQ-ER-YCRA1",
+            "CHME3-EQ-CONTACTORS"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3E-EQ-ER-YCRA1",
+              "toEquipmentId": "CHME3-EQ-CONTACTORS",
+              "flowKind": "COMMAND",
+              "label": "Временная последовательность пуска"
+            }
+          ],
+          "explanation": "YCRA1 управляет пусковыми аппаратами"
+        },
+        {
+          "step": 4,
+          "title": "АКБ питает тяговый генератор в стартерном режиме",
+          "activeEquipmentIds": [
+            "CHME3-EQ-BATTERY",
+            "CHME3-EQ-TRACTION-GENERATOR"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-BATTERY",
+              "toEquipmentId": "CHME3-EQ-TRACTION-GENERATOR",
+              "flowKind": "STARTER_CURRENT",
+              "label": "Пусковой ток"
+            }
+          ],
+          "explanation": "АКБ питает тяговый генератор в стартерном режиме"
+        },
+        {
+          "step": 5,
+          "title": "После запуска формируется признак работающего дизеля",
+          "activeEquipmentIds": [
+            "CHME3-EQ-TRACTION-GENERATOR",
+            "CHME3E-EQ-RELAY-RD"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-TRACTION-GENERATOR",
+              "toEquipmentId": "CHME3E-EQ-RELAY-RD",
+              "flowKind": "STATUS_SIGNAL",
+              "label": "Признак работающего дизеля"
+            }
+          ],
+          "explanation": "После запуска формируется признак работающего дизеля"
+        }
+      ]
+    },
+    {
+      "id": "CHME3E-STEP-PREHEAT-RUNNING",
+      "family": "CHME3E",
+      "title": "ЧМЭ3Э — обогрев водяной системы от тягового генератора",
+      "domain": "ELECTRICAL",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная последовательность по проверенным связям Атласа; не является монтажной трассировкой проводов, клемм или трубопроводов.",
+      "applicability": {
+        "families": [
+          "CHME3E"
+        ],
+        "profileIds": [
+          "chme3e-electronic"
+        ],
+        "selectionRequired": true
+      },
+      "sourceSchemeRef": "CHME3E-SCH-PREHEAT-RUNNING",
+      "sourcePresentations": [
+        {
+          "sourceId": "CHME3E-SRC-NOTIK-EQUIPMENT-67",
+          "title": "§67 — Особенности электрического оборудования ЧМЭ3Т и ЧМЭ3Э",
+          "documentDetails": "",
+          "provenanceStatus": "TRAINING_REFERENCE",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://www.sinref.ru/000_uchebniki/05300_transport_jd_teplovozi/170_teplovozi_chme3_chme3t_chme3e_izdanie2_notik_1996/146.htm"
+        },
+        {
+          "sourceId": "CHME3E-SRC-NOTIK-WATER-47",
+          "title": "§47 — Водяная система ЧМЭ3Т и ЧМЭ3Э с электрическим обогревом",
+          "documentDetails": "",
+          "provenanceStatus": "TRAINING_REFERENCE",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://www.sinref.ru/000_uchebniki/05300_transport_jd_teplovozi/170_teplovozi_chme3_chme3t_chme3e_izdanie2_notik_1996/082.htm"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "CHME_ATLAS_FUNCTIONAL_SCHEME",
+        "evidenceStatus": "TRAINING_REFERENCE"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "ПО задаёт режим обогрева",
+          "activeEquipmentIds": [
+            "CHME3E-EQ-MODE-SWITCH-PO",
+            "CHME3E-EQ-CONTACTOR-KOG1",
+            "CHME3E-EQ-CONTACTOR-KOG2"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3E-EQ-MODE-SWITCH-PO",
+              "toEquipmentId": "CHME3E-EQ-CONTACTOR-KOG1",
+              "flowKind": "COMMAND",
+              "label": "Команда КОГ1"
+            },
+            {
+              "fromEquipmentId": "CHME3E-EQ-MODE-SWITCH-PO",
+              "toEquipmentId": "CHME3E-EQ-CONTACTOR-KOG2",
+              "flowKind": "COMMAND",
+              "label": "Команда КОГ2"
+            }
+          ],
+          "explanation": "ПО задаёт режим обогрева"
+        },
+        {
+          "step": 2,
+          "title": "Тяговый генератор подаёт питание в цепь обогрева",
+          "activeEquipmentIds": [
+            "CHME3-EQ-TRACTION-GENERATOR",
+            "CHME3E-EQ-CONTACTOR-KOG1"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-TRACTION-GENERATOR",
+              "toEquipmentId": "CHME3E-EQ-CONTACTOR-KOG1",
+              "flowKind": "AUXILIARY_POWER",
+              "label": "Силовое питание обогрева"
+            }
+          ],
+          "explanation": "Тяговый генератор подаёт питание в цепь обогрева"
+        },
+        {
+          "step": 3,
+          "title": "КОГ1 / КОГ2 собирают цепь нагревателей",
+          "activeEquipmentIds": [
+            "CHME3E-EQ-CONTACTOR-KOG1",
+            "CHME3E-EQ-CONTACTOR-KOG2",
+            "CHME3E-EQ-HEATER-ELEMENTS-R85-R88"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3E-EQ-CONTACTOR-KOG1",
+              "toEquipmentId": "CHME3E-EQ-CONTACTOR-KOG2",
+              "flowKind": "AUXILIARY_POWER",
+              "label": "Сборка цепи"
+            },
+            {
+              "fromEquipmentId": "CHME3E-EQ-CONTACTOR-KOG2",
+              "toEquipmentId": "CHME3E-EQ-HEATER-ELEMENTS-R85-R88",
+              "flowKind": "AUXILIARY_POWER",
+              "label": "Питание R85—R88"
+            }
+          ],
+          "explanation": "КОГ1 / КОГ2 собирают цепь нагревателей"
+        },
+        {
+          "step": 4,
+          "title": "Водяной насос обеспечивает циркуляцию",
+          "activeEquipmentIds": [
+            "CHME3-EQ-WATER-PUMP",
+            "CHME3E-EQ-HEATER-ELEMENTS-R85-R88"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-WATER-PUMP",
+              "toEquipmentId": "CHME3E-EQ-HEATER-ELEMENTS-R85-R88",
+              "flowKind": "COOLANT_FLOW",
+              "label": "Циркуляция теплоносителя"
+            }
+          ],
+          "explanation": "Водяной насос обеспечивает циркуляцию"
+        }
+      ]
+    },
+    {
+      "id": "CHME3E-STEP-PREHEAT-EXTERNAL",
+      "family": "CHME3E",
+      "title": "ЧМЭ3Э — функциональный путь внешнего прогрева",
+      "domain": "ELECTRICAL",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная последовательность по проверенным связям Атласа; не является монтажной трассировкой проводов, клемм или трубопроводов.",
+      "applicability": {
+        "families": [
+          "CHME3E"
+        ],
+        "profileIds": [
+          "chme3e-electronic"
+        ],
+        "selectionRequired": true
+      },
+      "sourceSchemeRef": "CHME3E-SCH-PREHEAT-EXTERNAL",
+      "sourcePresentations": [
+        {
+          "sourceId": "CHME3E-SRC-NOTIK-EQUIPMENT-67",
+          "title": "§67 — Особенности электрического оборудования ЧМЭ3Т и ЧМЭ3Э",
+          "documentDetails": "",
+          "provenanceStatus": "TRAINING_REFERENCE",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://www.sinref.ru/000_uchebniki/05300_transport_jd_teplovozi/170_teplovozi_chme3_chme3t_chme3e_izdanie2_notik_1996/146.htm"
+        },
+        {
+          "sourceId": "CHME3E-SRC-NOTIK-WATER-47",
+          "title": "§47 — Водяная система ЧМЭ3Т и ЧМЭ3Э с электрическим обогревом",
+          "documentDetails": "",
+          "provenanceStatus": "TRAINING_REFERENCE",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://www.sinref.ru/000_uchebniki/05300_transport_jd_teplovozi/170_teplovozi_chme3_chme3t_chme3e_izdanie2_notik_1996/082.htm"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "CHME_ATLAS_FUNCTIONAL_SCHEME",
+        "evidenceStatus": "TRAINING_REFERENCE"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "ПО → КОП",
+          "activeEquipmentIds": [
+            "CHME3E-EQ-MODE-SWITCH-PO",
+            "CHME3E-EQ-CONTACTOR-KOP"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3E-EQ-MODE-SWITCH-PO",
+              "toEquipmentId": "CHME3E-EQ-CONTACTOR-KOP",
+              "flowKind": "COMMAND",
+              "label": "Разрешение внешнего прогрева"
+            }
+          ],
+          "explanation": "ПО → КОП"
+        },
+        {
+          "step": 2,
+          "title": "КОП распределяет питание на нагрев и насосы",
+          "activeEquipmentIds": [
+            "CHME3E-EQ-CONTACTOR-KOP",
+            "CHME3E-EQ-HEATER-ELEMENTS-R85-R88",
+            "CHME3E-EQ-WATER-PUMP-MOTORS-DOV"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3E-EQ-CONTACTOR-KOP",
+              "toEquipmentId": "CHME3E-EQ-HEATER-ELEMENTS-R85-R88",
+              "flowKind": "AUXILIARY_POWER",
+              "label": "Питание нагревателей"
+            },
+            {
+              "fromEquipmentId": "CHME3E-EQ-CONTACTOR-KOP",
+              "toEquipmentId": "CHME3E-EQ-WATER-PUMP-MOTORS-DOV",
+              "flowKind": "AUXILIARY_POWER",
+              "label": "Питание электроприводов насосов"
+            }
+          ],
+          "explanation": "КОП распределяет питание на нагрев и насосы"
+        },
+        {
+          "step": 3,
+          "title": "ДОВ1—ДОВ3 приводят электронасосы",
+          "activeEquipmentIds": [
+            "CHME3E-EQ-WATER-PUMP-MOTORS-DOV",
+            "CHME3E-EQ-ELECTRIC-WATER-PUMPS"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3E-EQ-WATER-PUMP-MOTORS-DOV",
+              "toEquipmentId": "CHME3E-EQ-ELECTRIC-WATER-PUMPS",
+              "flowKind": "AUXILIARY_POWER",
+              "label": "Привод насосов"
+            }
+          ],
+          "explanation": "ДОВ1—ДОВ3 приводят электронасосы"
+        },
+        {
+          "step": 4,
+          "title": "Насосы обеспечивают циркуляцию через нагреваемые контуры",
+          "activeEquipmentIds": [
+            "CHME3E-EQ-ELECTRIC-WATER-PUMPS",
+            "CHME3E-EQ-HEATER-ELEMENTS-R85-R88"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3E-EQ-ELECTRIC-WATER-PUMPS",
+              "toEquipmentId": "CHME3E-EQ-HEATER-ELEMENTS-R85-R88",
+              "flowKind": "COOLANT_FLOW",
+              "label": "Принудительная циркуляция"
+            }
+          ],
+          "explanation": "Насосы обеспечивают циркуляцию через нагреваемые контуры"
+        }
+      ],
+      "safetyNote": "Только информационная функциональная схема. Не является инструкцией по подключению внешней трёхфазной сети и не разрешает работы под напряжением."
+    },
+    {
+      "id": "CHME3E-STEP-REMOTE-CONTROL-ELECTRICAL",
+      "family": "CHME3E",
+      "title": "ЧМЭ3Э — команды переносного пульта",
+      "domain": "ELECTRICAL",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная последовательность по проверенным связям Атласа; не является монтажной трассировкой проводов, клемм или трубопроводов.",
+      "applicability": {
+        "families": [
+          "CHME3E"
+        ],
+        "profileIds": [
+          "chme3e-electronic"
+        ],
+        "selectionRequired": true
+      },
+      "sourceSchemeRef": "CHME3E-SCH-REMOTE-CONTROL",
+      "sourcePresentations": [
+        {
+          "sourceId": "CHME3E-SRC-NOTIK-ONE-PERSON-99",
+          "title": "§99 — Управление тепловозом ЧМЭ3Э в одно лицо",
+          "documentDetails": "",
+          "provenanceStatus": "TRAINING_REFERENCE",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://sinref.ru/000_uchebniki/05300_transport_jd_teplovozi/170_teplovozi_chme3_chme3t_chme3e_izdanie2_notik_1996/194.htm"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "CHME_ATLAS_FUNCTIONAL_SCHEME",
+        "evidenceStatus": "TRAINING_REFERENCE"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Переносной пульт → НН106",
+          "activeEquipmentIds": [
+            "CHME3E-EQ-PORTABLE-CONTROL-PANELS",
+            "CHME3E-EQ-CONTROLLER-HH106"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3E-EQ-PORTABLE-CONTROL-PANELS",
+              "toEquipmentId": "CHME3E-EQ-CONTROLLER-HH106",
+              "flowKind": "COMMAND",
+              "label": "Команда изменения режима / мощности"
+            }
+          ],
+          "explanation": "Переносной пульт → НН106"
+        },
+        {
+          "step": 2,
+          "title": "НН106 → GC40P",
+          "activeEquipmentIds": [
+            "CHME3E-EQ-CONTROLLER-HH106",
+            "CHME3E-EQ-ELECTRONIC-REGULATOR-GC40P"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3E-EQ-CONTROLLER-HH106",
+              "toEquipmentId": "CHME3E-EQ-ELECTRONIC-REGULATOR-GC40P",
+              "flowKind": "CONTROL_SIGNAL",
+              "label": "Электронная логика команды"
+            }
+          ],
+          "explanation": "НН106 → GC40P"
+        },
+        {
+          "step": 3,
+          "title": "Пульт → сигнальные лампы",
+          "activeEquipmentIds": [
+            "CHME3E-EQ-PORTABLE-CONTROL-PANELS",
+            "CHME3E-EQ-ROOF-SIGNAL-LAMPS"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3E-EQ-PORTABLE-CONTROL-PANELS",
+              "toEquipmentId": "CHME3E-EQ-ROOF-SIGNAL-LAMPS",
+              "flowKind": "STATUS_SIGNAL",
+              "label": "Сигнализация режима"
+            }
+          ],
+          "explanation": "Пульт → сигнальные лампы"
+        }
+      ]
+    },
+    {
+      "id": "CHME3E-STEP-REMOTE-CONTROL-PNEUMATIC",
+      "family": "CHME3E",
+      "title": "ЧМЭ3Э — пневматическое питание переносного управления",
+      "domain": "PNEUMATIC",
+      "representation": "SOURCE_BACKED_FUNCTIONAL",
+      "functionalDisclaimer": "Функциональная последовательность по проверенным связям Атласа; не является монтажной трассировкой проводов, клемм или трубопроводов.",
+      "applicability": {
+        "families": [
+          "CHME3E"
+        ],
+        "profileIds": [
+          "chme3e-electronic"
+        ],
+        "selectionRequired": true
+      },
+      "sourceSchemeRef": "CHME3E-SCH-REMOTE-CONTROL",
+      "sourcePresentations": [
+        {
+          "sourceId": "CHME3E-SRC-NOTIK-ONE-PERSON-99",
+          "title": "§99 — Управление тепловозом ЧМЭ3Э в одно лицо",
+          "documentDetails": "",
+          "provenanceStatus": "TRAINING_REFERENCE",
+          "authorityForAction": "NO_BY_ITSELF",
+          "url": "https://sinref.ru/000_uchebniki/05300_transport_jd_teplovozi/170_teplovozi_chme3_chme3t_chme3e_izdanie2_notik_1996/194.htm"
+        }
+      ],
+      "authority": "INFORMATION_ONLY",
+      "origin": {
+        "kind": "CHME_ATLAS_FUNCTIONAL_SCHEME",
+        "evidenceStatus": "TRAINING_REFERENCE"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "title": "Резервуар управления → переносной пульт",
+          "activeEquipmentIds": [
+            "CHME3-EQ-PNEUMATIC-CONTROL-RESERVOIR",
+            "CHME3E-EQ-PORTABLE-CONTROL-PANELS"
+          ],
+          "edges": [
+            {
+              "fromEquipmentId": "CHME3-EQ-PNEUMATIC-CONTROL-RESERVOIR",
+              "toEquipmentId": "CHME3E-EQ-PORTABLE-CONTROL-PANELS",
+              "flowKind": "CONTROL_PRESSURE",
+              "label": "Пневматическая энергия исполнительных команд"
+            }
+          ],
+          "explanation": "Резервуар управления → переносной пульт"
+        }
+      ],
+      "researchNotes": [
+        "Внутренний маршрут через электропневматические и выпускные клапаны не изображается до добавления этих приборов как канонических узлов Атласа."
+      ]
+    }
+  ],
+  "researchGaps": [
+    "ЧМЭ: точный маршрут разрядки/выпуска через внутренние клапаны не показывается, пока приборы не заведены в канонический Атлас с подтвержденным источником.",
+    "Ермак: существующие flowLayer помечены как source-backed functional и поэтому не переименовываются в монтажную трассировку.",
+    "ЧМЭ3Э: внешний трехфазный прогрев остается INFORMATION_ONLY; порядок подключения внешней сети не моделируется."
+  ]
+}
