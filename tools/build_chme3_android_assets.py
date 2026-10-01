@@ -102,7 +102,9 @@ for variant, name, equipment, views in (
     for system in systems:
         members = [item["id"] for item in equipment if item["systemId"] == system["id"]]
         if members:
-            entries.append(entry(system, "SYSTEMS", system["title"], [("Оборудование", [next(x["name"] for x in equipment if x["id"] == mid) for mid in members])], related=members))
+            member_names = [next(x["name"] for x in equipment if x["id"] == mid) for mid in members]
+            entries.append(entry(system, "SYSTEMS", system["title"], [("Оборудование", member_names)],
+                                 related=members, aliases=member_names))
     for item in equipment:
         title = item.get("name", item["id"])
         blocks = [("Назначение", fields(item, "purpose", "principle")), ("Расположение", fields(item, "location")),
