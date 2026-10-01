@@ -1,0 +1,25 @@
+name: ChME3 interactive schemes
+
+on:
+  push:
+    branches:
+      - feature/locomotive-knowledge-foundation
+    paths:
+      - 'docs/locomotives/diesel/chme3-family/**'
+      - 'docs/locomotives/chme3/atlas*.json'
+      - 'qa/validate_chme3_interactive.py'
+      - '.github/workflows/chme3-interactive-check.yml'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate ChME3 family interactive schemes
+        run: python qa/validate_chme3_interactive.py
+      - name: Keep ChME3E Stage 2 Atlas contract green
+        run: python qa/validate_chme3e_stage2.py
