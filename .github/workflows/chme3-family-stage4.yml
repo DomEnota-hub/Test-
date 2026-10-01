@@ -1,0 +1,49 @@
+name: ChME3 family stage 4 final QA
+
+on:
+  push:
+    branches:
+      - feature/locomotive-knowledge-foundation
+    paths:
+      - 'docs/locomotives/chme3/**'
+      - 'docs/locomotives/diesel/chme3-family/**'
+      - 'qa/validate_chme3_*.py'
+      - 'qa/audit_chme3_*.py'
+      - '.github/workflows/chme3-family-stage4.yml'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Preserve legacy ChME3 Atlas
+        run: python qa/validate_chme3_atlas_checkpoint.py
+
+      - name: Preserve legacy ChME3 diagnostics metadata
+        run: python qa/validate_chme3_diagnostics_v3.py
+
+      - name: Require complete legacy runtime-v2 semantics
+        run: python qa/audit_chme3_diagnostic_semantics_v4.py --require-complete
+
+      - name: Preserve legacy ChME3 acceptance
+        run: python qa/validate_chme3_acceptance.py
+
+      - name: Preserve legacy ChME3 final cross-layer package
+        run: python qa/validate_chme3_final_package.py
+
+      - name: Preserve ChME3 family Stage 3
+        run: python qa/validate_chme3_family_stage3.py
+
+      - name: Preserve ChME3E Stage 2 Atlas
+        run: python qa/validate_chme3e_stage2.py
+
+      - name: Preserve ChME3 family interactive schemes
+        run: python qa/validate_chme3_interactive.py
+
+      - name: Validate ChME3 family Stage 4 acceptance and cross-layer integrity
+        run: python qa/validate_chme3_family_stage4.py
