@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "packageId": "chme3-family",
+  "updatedAt": "2026-10-01",
+  "policy": {
+    "canonicalPrefix": "CHME3-EQ-",
+    "variantPrefix": "CHME3T-EQ-",
+    "rule": "Все схемы, карточки, диагностика и приёмка ссылаются на один канонический equipmentId. Разные словесные формы и старые ID не создают отдельную сущность.",
+    "danglingReferencePolicy": "BLOCK_CHECKPOINT"
+  },
+  "canonicalMappings": [
+    {"canonical":"CHME3-EQ-TRACTION-MOTORS","aliases":["CHME3-EQ-TRACTION-MOTOR","CHME3-EQ-TM","traction-motor","traction-motors"]},
+    {"canonical":"CHME3-EQ-TRACTION-GENERATOR","aliases":["CHME3-EQ-MAIN-GENERATOR","traction-generator","main-generator"]},
+    {"canonical":"CHME3-EQ-AUX-GENERATOR","aliases":["CHME3-EQ-AUXILIARY-GENERATOR","aux-generator"]},
+    {"canonical":"CHME3-EQ-GOVERNOR","aliases":["CHME3-EQ-DIESEL-GOVERNOR","governor"]},
+    {"canonical":"CHME3-EQ-OVERSPEED-GOV","aliases":["CHME3-EQ-OVERSPEED-GOVERNOR","overspeed-governor"]},
+    {"canonical":"CHME3-EQ-FUEL-PRIME-PUMP","aliases":["CHME3-EQ-FUEL-PRIMING-PUMP","fuel-priming-pump"]},
+    {"canonical":"CHME3-EQ-OIL-PRIME-PUMP","aliases":["CHME3-EQ-OIL-PRIMING-PUMP","oil-priming-pump"]},
+    {"canonical":"CHME3-EQ-MAIN-RESERVOIRS","aliases":["CHME3-EQ-MAIN-RESERVOIR","main-reservoir"]},
+    {"canonical":"CHME3T-EQ-BRAKE-RESISTORS","aliases":["CHME3T-EQ-BRAKING-RESISTORS","CHME3T-EQ-RHEOSTATS"]},
+    {"canonical":"CHME3T-EQ-EDB-CONTROL","aliases":["CHME3T-EQ-RHEOSTATIC-BRAKE-CONTROL","CHME3T-EQ-DYNAMIC-BRAKE-CONTROL"]}
+  ],
+  "reservedEquipmentIds": [
+    "CHME3-EQ-AIR-DISTRIBUTOR",
+    "CHME3-EQ-BRAKE-CYLINDERS",
+    "CHME3-EQ-EPC-AUTOSTOP",
+    "CHME3-EQ-EQUALIZING-RESERVOIR",
+    "CHME3-EQ-PNEUMATIC-CONTROL-RESERVOIR",
+    "CHME3-EQ-AIR-DRY-SEPARATOR",
+    "CHME3-EQ-INTERCOOLER",
+    "CHME3-EQ-REVERSER",
+    "CHME3-EQ-TRAIN-CONTACTORS",
+    "CHME3-EQ-BATTERY-SWITCH",
+    "CHME3-EQ-GOVERNOR-SERVOMOTOR"
+  ],
+  "notes": [
+    "reservedEquipmentIds допускается создать во втором заходе как отдельные карточки, если они ещё агрегированы внутри более общей сущности.",
+    "Миграционные alias-ID существуют только для импорта/проверки и не должны отображаться пользователю."
+  ]
+}
