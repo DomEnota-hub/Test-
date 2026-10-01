@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "familyId": "chme3-family",
+  "updatedAt": "2026-10-01",
+  "stage": "STAGE_3_DIAGNOSTICS_ASSISTANT_SEMANTICS",
+  "migrationMode": "BRIDGE_UNTIL_FAMILY_COMMON_IS_PHYSICALLY_MIGRATED",
+  "runtimeContract": "docs/diagnostics/LOCOMOTIVE_DIAGNOSTIC_RUNTIME_CONTRACT_V2.md",
+  "legacySharedCorpus": {
+    "root": "docs/locomotives/chme3",
+    "scenarioGlobs": ["diagnostics_*_pass3.json"],
+    "runtimeGraphGlobs": ["diagnostic_runtime_graphs_v2*.json"],
+    "expectedScenarioCount": 56,
+    "requiredRuntimeCoverage": 56,
+    "semanticAudit": "qa/audit_chme3_diagnostic_semantics_v4.py --require-complete",
+    "contentValidation": "qa/validate_chme3_diagnostics_v3.py"
+  },
+  "profileLayers": {
+    "chme3-base": {
+      "series": "ЧМЭ3",
+      "source": "legacySharedCorpus",
+      "applicabilityRule": "ONLY_SCENARIOS_WHERE_PROFILES_CONTAINS_SERIES"
+    },
+    "chme3t-rheostatic": {
+      "series": "ЧМЭ3Т",
+      "source": "legacySharedCorpus",
+      "applicabilityRule": "ONLY_SCENARIOS_WHERE_PROFILES_CONTAINS_SERIES",
+      "requiredScenarioIds": ["CHME3-DIAG-110"],
+      "profileIsolation": "EDB_SCENARIO_AND_EQUIPMENT_MUST_REMAIN_CHME3T_ONLY"
+    },
+    "chme3e-electronic": {
+      "series": "ЧМЭ3Э",
+      "sharedSource": "legacySharedCorpus",
+      "sharedApplicabilityRule": "ONLY_SCENARIOS_WHERE_PROFILES_CONTAINS_SERIES",
+      "variantScenarioFile": "../chme3e/diagnostics_stage3.json",
+      "variantRuntimeFile": "../chme3e/diagnostic_runtime_graphs_v2.json",
+      "assistantSemanticsFile": "../chme3e/assistant_semantics_stage3.json",
+      "hardExclusions": [
+        "CHME3-DIAG-110",
+        "CHME3-SYS-EDB",
+        "CHME3T-EQ-EDB-CONTROL",
+        "CHME3T-EQ-BRAKE-RESISTORS",
+        "CHME3T-EQ-BRAKE-RESISTOR-FAN"
+      ]
+    }
+  },
+  "provenancePolicy": {
+    "officialityIsNotTruth": true,
+    "runtimeAuthorityIsIndependentFromDiscoveryValue": true,
+    "allowedStatuses": ["996R_CONFIRMED", "OFFICIAL_OTHER", "MANUFACTURER_CONFIRMED", "LOCAL_INSTRUCTION", "FIELD_PRACTICE", "CONFLICT", "UNVERIFIED", "TRAINING_REFERENCE"],
+    "sourceBoundActionRequires": ["CURRENT_PRIMARY_OR_EXPLICITLY_APPROVED_BOUND_SOURCE", "PROFILE_MATCH", "SAFETY_GATE_WHERE_REQUIRED"],
+    "fieldPracticeMayAuthorizeAction": false,
+    "unverifiedMayAuthorizeAction": false,
+    "conflictMayAuthorizeAction": false
+  },
+  "integrationState": "NOT_INTEGRATION_READY_UNTIL_STAGE_4"
+}
