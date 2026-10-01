@@ -5,7 +5,7 @@
   "series": "ЧМЭ3Э",
   "tractionType": "diesel",
   "updatedAt": "2026-10-01",
-  "stage": "STAGE_2_ATLAS_SCHEMES_COMPLETE",
+  "stage": "STAGE_2_ATLAS_SCHEMES_INTERACTIVE_COMPLETE",
   "title": "ЧМЭ3Э — электронное исполнение без заводского реостатного тормоза",
   "sharedBase": "../common",
   "variantLayer": ".",
@@ -31,6 +31,7 @@
     "inheritCommonDieselFuelOilWaterPneumaticContent": "ONLY_WITH_CONFIRMED_APPLICABILITY",
     "inheritChme3tElectronicContent": "NO_AUTOMATIC_INHERITANCE",
     "electricalSchemePolicy": "Use a dedicated CHME3E electrical layer; shared apparatus may reference family-common entities, but circuit logic must follow CHME3E-specific evidence.",
+    "interactiveSchemePolicy": "Expose semantic-canvas interactive views through the family interactive contract. Source-overlay coordinates require a separately verified image mapping and must never be invented.",
     "edbPolicy": "Factory rheostatic-brake content is excluded unless a specific non-factory modernization is independently confirmed for the physical locomotive.",
     "modernizationPolicy": "Actual installed equipment overrides assumptions from series/number for information routing, but does not grant authority for actions without current source support.",
     "unknownExecutionPolicy": "Fail closed for variant-dependent operational actions."
@@ -40,8 +41,17 @@
     "atlasIndex": "atlas_variant.json",
     "atlasCards": ["atlas_cards_electronic.json", "atlas_cards_preheat_remote.json"],
     "schemes": "schemes_variant.json",
+    "interactiveSchemes": "interactive_schemes.json",
     "schemeDesignations": "scheme_designations.json",
     "stage2Sources": "source_registry_stage2.json"
+  },
+  "interactiveCapabilities": {
+    "renderMode": "SEMANTIC_CANVAS",
+    "tapToEquipmentCard": true,
+    "designationSearchToHotspot": true,
+    "diagnosticToSchemeJoin": "BY_EQUIPMENT_ID",
+    "profileIsolation": true,
+    "verifiedSourceOverlay": "NOT_YET_REQUIRED"
   },
   "numberReference": {
     "status": "REFERENCE_ONLY_NOT_PROFILE_AUTHORITY",
