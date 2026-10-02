@@ -50,6 +50,17 @@ jobs:
           gradle-version: '8.7'
       - name: Audit expanded emergency architecture and ChME3 research boundary
         run: python3 qa/validate_extended_emergency_architecture.py
+      - name: Preserve existing ChME3 Android projection
+        run: python3 qa/verify_chme3_android_assets.py
+      - name: Preserve existing diagnostic graph contracts
+        run: |
+          python3 qa/verify_diagnostic_graphs.py
+          python3 qa/verify_diagnostic_unknown_routes.py
+      - name: Preserve TEM2 stages 1 through 3
+        run: |
+          python3 qa/validate_tem2_stage1_foundation.py
+          python3 app/qa/validate_tem2_stage2.py
+          python3 app/qa/validate_tem2_stage3.py
       - name: Extract base project and overlay audited patch
         run: |
           rm -rf buildsrc
