@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "profileId": "tem2-base",
+  "familyId": "tem2-family",
+  "series": "ТЭМ2",
+  "tractionType": "diesel",
+  "updatedAt": "2026-10-02",
+  "stage": "STAGE_1_FOUNDATION_COMPLETE",
+  "completedStages": ["FOUNDATION"],
+  "title": "ТЭМ2 — базовое исполнение семейства",
+  "sharedBase": "../common",
+  "variantLayer": ".",
+  "confirmedFamilyTraits": [
+    "six_axle_shunting_diesel_locomotive",
+    "dc_electric_power_transmission",
+    "diesel_generator_powerplant",
+    "six_traction_motor_family_architecture",
+    "pneumatic_brake_system_family"
+  ],
+  "executionDependentTraits": [
+    "PD1 versus PD1M diesel execution by build period or replacement",
+    "electrical apparatus revision by production period",
+    "one-person control equipment",
+    "multiple-unit equipment",
+    "brake apparatus after modernization or replacement"
+  ],
+  "explicitExclusions": [
+    "TEM2U-only body/cab and control layout assumptions",
+    "TEM2UM 1PD-4A / higher-power diesel-generator assumptions",
+    "TEM2T rheostatic/electrodynamic brake equipment",
+    "TEM2A execution-specific gauge/export equipment",
+    "TEM15/TEM17/TEM18 equipment"
+  ],
+  "profileRules": {
+    "inheritCommonMechanicalContent": true,
+    "inheritCommonDieselFuelOilCoolingPneumaticContent": "ONLY_WITH_CONFIRMED_APPLICABILITY",
+    "electricalSchemePolicy": "Use TEM2-specific evidence and revision-aware circuit data; do not substitute TEM2U or TEM2UM diagrams merely because the family is related.",
+    "dieselPolicy": "PD1/PD1M execution is not inferred from the series label alone; actual build/installed equipment evidence wins.",
+    "modernizationPolicy": "Actual installed equipment overrides factory-number assumptions for information routing, but not action authority.",
+    "unknownExecutionPolicy": "Fail closed for variant-dependent operational actions."
+  },
+  "evidenceRefs": [
+    "TEM2-SRC-BMZ-MANUAL-1983",
+    "TEM2-SRC-RZD-TEM2-IO-2004",
+    "TEM2-SRC-NOTIK-ELECTRICAL-1980",
+    "TEM2-SRC-SDOBNIKOV-1978",
+    "TEM2-SRC-BRAKES-2026",
+    "TEM2-SRC-POT-RZD-342-2025"
+  ],
+  "nextStages": ["ATLAS_SCHEMES_INTERACTIVE", "DIAGNOSTICS_ASSISTANT_SEMANTICS", "ACCEPTANCE_CROSS_LAYER_QA"],
+  "integrationState": "FOUNDATION_ONLY_NOT_READY_FOR_APP_INTEGRATION"
+}
