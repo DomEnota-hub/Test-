@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 2,
+  "familyId": "tem2-family",
+  "stage": 2,
+  "classification": "SOURCE_BACKED_FUNCTIONAL",
+  "precisionBoundary": "Функциональный уровень компонентов и потоков. Файл не заявляет точные номера проводов, клемм, трассы кабелей или физическую прокладку труб.",
+  "profiles": ["tem2-base", "tem2u-improved"],
+  "sourceGroups": {
+    "M2": ["TEM2-SRC-BMZ-MANUAL-1983"],
+    "M2U": ["TEM2U-SRC-BMZ-MANUAL-1988"],
+    "EL": ["TEM2-SRC-NOTIK-ELECTRICAL-1980"],
+    "BRK": ["TEM2-SRC-BRAKES-2026"],
+    "FAMILY": ["TEM2-SRC-RZD-TEM2-IO-2004"]
+  },
+  "systems": [
+    ["SYS-DIESEL", "Дизель и механическая часть", "MECHANICAL"],
+    ["SYS-TRACTION", "Тяговая электрическая передача", "ELECTRICAL"],
+    ["SYS-EXCITATION", "Возбуждение и регулирование тягового генератора", "ELECTRICAL"],
+    ["SYS-START", "Пуск дизеля и аккумуляторная цепь", "ELECTRICAL"],
+    ["SYS-AUX", "Вспомогательные электрические цепи", "ELECTRICAL"],
+    ["SYS-AIR", "Получение и подготовка сжатого воздуха", "PNEUMATIC"],
+    ["SYS-TRAIN-BRAKE", "Автоматический поездной тормоз", "PNEUMATIC"],
+    ["SYS-LOCO-BRAKE", "Вспомогательный локомотивный тормоз", "PNEUMATIC"],
+    ["SYS-CONTROL", "Органы управления и блокировки", "CONTROL"]
+  ],
+  "equipment": [
+    ["TEM2-EQ-DIESEL", "Дизель ПД1 / фактически установленное исполнение", "SYS-DIESEL", ["tem2-base"], ["M2"]],
+    ["TEM2U-EQ-DIESEL", "Дизель ПД1М / фактически установленное исполнение", "SYS-DIESEL", ["tem2u-improved"], ["M2U"]],
+    ["TEM2-EQ-TG", "Тяговый генератор", "SYS-TRACTION", ["tem2-base", "tem2u-improved"], ["M2", "M2U"]],
+    ["TEM2-EQ-TM1-3", "Тяговые электродвигатели 1–3", "SYS-TRACTION", ["tem2-base", "tem2u-improved"], ["EL", "M2U"]],
+    ["TEM2-EQ-TM4-6", "Тяговые электродвигатели 4–6", "SYS-TRACTION", ["tem2-base", "tem2u-improved"], ["EL", "M2U"]],
+    ["TEM2-EQ-P1", "Поездной контактор П1", "SYS-TRACTION", ["tem2-base", "tem2u-improved"], ["EL", "M2U"]],
+    ["TEM2-EQ-P2", "Поездной контактор П2", "SYS-TRACTION", ["tem2-base", "tem2u-improved"], ["EL", "M2U"]],
+    ["TEM2-EQ-REV", "Реверсор", "SYS-TRACTION", ["tem2-base", "tem2u-improved"], ["EL", "M2U"]],
+    ["TEM2-EQ-FIELD-SHUNT", "Контакторы и резисторы ослабления возбуждения ТЭД", "SYS-TRACTION", ["tem2-base", "tem2u-improved"], ["EL", "M2U"]],
+    ["TEM2-EQ-MOTOR-CUTOUT", "Отключатель тяговых электродвигателей", "SYS-TRACTION", ["tem2-base", "tem2u-improved"], ["EL", "M2U"]],
+    ["TEM2-EQ-EXCITER", "Возбудитель", "SYS-EXCITATION", ["tem2-base", "tem2u-improved"], ["EL", "M2U"]],
+    ["TEM2-EQ-AUX-GEN", "Вспомогательный генератор", "SYS-AUX", ["tem2-base", "tem2u-improved"], ["EL", "M2U"]],
+    ["TEM2-EQ-KV", "Контактор возбуждения тягового генератора КВ", "SYS-EXCITATION", ["tem2-base", "tem2u-improved"], ["EL", "M2U"]],
+    ["TEM2-EQ-VV", "Контактор возбуждения возбудителя ВВ", "SYS-EXCITATION", ["tem2-base", "tem2u-improved"], ["EL", "M2U"]],
+    ["TEM2-EQ-CURRENT-LIMIT", "Реле ограничения тока", "SYS-EXCITATION", ["tem2-base", "tem2u-improved"], ["EL", "M2U"]],
+    ["TEM2-EQ-BAT", "Аккумуляторная батарея", "SYS-START", ["tem2-base", "tem2u-improved"], ["M2", "M2U"]],
+    ["TEM2-EQ-START-CIRCUIT", "Пусковая функциональная группа", "SYS-START", ["tem2-base", "tem2u-improved"], ["M2", "M2U"]],
+    ["TEM2-EQ-VOLT-REG", "Регулятор напряжения вспомогательного генератора", "SYS-AUX", ["tem2-base", "tem2u-improved"], ["EL", "M2U"]],
+    ["TEM2-EQ-GROUND-RELAY", "Реле заземления", "SYS-CONTROL", ["tem2-base", "tem2u-improved"], ["EL", "M2U"]],
+    ["TEM2-EQ-SLIP-RELAYS", "Реле боксования", "SYS-CONTROL", ["tem2-base", "tem2u-improved"], ["EL", "M2U"]],
+    ["TEM2-EQ-CONTROLLER", "Контроллер машиниста", "SYS-CONTROL", ["tem2-base", "tem2u-improved"], ["M2", "M2U"]],
+    ["TEM2-EQ-COMP", "Компрессор", "SYS-AIR", ["tem2-base", "tem2u-improved"], ["M2", "M2U"]],
+    ["TEM2-EQ-PRESS-REG", "Регулятор давления компрессора", "SYS-AIR", ["tem2-base", "tem2u-improved"], ["M2", "M2U"]],
+    ["TEM2-EQ-MAIN-RES", "Главные резервуары", "SYS-AIR", ["tem2-base", "tem2u-improved"], ["M2", "M2U"]],
+    ["TEM2-EQ-OIL-SEP", "Маслоотделитель / подготовка воздуха", "SYS-AIR", ["tem2-base", "tem2u-improved"], ["M2", "M2U"]],
+    ["TEM2-EQ-FEED-PIPE", "Питательная магистраль", "SYS-AIR", ["tem2-base", "tem2u-improved"], ["M2", "M2U"]],
+    ["TEM2-EQ-DRV-BRAKE", "Кран машиниста поездного тормоза", "SYS-TRAIN-BRAKE", ["tem2-base", "tem2u-improved"], ["M2", "M2U", "BRK"]],
+    ["TEM2-EQ-EQ-RES", "Уравнительный резервуар", "SYS-TRAIN-BRAKE", ["tem2-base", "tem2u-improved"], ["M2", "M2U"]],
+    ["TEM2-EQ-BRAKE-PIPE", "Тормозная магистраль", "SYS-TRAIN-BRAKE", ["tem2-base", "tem2u-improved"], ["M2", "M2U", "BRK"]],
+    ["TEM2-EQ-AIR-DIST", "Воздухораспределитель локомотива", "SYS-TRAIN-BRAKE", ["tem2-base", "tem2u-improved"], ["M2", "M2U"]],
+    ["TEM2-EQ-AUX-RES", "Запасный / дополнительный резервуар тормозной системы", "SYS-TRAIN-BRAKE", ["tem2-base", "tem2u-improved"], ["M2", "M2U"]],
+    ["TEM2-EQ-BC", "Тормозные цилиндры", "SYS-TRAIN-BRAKE", ["tem2-base", "tem2u-improved"], ["M2", "M2U", "BRK"]],
+    ["TEM2-EQ-INDEP-BRAKE", "Кран вспомогательного тормоза локомотива", "SYS-LOCO-BRAKE", ["tem2-base", "tem2u-improved"], ["M2", "M2U", "BRK"]],
+    ["TEM2-EQ-EPC-AUTOSTOP", "Электропневматический клапан автостопа", "SYS-TRAIN-BRAKE", ["tem2-base", "tem2u-improved"], ["M2", "M2U"]],
+    ["TEM2U-EQ-ONE-PERSON", "Оборудование управления одним лицом — только при фактическом наличии", "SYS-CONTROL", ["tem2u-improved"], ["M2U"]],
+    ["TEM2U-EQ-MU-CONTROL", "Цепи системы многих единиц — только при фактическом наличии", "SYS-CONTROL", ["tem2u-improved"], ["M2U"]]
+  ],
+  "schemes": [
+    {"id":"TEM2-SCH-TRACTION","title":"Тяговая силовая цепь","domain":"ELECTRICAL","app":["tem2-base","tem2u-improved"],"nodes":["TEM2-EQ-TG","TEM2-EQ-P1","TEM2-EQ-P2","TEM2-EQ-TM1-3","TEM2-EQ-TM4-6","TEM2-EQ-REV","TEM2-EQ-FIELD-SHUNT","TEM2-EQ-MOTOR-CUTOUT"],"src":["EL","M2U"]},
+    {"id":"TEM2-SCH-EXCITATION","title":"Возбуждение тягового генератора","domain":"ELECTRICAL","app":["tem2-base","tem2u-improved"],"nodes":["TEM2-EQ-AUX-GEN","TEM2-EQ-EXCITER","TEM2-EQ-VV","TEM2-EQ-KV","TEM2-EQ-TG","TEM2-EQ-CURRENT-LIMIT"],"src":["EL","M2U"]},
+    {"id":"TEM2-SCH-START","title":"Пуск дизеля и аккумуляторная цепь","domain":"ELECTRICAL","app":["tem2-base","tem2u-improved"],"nodes":["TEM2-EQ-BAT","TEM2-EQ-START-CIRCUIT","TEM2-EQ-DIESEL","TEM2U-EQ-DIESEL"],"src":["M2","M2U"]},
+    {"id":"TEM2-SCH-AUX","title":"Вспомогательное электроснабжение и заряд","domain":"ELECTRICAL","app":["tem2-base","tem2u-improved"],"nodes":["TEM2-EQ-AUX-GEN","TEM2-EQ-VOLT-REG","TEM2-EQ-BAT"],"src":["EL","M2U"]},
+    {"id":"TEM2-SCH-CONTROL","title":"Функциональная цепь тягового управления и защит","domain":"ELECTRICAL","app":["tem2-base","tem2u-improved"],"nodes":["TEM2-EQ-CONTROLLER","TEM2-EQ-REV","TEM2-EQ-P1","TEM2-EQ-P2","TEM2-EQ-VV","TEM2-EQ-KV","TEM2-EQ-GROUND-RELAY","TEM2-EQ-SLIP-RELAYS"],"src":["EL","M2U"]},
+    {"id":"TEM2-SCH-AIR-SUPPLY","title":"Получение сжатого воздуха и питательная магистраль","domain":"PNEUMATIC","app":["tem2-base","tem2u-improved"],"nodes":["TEM2-EQ-COMP","TEM2-EQ-PRESS-REG","TEM2-EQ-MAIN-RES","TEM2-EQ-OIL-SEP","TEM2-EQ-FEED-PIPE"],"src":["M2","M2U"]},
+    {"id":"TEM2-SCH-TRAIN-BRAKE","title":"Автоматический поездной тормоз","domain":"PNEUMATIC","app":["tem2-base","tem2u-improved"],"nodes":["TEM2-EQ-FEED-PIPE","TEM2-EQ-DRV-BRAKE","TEM2-EQ-EQ-RES","TEM2-EQ-BRAKE-PIPE","TEM2-EQ-AIR-DIST","TEM2-EQ-AUX-RES","TEM2-EQ-BC","TEM2-EQ-EPC-AUTOSTOP"],"src":["M2","M2U","BRK"]},
+    {"id":"TEM2-SCH-LOCO-BRAKE","title":"Вспомогательный прямодействующий тормоз локомотива","domain":"PNEUMATIC","app":["tem2-base","tem2u-improved"],"nodes":["TEM2-EQ-FEED-PIPE","TEM2-EQ-INDEP-BRAKE","TEM2-EQ-BC"],"src":["M2","M2U","BRK"]},
+    {"id":"TEM2U-SCH-PROFILE-CONTROL","title":"Профильные цепи управления ТЭМ2У","domain":"ELECTRICAL","app":["tem2u-improved"],"nodes":["TEM2U-EQ-ONE-PERSON","TEM2U-EQ-MU-CONTROL","TEM2-EQ-CONTROLLER"],"src":["M2U"]}
+  ],
+  "flows": [
+    ["TEM2-FLOW-TRACTION-A","ELECTRICAL_TRACTION_CURRENT",["tem2-base","tem2u-improved"],"TEM2-SCH-TRACTION",["TEM2-EQ-TG","TEM2-EQ-P1","TEM2-EQ-TM1-3","TEM2-EQ-REV"]],
+    ["TEM2-FLOW-TRACTION-B","ELECTRICAL_TRACTION_CURRENT",["tem2-base","tem2u-improved"],"TEM2-SCH-TRACTION",["TEM2-EQ-TG","TEM2-EQ-P2","TEM2-EQ-TM4-6","TEM2-EQ-REV"]],
+    ["TEM2-FLOW-EXCITATION","ELECTRICAL_EXCITATION",["tem2-base","tem2u-improved"],"TEM2-SCH-EXCITATION",["TEM2-EQ-AUX-GEN","TEM2-EQ-VV","TEM2-EQ-EXCITER","TEM2-EQ-KV","TEM2-EQ-TG"]],
+    ["TEM2-FLOW-START","ELECTRICAL_CONTROL_POWER",["tem2-base","tem2u-improved"],"TEM2-SCH-START",["TEM2-EQ-BAT","TEM2-EQ-START-CIRCUIT"]],
+    ["TEM2-FLOW-AUX-CHARGE","ELECTRICAL_AUX_POWER",["tem2-base","tem2u-improved"],"TEM2-SCH-AUX",["TEM2-EQ-AUX-GEN","TEM2-EQ-VOLT-REG","TEM2-EQ-BAT"]],
+    ["TEM2-FLOW-TRACTION-CONTROL","CONTROL_COMMAND",["tem2-base","tem2u-improved"],"TEM2-SCH-CONTROL",["TEM2-EQ-CONTROLLER","TEM2-EQ-REV","TEM2-EQ-P1","TEM2-EQ-P2","TEM2-EQ-VV","TEM2-EQ-KV"]],
+    ["TEM2-FLOW-AIR-SUPPLY","PNEUMATIC_SUPPLY",["tem2-base","tem2u-improved"],"TEM2-SCH-AIR-SUPPLY",["TEM2-EQ-COMP","TEM2-EQ-MAIN-RES","TEM2-EQ-OIL-SEP","TEM2-EQ-FEED-PIPE"]],
+    ["TEM2-FLOW-TRAIN-CONTROL","PNEUMATIC_BRAKE_CONTROL",["tem2-base","tem2u-improved"],"TEM2-SCH-TRAIN-BRAKE",["TEM2-EQ-FEED-PIPE","TEM2-EQ-DRV-BRAKE","TEM2-EQ-EQ-RES","TEM2-EQ-BRAKE-PIPE"]],
+    ["TEM2-FLOW-TRAIN-ACTUATION","PNEUMATIC_BRAKE_ACTUATION",["tem2-base","tem2u-improved"],"TEM2-SCH-TRAIN-BRAKE",["TEM2-EQ-BRAKE-PIPE","TEM2-EQ-AIR-DIST","TEM2-EQ-AUX-RES","TEM2-EQ-BC"]],
+    ["TEM2-FLOW-INDEP-BRAKE","PNEUMATIC_BRAKE_CONTROL",["tem2-base","tem2u-improved"],"TEM2-SCH-LOCO-BRAKE",["TEM2-EQ-FEED-PIPE","TEM2-EQ-INDEP-BRAKE","TEM2-EQ-BC"]],
+    ["TEM2U-FLOW-PROFILE-CONTROL","CONTROL_COMMAND",["tem2u-improved"],"TEM2U-SCH-PROFILE-CONTROL",["TEM2U-EQ-ONE-PERSON","TEM2-EQ-CONTROLLER","TEM2U-EQ-MU-CONTROL"]]
+  ],
+  "interactiveProjection": {
+    "viewPerApplicableSchemeAndProfile": true,
+    "canvas": [1000,650],
+    "hotspotLayout": {"type":"DETERMINISTIC_GRID","columns":4,"origin":[120,130],"spacing":[230,180],"radius":42},
+    "coordinatePolicy": "DISPLAY_ONLY_NOT_PHYSICAL_LOCATION",
+    "hitTesting": "SCREEN_TO_SCHEME_TRANSFORM_REQUIRED",
+    "camera": {"fit":true,"pan":true,"zoom":true,"resetToFit":true,"fitActiveStep":true,"autoPanBetweenSteps":false,"reducedMotion":true,"portraitLandscape":true}
+  },
+  "semanticPalette": {
+    "colorNeverSoleCarrier": true,
+    "brandAmberDistinctFromDeviationOrange": true,
+    "meanings": {"neutral":"назначение/общая справка","green":"нормальное состояние","orange":"отклонение","red":"опасность/запрет","blue":"справочная информация"},
+    "flowStyles": {"ELECTRICAL_TRACTION_CURRENT":"solid-bold","ELECTRICAL_EXCITATION":"dash-dot","ELECTRICAL_CONTROL_POWER":"dash","ELECTRICAL_AUX_POWER":"solid","CONTROL_COMMAND":"dash","PNEUMATIC_SUPPLY":"solid","PNEUMATIC_BRAKE_CONTROL":"dash","PNEUMATIC_BRAKE_ACTUATION":"solid-bold"}
+  },
+  "profileIsolation": {
+    "failClosed": true,
+    "deniedAdjacentVariants": ["TEM2UM","TEM2T","TEM2A","TEM15","TEM17","TEM18"],
+    "deniedFeatures": ["TEM2T_RHEOSTATIC_BRAKE","TEM2UM_1PD4A_HIGH_POWER","TEM2A_VARIANT_SPECIFIC_EQUIPMENT"],
+    "rule": "Запрещённые соседние исполнения могут присутствовать только в exclusion metadata, но не как активные Atlas-ID, схемы, hotspots или flow steps."
+  },
+  "runtimeSafety": {
+    "stage2ProvidesExecutableActions": false,
+    "fieldPracticeAuthorizesActions": false,
+    "externalPowerConnectionInstructions": false
+  }
+}
