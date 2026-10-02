@@ -1,12 +1,19 @@
-name: Apply expanded emergency settings UI
+name: Expanded emergency Stage 0 audit
 
 on:
   push:
     branches:
       - feature/extended-emergency-scenarios
+      - audit/extended-emergency-stage0
     paths:
       - '.github/workflows/apply-extended-emergency-settings.yml'
       - 'qa/validate_extended_emergency_architecture.py'
+      - 'docs/integration/EXTENDED_EMERGENCY_STAGE0_CHECKPOINT.md'
+      - 'docs/locomotives/chme3/diagnostic_source_registry_addendum.json'
+      - 'docs/locomotives/chme3/diagnostic_source_matrix.json'
+      - 'docs/locomotives/chme3/diagnostic_field_observations.json'
+      - 'docs/locomotives/chme3/diagnostics_extended_pass3.json'
+      - 'docs/locomotives/chme3/source_registry.json'
       - 'app/src/main/java/ru/railbrake/calculator/ui/BrakeCalculatorApp.kt'
       - 'patch/app/src/main/java/ru/railbrake/calculator/ui/BrakeCalculatorApp.kt'
       - 'app/src/main/java/ru/railbrake/calculator/ui/ExtendedEmergencySettingsSection.kt'
@@ -22,16 +29,14 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  patch-and-verify:
+  audit-and-verify:
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: feature/extended-emergency-scenarios
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
@@ -43,45 +48,16 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.7'
-      - name: Patch settings screen labels and section in app and patch mirrors
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          paths = [
-              Path('app/src/main/java/ru/railbrake/calculator/ui/BrakeCalculatorApp.kt'),
-              Path('patch/app/src/main/java/ru/railbrake/calculator/ui/BrakeCalculatorApp.kt'),
-          ]
-          for p in paths:
-              text = p.read_text(encoding='utf-8')
-              replacements = [
-                  ('SETTINGS("Палитра")', 'SETTINGS("Настройки")', 1),
-                  ('label = { Text("Палитра") },', 'label = { Text("Настройки") },', 1),
-                  ('PaletteScreen(palette, onPaletteChange, themeMode, onThemeModeChange)', 'SettingsScreen(palette, onPaletteChange, themeMode, onThemeModeChange)', 1),
-                  ('private fun PaletteScreen(', 'private fun SettingsScreen(', 1),
-              ]
-              for old, new, expected in replacements:
-                  count = text.count(old)
-                  if count != expected:
-                      raise SystemExit(f'{p}: expected {expected} occurrence(s) of {old!r}, got {count}')
-                  text = text.replace(old, new)
-              anchor = '    RailInfoBand("Тема и цветовой акцент настраиваются независимо. Красный по-прежнему зарезервирован для опасности и ОПП.")'
-              if text.count(anchor) != 1:
-                  raise SystemExit(f'{p}: settings insertion anchor drifted')
-              text = text.replace(anchor, '    ExtendedEmergencySettingsSection()\n' + anchor)
-              if 'Палитра' in text:
-                  raise SystemExit(f'{p}: stale user-facing Палитра label remains')
-              p.write_text(text, encoding='utf-8')
-          PY
-      - name: Verify expanded emergency architecture and mirrors
+      - name: Audit expanded emergency architecture and ChME3 research boundary
         run: python3 qa/validate_extended_emergency_architecture.py
-      - name: Extract base project and overlay patch
+      - name: Extract base project and overlay audited patch
         run: |
           rm -rf buildsrc
           mkdir buildsrc
           unzip -q RailBrakeCalculator.zip -d buildsrc
           test -f buildsrc/RailBrakeCalculator/settings.gradle.kts
           cp -a patch/. buildsrc/RailBrakeCalculator/
-      - name: Prepare source-only UI validation build
+      - name: Prepare source-only Android validation build
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -94,30 +70,27 @@ jobs:
               raise SystemExit('Expected exactly one local sherpa-onnx dependency')
           gradle.write_text(text.replace(dependency, ''), encoding='utf-8')
 
-          # The offline ASR AAR is an external binary and is intentionally not
-          # stored in this repository/zip. Replace only its adapter in the
-          # temporary build tree so the settings/UI change can still receive a
-          # real Kotlin compile and unit-test pass. Repository sources remain
-          # untouched; full runtime/release validation still requires the AAR.
+          # The offline ASR AAR is an external binary and is not stored in this
+          # repository/zip. Replace only its adapter in the disposable build
+          # tree so Stage 0 can compile, test, lint and assemble the audited UI.
+          # Repository sources remain untouched; a full runtime/release check
+          # with real voice input still requires the actual AAR.
           voice = root / 'app/src/main/java/ru/railbrake/calculator/core/assistant/AssistantVoiceInput.kt'
           if not voice.is_file():
               raise SystemExit('AssistantVoiceInput.kt missing from temporary build')
           voice.write_text('''package ru.railbrake.calculator.core.assistant\n\nimport android.content.Context\n\ninternal enum class AssistantVoicePhase { PREPARING, LISTENING, TRANSCRIBING }\n\ninternal sealed interface AssistantVoiceOutcome {\n    data class Transcript(val text: String) : AssistantVoiceOutcome\n    data object NoSpeech : AssistantVoiceOutcome\n}\n\ninternal class AssistantVoiceInput(private val context: Context) {\n    fun stop() = Unit\n    fun close() = Unit\n    suspend fun capture(onPhase: suspend (AssistantVoicePhase) -> Unit): AssistantVoiceOutcome {\n        onPhase(AssistantVoicePhase.PREPARING)\n        return AssistantVoiceOutcome.NoSpeech\n    }\n}\n''', encoding='utf-8')
           PY
-      - name: Kotlin compile (UI source validation)
+      - name: Kotlin compile (source-only validation)
         working-directory: buildsrc/RailBrakeCalculator
         run: gradle :app:compileDebugKotlin --stacktrace --console=plain
-      - name: Unit tests (UI source validation)
+      - name: Unit tests (source-only validation)
         working-directory: buildsrc/RailBrakeCalculator
         run: gradle :app:testDebugUnitTest --stacktrace --console=plain
+      - name: Lint (source-only validation)
+        working-directory: buildsrc/RailBrakeCalculator
+        run: gradle :app:lintDebug --stacktrace --console=plain
+      - name: Assemble debug (source-only validation)
+        working-directory: buildsrc/RailBrakeCalculator
+        run: gradle :app:assembleDebug --stacktrace --console=plain
       - name: Patch hygiene
         run: git diff --check
-      - name: Commit verified settings integration
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add app/src/main/java/ru/railbrake/calculator/ui/BrakeCalculatorApp.kt patch/app/src/main/java/ru/railbrake/calculator/ui/BrakeCalculatorApp.kt
-          git diff --cached --quiet && exit 0
-          git commit -m 'feat: rename Palette to Settings and expose expanded emergency toggle'
-          git pull --rebase origin feature/extended-emergency-scenarios
-          git push origin HEAD:feature/extended-emergency-scenarios
