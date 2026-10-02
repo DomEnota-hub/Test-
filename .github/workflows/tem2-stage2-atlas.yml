@@ -7,6 +7,7 @@ on:
     paths:
       - 'docs/locomotives/diesel/tem2-family/**'
       - 'docs/locomotives/manifests/locomotive_families.json'
+      - 'docs/integration/TEM2_STAGE2_ATLAS_CHECKPOINT.md'
       - 'qa/validate_tem2_stage1_foundation.py'
       - 'app/qa/validate_tem2_stage2.py'
       - '.github/workflows/tem2-stage2-atlas.yml'
