@@ -1,0 +1,93 @@
+standardScenarioId	dataset	searched	discoveryStatus	checkedSourceRefs	variantEvidenceGaps	noAdditionalReason
+CHME3-DIAG-001	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-BAV-FORMULARY|ST2-SRC-CHME3-SUKHONOSOV-2006	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-002	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-OLTEP-DIESEL	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-003	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-OLTEP-DIESEL	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-004	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-SCBIST-2023	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-005	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-LEGACY-COPY	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-006	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-OLTEP-DIESEL	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-007	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-OLTEP-DIESEL	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-008	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-996-CDOCKA	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-009	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-996-SDO|ST2-SRC-CHME3-SCBIST-PAM	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-010	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-OLTEP-DIESEL	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-011	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-OLTEP-DIESEL	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-012	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-996-CDOCKA|ST2-SRC-CHME3-SCBIST-2020	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-101	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-BAV-FORMULARY|ST2-SRC-CHME3-SUKHONOSOV-2006	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-102	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-LEGACY-COPY	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-103	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-996-SDO|ST2-SRC-CHME3-SCBIST-2023	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-104	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-BAV-FORMULARY|ST2-SRC-CHME3-SUKHONOSOV-2006	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-105	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-SCBIST-2018	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-106	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-LEGACY-COPY|ST2-SRC-CHME3-SCBIST-2020	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-107	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-SCBIST-PAM	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-108	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-SCBIST-PAM	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-109	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-COLLECTION|ST2-SRC-CHME3-OLTEP-ELECTRICAL	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-110	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3T-EDB-1997|ST2-SRC-CHME3T-SCHEMES		
+CHME3-DIAG-201	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-OLTEP-DIESEL|ST2-SRC-CHME3-SCBIST-2020	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-202	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-SCBIST-PAM	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-203	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-SCBIST-PAM	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-204	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-SCBIST-PAM	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-205	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-SCBIST-PAM	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-206	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-SCBIST-2020	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-207	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-SCBIST-PAM	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-208	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-SCBIST-2020	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-301	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-SCBIST-2018|ST2-SRC-CHME3-SCBIST-PAM	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-302	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-SCBIST-PAM	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-303	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-OLTEP-ELECTRICAL|ST2-SRC-CHME3-SCBIST-2018	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-304	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-BAV-FORMULARY|ST2-SRC-CHME3-SCBIST-2020	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-305	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-BAV-FORMULARY|ST2-SRC-CHME3-SCBIST-2023	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-306	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-SCBIST-2018	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-307	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-SUKHONOSOV-2006	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-308	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-OLTEP-DIESEL	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-309	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-OLTEP-DIESEL|ST2-SRC-CHME3-SCBIST-PAM	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-310	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-SCBIST-PAM	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-311	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-NOTIK-1996-WEB|ST2-SRC-CHME3-OLTEP-DIESEL	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-312	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-OLTEP-DIESEL	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-313	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-996-CDOCKA|ST2-SRC-CHME3-SCBIST-PAM	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-314	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-NOTIK-1996-WEB	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-315	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-NOTIK-1996-WEB|ST2-SRC-CHME3-OLTEP-DIESEL	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-316	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-OLTEP-DIESEL|ST2-SRC-CHME3-SCBIST-2020	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-317	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-OLTEP-DIESEL|ST2-SRC-CHME3-SCBIST-2020	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-318	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-SCBIST-PAM	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-319	CHME3_SHARED_56	true	NO_ADDITIONAL_METHOD_FOUND	ST2-SRC-CHME3-NOTIK-1996-WEB|ST2-SRC-CHME3-COLLECTION	chme3-base|chme3t-rheostatic|chme3e-electronic	Целевой поиск нашёл описание устройства/диагностики, но не отдельный расширенный способ, пригодный даже как абстрактный кандидат без выдумывания процедуры.
+CHME3-DIAG-320	CHME3_SHARED_56	true	NO_ADDITIONAL_METHOD_FOUND	ST2-SRC-CHME3-NOTIK-1996-WEB|ST2-SRC-CHME3-COLLECTION	chme3-base|chme3t-rheostatic|chme3e-electronic	Целевой поиск нашёл описание устройства/диагностики, но не отдельный расширенный способ, пригодный даже как абстрактный кандидат без выдумывания процедуры.
+CHME3-DIAG-321	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-996-CDOCKA	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-322	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-996-CDOCKA	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-323	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-996-CDOCKA	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-324	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-996-CDOCKA	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-325	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-996-CDOCKA	chme3t-rheostatic|chme3e-electronic	
+CHME3-DIAG-326	CHME3_SHARED_56	true	FOUND	ST2-SRC-CHME3-996-CDOCKA	chme3t-rheostatic|chme3e-electronic	
+CHME3E-DIAG-001	CHME3E_SPECIFIC_12	true	NO_ADDITIONAL_METHOD_FOUND	ST2-SRC-CHME3-NOTIK-1996-WEB|ST2-SRC-CHME3-COLLECTION	chme3e-electronic	Найдены профильные описания схем/оборудования ЧМЭ3Э, но отдельный подтверждаемый резервный метод для этой конкретной ветви в открытом поиске не найден. Базовые аварийные схемы ЧМЭ3 не наследуются.
+CHME3E-DIAG-002	CHME3E_SPECIFIC_12	true	NO_ADDITIONAL_METHOD_FOUND	ST2-SRC-CHME3-NOTIK-1996-WEB|ST2-SRC-CHME3-COLLECTION	chme3e-electronic	Найдены профильные описания схем/оборудования ЧМЭ3Э, но отдельный подтверждаемый резервный метод для этой конкретной ветви в открытом поиске не найден. Базовые аварийные схемы ЧМЭ3 не наследуются.
+CHME3E-DIAG-003	CHME3E_SPECIFIC_12	true	NO_ADDITIONAL_METHOD_FOUND	ST2-SRC-CHME3-NOTIK-1996-WEB|ST2-SRC-CHME3-COLLECTION	chme3e-electronic	Найдены профильные описания схем/оборудования ЧМЭ3Э, но отдельный подтверждаемый резервный метод для этой конкретной ветви в открытом поиске не найден. Базовые аварийные схемы ЧМЭ3 не наследуются.
+CHME3E-DIAG-004	CHME3E_SPECIFIC_12	true	NO_ADDITIONAL_METHOD_FOUND	ST2-SRC-CHME3-NOTIK-1996-WEB|ST2-SRC-CHME3-COLLECTION	chme3e-electronic	Найдены профильные описания схем/оборудования ЧМЭ3Э, но отдельный подтверждаемый резервный метод для этой конкретной ветви в открытом поиске не найден. Базовые аварийные схемы ЧМЭ3 не наследуются.
+CHME3E-DIAG-005	CHME3E_SPECIFIC_12	true	NO_ADDITIONAL_METHOD_FOUND	ST2-SRC-CHME3-NOTIK-1996-WEB|ST2-SRC-CHME3-COLLECTION	chme3e-electronic	Найдены профильные описания схем/оборудования ЧМЭ3Э, но отдельный подтверждаемый резервный метод для этой конкретной ветви в открытом поиске не найден. Базовые аварийные схемы ЧМЭ3 не наследуются.
+CHME3E-DIAG-006	CHME3E_SPECIFIC_12	true	NO_ADDITIONAL_METHOD_FOUND	ST2-SRC-CHME3-NOTIK-1996-WEB|ST2-SRC-CHME3-COLLECTION	chme3e-electronic	Найдены профильные описания схем/оборудования ЧМЭ3Э, но отдельный подтверждаемый резервный метод для этой конкретной ветви в открытом поиске не найден. Базовые аварийные схемы ЧМЭ3 не наследуются.
+CHME3E-DIAG-007	CHME3E_SPECIFIC_12	true	NO_ADDITIONAL_METHOD_FOUND	ST2-SRC-CHME3-NOTIK-1996-WEB|ST2-SRC-CHME3-COLLECTION	chme3e-electronic	Найдены профильные описания схем/оборудования ЧМЭ3Э, но отдельный подтверждаемый резервный метод для этой конкретной ветви в открытом поиске не найден. Базовые аварийные схемы ЧМЭ3 не наследуются.
+CHME3E-DIAG-008	CHME3E_SPECIFIC_12	true	NO_ADDITIONAL_METHOD_FOUND	ST2-SRC-CHME3-NOTIK-1996-WEB|ST2-SRC-CHME3-COLLECTION	chme3e-electronic	Найдены профильные описания схем/оборудования ЧМЭ3Э, но отдельный подтверждаемый резервный метод для этой конкретной ветви в открытом поиске не найден. Базовые аварийные схемы ЧМЭ3 не наследуются.
+CHME3E-DIAG-009	CHME3E_SPECIFIC_12	true	NO_ADDITIONAL_METHOD_FOUND	ST2-SRC-CHME3-NOTIK-1996-WEB|ST2-SRC-CHME3-COLLECTION	chme3e-electronic	Найдены профильные описания схем/оборудования ЧМЭ3Э, но отдельный подтверждаемый резервный метод для этой конкретной ветви в открытом поиске не найден. Базовые аварийные схемы ЧМЭ3 не наследуются.
+CHME3E-DIAG-010	CHME3E_SPECIFIC_12	true	NO_ADDITIONAL_METHOD_FOUND	ST2-SRC-CHME3-NOTIK-1996-WEB|ST2-SRC-CHME3-COLLECTION	chme3e-electronic	Найдены профильные описания схем/оборудования ЧМЭ3Э, но отдельный подтверждаемый резервный метод для этой конкретной ветви в открытом поиске не найден. Базовые аварийные схемы ЧМЭ3 не наследуются.
+CHME3E-DIAG-011	CHME3E_SPECIFIC_12	true	NO_ADDITIONAL_METHOD_FOUND	ST2-SRC-CHME3-NOTIK-1996-WEB|ST2-SRC-CHME3-COLLECTION	chme3e-electronic	Найдены профильные описания схем/оборудования ЧМЭ3Э, но отдельный подтверждаемый резервный метод для этой конкретной ветви в открытом поиске не найден. Базовые аварийные схемы ЧМЭ3 не наследуются.
+CHME3E-DIAG-012	CHME3E_SPECIFIC_12	true	NO_ADDITIONAL_METHOD_FOUND	ST2-SRC-CHME3-NOTIK-1996-WEB|ST2-SRC-CHME3-COLLECTION	chme3e-electronic	Найдены профильные описания схем/оборудования ЧМЭ3Э, но отдельный подтверждаемый резервный метод для этой конкретной ветви в открытом поиске не найден. Базовые аварийные схемы ЧМЭ3 не наследуются.
+TEM2-DIAG-001	TEM2_FAMILY_24	true	FOUND	ST2-SRC-TEM2-BOOKSITE-1971|ST2-SRC-TEM2-TECHTRAIN-2020	tem2u-improved	
+TEM2-DIAG-002	TEM2_FAMILY_24	true	FOUND	ST2-SRC-TEM2-KOVALEV-1980	tem2u-improved	
+TEM2-DIAG-003	TEM2_FAMILY_24	true	FOUND	ST2-SRC-TEM2-VPOEZDKU-2017	tem2u-improved	
+TEM2-DIAG-004	TEM2_FAMILY_24	true	FOUND	ST2-SRC-TEM2-KOVALEV-1980|ST2-SRC-TEM2-SCBIST-2009	tem2u-improved	
+TEM2-DIAG-005	TEM2_FAMILY_24	true	FOUND	ST2-SRC-TEM2-KOVALEV-1980|ST2-SRC-TEM2-NOTIK-1980	tem2u-improved	
+TEM2-DIAG-006	TEM2_FAMILY_24	true	FOUND	ST2-SRC-TEM2-SCBIST-2009|ST2-SRC-TEM2-VPOEZDKU-2017	tem2u-improved	
+TEM2-DIAG-007	TEM2_FAMILY_24	true	FOUND	ST2-SRC-TEM2-KOVALEV-1980|ST2-SRC-TEM2-NOTIK-1980	tem2u-improved	
+TEM2-DIAG-008	TEM2_FAMILY_24	true	FOUND	ST2-SRC-TEM2-TECHTRAIN-2020|ST2-SRC-TEM2-VUNIVERE	tem2u-improved	
+TEM2-DIAG-009	TEM2_FAMILY_24	true	FOUND	ST2-SRC-TEM2-SCBIST-2009	tem2u-improved	
+TEM2-DIAG-010	TEM2_FAMILY_24	true	FOUND	ST2-SRC-TEM2-VUNIVERE	tem2u-improved	
+TEM2-DIAG-011	TEM2_FAMILY_24	true	FOUND	ST2-SRC-TEM2-VUNIVERE	tem2u-improved	
+TEM2-DIAG-012	TEM2_FAMILY_24	true	FOUND	ST2-SRC-TEM2-SCBIST-2009	tem2u-improved	
+TEM2-DIAG-013	TEM2_FAMILY_24	true	FOUND	ST2-SRC-TEM2-SCBIST-2009	tem2u-improved	
+TEM2-DIAG-014	TEM2_FAMILY_24	true	FOUND	ST2-SRC-TEM2-TECHTRAIN-2020|ST2-SRC-TEM2-VUNIVERE	tem2u-improved	
+TEM2-DIAG-015	TEM2_FAMILY_24	true	FOUND	ST2-SRC-TEM2-SCBIST-2009|ST2-SRC-TEM2-TECHTRAIN-2020	tem2u-improved	
+TEM2-DIAG-016	TEM2_FAMILY_24	true	FOUND	ST2-SRC-TEM2-KOVALEV-1980	tem2u-improved	
+TEM2-DIAG-017	TEM2_FAMILY_24	true	FOUND	ST2-SRC-TEM2-KOVALEV-1980	tem2u-improved	
+TEM2-DIAG-018	TEM2_FAMILY_24	true	FOUND	ST2-SRC-BRAKE-3508R-2022|ST2-SRC-TEM2-KOVALEV-1980	tem2u-improved	
+TEM2-DIAG-019	TEM2_FAMILY_24	true	FOUND	ST2-SRC-BRAKE-3508R-2022|ST2-SRC-TEM2-KOVALEV-1980	tem2u-improved	
+TEM2-DIAG-020	TEM2_FAMILY_24	true	FOUND	ST2-SRC-BRAKE-3508R-2022|ST2-SRC-TEM2-KOVALEV-1980	tem2u-improved	
+TEM2-DIAG-021	TEM2_FAMILY_24	true	FOUND	ST2-SRC-TEM2-NOTIK-1980|ST2-SRC-TEM2-SCBIST-2009	tem2u-improved	
+TEM2-DIAG-022	TEM2_FAMILY_24	true	NO_ADDITIONAL_METHOD_FOUND	ST2-SRC-TEM2U-MANUAL-1988-WEB|ST2-SRC-TEM-COLLECTION	tem2u-improved	Найдены описание штатной схемы и профильного оборудования, но отдельный резервный способ для этой конкретной ветви не найден; методы ТЭМ2 не наследуются к ТЭМ2У автоматически.
+TEM2-DIAG-023	TEM2_FAMILY_24	true	NO_ADDITIONAL_METHOD_FOUND	ST2-SRC-TEM2U-MANUAL-1988-WEB|ST2-SRC-TEM-COLLECTION	tem2u-improved	Найдены описание штатной схемы и профильного оборудования, но отдельный резервный способ для этой конкретной ветви не найден; методы ТЭМ2 не наследуются к ТЭМ2У автоматически.
+TEM2-DIAG-024	TEM2_FAMILY_24	true	FOUND	ST2-SRC-TEM2-INGENERYI|ST2-SRC-TEM2-VPOEZDKU-2017|ST2-SRC-TEM2U-MANUAL-1988-WEB|ST2-SRC-TEM2U-PUBDOC		
