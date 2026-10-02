@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "familyId": "tem2-family",
+  "tractionType": "diesel",
+  "updatedAt": "2026-10-02",
+  "migrationState": "STAGE_1_FOUNDATION_COMPLETE",
+  "canonicalLayers": {
+    "common": "common",
+    "variants": {
+      "tem2-base": "tem2",
+      "tem2u-improved": "tem2u"
+    }
+  },
+  "profiles": [
+    {
+      "profileId": "tem2-base",
+      "series": "ТЭМ2",
+      "supportState": "STAGE_1_FOUNDATION_COMPLETE",
+      "completedStages": ["FOUNDATION"],
+      "sharedBase": "common",
+      "variantLayer": "tem2",
+      "requiredBeforeIntegration": ["ATLAS_SCHEMES_INTERACTIVE", "DIAGNOSTICS_ASSISTANT_SEMANTICS", "ACCEPTANCE_CROSS_LAYER_QA"]
+    },
+    {
+      "profileId": "tem2u-improved",
+      "series": "ТЭМ2У",
+      "supportState": "STAGE_1_FOUNDATION_COMPLETE",
+      "completedStages": ["FOUNDATION"],
+      "sharedBase": "common",
+      "variantLayer": "tem2u",
+      "requiredBeforeIntegration": ["ATLAS_SCHEMES_INTERACTIVE", "DIAGNOSTICS_ASSISTANT_SEMANTICS", "ACCEPTANCE_CROSS_LAYER_QA"]
+    }
+  ],
+  "inheritancePolicy": {
+    "commonContent": "Shared mechanical, diesel-generator, fuel, oil, cooling, pneumatic, running-gear and auxiliary content may be inherited only where applicability is explicitly confirmed for the selected profile/execution.",
+    "variantOverrides": "Cab/body layout, control equipment, electrical circuits and any execution-specific apparatus live in the variant layer when they differ.",
+    "actualEquipmentWins": "Actual installed equipment and documented modernization override assumptions based only on series or locomotive number for information routing.",
+    "unknownExecution": "Variant-dependent operational actions fail closed until the actual execution is confirmed.",
+    "noAdjacentVariantLeak": "TEM2UM, TEM2T, TEM2A and later TEM-family equipment is excluded unless a future dedicated profile explicitly adds it with evidence."
+  },
+  "sourcePolicy": {
+    "officialityIsNotTruth": true,
+    "manufacturerManualsDefineHistoricalFactoryExecution": true,
+    "currentOperationalActionsRequireCurrentApplicableAuthority": true,
+    "fieldAndTrainingSourcesMaySupportSearchHypothesesButNotActionAuthority": true,
+    "conflictsRemainVisible": true
+  },
+  "nextStage": "ATLAS_SCHEMES_INTERACTIVE",
+  "integrationBoundary": {
+    "foundationReady": true,
+    "androidRuntimeIntegrated": false,
+    "assistantEngineMerged": false,
+    "rule": "Stage 1 establishes sources, profiles, applicability and inheritance only. It does not claim Atlas, schemes, diagnostics, acceptance or Android integration are complete."
+  }
+}
