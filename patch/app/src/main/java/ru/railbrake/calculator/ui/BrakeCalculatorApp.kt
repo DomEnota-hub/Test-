@@ -111,7 +111,7 @@ private enum class AppScreen(val title: String) {
     APPENDIX("ИДП №12"),
     HISTORY("История"),
     EXAM_QUESTIONS("Вопросы и ответы"),
-    SETTINGS("Палитра")
+    SETTINGS("Настройки")
 }
 
 private enum class OutputMode(val title: String) {
@@ -272,7 +272,7 @@ fun BrakeCalculatorApp(
                 }
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                 NavigationDrawerItem(
-                    label = { Text("Палитра") },
+                    label = { Text("Настройки") },
                     selected = screen == AppScreen.SETTINGS,
                     onClick = { screenName = AppScreen.SETTINGS.name; drawerScope.launch { drawerState.close() } },
                     modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
@@ -508,7 +508,7 @@ fun BrakeCalculatorApp(
                     }
                 ) }
                 AppScreen.SETTINGS -> ScrollPage {
-                    PaletteScreen(palette, onPaletteChange, themeMode, onThemeModeChange)
+                    SettingsScreen(palette, onPaletteChange, themeMode, onThemeModeChange)
                 }
                 }
             }
@@ -1525,7 +1525,7 @@ private fun LocomotiveCard(loco: LocomotiveSpec) {
 }
 
 @Composable
-private fun PaletteScreen(
+private fun SettingsScreen(
     palette: AccentPalette,
     onPaletteChange: (AccentPalette) -> Unit,
     themeMode: AppThemeMode,
@@ -1564,6 +1564,7 @@ private fun PaletteScreen(
             )
         }
     }
+    ExtendedEmergencySettingsSection()
     RailInfoBand("Тема и цветовой акцент настраиваются независимо. Красный по-прежнему зарезервирован для опасности и ОПП.")
     SectionCard("О приложении", "Текущая рабочая сборка") {
         Metric("Версия", "${packageInfo.versionName ?: "—"} ($actualVersionCode)")
