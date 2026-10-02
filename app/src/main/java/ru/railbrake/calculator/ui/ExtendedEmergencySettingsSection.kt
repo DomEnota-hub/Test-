@@ -53,7 +53,7 @@ internal fun ExtendedEmergencySettingsSection() {
                     color = MaterialTheme.colorScheme.primary
                 )
                 Text(
-                    "Архивные, заводские и полевые методы — отдельным opt-in слоем",
+                    "Архивные, заводские и полевые методы — включаются отдельно",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -73,7 +73,7 @@ internal fun ExtendedEmergencySettingsSection() {
                         if (enabled)
                             "Помимо стандартных маршрутов могут показываться явно маркированные расширенные ветви."
                         else
-                            "Стандартная диагностика использует только обычные разрешённые маршруты.",
+                            "Стандартная диагностика не показывает расширенные ветви.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
