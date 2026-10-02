@@ -1,0 +1,27 @@
+name: TEM2 Stage 3 diagnostics
+
+on:
+  push:
+    branches:
+      - feature/tem2-stage3
+    paths:
+      - 'docs/locomotives/diesel/tem2-family/**'
+      - 'app/qa/validate_tem2_stage2.py'
+      - 'app/qa/validate_tem2_stage3.py'
+      - 'qa/validate_tem2_stage1_foundation.py'
+      - '.github/workflows/tem2-stage3-diagnostics.yml'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Preserve TEM2 Stage 1 foundation contract
+        run: python3 qa/validate_tem2_stage1_foundation.py
+      - name: Preserve TEM2 Stage 2 atlas contract
+        run: python3 app/qa/validate_tem2_stage2.py
+      - name: Validate TEM2 Stage 3 diagnostics and assistant semantics
+        run: python3 app/qa/validate_tem2_stage3.py
+      - name: Check patch hygiene
+        run: git diff --check
