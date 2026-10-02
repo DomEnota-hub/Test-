@@ -24,7 +24,7 @@ class ExtendedEmergencyModeRepository(context: Context) {
     }
 
     fun enablePreviouslyAcknowledged() {
-        check(hasAcknowledgedWarning()) { "Expanded emergency warning must be acknowledged before enabling" }
+        if (!hasAcknowledgedWarning()) return
         prefs.edit().putBoolean(KEY_ENABLED, true).apply()
     }
 
