@@ -1,0 +1,102 @@
+name: Expanded emergency Stage 3 runtime
+
+on:
+  push:
+    branches:
+      - audit/extended-emergency-stage3
+    paths:
+      - 'docs/integration/extended_emergency_stage3_runtime_contract.json'
+      - 'docs/integration/extended_emergency_stage3_assistant_contract.json'
+      - 'docs/integration/EXTENDED_EMERGENCY_STAGE3_CHECKPOINT.md'
+      - 'qa/build_extended_emergency_stage3_projection.py'
+      - 'qa/validate_extended_emergency_stage3_runtime.py'
+      - '.github/workflows/extended-emergency-stage3-runtime.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  runtime-and-regression:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Preserve Stage 2 discovery
+        run: python3 qa/validate_extended_emergency_stage2_discovery.py
+
+      - name: Build deterministic Stage 3 runtime-v2 projection
+        run: |
+          python3 qa/build_extended_emergency_stage3_projection.py --output /tmp/extended_stage3_runtime.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          path = Path('/tmp/extended_stage3_runtime.json')
+          data = json.loads(path.read_text(encoding='utf-8'))
+          assert len(data['scenarioRouting']) == 92
+          assert len(data['candidateRoutes']) == 77
+          print('Generated projection:', len(data['scenarioRouting']), 'scenario decisions /', len(data['candidateRoutes']), 'candidate routes')
+          PY
+
+      - name: Validate Stage 3 runtime-v2 and assistant semantics
+        run: python3 qa/validate_extended_emergency_stage3_runtime.py
+
+      - name: Preserve Stage 1 inventory and Stage 0 architecture
+        run: |
+          python3 qa/validate_extended_emergency_stage1_inventory.py
+          python3 qa/validate_extended_emergency_architecture.py
+
+      - name: Preserve existing ChME3 standard projection and diagnostic graphs
+        run: |
+          python3 qa/verify_chme3_android_assets.py
+          python3 qa/verify_diagnostic_graphs.py
+          python3 qa/verify_diagnostic_unknown_routes.py
+
+      - name: Preserve TEM2 stages 1 through 3
+        run: |
+          python3 qa/validate_tem2_stage1_foundation.py
+          python3 app/qa/validate_tem2_stage2.py
+          python3 app/qa/validate_tem2_stage3.py
+
+      - name: Enforce Stage 3 runtime-only change boundary
+        run: |
+          python3 - <<'PY'
+          import subprocess
+
+          base = '6a76fc0ada4526e0b5f6415095b9d492ed986c9c'
+          subprocess.run(['git', 'cat-file', '-e', f'{base}^{{commit}}'], check=True)
+          allowed = {
+              'docs/integration/extended_emergency_stage3_runtime_contract.json',
+              'docs/integration/extended_emergency_stage3_assistant_contract.json',
+              'docs/integration/EXTENDED_EMERGENCY_STAGE3_CHECKPOINT.md',
+              'qa/build_extended_emergency_stage3_projection.py',
+              'qa/validate_extended_emergency_stage3_runtime.py',
+              '.github/workflows/extended-emergency-stage3-runtime.yml',
+          }
+          changed = {
+              line.strip()
+              for line in subprocess.check_output(
+                  ['git', 'diff', '--name-only', f'{base}..HEAD'], text=True
+              ).splitlines()
+              if line.strip()
+          }
+          unexpected = sorted(changed - allowed)
+          if unexpected:
+              raise SystemExit('Stage 3 runtime-only boundary violated: ' + ', '.join(unexpected))
+          required = {
+              'docs/integration/extended_emergency_stage3_runtime_contract.json',
+              'docs/integration/extended_emergency_stage3_assistant_contract.json',
+              'qa/build_extended_emergency_stage3_projection.py',
+              'qa/validate_extended_emergency_stage3_runtime.py',
+          }
+          missing = sorted(required - changed)
+          if missing:
+              raise SystemExit('Stage 3 expected runtime artifacts missing from diff: ' + ', '.join(missing))
+          print('Stage 3 runtime-only boundary PASS:', ', '.join(sorted(changed)))
+          PY
+
+      - name: Patch hygiene
+        run: git diff --check
