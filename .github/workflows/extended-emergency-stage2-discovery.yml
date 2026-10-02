@@ -22,6 +22,8 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Validate complete Stage 2 branch-by-branch discovery
         run: python3 qa/validate_extended_emergency_stage2_discovery.py
@@ -49,6 +51,7 @@ jobs:
           import subprocess
 
           base = '5d522977f9400a17f155f37d94b2c83461ccd0dd'
+          subprocess.run(['git', 'cat-file', '-e', f'{base}^{{commit}}'], check=True)
           allowed = {
               'docs/integration/extended_emergency_stage2_sources.tsv',
               'docs/integration/extended_emergency_stage2_discovery.tsv',
