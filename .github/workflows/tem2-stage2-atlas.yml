@@ -1,0 +1,25 @@
+name: TEM2 Stage 2 atlas
+
+on:
+  push:
+    branches:
+      - feature/tem2-stage2
+    paths:
+      - 'docs/locomotives/diesel/tem2-family/**'
+      - 'docs/locomotives/manifests/locomotive_families.json'
+      - 'qa/validate_tem2_stage1_foundation.py'
+      - 'app/qa/validate_tem2_stage2.py'
+      - '.github/workflows/tem2-stage2-atlas.yml'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Preserve TEM2 Stage 1 foundation contract
+        run: python3 qa/validate_tem2_stage1_foundation.py
+      - name: Validate TEM2 Stage 2 atlas and schemes
+        run: python3 app/qa/validate_tem2_stage2.py
+      - name: Check patch hygiene
+        run: git diff --check
