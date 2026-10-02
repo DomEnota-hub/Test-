@@ -59,14 +59,8 @@ jobs:
                   raise SystemExit(f'{p}: stale user-facing Палитра label remains')
               p.write_text(text, encoding='utf-8')
           PY
-      - name: Verify app and patch mirrors
-        run: |
-          cmp app/src/main/java/ru/railbrake/calculator/ui/BrakeCalculatorApp.kt patch/app/src/main/java/ru/railbrake/calculator/ui/BrakeCalculatorApp.kt
-          cmp app/src/main/java/ru/railbrake/calculator/ui/ExtendedEmergencySettingsSection.kt patch/app/src/main/java/ru/railbrake/calculator/ui/ExtendedEmergencySettingsSection.kt
-          cmp app/src/main/java/ru/railbrake/calculator/data/ExtendedEmergencyModeRepository.kt patch/app/src/main/java/ru/railbrake/calculator/data/ExtendedEmergencyModeRepository.kt
-          cmp app/src/main/java/ru/railbrake/calculator/ui/theme/Color.kt patch/app/src/main/java/ru/railbrake/calculator/ui/theme/Color.kt
-          cmp app/src/main/java/ru/railbrake/calculator/ui/theme/Theme.kt patch/app/src/main/java/ru/railbrake/calculator/ui/theme/Theme.kt
-          cmp app/src/main/assets/technical/extended_emergency_policy.json patch/app/src/main/assets/technical/extended_emergency_policy.json
+      - name: Verify expanded emergency architecture and mirrors
+        run: python3 qa/validate_extended_emergency_architecture.py
       - name: Extract base project and overlay patch
         run: |
           rm -rf buildsrc
