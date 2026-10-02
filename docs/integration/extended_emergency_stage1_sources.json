@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "stage": 1,
+  "modeId": "EXTENDED_EMERGENCY_KNOWLEDGE",
+  "updatedAt": "2026-10-02",
+  "purpose": "Дополнительный реестр источников, найденных при Stage 1 inventory. Эти записи служат только для исследования кандидатов и не повышают action authority.",
+  "policy": {
+    "sourceIndexIsNotPrimaryText": true,
+    "fieldOrTrainingNeverAutoAuthorizesAction": true,
+    "documentMirrorNeverAutoAuthorizesAction": true,
+    "exactProfileApplicabilityRequired": true,
+    "unknownExecution": "FAIL_CLOSED"
+  },
+  "sources": [
+    {
+      "id": "EXT-STAGE1-996R-2024-INDEX",
+      "title": "Перечень действий локомотивных бригад по выявлению и устранению неисправностей на локомотивах при поездной и маневровой работе",
+      "document": "Распоряжение ОАО РЖД от 12.04.2022 № 996/р, редакция по распоряжению от 05.03.2024 № 592/р",
+      "url": "https://urizdat.ru/books/zheleznodorozhnyy-transport/lokomotivy-i-lokomotivnoe-hozyaystvo-ct-ctr/perechen-deystviy-lokomotivnyh-brigad-po-vyyavleniyu-i-ustraneniyu-neispravnostey-na-lokomotivah-pri-poezdnoy-i-manevrovoy-rabote-utverzhden-rasporyazheniem-oao-rzhd-ot-12-04-2022-996-r-v-redakcii-rasporyazheniya-oao-rzhd-ot-05-03-2024-592-r.html",
+      "sourceType": "OFFICIAL_SECONDARY_INDEX",
+      "sourceStatus": "OFFICIAL_OTHER",
+      "evidenceLevel": "SECONDARY_INDEX",
+      "authority": "SOURCE_INDEX_ONLY",
+      "explicitSeriesListed": ["ЧМЭ3", "ТЭМ2"],
+      "notExplicitlyProvenForProfiles": ["chme3t-rheostatic", "chme3e-electronic", "tem2u-improved"],
+      "notes": [
+        "Открытая карточка издания подтверждает наличие отдельных порядков для ЧМЭ3 и ТЭМ2 и указывает редакцию 592/р.",
+        "Карточка издания не является проверкой точного первичного текста конкретного пункта и не доказывает применимость действий к ЧМЭ3Т/ЧМЭ3Э/ТЭМ2У."
+      ]
+    },
+    {
+      "id": "EXT-STAGE1-CHME3-OLTEP-ELECTRICAL",
+      "title": "Неисправности электрооборудования тепловоза ЧМЭ3 — основные аварийные схемы приведения в движение",
+      "url": "https://oltep.narod.ru/neispr/neisp_el.htm",
+      "sourceType": "FIELD_GUIDE",
+      "sourceStatus": "FIELD_PRACTICE",
+      "evidenceLevel": "FIELD",
+      "authority": "RESEARCH_ONLY",
+      "applicability": ["chme3-base"],
+      "notes": [
+        "Источник содержит четыре аварийные схемы, операции с перемычками/клиньями и отдельные действия при признаках генераторного режима.",
+        "Технические шаги сохраняются только как исследовательская доказательная база; Stage 1 не переносит их в runtime action-layer."
+      ]
+    },
+    {
+      "id": "EXT-STAGE1-TEM2-SCBIST-CONTROL-2009",
+      "title": "Цепи управления тепловоза ТЭМ2: возможные неисправности, способы устранения",
+      "url": "https://scbist.com/xx2/28389-04-2009-cepi-upravleniya-elektrovoza-tem2-vozmozhnye-neispravnosti-sposoby-ustraneniya.html",
+      "sourceType": "TECHNICAL_TRAINING_ARTICLE",
+      "sourceStatus": "TRAINING_REFERENCE",
+      "evidenceLevel": "HISTORICAL_TRAINING",
+      "authority": "RESEARCH_ONLY",
+      "applicability": ["tem2-base"],
+      "notes": [
+        "Материал описывает поиск неисправностей цепей управления и отдельные аварийные обходы.",
+        "Особенно важен как источник анти-паттернов: обход цепи ЭПК и принудительное включение аппаратов не получают action authority без текущего первичного документа."
+      ]
+    },
+    {
+      "id": "EXT-STAGE1-TEM2-SCBIST-CREW-2011",
+      "title": "Машинисту о тепловозах ТЭМ2, ТЭМ3 и ТЭМ18",
+      "url": "https://scbist.com/xx2/11101-mashinistu-o-teplovozah-tem2-tem3-i-tem18.html",
+      "sourceType": "TECHNICAL_TRAINING_ARTICLE",
+      "sourceStatus": "TRAINING_REFERENCE",
+      "evidenceLevel": "HISTORICAL_TRAINING",
+      "authority": "RESEARCH_ONLY",
+      "applicability": ["tem2-base"],
+      "notes": [
+        "Содержит диагностическую логику пуска и исторические аварийные способы ручного воздействия на аппараты.",
+        "Любое ручное включение пусковых аппаратов остаётся неисполняемым кандидатом до проверки текущего порядка и фактического исполнения."
+      ]
+    },
+    {
+      "id": "EXT-STAGE1-TEM2-INGENERYI-FUEL",
+      "title": "Схема топливной системы тепловоза ТЭМ2 — аварийная система подачи топлива",
+      "url": "https://www.ingeneryi.info/teh-n/rzhd-tehnika/teplovozy-tehnika-rzhd/toplivo/1161-shema-toplivnoy-sistemy-teplovoza-tem2.html",
+      "sourceType": "SECONDARY_TECHNICAL_ARTICLE",
+      "sourceStatus": "UNVERIFIED",
+      "evidenceLevel": "SECONDARY_TECHNICAL",
+      "authority": "RESEARCH_ONLY",
+      "applicability": ["tem2-base"],
+      "notes": [
+        "Подтверждает существование описываемой как штатно предусмотренная аварийной ветви подачи топлива.",
+        "Перед превращением в пользовательское действие требуется сверка с заводским руководством и текущим порядком 996/р."
+      ]
+    },
+    {
+      "id": "EXT-STAGE1-TEM2-OK-TECHTRAINING-2020",
+      "title": "Тех.Учеба: пуск дизеля и назначение блокировок в схеме пуска ТЭМ2",
+      "url": "https://m.ok.ru/group/55919661482060/topic/150931658058572",
+      "sourceType": "FIELD_TRAINING_REPOST",
+      "sourceStatus": "FIELD_PRACTICE",
+      "evidenceLevel": "FIELD",
+      "authority": "RESEARCH_ONLY",
+      "applicability": ["tem2-base"],
+      "notes": [
+        "Материал прямо называет аварийные схемы исключительной мерой и описывает последовательность штатного пуска.",
+        "Социальная публикация не используется как разрешение аварийного действия."
+      ]
+    },
+    {
+      "id": "EXT-STAGE1-TEM2U-PUBDOC-ELECTRICAL",
+      "title": "Силовая цепь и электрическая схема тепловоза ТЭМ2У — публичное зеркало учебного материала",
+      "url": "https://pubdoc.ru/doc/360179/e-lektricheskaya-shema-teplovoza-te-m2u",
+      "sourceType": "UNVERIFIED_DOCUMENT_MIRROR",
+      "sourceStatus": "UNVERIFIED",
+      "evidenceLevel": "DISCOVERY_ONLY",
+      "authority": "DISCOVERY_ONLY",
+      "applicability": ["tem2u-improved"],
+      "notes": [
+        "В тексте присутствуют разделы по пуску и аварийному питанию дизеля ТЭМ2У.",
+        "Происхождение зеркала и соответствие конкретной редакции заводского руководства не подтверждены; использовать только для навигации к первичному материалу."
+      ]
+    }
+  ]
+}
