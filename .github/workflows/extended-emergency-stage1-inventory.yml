@@ -1,0 +1,59 @@
+name: Expanded emergency Stage 1 inventory
+
+on:
+  push:
+    branches:
+      - audit/extended-emergency-stage1
+    paths:
+      - 'docs/integration/extended_emergency_stage1_sources.json'
+      - 'docs/integration/extended_emergency_stage1_inventory.json'
+      - 'docs/integration/EXTENDED_EMERGENCY_STAGE1_CHECKPOINT.md'
+      - 'qa/validate_extended_emergency_stage1_inventory.py'
+      - '.github/workflows/extended-emergency-stage1-inventory.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inventory-and-regression:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate Stage 1 source and candidate inventory
+        run: python3 qa/validate_extended_emergency_stage1_inventory.py
+
+      - name: Preserve Stage 0 expanded emergency architecture
+        run: python3 qa/validate_extended_emergency_architecture.py
+
+      - name: Preserve ChME3 standard projection and diagnostic graphs
+        run: |
+          python3 qa/verify_chme3_android_assets.py
+          python3 qa/verify_diagnostic_graphs.py
+          python3 qa/verify_diagnostic_unknown_routes.py
+
+      - name: Preserve TEM2 Stage 1 through Stage 3
+        run: |
+          python3 qa/validate_tem2_stage1_foundation.py
+          python3 app/qa/validate_tem2_stage2.py
+          python3 app/qa/validate_tem2_stage3.py
+
+      - name: Enforce Stage 1 inventory-only change boundary
+        run: |
+          base=06547cdcbfb92aee53442bd85529d83e06961e42
+          git cat-file -e "$base^{commit}"
+          changed="$(git diff --name-only "$base" HEAD)"
+          printf '%s\n' "$changed"
+          unexpected="$(printf '%s\n' "$changed" | grep -Ev '^(docs/integration/extended_emergency_stage1_(sources|inventory)\.json|docs/integration/EXTENDED_EMERGENCY_STAGE1_CHECKPOINT\.md|qa/validate_extended_emergency_stage1_inventory\.py|\.github/workflows/extended-emergency-stage1-inventory\.yml)$' || true)"
+          if [ -n "$unexpected" ]; then
+            echo 'Stage 1 changed files outside the inventory boundary:'
+            printf '%s\n' "$unexpected"
+            exit 1
+          fi
+
+      - name: Patch hygiene
+        run: git diff --check
