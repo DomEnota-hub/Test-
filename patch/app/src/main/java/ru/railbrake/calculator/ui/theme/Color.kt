@@ -21,6 +21,9 @@ val Warning = Color(0xFFFFB45E)
 val Danger = Color(0xFFE54848)
 val Divider = Color(0xFF2B343E)
 
+// Fixed semantic identity for opt-in expanded emergency scenarios.
+// These colors intentionally do not follow AccentPalette: turquoise means
+// "expanded/non-standard provenance" in every app palette.
 val ExtendedEmergencyLight = Color(0xFF0F766E)
 val ExtendedEmergencyLightContainer = Color(0xFFD7F5F1)
 val ExtendedEmergencyDark = Color(0xFF5EEAD4)
