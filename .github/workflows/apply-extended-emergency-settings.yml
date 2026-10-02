@@ -68,10 +68,24 @@ jobs:
           unzip -q RailBrakeCalculator.zip -d buildsrc
           test -f buildsrc/RailBrakeCalculator/settings.gradle.kts
           cp -a patch/. buildsrc/RailBrakeCalculator/
-      - name: Kotlin compile
+      - name: Prepare source-only UI validation build
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('buildsrc/RailBrakeCalculator/app/build.gradle.kts')
+          text = p.read_text(encoding='utf-8')
+          dependency = '    implementation(files("libs/sherpa-onnx.aar"))\n'
+          if text.count(dependency) != 1:
+              raise SystemExit('Expected exactly one local sherpa-onnx dependency')
+          # The binary AAR is intentionally not stored in this repository/zip.
+          # This workflow validates the Kotlin/UI change set independently from
+          # the external offline-ASR binary; release/full runtime builds keep it.
+          p.write_text(text.replace(dependency, ''), encoding='utf-8')
+          PY
+      - name: Kotlin compile (UI source validation)
         working-directory: buildsrc/RailBrakeCalculator
         run: gradle :app:compileDebugKotlin --stacktrace --console=plain
-      - name: Unit tests
+      - name: Unit tests (UI source validation)
         working-directory: buildsrc/RailBrakeCalculator
         run: gradle :app:testDebugUnitTest --stacktrace --console=plain
       - name: Patch hygiene
