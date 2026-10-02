@@ -21,8 +21,15 @@ class AssistantEngine(
     internal fun query(input: AssistantParsedQuery, limit: Int = 3): AssistantEngineResult {
         // The working choice supplies context only when the request does not
         // name a series. First aid and general safety remain common.
-        val parsed = if (input.family == null && defaultFamily != null &&
+        val scoped = if (input.family == null && defaultFamily != null &&
             input.intent != AssistantIntent.SAFETY) input.copy(family = defaultFamily) else input
+        val diesel = if (scoped.componentKey == null) {
+            AssistantQueryParser.dieselFromEngineContext(scoped.normalizedText, scoped.family)
+        } else null
+        val parsed = if (diesel != null) scoped.copy(
+            componentKey = diesel,
+            searchText = "${scoped.searchText} ${AssistantQueryParser.componentSearchText(diesel).orEmpty()}"
+        ) else scoped
 
         if (parsed.family == TechnicalFamily.CHME3E && listOf(
                 "реостатный тормоз", "эдт", "тормозные резисторы", "вентилятор тормозных резисторов"

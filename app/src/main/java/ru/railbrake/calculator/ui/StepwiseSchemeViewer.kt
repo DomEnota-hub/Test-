@@ -2,6 +2,7 @@ package ru.railbrake.calculator.ui
 
 import android.content.Context
 import android.graphics.Paint
+import android.graphics.Typeface
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -20,6 +21,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.graphics.nativeCanvas
@@ -27,11 +29,14 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalDensity
 import org.json.JSONObject
 import ru.railbrake.calculator.core.TechnicalDataRepository
 import ru.railbrake.calculator.core.TechnicalEntry
 import ru.railbrake.calculator.core.TechnicalFamily
 import kotlin.math.min
+import kotlin.math.max
+import kotlin.math.abs
 
 private data class SchemeNode(val key: String, val equipmentId: String, val label: String, val x: Float, val y: Float, val width: Float, val height: Float) {
     val center get() = Offset(x + width / 2f, y + height / 2f)
@@ -44,7 +49,7 @@ private data class SchemeSequence(
     val disclaimer: String, val nodes: List<SchemeNode>, val steps: List<SchemeStep>,
     val sources: List<SchemeSource>, val left: Float, val top: Float, val right: Float, val bottom: Float
 )
-private data class FlowStyle(val label: String, val light: Color, val dark: Color, val dashed: Boolean)
+private data class FlowStyle(val label: String, val light: Color, val dark: Color, val pattern: String)
 
 private class StepwiseSchemeData(private val context: Context) {
     private fun asset(name: String) = JSONObject(context.assets.open("technical/$name").bufferedReader().use { it.readText() })
@@ -53,11 +58,10 @@ private class StepwiseSchemeData(private val context: Context) {
         val list = palette.getJSONArray("flowTokens")
         for (i in 0 until list.length()) {
             val item = list.getJSONObject(i)
-            val style = item.optString("lineStyle")
             put(item.getString("flowKind"), FlowStyle(item.getString("label"),
                 item.getJSONObject("light").getString("stroke").asColor(),
                 item.getJSONObject("dark").getString("stroke").asColor(),
-                style.contains("dash", ignoreCase = true)))
+                item.optString("lineStyle")))
         }
     }
     val sequences: List<SchemeSequence> = run {
@@ -145,7 +149,10 @@ private fun StepwiseSchemeViewer(
     repository: TechnicalDataRepository, entry: TechnicalEntry, onOpen: (TechnicalEntry) -> Unit
 ) {
     var selectedId by rememberSaveable(entry.id) { mutableStateOf(sequences.first().id) }
-    val sequence = sequences.firstOrNull { it.id == selectedId } ?: sequences.first()
+    val sourceSequence = sequences.firstOrNull { it.id == selectedId } ?: sequences.first()
+    val sequence = remember(sourceSequence, repository) { sourceSequence.copy(nodes = sourceSequence.nodes.map { node ->
+        node.copy(label = repository.entry(node.equipmentId, entry.family)?.title ?: node.label)
+    }) }
     var stepIndex by rememberSaveable(sequence.id) { mutableIntStateOf(0) }
     val step = sequence.steps[stepIndex.coerceIn(sequence.steps.indices)]
     var selectedNode by rememberSaveable(sequence.id) { mutableStateOf<String?>(null) }
@@ -168,13 +175,30 @@ private fun StepwiseSchemeViewer(
             Text(sequence.title, style = MaterialTheme.typography.titleMedium)
             Text(sequence.disclaimer, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             SchemeCanvas(sequence, stepIndex, styles, isDark, background, foreground,
-                selectedNode, onSelect = { selectedNode = it })
+                selectedNode, onSelect = { key ->
+                    selectedNode = key
+                    sequence.nodes.firstOrNull { it.key == key }?.equipmentId
+                        ?.let { repository.entry(it, entry.family) }?.let(onOpen)
+                })
+            Text("Элементы схемы", fontWeight = FontWeight.Bold)
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                items(sequence.nodes, key = { it.key }) { item ->
+                    OutlinedButton(
+                        onClick = {
+                            selectedNode = item.key
+                            item.equipmentId.let { repository.entry(it, entry.family) }?.let(onOpen)
+                        },
+                        modifier = Modifier.heightIn(min = 48.dp)
+                    ) { Text(item.label) }
+                }
+            }
             Text(if (sequence.steps.size == 1 && step.edges.isEmpty()) step.title
                 else "Шаг ${stepIndex + 1} из ${sequence.steps.size}: ${step.title}", fontWeight = FontWeight.Bold)
             if (step.explanation.isNotBlank()) Text(step.explanation)
-            step.edges.map { it.kind }.distinct().forEach { kind ->
-                val style = styles[kind]
-                if (style != null) Text("→ ${style.label}", color = if (isDark) style.dark else style.light)
+            step.edges.distinctBy { it.kind to it.label }.forEach { edge ->
+                val style = styles[edge.kind]
+                if (style != null) Text("→ ${edge.label.ifBlank { style.label }} · ${style.label}",
+                    color = if (isDark) style.dark else style.light)
             }
             if (sequence.steps.size > 1) Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedButton(onClick = { stepIndex-- }, enabled = stepIndex > 0, modifier = Modifier.weight(1f)) { Text("← Назад") }
@@ -195,6 +219,35 @@ private fun StepwiseSchemeViewer(
     }
 }
 
+/** A reading layout for the verified functional graph, independent of physical placement. */
+private fun readingOrder(sequence: SchemeSequence): List<SchemeNode> {
+    val byKey = sequence.nodes.associateBy { it.key }
+    val keys = linkedSetOf<String>()
+    sequence.steps.forEach { step -> step.edges.forEach { edge ->
+        keys += edge.from
+        keys += edge.to
+    } }
+    sequence.nodes.forEach { keys += it.key }
+    return keys.mapNotNull(byKey::get)
+}
+
+private fun readingLayout(sequence: SchemeSequence, width: Float): List<SchemeNode> {
+    val ordered = readingOrder(sequence)
+    val columns = if (width >= 600f || (width >= 300f && ordered.size > 4)) 2 else 1
+    val margin = 16f
+    val gapX = 20f
+    val gapY = 36f
+    val nodeWidth = (width - margin * 2 - gapX * (columns - 1)) / columns
+    val nodeHeight = if (nodeWidth < 175f) 92f else 78f
+    return ordered.mapIndexed { index, node ->
+        val row = index / columns
+        val col = index % columns
+        val visualCol = if (columns == 2 && row % 2 == 1) columns - 1 - col else col
+        node.copy(x = margin + visualCol * (nodeWidth + gapX),
+            y = margin + row * (nodeHeight + gapY), width = nodeWidth, height = nodeHeight)
+    }
+}
+
 @Composable
 private fun SchemeCanvas(
     sequence: SchemeSequence, stepIndex: Int, styles: Map<String, FlowStyle>, isDark: Boolean,
@@ -203,98 +256,170 @@ private fun SchemeCanvas(
     var zoom by rememberSaveable(sequence.id) { mutableFloatStateOf(1f) }
     var shiftX by rememberSaveable(sequence.id) { mutableFloatStateOf(0f) }
     var shiftY by rememberSaveable(sequence.id) { mutableFloatStateOf(0f) }
-    val nodeByKey = remember(sequence.id) { sequence.nodes.associateBy { it.key } }
+    val currentEdges = sequence.steps[stepIndex].edges.toSet()
+    val completedEdges = sequence.steps.take(stepIndex).flatMap { it.edges }.toSet()
     val allEdges = remember(sequence.id) { sequence.steps.flatMap { it.edges }.distinct() }
-    val activeEdges = sequence.steps.take(stepIndex + 1).flatMap { it.edges }.toSet()
-    val activeNodes = activeEdges.flatMap { listOf(it.from, it.to) }.toSet()
-    val boundsWidth = (sequence.right - sequence.left).coerceAtLeast(1f)
-    val boundsHeight = (sequence.bottom - sequence.top).coerceAtLeast(1f)
-    val centerX = (sequence.left + sequence.right) / 2f
-    val centerY = (sequence.top + sequence.bottom) / 2f
-    val accent = MaterialTheme.colorScheme.primary
+    val activeNodes = (currentEdges + completedEdges).flatMap { listOf(it.from, it.to) }.toSet()
+    val currentNodes = currentEdges.flatMap { listOf(it.from, it.to) }.toSet()
+    val highlight = if (isDark) Color(0xFF7DD3FC) else Color(0xFF0369A1)
 
     Column(verticalArrangement = Arrangement.spacedBy(5.dp)) {
-        BoxWithConstraints(Modifier.fillMaxWidth().height(370.dp)
-            .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(12.dp))) {
-            val density = androidx.compose.ui.platform.LocalDensity.current
+        BoxWithConstraints(Modifier.fillMaxWidth()) {
+            val density = LocalDensity.current
+            val width = maxWidth.value
+            val nodes = remember(sequence.id, width) { readingLayout(sequence, width) }
+            val nodeByKey = remember(nodes) { nodes.associateBy { it.key } }
+            val contentHeight = (nodes.maxOfOrNull { it.y + it.height } ?: 0f) + 16f
+            val height = max(290f, contentHeight)
             val widthPx = with(density) { maxWidth.toPx() }
-            val heightPx = with(density) { 370.dp.toPx() }
-            val paddingPx = with(density) { 24.dp.toPx() }
-            val fit = min((widthPx - paddingPx * 2) / boundsWidth, (heightPx - paddingPx * 2) / boundsHeight)
-            val viewportCenter = Offset(widthPx / 2, heightPx / 2)
-            val transform = Modifier.fillMaxSize()
+            val heightPx = with(density) { height.dp.toPx() }
+            val insetPx = with(density) { 8.dp.toPx() }
+            val fit = min((widthPx - insetPx * 2) / width, (heightPx - insetPx * 2) / height)
+            val center = Offset(widthPx / 2f, heightPx / 2f)
+            val contentCenter = Offset(width / 2f, height / 2f)
+            fun clamp(value: Float, extent: Float, viewport: Float): Float {
+                val overscroll = with(density) { 16.dp.toPx() }
+                val range = max(overscroll, (extent * fit * zoom - viewport) / 2f + overscroll)
+                return value.coerceIn(-range, range)
+            }
+            val gestures = Modifier.fillMaxSize()
                 .pointerInput(sequence.id, widthPx, heightPx) {
                     detectTransformGestures { centroid, pan, factor, _ ->
                         val next = (zoom * factor).coerceIn(1f, 5f)
                         val ratio = next / zoom
-                        shiftX = (shiftX * ratio + pan.x + (centroid.x - viewportCenter.x) * (1f - ratio))
-                            .coerceIn(-widthPx * next, widthPx * next)
-                        shiftY = (shiftY * ratio + pan.y + (centroid.y - viewportCenter.y) * (1f - ratio))
-                            .coerceIn(-heightPx * next, heightPx * next)
                         zoom = next
+                        shiftX = clamp(shiftX * ratio + pan.x + (centroid.x - center.x) * (1f - ratio), width, widthPx)
+                        shiftY = clamp(shiftY * ratio + pan.y + (centroid.y - center.y) * (1f - ratio), height, heightPx)
                     }
                 }
                 .pointerInput(sequence.id, widthPx, heightPx) {
                     detectTapGestures(onDoubleTap = { zoom = 1f; shiftX = 0f; shiftY = 0f }, onTap = { point ->
-                        val x = (point.x - viewportCenter.x - shiftX) / (fit * zoom) + centerX
-                        val y = (point.y - viewportCenter.y - shiftY) / (fit * zoom) + centerY
-                        sequence.nodes.firstOrNull { x in it.x..(it.x + it.width) && y in it.y..(it.y + it.height) }
-                            ?.let { onSelect(it.key) }
+                        val logical = Offset(
+                            (point.x - center.x - shiftX) / (fit * zoom) + contentCenter.x,
+                            (point.y - center.y - shiftY) / (fit * zoom) + contentCenter.y
+                        )
+                        val minHit = with(density) { 48.dp.toPx() } / (fit * zoom)
+                        nodes.filter { node ->
+                            val padX = max(0f, (minHit - node.width) / 2f)
+                            val padY = max(0f, (minHit - node.height) / 2f)
+                            logical.x in (node.x - padX)..(node.x + node.width + padX) &&
+                                logical.y in (node.y - padY)..(node.y + node.height + padY)
+                        }.minByOrNull { (it.center - logical).getDistance() }?.let { onSelect(it.key) }
                     })
                 }
-            Canvas(transform.background(background)) {
+            Canvas(Modifier.fillMaxWidth().height(height.dp)
+                .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(12.dp))
+                .then(gestures).background(background)) {
                 withTransform({
-                    translate(viewportCenter.x + shiftX, viewportCenter.y + shiftY)
+                    translate(center.x + shiftX, center.y + shiftY)
                     scale(fit * zoom, fit * zoom)
-                    translate(-centerX, -centerY)
+                    translate(-contentCenter.x, -contentCenter.y)
                 }) {
                     allEdges.forEach { edge ->
-                        val from = nodeByKey[edge.from]?.center ?: return@forEach
-                        val to = nodeByKey[edge.to]?.center ?: return@forEach
-                        val active = edge in activeEdges
+                        val from = nodeByKey[edge.from] ?: return@forEach
+                        val to = nodeByKey[edge.to] ?: return@forEach
+                        val sameRow = abs(from.center.y - to.center.y) < 10f
+                        val start: Offset
+                        val end: Offset
+                        val horizontalEnd: Boolean
+                        val arrowSign: Float
+                        val path = Path()
+                        if (sameRow) {
+                            horizontalEnd = true
+                            val right = to.center.x > from.center.x
+                            arrowSign = if (right) 1f else -1f
+                            start = Offset(if (right) from.x + from.width else from.x, from.center.y)
+                            end = Offset(if (right) to.x else to.x + to.width, to.center.y)
+                            path.moveTo(start.x, start.y)
+                            path.lineTo(end.x, end.y)
+                        } else if (to.y > from.y + from.height + 2f && to.y - from.y < from.height * 2.5f) {
+                            horizontalEnd = false
+                            arrowSign = 0f
+                            start = Offset(from.center.x, from.y + from.height)
+                            end = Offset(to.center.x, to.y)
+                            val mid = (start.y + end.y) / 2f
+                            path.moveTo(start.x, start.y)
+                            path.lineTo(start.x, mid)
+                            path.lineTo(end.x, mid)
+                            path.lineTo(end.x, end.y)
+                        } else {
+                            horizontalEnd = true
+                            arrowSign = -1f
+                            val lane = width - 5f
+                            start = Offset(from.x + from.width, from.center.y)
+                            end = Offset(to.x + to.width, to.center.y)
+                            path.moveTo(start.x, start.y)
+                            path.lineTo(lane, start.y)
+                            path.lineTo(lane, end.y)
+                            path.lineTo(end.x, end.y)
+                        }
                         val token = styles[edge.kind]
-                        val color = if (active) (if (isDark) token?.dark else token?.light) ?: accent
-                            else foreground.copy(alpha = 0.24f)
-                        drawLine(color, from, to, strokeWidth = if (active) 5f else 2.5f)
-                        val direction = to - from
-                        val length = direction.getDistance().coerceAtLeast(1f)
-                        val tip = from + direction * 0.70f
-                        val unit = direction / length
+                        val color = when {
+                            edge in currentEdges -> (if (isDark) token?.dark else token?.light) ?: highlight
+                            edge in completedEdges -> ((if (isDark) token?.dark else token?.light) ?: highlight).copy(alpha = 0.65f)
+                            else -> foreground.copy(alpha = 0.28f)
+                        }
+                        val pattern = token?.pattern.orEmpty()
+                        val effect = when {
+                            "dotted" in pattern -> PathEffect.dashPathEffect(floatArrayOf(2f, 7f))
+                            "dash-dot" in pattern -> PathEffect.dashPathEffect(floatArrayOf(12f, 5f, 2f, 5f))
+                            "dashed" in pattern -> PathEffect.dashPathEffect(floatArrayOf(11f, 7f))
+                            else -> null
+                        }
+                        val stroke = if (edge in currentEdges) 4f else 2.5f
+                        drawPath(path, color, style = Stroke(width = stroke, pathEffect = effect))
+                        if ("double" in pattern) withTransform({ translate(3f, 3f) }) {
+                            drawPath(path, color, style = Stroke(width = 1.5f, pathEffect = effect))
+                        }
                         val arrow = Path().apply {
-                            moveTo(tip.x, tip.y)
-                            lineTo(tip.x - unit.x * 16f - unit.y * 9f, tip.y - unit.y * 16f + unit.x * 9f)
-                            lineTo(tip.x - unit.x * 16f + unit.y * 9f, tip.y - unit.y * 16f - unit.x * 9f)
+                            moveTo(end.x, end.y)
+                            if (horizontalEnd) {
+                                lineTo(end.x - arrowSign * 12f, end.y - 6f)
+                                lineTo(end.x - arrowSign * 12f, end.y + 6f)
+                            } else {
+                                lineTo(end.x - 6f, end.y - 12f)
+                                lineTo(end.x + 6f, end.y - 12f)
+                            }
                             close()
                         }
                         drawPath(arrow, color)
                     }
-                    sequence.nodes.forEach { node ->
-                        val active = node.key in activeNodes
+                    val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                        textSize = 16f
+                        typeface = Typeface.DEFAULT_BOLD
+                        color = android.graphics.Color.parseColor(if (isDark) "#F1F5F9" else "#17212B")
+                    }
+                    nodes.forEach { node ->
                         val selected = node.key == selectedNode
-                        val stroke = if (selected) accent else if (active) accent.copy(alpha = 0.8f) else foreground.copy(alpha = 0.42f)
+                        val stroke = when {
+                            selected || node.key in currentNodes -> highlight
+                            node.key in activeNodes -> highlight.copy(alpha = 0.65f)
+                            else -> foreground.copy(alpha = 0.42f)
+                        }
                         drawRoundRect(color = if (isDark) Color(0xFF243237) else Color(0xFFF0F5F7),
                             topLeft = Offset(node.x, node.y), size = Size(node.width, node.height),
                             cornerRadius = CornerRadius(10f))
-                        drawRoundRect(color = stroke, topLeft = Offset(node.x, node.y), size = Size(node.width, node.height),
-                            cornerRadius = CornerRadius(10f), style = Stroke(if (selected) 4f else 2f))
-                        val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                            textSize = 17f
-                            typeface = android.graphics.Typeface.DEFAULT_BOLD
-                            color = android.graphics.Color.parseColor(if (isDark) "#F0F6F5" else "#19242A")
-                        }
-                        val words = node.label.split(' ')
+                        drawRoundRect(color = stroke, topLeft = Offset(node.x, node.y),
+                            size = Size(node.width, node.height), cornerRadius = CornerRadius(10f),
+                            style = Stroke(if (selected || node.key in currentNodes) 3f else 2f))
                         val lines = mutableListOf<String>()
                         var line = ""
-                        words.forEach { word ->
-                            val candidate = if (line.isEmpty()) word else "$line $word"
-                            if (paint.measureText(candidate) > node.width - 16f && line.isNotEmpty()) {
-                                lines += line; line = word
+                        node.label.split(' ').forEach { word ->
+                            val candidate = if (line.isBlank()) word else "$line $word"
+                            if (paint.measureText(candidate) > node.width - 18f && line.isNotBlank()) {
+                                lines += line
+                                line = word
                             } else line = candidate
                         }
-                        if (line.isNotEmpty()) lines += line
-                        lines.take(3).forEachIndexed { index, text ->
-                            drawContext.canvas.nativeCanvas.drawText(text, node.x + 8f,
-                                node.y + (node.height - min(lines.size, 3) * 20f) / 2f + 17f + index * 20f, paint)
+                        if (line.isNotBlank()) lines += line
+                        lines.take(4).forEachIndexed { index, value ->
+                            var visible = value
+                            while (visible.isNotEmpty() && paint.measureText(visible) > node.width - 18f) {
+                                visible = visible.dropLast(1)
+                            }
+                            if (visible != value) visible = visible.dropLast(1) + "…"
+                            drawContext.canvas.nativeCanvas.drawText(visible, node.x + 9f,
+                                node.y + (node.height - min(lines.size, 4) * 19f) / 2f + 16f + index * 19f, paint)
                         }
                     }
                 }
@@ -305,7 +430,7 @@ private fun SchemeCanvas(
             OutlinedButton(onClick = { zoom = (zoom * 1.4f).coerceAtMost(5f) }) { Text("+") }
             OutlinedButton(onClick = { zoom = 1f; shiftX = 0f; shiftY = 0f }) { Text("Показать целиком") }
         }
-        Text("Разведите пальцы для увеличения, перемещайте схему жестом. Двойное касание возвращает общий вид.",
+        Text("Увеличивайте и перемещайте схему жестом. Двойное касание возвращает общий вид.",
             style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }

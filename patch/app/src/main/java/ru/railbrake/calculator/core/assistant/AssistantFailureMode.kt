@@ -11,6 +11,7 @@ enum class AssistantFailureMode(val label: String) {
     NO_SWITCH_OFF("не выключается"),
     SPONTANEOUS_OFF("самопроизвольно отключается"),
     NO_START("не запускается"),
+    ENGINE_STALL("дизель глохнет"),
     NO_STOP("не останавливается"),
     NO_RISE("не поднимается"),
     SLOW_RISE("медленный подъём"),
@@ -73,6 +74,10 @@ object AssistantFailureModeDetector {
         if (containsAny(normalized, "не запуска", "не старт", "не вращ", "не пуска", "молчит") ||
             (compressorContext && containsAny(normalized, "не включ", "не хочет включ"))) {
             modes += AssistantFailureMode.NO_START
+        }
+        if (containsAny(normalized, "глох", "заглох", "заглохн") &&
+            !containsAny(normalized, "не глох", "не заглох")) {
+            modes += AssistantFailureMode.ENGINE_STALL
         }
         if (containsAny(normalized, "не останавлива", "не стопорится") ||
             (compressorContext && containsAny(normalized, "не отключ", "не выключ"))) {

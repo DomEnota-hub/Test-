@@ -132,6 +132,7 @@ object AssistantQueryParser {
         ComponentVocabulary("PANTOGRAPH", listOf("токоприемник"), "токоприемник пантограф"),
         ComponentVocabulary("EKG", listOf("экг", "групповой переключатель", "групповик"), "экг групповой переключатель групповик"),
         ComponentVocabulary("TRACTION_MOTOR", listOf("тяговый двигатель", "тяговые двигатели", "тэд"), "тэд тяговый электродвигатель тяговые двигатели"),
+        ComponentVocabulary("DIESEL", listOf("дизель", "дизельный двигатель", "силовая установка"), "дизель дизельный двигатель"),
         ComponentVocabulary("RECTIFIER", listOf("выпрямительная установка", "выпрямитель", "ву"), "ву выпрямительная установка выпрямитель"),
         ComponentVocabulary("MOTOR_FAN", listOf("мотор-вентилятор", "мотор вентилятор"), "мотор-вентилятор вентилятор охлаждения"),
         ComponentVocabulary("PHASE_SPLITTER", listOf("фазорасщепитель", "расщепитель фаз", "фазник"), "фазорасщепитель расщепитель фаз фазник"),
@@ -156,7 +157,7 @@ object AssistantQueryParser {
         "ошиб", "авари", "отказ", "неисправ", "пробой", "обрыв", "короткое замыкание",
         "тяги нет", "тяга пропала", "тягу не берет", "не берет тягу",
         "давление не", "нет давления", "молчит", "воздуха не дает",
-        "дым", "искрит", "искрен", "перегрев", "греется", "стучит", "шумит", "утеч", "теч",
+            "дым", "искрит", "искрен", "перегрев", "греется", "стучит", "шумит", "утеч", "теч", "глох", "заглох",
         "самопроизвольно", "сам включ", "сам выключ", "мигает", "моргает", "горит постоянно",
         "глюч", "косяч", "чуд", "выруб", "отруб", "отвал", "залип", "трав", "сифон",
         "не останавлива", "пахнет гарью", "гарь", "трещит", "дребезжит", "воет", "свистит"
@@ -173,7 +174,7 @@ object AssistantQueryParser {
             else -> null
         }
 
-        val componentKey = componentFromAnswer(normalized)
+        val componentKey = componentFromAnswer(normalized) ?: dieselFromEngineContext(normalized, family)
         val failureModes = AssistantFailureModeDetector.detect(normalized)
         val safetyTopicIds = AssistantSafetyTopics.resolve(normalized, electricalInjury.containsMatchIn(normalized))
         // Preserve the original electric-injury compatibility field. The
@@ -264,6 +265,13 @@ object AssistantQueryParser {
 
     fun componentSearchText(componentKey: String): String? =
         componentVocabulary.firstOrNull { it.key == componentKey }?.enrichment
+
+    /** "Двигатель" refers to the diesel only in a ChME context and without a traction-motor cue. */
+    fun dieselFromEngineContext(text: String, family: TechnicalFamily?): String? =
+        "DIESEL".takeIf {
+            family?.isChme3 == true && "двигател" in text &&
+                "тягов" !in text && "тэд" !in text && "электродвигател" !in text
+        }
 
     fun normalize(text: String): String {
         var result = text

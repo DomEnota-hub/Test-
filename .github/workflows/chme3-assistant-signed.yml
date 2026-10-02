@@ -130,6 +130,7 @@ jobs:
               "app/src/test/java/ru/railbrake/calculator/core/assistant/$testfile" \
               "patch/app/src/test/java/ru/railbrake/calculator/core/assistant/$testfile"
           done
+          cmp app/src/test/java/ru/railbrake/calculator/core/assistant/AssistantDieselStallRoutingTest.kt patch/app/src/test/java/ru/railbrake/calculator/core/assistant/AssistantDieselStallRoutingTest.kt
           cmp app/src/main/java/ru/railbrake/calculator/ui/FirstAidScreen.kt patch/app/src/main/java/ru/railbrake/calculator/ui/FirstAidScreen.kt
           cmp app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt patch/app/src/main/java/ru/railbrake/calculator/core/TechnicalDataRepository.kt
           cmp app/src/main/java/ru/railbrake/calculator/core/UserFacingTechnicalPolicy.kt patch/app/src/main/java/ru/railbrake/calculator/core/UserFacingTechnicalPolicy.kt
@@ -264,7 +265,7 @@ jobs:
 
           text, code_count = re.subn(
               r'versionCode\s*=\s*\d+',
-              'versionCode = 215',
+              'versionCode = 216',
               text,
               count=1,
           )
@@ -272,7 +273,7 @@ jobs:
               raise SystemExit('Expected versionCode was not found exactly once')
 
           def version_replacement(match):
-              return f'versionName = "{match.group(1)}-assistant-v0.24"'
+              return f'versionName = "{match.group(1)}-assistant-v0.25"'
 
           text, version_count = re.subn(
               r'versionName\s*=\s*"([^"]+)"',
@@ -362,7 +363,7 @@ jobs:
           set -euo pipefail
           APK=buildsrc/RailBrakeCalculator/app/build/outputs/apk/release/app-release.apk
           "$ANDROID_SDK_ROOT/build-tools/34.0.0/aapt" dump badging "$APK" | tee assistant-test-badging.log
-          grep -Fq "package: name='ru.railbrake.calculator.assistanttest' versionCode='215' versionName='1.2.2-dev14-beta53-chme3-assistant-v0.24'" assistant-test-badging.log
+          grep -Fq "package: name='ru.railbrake.calculator.assistanttest' versionCode='216' versionName='1.2.2-dev14-beta53-chme3-assistant-v0.25'" assistant-test-badging.log
           "$ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner" verify --verbose --print-certs "$APK" | tee assistant-test-apksigner.log
           grep -qi "Signer #1 certificate SHA-256 digest: $EXPECTED_SIGNING_CERT_SHA256" assistant-test-apksigner.log
           unzip -Z1 "$APK" | grep 'assets/technical/' | head -30
@@ -381,7 +382,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: railbrake-assistant-test-v0.24-chme3-signed-apk
+          name: railbrake-assistant-test-v0.25-chme3-signed-apk
           path: buildsrc/RailBrakeCalculator/app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
           retention-days: 7
