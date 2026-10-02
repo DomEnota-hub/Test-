@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "familyId": "tem2-family",
+  "updatedAt": "2026-10-02",
+  "profileDimensions": [
+    {
+      "id": "series_execution",
+      "values": ["TEM2", "TEM2U"],
+      "required": true
+    },
+    {
+      "id": "diesel_execution",
+      "values": ["PD1_EARLY", "PD1M", "OTHER_CONFIRMED_MODERNIZATION", "UNKNOWN"],
+      "required": true,
+      "rule": "Do not infer diesel execution from series alone; factory period and later replacement/modernization must be considered."
+    },
+    {
+      "id": "electrical_execution",
+      "values": ["TEM2_FACTORY_BASELINE", "TEM2U_FACTORY_BASELINE", "DOCUMENTED_MODERNIZATION", "UNKNOWN"],
+      "required": true
+    },
+    {
+      "id": "brake_equipment_execution",
+      "values": ["FACTORY_DOCUMENTED", "DOCUMENTED_REPLACEMENT", "UNKNOWN"],
+      "required": true,
+      "rule": "Brake apparatus identity and routing require actual-equipment confirmation before variant-dependent instructions."
+    },
+    {
+      "id": "control_execution",
+      "values": ["STANDARD_CAB", "ONE_PERSON_CONTROL_PRESENT", "ADDITIONAL_CONTROL_STATIONS_PRESENT", "DOCUMENTED_MODERNIZATION", "UNKNOWN"],
+      "required": false
+    },
+    {
+      "id": "local_modernization",
+      "values": ["NONE_CONFIRMED", "PRESENT_DOCUMENTED", "UNKNOWN"],
+      "required": true
+    }
+  ],
+  "familyRules": [
+    "Series name selects an information profile but never proves the exact installed equipment after overhaul or modernization.",
+    "TEM2U may inherit TEM2-family common content only where applicability is independently confirmed.",
+    "TEM2 electrical topology must not be assumed identical to TEM2U when the TEM2U manufacturer manual defines a dedicated circuit/execution.",
+    "Unknown execution blocks variant-dependent operational actions and forces clarification or safe generic guidance.",
+    "No TEM2UM, TEM2T or TEM2A feature enters TEM2/TEM2U profiles without a dedicated evidence-backed profile or explicit modernization record."
+  ],
+  "explicitAdjacentVariantExclusions": {
+    "TEM2UM": ["1PD-4A / higher-power diesel-generator assumptions", "TEM2UM-specific electrical scheme", "TEM2UM-specific apparatus"],
+    "TEM2T": ["factory rheostatic/electrodynamic brake equipment", "braking resistor equipment", "EDB runtime actions"],
+    "TEM2A": ["gauge/export execution-specific running gear and equipment"],
+    "LATER_TEM_FAMILY": ["TEM15/TEM17/TEM18 equipment and control logic"]
+  },
+  "integrationDefaults": {
+    "failClosedOnUnknownExecution": true,
+    "actualEquipmentOverridesNumberHint": true,
+    "sourceAndProfileRequiredForSourceBoundAction": true,
+    "fieldPracticeAuthority": "NO"
+  }
+}
