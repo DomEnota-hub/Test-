@@ -6,6 +6,7 @@ on:
       - feature/tem2-stage3
     paths:
       - 'docs/locomotives/diesel/tem2-family/**'
+      - 'docs/integration/TEM2_STAGE3_DIAGNOSTICS_CHECKPOINT.md'
       - 'app/qa/validate_tem2_stage2.py'
       - 'app/qa/validate_tem2_stage3.py'
       - 'qa/validate_tem2_stage1_foundation.py'
