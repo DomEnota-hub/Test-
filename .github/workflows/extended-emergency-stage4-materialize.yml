@@ -1,0 +1,37 @@
+name: Expanded emergency Stage 4 materialize
+
+on:
+  push:
+    branches:
+      - integration/extended-emergency-stage4
+    paths:
+      - 'qa/build_extended_emergency_stage4_asset.py'
+      - 'qa/build_extended_emergency_stage3_projection.py'
+      - 'docs/integration/extended_emergency_stage2_sources.tsv'
+      - 'docs/integration/extended_emergency_stage2_candidates.tsv'
+      - 'docs/integration/extended_emergency_stage2_discovery.tsv'
+      - '.github/workflows/extended-emergency-stage4-materialize.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build safe Android runtime asset and patch mirror
+        run: python3 qa/build_extended_emergency_stage4_asset.py
+      - name: Commit deterministic materialized assets
+        run: |
+          git diff --check
+          if git diff --quiet -- app/src/main/assets/technical/extended_emergency_runtime.json patch/app/src/main/assets/technical/extended_emergency_runtime.json; then
+            echo 'Runtime asset already materialized.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app/src/main/assets/technical/extended_emergency_runtime.json patch/app/src/main/assets/technical/extended_emergency_runtime.json
+          git commit -m 'build: materialize expanded emergency runtime asset'
+          git push origin HEAD:integration/extended-emergency-stage4
