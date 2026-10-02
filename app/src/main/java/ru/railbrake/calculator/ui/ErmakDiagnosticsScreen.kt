@@ -687,6 +687,12 @@ private fun ErmakDiagnosticRoute(scenario: ErmakDiagnosticScenario, family: Tech
                 if (scenario.prohibited.isNotEmpty()) {
                     InfoCard("Запрещено", scenario.prohibited, MaterialTheme.colorScheme.errorContainer)
                 }
+                if (node?.type == "terminal" && family.isChme3) {
+                    ExtendedEmergencyEvidenceSection(
+                        standardScenarioId = scenario.id,
+                        family = family
+                    )
+                }
                 val savedReport = buildErmakDiagnosticReport(
                     scenario = scenario,
                     family = family,
