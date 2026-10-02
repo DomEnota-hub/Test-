@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "modeId": "EXTENDED_EMERGENCY_KNOWLEDGE",
   "defaultEnabled": false,
   "warningPolicy": {
@@ -34,15 +34,46 @@
       "meaning": "Описанная практика работников/профильных источников без автоматического нормативного статуса"
     }
   ],
+  "actionDispositions": [
+    {
+      "id": "INFORMATION_ONLY",
+      "meaning": "Материал может объяснять симптом, гипотезу или исторический способ, но не отображается как действие для выполнения"
+    },
+    {
+      "id": "CONDITIONAL_ACTION",
+      "meaning": "Метод может быть показан в расширенном режиме только после проверки источника, фактического исполнения и требуемых safety-gates; это не повышает его нормативный статус"
+    },
+    {
+      "id": "PROHIBITED",
+      "meaning": "Метод хранится для доказательной базы или анти-паттерна и не отображается как выполнимое действие"
+    }
+  ],
+  "requiredScenarioMetadata": [
+    "id",
+    "profiles",
+    "provenanceClass",
+    "sourceRefs",
+    "sourceStatus",
+    "riskClass",
+    "actionDisposition"
+  ],
   "runtimeContract": {
     "standardModeMayEnterExtendedBranch": false,
     "extendedModeMayUpgradeAuthority": false,
+    "sourceAuthorityAndDisplayDispositionSeparate": true,
     "profileApplicabilityRequired": true,
     "unknownExecution": "FAIL_CLOSED",
     "sourceRequired": true,
     "sourceStatusRequired": true,
+    "actionDispositionRequired": true,
+    "fieldPracticeDoesNotAutoAuthorizeAction": true,
+    "manufacturerOrArchivedSourceDoesNotAutoAuthorizeCurrentAction": true,
     "dangerousStepKeepsIndependentSafetyMarking": true,
+    "dangerousStepRequiresDedicatedSafetyGate": true,
+    "prohibitedStepNeverExecutable": true,
     "bypassOrProtectionDefeatRequiresExplicitRecord": true,
+    "bypassOrProtectionDefeatDispositionDefault": "PROHIBITED",
+    "conditionalBypassRequiresDedicatedSafetyGate": true,
     "adjacentVariantInheritance": "DENY_UNLESS_EXPLICITLY_EVIDENCED"
   }
 }
