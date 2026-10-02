@@ -39,6 +39,9 @@ data class RailSemanticColors(
     val success: Color,
     val successContainer: Color,
     val successBorder: Color,
+    val extendedEmergency: Color,
+    val extendedEmergencyContainer: Color,
+    val extendedEmergencyBorder: Color,
     val disabledContent: Color
 )
 
@@ -53,6 +56,9 @@ private val LocalRailSemanticColors = staticCompositionLocalOf {
         success = Success,
         successContainer = Success.copy(alpha = 0.10f),
         successBorder = Success.copy(alpha = 0.38f),
+        extendedEmergency = ExtendedEmergencyDark,
+        extendedEmergencyContainer = ExtendedEmergencyDarkContainer,
+        extendedEmergencyBorder = ExtendedEmergencyDark.copy(alpha = 0.78f),
         disabledContent = RailSteel
     )
 }
@@ -142,6 +148,9 @@ private fun darkSemanticColors(palette: AccentPalette) = RailSemanticColors(
     success = Success,
     successContainer = Success.copy(alpha = 0.10f),
     successBorder = Success.copy(alpha = 0.38f),
+    extendedEmergency = ExtendedEmergencyDark,
+    extendedEmergencyContainer = ExtendedEmergencyDarkContainer,
+    extendedEmergencyBorder = ExtendedEmergencyDark.copy(alpha = 0.78f),
     disabledContent = RailSteel
 )
 
@@ -157,6 +166,9 @@ private fun lightSemanticColors(palette: AccentPalette): RailSemanticColors {
         success = Color(0xFF176A4B),
         successContainer = Color(0xFFE0F4EB),
         successBorder = Color(0xFF65AA8F),
+        extendedEmergency = ExtendedEmergencyLight,
+        extendedEmergencyContainer = ExtendedEmergencyLightContainer,
+        extendedEmergencyBorder = ExtendedEmergencyLight.copy(alpha = 0.82f),
         disabledContent = Color(0xFF68717A)
     )
 }
