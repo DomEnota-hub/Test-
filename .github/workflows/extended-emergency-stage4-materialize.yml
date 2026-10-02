@@ -6,6 +6,7 @@ on:
       - integration/extended-emergency-stage4
     paths:
       - 'qa/build_extended_emergency_stage4_asset.py'
+      - 'qa/apply_extended_emergency_stage4_ui.py'
       - 'qa/build_extended_emergency_stage3_projection.py'
       - 'docs/integration/extended_emergency_stage2_sources.tsv'
       - 'docs/integration/extended_emergency_stage2_candidates.tsv'
@@ -23,17 +24,25 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build safe Android runtime asset and patch mirror
         run: python3 qa/build_extended_emergency_stage4_asset.py
-      - name: Commit deterministic materialized assets
+      - name: Apply deterministic diagnostic UI integration
+        run: python3 qa/apply_extended_emergency_stage4_ui.py
+      - name: Commit deterministic materialized files
         run: |
           git diff --check
-          changes="$(git status --porcelain -- app/src/main/assets/technical/extended_emergency_runtime.json patch/app/src/main/assets/technical/extended_emergency_runtime.json)"
+          paths=(
+            app/src/main/assets/technical/extended_emergency_runtime.json
+            patch/app/src/main/assets/technical/extended_emergency_runtime.json
+            app/src/main/java/ru/railbrake/calculator/ui/ErmakDiagnosticsScreen.kt
+            patch/app/src/main/java/ru/railbrake/calculator/ui/ErmakDiagnosticsScreen.kt
+          )
+          changes="$(git status --porcelain -- "${paths[@]}")"
           if [ -z "$changes" ]; then
-            echo 'Runtime asset already materialized.'
+            echo 'Stage 4 runtime asset and diagnostic UI are already materialized.'
             exit 0
           fi
           printf '%s\n' "$changes"
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add app/src/main/assets/technical/extended_emergency_runtime.json patch/app/src/main/assets/technical/extended_emergency_runtime.json
-          git commit -m 'build: materialize expanded emergency runtime asset'
+          git add "${paths[@]}"
+          git commit -m 'build: materialize expanded emergency Stage 4 integration'
           git push origin HEAD:integration/extended-emergency-stage4
