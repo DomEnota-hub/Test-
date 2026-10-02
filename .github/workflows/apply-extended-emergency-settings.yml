@@ -6,6 +6,19 @@ on:
       - feature/extended-emergency-scenarios
     paths:
       - '.github/workflows/apply-extended-emergency-settings.yml'
+      - 'qa/validate_extended_emergency_architecture.py'
+      - 'app/src/main/java/ru/railbrake/calculator/ui/BrakeCalculatorApp.kt'
+      - 'patch/app/src/main/java/ru/railbrake/calculator/ui/BrakeCalculatorApp.kt'
+      - 'app/src/main/java/ru/railbrake/calculator/ui/ExtendedEmergencySettingsSection.kt'
+      - 'patch/app/src/main/java/ru/railbrake/calculator/ui/ExtendedEmergencySettingsSection.kt'
+      - 'app/src/main/java/ru/railbrake/calculator/data/ExtendedEmergencyModeRepository.kt'
+      - 'patch/app/src/main/java/ru/railbrake/calculator/data/ExtendedEmergencyModeRepository.kt'
+      - 'app/src/main/java/ru/railbrake/calculator/ui/theme/Color.kt'
+      - 'patch/app/src/main/java/ru/railbrake/calculator/ui/theme/Color.kt'
+      - 'app/src/main/java/ru/railbrake/calculator/ui/theme/Theme.kt'
+      - 'patch/app/src/main/java/ru/railbrake/calculator/ui/theme/Theme.kt'
+      - 'app/src/main/assets/technical/extended_emergency_policy.json'
+      - 'patch/app/src/main/assets/technical/extended_emergency_policy.json'
   workflow_dispatch:
 
 permissions:
@@ -72,15 +85,24 @@ jobs:
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          p = Path('buildsrc/RailBrakeCalculator/app/build.gradle.kts')
-          text = p.read_text(encoding='utf-8')
+
+          root = Path('buildsrc/RailBrakeCalculator')
+          gradle = root / 'app/build.gradle.kts'
+          text = gradle.read_text(encoding='utf-8')
           dependency = '    implementation(files("libs/sherpa-onnx.aar"))\n'
           if text.count(dependency) != 1:
               raise SystemExit('Expected exactly one local sherpa-onnx dependency')
-          # The binary AAR is intentionally not stored in this repository/zip.
-          # This workflow validates the Kotlin/UI change set independently from
-          # the external offline-ASR binary; release/full runtime builds keep it.
-          p.write_text(text.replace(dependency, ''), encoding='utf-8')
+          gradle.write_text(text.replace(dependency, ''), encoding='utf-8')
+
+          # The offline ASR AAR is an external binary and is intentionally not
+          # stored in this repository/zip. Replace only its adapter in the
+          # temporary build tree so the settings/UI change can still receive a
+          # real Kotlin compile and unit-test pass. Repository sources remain
+          # untouched; full runtime/release validation still requires the AAR.
+          voice = root / 'app/src/main/java/ru/railbrake/calculator/core/assistant/AssistantVoiceInput.kt'
+          if not voice.is_file():
+              raise SystemExit('AssistantVoiceInput.kt missing from temporary build')
+          voice.write_text('''package ru.railbrake.calculator.core.assistant\n\nimport android.content.Context\n\ninternal enum class AssistantVoicePhase { PREPARING, LISTENING, TRANSCRIBING }\n\ninternal sealed interface AssistantVoiceOutcome {\n    data class Transcript(val text: String) : AssistantVoiceOutcome\n    data object NoSpeech : AssistantVoiceOutcome\n}\n\ninternal class AssistantVoiceInput(private val context: Context) {\n    fun stop() = Unit\n    fun close() = Unit\n    suspend fun capture(onPhase: suspend (AssistantVoicePhase) -> Unit): AssistantVoiceOutcome {\n        onPhase(AssistantVoicePhase.PREPARING)\n        return AssistantVoiceOutcome.NoSpeech\n    }\n}\n''', encoding='utf-8')
           PY
       - name: Kotlin compile (UI source validation)
         working-directory: buildsrc/RailBrakeCalculator
