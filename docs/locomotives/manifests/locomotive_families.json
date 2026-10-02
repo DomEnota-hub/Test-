@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-01",
+  "updatedAt": "2026-10-02",
   "layoutPolicy": {
     "root": "docs/locomotives",
     "levels": ["tractionType", "family", "variant"],
@@ -19,6 +19,13 @@
       "legacyMigrationRoot": "docs/locomotives/chme3",
       "migrationState": "CANONICAL_STRUCTURE_STARTED",
       "profiles": ["chme3-base", "chme3t-rheostatic", "chme3e-electronic"]
+    },
+    {
+      "familyId": "tem2-family",
+      "tractionType": "diesel",
+      "canonicalRoot": "docs/locomotives/diesel/tem2-family",
+      "migrationState": "STAGE_1_FOUNDATION_COMPLETE",
+      "profiles": ["tem2-base", "tem2u-improved"]
     }
   ]
 }
