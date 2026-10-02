@@ -1,48 +1,188 @@
-name: Expanded emergency Stage 4 materialize
+name: Expanded emergency Stage 4 integration
 
 on:
   push:
     branches:
       - integration/extended-emergency-stage4
     paths:
+      - 'app/src/main/assets/technical/extended_emergency_runtime.json'
+      - 'patch/app/src/main/assets/technical/extended_emergency_runtime.json'
+      - 'app/src/main/java/ru/railbrake/calculator/core/ExtendedEmergencyRuntimeRepository.kt'
+      - 'patch/app/src/main/java/ru/railbrake/calculator/core/ExtendedEmergencyRuntimeRepository.kt'
+      - 'app/src/main/java/ru/railbrake/calculator/ui/ExtendedEmergencyEvidenceSection.kt'
+      - 'patch/app/src/main/java/ru/railbrake/calculator/ui/ExtendedEmergencyEvidenceSection.kt'
+      - 'app/src/main/java/ru/railbrake/calculator/ui/ErmakDiagnosticsScreen.kt'
+      - 'patch/app/src/main/java/ru/railbrake/calculator/ui/ErmakDiagnosticsScreen.kt'
+      - 'app/src/test/java/ru/railbrake/calculator/core/ExtendedEmergencyRuntimePolicyTest.kt'
+      - 'patch/app/src/test/java/ru/railbrake/calculator/core/ExtendedEmergencyRuntimePolicyTest.kt'
       - 'qa/build_extended_emergency_stage4_asset.py'
       - 'qa/apply_extended_emergency_stage4_ui.py'
-      - 'qa/build_extended_emergency_stage3_projection.py'
-      - 'docs/integration/extended_emergency_stage2_sources.tsv'
-      - 'docs/integration/extended_emergency_stage2_candidates.tsv'
-      - 'docs/integration/extended_emergency_stage2_discovery.tsv'
+      - 'qa/validate_extended_emergency_stage4_integration.py'
+      - 'docs/integration/EXTENDED_EMERGENCY_STAGE4_CHECKPOINT.md'
       - '.github/workflows/extended-emergency-stage4-materialize.yml'
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  materialize:
+  integration-and-regression:
     runs-on: ubuntu-24.04
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
-      - name: Build safe Android runtime asset and patch mirror
-        run: python3 qa/build_extended_emergency_stage4_asset.py
-      - name: Apply deterministic diagnostic UI integration
-        run: python3 qa/apply_extended_emergency_stage4_ui.py
-      - name: Commit deterministic materialized files
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install Android SDK 34
         run: |
-          git diff --check
-          paths=(
-            app/src/main/assets/technical/extended_emergency_runtime.json
-            patch/app/src/main/assets/technical/extended_emergency_runtime.json
-            app/src/main/java/ru/railbrake/calculator/ui/ErmakDiagnosticsScreen.kt
+          yes | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
+          "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-34' 'build-tools;34.0.0'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+
+      - name: Preserve Stage 2 discovery and Stage 3 runtime contracts
+        run: |
+          python3 qa/validate_extended_emergency_stage2_discovery.py
+          python3 qa/validate_extended_emergency_stage3_runtime.py
+
+      - name: Validate Stage 4 Android runtime and cross-layer wiring
+        run: python3 qa/validate_extended_emergency_stage4_integration.py
+
+      - name: Preserve Stage 0 architecture and Stage 1 inventory
+        run: |
+          python3 qa/validate_extended_emergency_architecture.py
+          python3 qa/validate_extended_emergency_stage1_inventory.py
+
+      - name: Preserve ChME3 standard projection and diagnostic graphs
+        run: |
+          python3 qa/verify_chme3_android_assets.py
+          python3 qa/verify_diagnostic_graphs.py
+          python3 qa/verify_diagnostic_unknown_routes.py
+
+      - name: Preserve TEM2 stages 1 through 3
+        run: |
+          python3 qa/validate_tem2_stage1_foundation.py
+          python3 app/qa/validate_tem2_stage2.py
+          python3 app/qa/validate_tem2_stage3.py
+
+      - name: Verify deterministic Stage 4 runtime asset materialization
+        run: |
+          rm -rf /tmp/expanded-stage4
+          mkdir -p /tmp/expanded-stage4/app /tmp/expanded-stage4/patch
+          python3 qa/build_extended_emergency_stage4_asset.py \
+            --app-output /tmp/expanded-stage4/app/runtime.json \
+            --patch-output /tmp/expanded-stage4/patch/runtime.json
+          cmp /tmp/expanded-stage4/app/runtime.json app/src/main/assets/technical/extended_emergency_runtime.json
+          cmp /tmp/expanded-stage4/patch/runtime.json patch/app/src/main/assets/technical/extended_emergency_runtime.json
+
+      - name: Verify deterministic Stage 4 UI patch is already applied
+        run: |
+          python3 qa/apply_extended_emergency_stage4_ui.py
+          git diff --exit-code -- \
+            app/src/main/java/ru/railbrake/calculator/ui/ErmakDiagnosticsScreen.kt \
             patch/app/src/main/java/ru/railbrake/calculator/ui/ErmakDiagnosticsScreen.kt
-          )
-          changes="$(git status --porcelain -- "${paths[@]}")"
-          if [ -z "$changes" ]; then
-            echo 'Stage 4 runtime asset and diagnostic UI are already materialized.'
-            exit 0
-          fi
-          printf '%s\n' "$changes"
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add "${paths[@]}"
-          git commit -m 'build: materialize expanded emergency Stage 4 integration'
-          git push origin HEAD:integration/extended-emergency-stage4
+
+      - name: Extract base project and overlay Stage 4 patch
+        run: |
+          rm -rf buildsrc
+          mkdir buildsrc
+          unzip -q RailBrakeCalculator.zip -d buildsrc
+          test -f buildsrc/RailBrakeCalculator/settings.gradle.kts
+          cp -a patch/. buildsrc/RailBrakeCalculator/
+
+      - name: Prepare source-only Android validation build
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          root = Path('buildsrc/RailBrakeCalculator')
+          gradle = root / 'app/build.gradle.kts'
+          text = gradle.read_text(encoding='utf-8')
+          dependency = '    implementation(files("libs/sherpa-onnx.aar"))\n'
+          if text.count(dependency) != 1:
+              raise SystemExit('Expected exactly one local sherpa-onnx dependency')
+          gradle.write_text(text.replace(dependency, ''), encoding='utf-8')
+
+          voice = root / 'app/src/main/java/ru/railbrake/calculator/core/assistant/AssistantVoiceInput.kt'
+          if not voice.is_file():
+              raise SystemExit('AssistantVoiceInput.kt missing from temporary build')
+          voice.write_text('''package ru.railbrake.calculator.core.assistant\n\nimport android.content.Context\n\ninternal enum class AssistantVoicePhase { PREPARING, LISTENING, TRANSCRIBING }\n\ninternal sealed interface AssistantVoiceOutcome {\n    data class Transcript(val text: String) : AssistantVoiceOutcome\n    data object NoSpeech : AssistantVoiceOutcome\n}\n\ninternal class AssistantVoiceInput(private val context: Context) {\n    fun stop() = Unit\n    fun close() = Unit\n    suspend fun capture(onPhase: suspend (AssistantVoicePhase) -> Unit): AssistantVoiceOutcome {\n        onPhase(AssistantVoicePhase.PREPARING)\n        return AssistantVoiceOutcome.NoSpeech\n    }\n}\n''', encoding='utf-8')
+          PY
+
+      - name: Kotlin compile (source-only validation)
+        working-directory: buildsrc/RailBrakeCalculator
+        run: gradle :app:compileDebugKotlin --stacktrace --console=plain
+
+      - name: Unit tests (source-only validation)
+        working-directory: buildsrc/RailBrakeCalculator
+        run: gradle :app:testDebugUnitTest --stacktrace --console=plain
+
+      - name: Lint (source-only validation)
+        working-directory: buildsrc/RailBrakeCalculator
+        run: gradle :app:lintDebug --stacktrace --console=plain
+
+      - name: Assemble debug (source-only validation)
+        working-directory: buildsrc/RailBrakeCalculator
+        run: gradle :app:assembleDebug --stacktrace --console=plain
+
+      - name: Enforce Stage 4 integration-only change boundary
+        run: |
+          python3 - <<'PY'
+          import subprocess
+
+          base = '81a189cb3eb31d83000f6e40338895dd92ec2696'
+          subprocess.run(['git', 'cat-file', '-e', f'{base}^{{commit}}'], check=True)
+          allowed = {
+              'app/src/main/assets/technical/extended_emergency_runtime.json',
+              'patch/app/src/main/assets/technical/extended_emergency_runtime.json',
+              'app/src/main/java/ru/railbrake/calculator/core/ExtendedEmergencyRuntimeRepository.kt',
+              'patch/app/src/main/java/ru/railbrake/calculator/core/ExtendedEmergencyRuntimeRepository.kt',
+              'app/src/main/java/ru/railbrake/calculator/ui/ExtendedEmergencyEvidenceSection.kt',
+              'patch/app/src/main/java/ru/railbrake/calculator/ui/ExtendedEmergencyEvidenceSection.kt',
+              'app/src/main/java/ru/railbrake/calculator/ui/ErmakDiagnosticsScreen.kt',
+              'patch/app/src/main/java/ru/railbrake/calculator/ui/ErmakDiagnosticsScreen.kt',
+              'app/src/test/java/ru/railbrake/calculator/core/ExtendedEmergencyRuntimePolicyTest.kt',
+              'patch/app/src/test/java/ru/railbrake/calculator/core/ExtendedEmergencyRuntimePolicyTest.kt',
+              'qa/build_extended_emergency_stage4_asset.py',
+              'qa/apply_extended_emergency_stage4_ui.py',
+              'qa/validate_extended_emergency_stage4_integration.py',
+              'docs/integration/EXTENDED_EMERGENCY_STAGE4_CHECKPOINT.md',
+              '.github/workflows/extended-emergency-stage4-materialize.yml',
+          }
+          changed = {
+              line.strip()
+              for line in subprocess.check_output(
+                  ['git', 'diff', '--name-only', f'{base}..HEAD'], text=True
+              ).splitlines()
+              if line.strip()
+          }
+          unexpected = sorted(changed - allowed)
+          if unexpected:
+              raise SystemExit('Stage 4 integration-only boundary violated: ' + ', '.join(unexpected))
+          required = {
+              'app/src/main/assets/technical/extended_emergency_runtime.json',
+              'patch/app/src/main/assets/technical/extended_emergency_runtime.json',
+              'app/src/main/java/ru/railbrake/calculator/core/ExtendedEmergencyRuntimeRepository.kt',
+              'patch/app/src/main/java/ru/railbrake/calculator/core/ExtendedEmergencyRuntimeRepository.kt',
+              'app/src/main/java/ru/railbrake/calculator/ui/ExtendedEmergencyEvidenceSection.kt',
+              'patch/app/src/main/java/ru/railbrake/calculator/ui/ExtendedEmergencyEvidenceSection.kt',
+              'app/src/main/java/ru/railbrake/calculator/ui/ErmakDiagnosticsScreen.kt',
+              'patch/app/src/main/java/ru/railbrake/calculator/ui/ErmakDiagnosticsScreen.kt',
+              'qa/validate_extended_emergency_stage4_integration.py',
+          }
+          missing = sorted(required - changed)
+          if missing:
+              raise SystemExit('Stage 4 required integration files missing from diff: ' + ', '.join(missing))
+          print('Stage 4 integration-only boundary PASS:', ', '.join(sorted(changed)))
+          PY
+
+      - name: Patch hygiene
+        run: git diff --check
