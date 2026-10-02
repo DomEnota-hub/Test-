@@ -26,10 +26,12 @@ jobs:
       - name: Commit deterministic materialized assets
         run: |
           git diff --check
-          if git diff --quiet -- app/src/main/assets/technical/extended_emergency_runtime.json patch/app/src/main/assets/technical/extended_emergency_runtime.json; then
+          changes="$(git status --porcelain -- app/src/main/assets/technical/extended_emergency_runtime.json patch/app/src/main/assets/technical/extended_emergency_runtime.json)"
+          if [ -z "$changes" ]; then
             echo 'Runtime asset already materialized.'
             exit 0
           fi
+          printf '%s\n' "$changes"
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add app/src/main/assets/technical/extended_emergency_runtime.json patch/app/src/main/assets/technical/extended_emergency_runtime.json
