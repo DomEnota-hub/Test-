@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "modeId": "EXTENDED_EMERGENCY_KNOWLEDGE",
+  "defaultEnabled": false,
+  "warningPolicy": {
+    "acknowledgement": "FIRST_ENABLE_ONLY",
+    "repeatPerScenario": false,
+    "warningTextMustNameColor": "бирюзовая рамка",
+    "badge": "Расширенный сценарий"
+  },
+  "visualSemantics": {
+    "semantic": "EXPANDED_NON_STANDARD_PROVENANCE",
+    "themeIndependent": true,
+    "lightBorder": "#0F766E",
+    "darkBorder": "#5EEAD4",
+    "colorNeverSoleCarrier": true,
+    "dangerInsideScenarioRemainsRed": true
+  },
+  "provenanceClasses": [
+    {
+      "id": "ARCHIVED_OFFICIAL",
+      "meaning": "Архивная официальная инструкция или правило, не заявленное как действующее разрешение в текущем контексте"
+    },
+    {
+      "id": "MANUFACTURER_EXTENDED",
+      "meaning": "Метод или процедура изготовителя, требующая отдельной проверки текущей применимости и полномочий"
+    },
+    {
+      "id": "HISTORICAL_TRAINING",
+      "meaning": "Исторический учебный или справочный материал"
+    },
+    {
+      "id": "FIELD_PRACTICE",
+      "meaning": "Описанная практика работников/профильных источников без автоматического нормативного статуса"
+    }
+  ],
+  "runtimeContract": {
+    "standardModeMayEnterExtendedBranch": false,
+    "extendedModeMayUpgradeAuthority": false,
+    "profileApplicabilityRequired": true,
+    "unknownExecution": "FAIL_CLOSED",
+    "sourceRequired": true,
+    "sourceStatusRequired": true,
+    "dangerousStepKeepsIndependentSafetyMarking": true,
+    "bypassOrProtectionDefeatRequiresExplicitRecord": true,
+    "adjacentVariantInheritance": "DENY_UNLESS_EXPLICITLY_EVIDENCED"
+  }
+}
