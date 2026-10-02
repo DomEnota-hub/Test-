@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "modeId": "EXTENDED_EMERGENCY_KNOWLEDGE",
+  "stage": "STAGE_3_RUNTIME_V2_ASSISTANT_PROJECTION",
+  "updatedAt": "2026-10-02",
+  "builder": "qa/build_extended_emergency_stage3_projection.py",
+  "canonicalInputs": [
+    "docs/integration/extended_emergency_stage2_candidates.tsv",
+    "docs/integration/extended_emergency_stage2_discovery.tsv"
+  ],
+  "runtimeBoundary": {
+    "standardDiagnosticsRemainCanonical": true,
+    "expandedModeMayReplaceStandardScenarioSelection": false,
+    "expandedEvidenceAttachesOnlyAfterStandardScenarioMatch": true,
+    "standardGraphProvidesExecutableChecks": true,
+    "expandedProjectionProvidesExecutableActions": false,
+    "unknownExecution": "FAIL_CLOSED",
+    "adjacentVariantInheritance": "DENY",
+    "currentAuthorityRequiredBeforeConditionalAction": true,
+    "procedureLevelHazardousDetailAllowed": false
+  },
+  "presentation": {
+    "badge": "Расширенный сценарий",
+    "frameSemantic": "EXPANDED_NON_STANDARD_PROVENANCE",
+    "lightBorder": "#0F766E",
+    "darkBorder": "#5EEAD4",
+    "colorNeverSoleCarrier": true,
+    "dangerSemanticRemainsIndependentRed": true,
+    "repeatGeneralWarningPerScenario": false,
+    "placementWhenEnabled": "DIRECTLY_AFTER_STANDARD_LOCALIZATION"
+  },
+  "dispositionRules": {
+    "INFORMATION_ONLY": {
+      "visibleWhenModeEnabledAndProfileMatches": true,
+      "executable": false,
+      "procedureVisible": false,
+      "purpose": "Дополнительная гипотеза, локализация, историческая или заводская справка"
+    },
+    "PROHIBITED": {
+      "visibleWhenModeEnabledAndProfileMatches": true,
+      "executable": false,
+      "procedureVisible": false,
+      "purpose": "Показать факт существования метода, его источник, риск и запрет без процедуры выполнения"
+    },
+    "CONDITIONAL_ACTION": {
+      "allowedAtStage3": false,
+      "requirementsBeforeFutureUse": [
+        "current applicable authority",
+        "exact profile or execution match",
+        "conflict review",
+        "dedicated safety gate"
+      ]
+    }
+  },
+  "expectedProjection": {
+    "standardScenarioDecisions": 92,
+    "foundScenarioDecisions": 76,
+    "noAdditionalScenarioDecisions": 16,
+    "candidateRoutes": 77,
+    "informationOnlyRoutes": 49,
+    "prohibitedRoutes": 28,
+    "conditionalActionRoutes": 0,
+    "chme3BaseCandidates": 53,
+    "chme3tRheostaticCandidates": 1,
+    "chme3eElectronicCandidates": 0,
+    "tem2BaseCandidates": 22,
+    "tem2uImprovedCandidates": 1
+  }
+}
