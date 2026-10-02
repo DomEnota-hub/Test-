@@ -1,19 +1,23 @@
 {
   "schemaVersion": 1,
   "packageId": "chme3-family",
-  "updatedAt": "2026-10-01",
-  "state": "DIAGNOSTICS_PASS_3",
+  "updatedAt": "2026-10-02",
+  "state": "DIAGNOSTICS_PASS_3_STAGE0_AUDITED",
   "sources": [
     {
       "id": "CHME3-SRC-996R-CURRENT-INDEX",
       "title": "Перечень действий локомотивных бригад по выявлению и устранению неисправностей на локомотивах при поездной и маневровой работе",
       "document": "Распоряжение ОАО РЖД от 12.04.2022 № 996/р",
-      "knownRevision": "редакция с изменениями по распоряжению от 05.03.2024 № 592/р; актуальность на 2026 год подтверждается вторичными издательскими каталогами, первичный текст текущей редакции требует отдельной сверки",
+      "knownRevision": "редакция с изменениями по распоряжению от 05.03.2024 № 592/р; актуальность на 2026 год подтверждается вторичными издательскими и закупочными источниками, первичный текст текущей редакции требует отдельной сверки",
       "sourceType": "OFFICIAL_SECONDARY_INDEX",
       "provenanceStatus": "OFFICIAL_OTHER",
       "authority": "SOURCE_INDEX_ONLY",
       "url": "https://urizdat.ru/books/zheleznodorozhnyy-transport/lokomotivy-i-lokomotivnoe-hozyaystvo-ct-ctr/perechen-deystviy-lokomotivnyh-brigad-po-vyyavleniyu-i-ustraneniyu-neispravnostey-na-lokomotivah-pri-poezdnoy-i-manevrovoy-rabote-utverzhden-rasporyazheniem-oao-rzhd-ot-12-04-2022-996-r-v-redakcii-rasporyazheniya-oao-rzhd-ot-05-03-2024-592-r.html",
-      "notes": ["Содержит отдельный раздел по тепловозам серии ЧМЭ3.", "Не использовать как достаточное основание для точного шага без сверки текста соответствующего пункта."]
+      "notes": [
+        "Содержит отдельный раздел по тепловозам серии ЧМЭ3.",
+        "Не использовать как достаточное основание для точного шага без сверки текста соответствующего пункта.",
+        "Наличие издания/закупки в 2026 году подтверждает продолжающееся использование редакции, но само по себе не доказывает отсутствие более позднего изменения конкретного пункта."
+      ]
     },
     {
       "id": "CHME3-SRC-CDOCKA-996R-CHME3",
@@ -63,12 +67,21 @@
     {
       "id": "CHME3-SRC-TCH11-VYBORG-2007",
       "title": "Рекомендации локомотивной бригаде по устранению неисправностей на тепловозе ЧМЭ3",
-      "origin": "ТЧ-11 Выборг, 2007",
-      "sourceType": "LOCAL_LEGACY_GUIDE",
-      "provenanceStatus": "LOCAL_INSTRUCTION",
-      "authority": "RESEARCH_ONLY_OUTSIDE_ORIGINAL_SCOPE",
+      "origin": "На одной публичной копии указано: ТЧ-11 Выборг, 2007",
+      "sourceType": "LOCAL_LEGACY_GUIDE_COPY",
+      "provenanceStatus": "CONFLICT",
+      "authority": "RESEARCH_ONLY_PROVENANCE_CONFLICT",
       "url": "https://cyberpediasu.com/10x96a5.html",
-      "notes": ["Полезен для схемной логики, обозначений контактов и старых аварийных рекомендаций.", "Не распространять локальную практику ТЧ-11 как общесетевое разрешение."]
+      "comparisonUrls": [
+        "https://studfile.net/preview/12956391/",
+        "https://studopedia.net/2_41828_neispravnosti-v-tsepyah-puska-dizelya-teplovoza-serii-chme-.html"
+      ],
+      "notes": [
+        "Публичная копия Cyberpedia приписывает материал ТЧ-11 Выборг, 2007.",
+        "Публичные копии с существенно совпадающим содержанием приписывают рекомендации ОАО РЖД, Северной железной дороге, локомотивному депо Ярославль-Главный / ТЧ-1, 2004.",
+        "До нахождения первичной копии происхождение, депо и год считать конфликтными; материал пригоден только для исследования схемной логики и исторических аварийных приёмов.",
+        "Не распространять этот материал как локальное или общесетевое разрешение."
+      ]
     },
     {
       "id": "CHME3-SRC-SCBIST-ELECTRICAL-2018",
