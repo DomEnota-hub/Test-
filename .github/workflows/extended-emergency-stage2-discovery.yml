@@ -1,0 +1,83 @@
+name: Expanded emergency Stage 2 discovery
+
+on:
+  push:
+    branches:
+      - audit/extended-emergency-stage2
+    paths:
+      - 'docs/integration/extended_emergency_stage2_sources.tsv'
+      - 'docs/integration/extended_emergency_stage2_discovery.tsv'
+      - 'docs/integration/extended_emergency_stage2_candidates.tsv'
+      - 'docs/integration/EXTENDED_EMERGENCY_STAGE2_CHECKPOINT.md'
+      - 'qa/validate_extended_emergency_stage2_discovery.py'
+      - '.github/workflows/extended-emergency-stage2-discovery.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  discovery-and-regression:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate complete Stage 2 branch-by-branch discovery
+        run: python3 qa/validate_extended_emergency_stage2_discovery.py
+
+      - name: Preserve Stage 1 inventory and Stage 0 architecture
+        run: |
+          python3 qa/validate_extended_emergency_stage1_inventory.py
+          python3 qa/validate_extended_emergency_architecture.py
+
+      - name: Preserve existing ChME3 standard projection and diagnostic graphs
+        run: |
+          python3 qa/verify_chme3_android_assets.py
+          python3 qa/verify_diagnostic_graphs.py
+          python3 qa/verify_diagnostic_unknown_routes.py
+
+      - name: Preserve TEM2 stages 1 through 3
+        run: |
+          python3 qa/validate_tem2_stage1_foundation.py
+          python3 app/qa/validate_tem2_stage2.py
+          python3 app/qa/validate_tem2_stage3.py
+
+      - name: Enforce Stage 2 research-only change boundary
+        run: |
+          python3 - <<'PY'
+          import subprocess
+
+          base = '5d522977f9400a17f155f37d94b2c83461ccd0dd'
+          allowed = {
+              'docs/integration/extended_emergency_stage2_sources.tsv',
+              'docs/integration/extended_emergency_stage2_discovery.tsv',
+              'docs/integration/extended_emergency_stage2_candidates.tsv',
+              'docs/integration/EXTENDED_EMERGENCY_STAGE2_CHECKPOINT.md',
+              'qa/validate_extended_emergency_stage2_discovery.py',
+              '.github/workflows/extended-emergency-stage2-discovery.yml',
+          }
+          changed = {
+              line.strip()
+              for line in subprocess.check_output(
+                  ['git', 'diff', '--name-only', f'{base}..HEAD'], text=True
+              ).splitlines()
+              if line.strip()
+          }
+          unexpected = sorted(changed - allowed)
+          if unexpected:
+              raise SystemExit('Stage 2 research-only boundary violated: ' + ', '.join(unexpected))
+          required = {
+              'docs/integration/extended_emergency_stage2_sources.tsv',
+              'docs/integration/extended_emergency_stage2_discovery.tsv',
+              'docs/integration/extended_emergency_stage2_candidates.tsv',
+              'qa/validate_extended_emergency_stage2_discovery.py',
+          }
+          missing = sorted(required - changed)
+          if missing:
+              raise SystemExit('Stage 2 expected research artifacts missing from diff: ' + ', '.join(missing))
+          print('Stage 2 research-only boundary PASS:', ', '.join(sorted(changed)))
+          PY
+
+      - name: Patch hygiene
+        run: git diff --check
