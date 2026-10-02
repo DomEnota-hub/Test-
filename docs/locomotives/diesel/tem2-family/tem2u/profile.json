@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "profileId": "tem2u-improved",
+  "familyId": "tem2-family",
+  "series": "ТЭМ2У",
+  "tractionType": "diesel",
+  "updatedAt": "2026-10-02",
+  "stage": "STAGE_1_FOUNDATION_COMPLETE",
+  "completedStages": ["FOUNDATION"],
+  "title": "ТЭМ2У — улучшенное исполнение семейства ТЭМ2",
+  "sharedBase": "../common",
+  "variantLayer": ".",
+  "confirmedFamilyTraits": [
+    "six_axle_shunting_diesel_locomotive",
+    "dc_electric_power_transmission",
+    "diesel_generator_powerplant",
+    "six_traction_motor_family_architecture",
+    "pneumatic_brake_system_family"
+  ],
+  "variantTraits": [
+    "dedicated_TEM2U_body_and_cab_execution",
+    "dedicated_TEM2U_control_layout",
+    "manufacturer_documented_one_person_control_apparatus",
+    "manufacturer_documented_multiple_unit_connection_and_operation",
+    "manufacturer_documented_additional_control_stations",
+    "manufacturer_documented_BRN_3V_voltage_regulator",
+    "manufacturer_documented_dedicated_TEM2U_electrical_scheme"
+  ],
+  "factoryBaselineBrakeEquipment": {
+    "status": "MANUFACTURER_MANUAL_BASELINE_VERIFY_ACTUAL_EQUIPMENT",
+    "items": ["кран машиниста №394.2", "кран вспомогательного тормоза №254.1", "воздухораспределитель №483.М", "регулятор давления"]
+  },
+  "explicitExclusions": [
+    "TEM2UM 1PD-4A / higher-power diesel-generator assumptions",
+    "TEM2UM-specific electrical scheme",
+    "TEM2T rheostatic/electrodynamic brake equipment",
+    "TEM2A execution-specific gauge/export equipment",
+    "TEM15/TEM17/TEM18 equipment"
+  ],
+  "profileRules": {
+    "inheritCommonMechanicalContent": true,
+    "inheritCommonDieselFuelOilCoolingPneumaticContent": "ONLY_WITH_CONFIRMED_APPLICABILITY",
+    "electricalSchemePolicy": "Use the dedicated TEM2U electrical layer from TEM2U-specific evidence; TEM2 and TEM2UM diagrams are not interchangeable defaults.",
+    "controlPolicy": "One-person-control and additional-station content is exposed only when the actual locomotive retains the documented equipment.",
+    "brakePolicy": "Manufacturer baseline apparatus names are reference defaults only; actual installed apparatus must be confirmed before variant-dependent guidance.",
+    "modernizationPolicy": "Actual installed equipment overrides assumptions from series/number for information routing, but does not grant authority for actions without current source support.",
+    "unknownExecutionPolicy": "Fail closed for variant-dependent operational actions."
+  },
+  "evidenceRefs": [
+    "TEM2U-SRC-BMZ-MANUAL-1988",
+    "TEM2-SRC-RZD-TEM2-IO-2004",
+    "TEM2-SRC-BRAKES-2026",
+    "TEM2-SRC-POT-RZD-342-2025"
+  ],
+  "nextStages": ["ATLAS_SCHEMES_INTERACTIVE", "DIAGNOSTICS_ASSISTANT_SEMANTICS", "ACCEPTANCE_CROSS_LAYER_QA"],
+  "integrationState": "FOUNDATION_ONLY_NOT_READY_FOR_APP_INTEGRATION"
+}
