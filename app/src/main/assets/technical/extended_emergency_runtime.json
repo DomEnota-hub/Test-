@@ -1,0 +1,2985 @@
+{
+  "schemaVersion": 1,
+  "modeId": "EXTENDED_EMERGENCY_KNOWLEDGE",
+  "generatedFrom": {
+    "stage3ProjectionBuilder": "qa/build_extended_emergency_stage3_projection.py",
+    "stage2Sources": "docs/integration/extended_emergency_stage2_sources.tsv"
+  },
+  "policy": {
+    "defaultEnabled": false,
+    "standardDiagnosticsRemainCanonical": true,
+    "attachOnlyAfterStandardScenarioMatch": true,
+    "exactProfileOnly": true,
+    "unknownExecution": "FAIL_CLOSED",
+    "adjacentVariantInheritance": "DENY",
+    "expandedEvidenceExecutable": false,
+    "procedureLevelHazardousDetailVisible": false,
+    "rawInternalIdsVisibleToUser": false
+  },
+  "statistics": {
+    "standardScenarios": 92,
+    "foundScenarios": 76,
+    "noAdditionalScenarios": 16,
+    "candidateRoutes": 77,
+    "informationOnly": 49,
+    "prohibited": 28,
+    "conditionalAction": 0,
+    "profileCandidateCounts": {
+      "chme3-base": 53,
+      "chme3t-rheostatic": 1,
+      "chme3e-electronic": 0,
+      "tem2-base": 22,
+      "tem2u-improved": 1
+    }
+  },
+  "scenarioRouting": [
+    {
+      "standardScenarioId": "CHME3-DIAG-001",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-002",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-003",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-004",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-005",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-006",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-007",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-008",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-009",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-010",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-011",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-012",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-101",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-102",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-103",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-104",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-105",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-106",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-107",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-108",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-109",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-110",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-201",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-202",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-203",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-204",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-205",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-206",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-207",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-208",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-301",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-302",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-303",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-304",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-305",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-306",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-307",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-308",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-309",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-310",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-311",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-312",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-313",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-314",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-315",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-316",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-317",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-318",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-319",
+      "discoveryStatus": "NO_ADDITIONAL_METHOD_FOUND",
+      "hasExpandedEvidence": false,
+      "noAdditionalReason": "Целевой поиск нашёл описание устройства/диагностики, но не отдельный расширенный способ, пригодный даже как абстрактный кандидат без выдумывания процедуры."
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-320",
+      "discoveryStatus": "NO_ADDITIONAL_METHOD_FOUND",
+      "hasExpandedEvidence": false,
+      "noAdditionalReason": "Целевой поиск нашёл описание устройства/диагностики, но не отдельный расширенный способ, пригодный даже как абстрактный кандидат без выдумывания процедуры."
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-321",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-322",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-323",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-324",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-325",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3-DIAG-326",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "CHME3E-DIAG-001",
+      "discoveryStatus": "NO_ADDITIONAL_METHOD_FOUND",
+      "hasExpandedEvidence": false,
+      "noAdditionalReason": "Найдены профильные описания схем/оборудования ЧМЭ3Э, но отдельный подтверждаемый резервный метод для этой конкретной ветви в открытом поиске не найден. Базовые аварийные схемы ЧМЭ3 не наследуются."
+    },
+    {
+      "standardScenarioId": "CHME3E-DIAG-002",
+      "discoveryStatus": "NO_ADDITIONAL_METHOD_FOUND",
+      "hasExpandedEvidence": false,
+      "noAdditionalReason": "Найдены профильные описания схем/оборудования ЧМЭ3Э, но отдельный подтверждаемый резервный метод для этой конкретной ветви в открытом поиске не найден. Базовые аварийные схемы ЧМЭ3 не наследуются."
+    },
+    {
+      "standardScenarioId": "CHME3E-DIAG-003",
+      "discoveryStatus": "NO_ADDITIONAL_METHOD_FOUND",
+      "hasExpandedEvidence": false,
+      "noAdditionalReason": "Найдены профильные описания схем/оборудования ЧМЭ3Э, но отдельный подтверждаемый резервный метод для этой конкретной ветви в открытом поиске не найден. Базовые аварийные схемы ЧМЭ3 не наследуются."
+    },
+    {
+      "standardScenarioId": "CHME3E-DIAG-004",
+      "discoveryStatus": "NO_ADDITIONAL_METHOD_FOUND",
+      "hasExpandedEvidence": false,
+      "noAdditionalReason": "Найдены профильные описания схем/оборудования ЧМЭ3Э, но отдельный подтверждаемый резервный метод для этой конкретной ветви в открытом поиске не найден. Базовые аварийные схемы ЧМЭ3 не наследуются."
+    },
+    {
+      "standardScenarioId": "CHME3E-DIAG-005",
+      "discoveryStatus": "NO_ADDITIONAL_METHOD_FOUND",
+      "hasExpandedEvidence": false,
+      "noAdditionalReason": "Найдены профильные описания схем/оборудования ЧМЭ3Э, но отдельный подтверждаемый резервный метод для этой конкретной ветви в открытом поиске не найден. Базовые аварийные схемы ЧМЭ3 не наследуются."
+    },
+    {
+      "standardScenarioId": "CHME3E-DIAG-006",
+      "discoveryStatus": "NO_ADDITIONAL_METHOD_FOUND",
+      "hasExpandedEvidence": false,
+      "noAdditionalReason": "Найдены профильные описания схем/оборудования ЧМЭ3Э, но отдельный подтверждаемый резервный метод для этой конкретной ветви в открытом поиске не найден. Базовые аварийные схемы ЧМЭ3 не наследуются."
+    },
+    {
+      "standardScenarioId": "CHME3E-DIAG-007",
+      "discoveryStatus": "NO_ADDITIONAL_METHOD_FOUND",
+      "hasExpandedEvidence": false,
+      "noAdditionalReason": "Найдены профильные описания схем/оборудования ЧМЭ3Э, но отдельный подтверждаемый резервный метод для этой конкретной ветви в открытом поиске не найден. Базовые аварийные схемы ЧМЭ3 не наследуются."
+    },
+    {
+      "standardScenarioId": "CHME3E-DIAG-008",
+      "discoveryStatus": "NO_ADDITIONAL_METHOD_FOUND",
+      "hasExpandedEvidence": false,
+      "noAdditionalReason": "Найдены профильные описания схем/оборудования ЧМЭ3Э, но отдельный подтверждаемый резервный метод для этой конкретной ветви в открытом поиске не найден. Базовые аварийные схемы ЧМЭ3 не наследуются."
+    },
+    {
+      "standardScenarioId": "CHME3E-DIAG-009",
+      "discoveryStatus": "NO_ADDITIONAL_METHOD_FOUND",
+      "hasExpandedEvidence": false,
+      "noAdditionalReason": "Найдены профильные описания схем/оборудования ЧМЭ3Э, но отдельный подтверждаемый резервный метод для этой конкретной ветви в открытом поиске не найден. Базовые аварийные схемы ЧМЭ3 не наследуются."
+    },
+    {
+      "standardScenarioId": "CHME3E-DIAG-010",
+      "discoveryStatus": "NO_ADDITIONAL_METHOD_FOUND",
+      "hasExpandedEvidence": false,
+      "noAdditionalReason": "Найдены профильные описания схем/оборудования ЧМЭ3Э, но отдельный подтверждаемый резервный метод для этой конкретной ветви в открытом поиске не найден. Базовые аварийные схемы ЧМЭ3 не наследуются."
+    },
+    {
+      "standardScenarioId": "CHME3E-DIAG-011",
+      "discoveryStatus": "NO_ADDITIONAL_METHOD_FOUND",
+      "hasExpandedEvidence": false,
+      "noAdditionalReason": "Найдены профильные описания схем/оборудования ЧМЭ3Э, но отдельный подтверждаемый резервный метод для этой конкретной ветви в открытом поиске не найден. Базовые аварийные схемы ЧМЭ3 не наследуются."
+    },
+    {
+      "standardScenarioId": "CHME3E-DIAG-012",
+      "discoveryStatus": "NO_ADDITIONAL_METHOD_FOUND",
+      "hasExpandedEvidence": false,
+      "noAdditionalReason": "Найдены профильные описания схем/оборудования ЧМЭ3Э, но отдельный подтверждаемый резервный метод для этой конкретной ветви в открытом поиске не найден. Базовые аварийные схемы ЧМЭ3 не наследуются."
+    },
+    {
+      "standardScenarioId": "TEM2-DIAG-001",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "TEM2-DIAG-002",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "TEM2-DIAG-003",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "TEM2-DIAG-004",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "TEM2-DIAG-005",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "TEM2-DIAG-006",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "TEM2-DIAG-007",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "TEM2-DIAG-008",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "TEM2-DIAG-009",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "TEM2-DIAG-010",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "TEM2-DIAG-011",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "TEM2-DIAG-012",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "TEM2-DIAG-013",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "TEM2-DIAG-014",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "TEM2-DIAG-015",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "TEM2-DIAG-016",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "TEM2-DIAG-017",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "TEM2-DIAG-018",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "TEM2-DIAG-019",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "TEM2-DIAG-020",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "TEM2-DIAG-021",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    },
+    {
+      "standardScenarioId": "TEM2-DIAG-022",
+      "discoveryStatus": "NO_ADDITIONAL_METHOD_FOUND",
+      "hasExpandedEvidence": false,
+      "noAdditionalReason": "Найдены описание штатной схемы и профильного оборудования, но отдельный резервный способ для этой конкретной ветви не найден; методы ТЭМ2 не наследуются к ТЭМ2У автоматически."
+    },
+    {
+      "standardScenarioId": "TEM2-DIAG-023",
+      "discoveryStatus": "NO_ADDITIONAL_METHOD_FOUND",
+      "hasExpandedEvidence": false,
+      "noAdditionalReason": "Найдены описание штатной схемы и профильного оборудования, но отдельный резервный способ для этой конкретной ветви не найден; методы ТЭМ2 не наследуются к ТЭМ2У автоматически."
+    },
+    {
+      "standardScenarioId": "TEM2-DIAG-024",
+      "discoveryStatus": "FOUND",
+      "hasExpandedEvidence": true,
+      "noAdditionalReason": null
+    }
+  ],
+  "records": [
+    {
+      "candidateId": "EXT2-CHME3-DIAG-001",
+      "standardScenarioId": "CHME3-DIAG-001",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "PROHIBITED",
+      "dispositionLabel": "Процедура намеренно не показывается",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "В источниках найден нестандартный аварийный приём, связанный с этой неисправностью. Процедура намеренно не отображается: текущая допустимость и профильная применимость действия не подтверждены.",
+      "terminal": "Использовать запись только как сведения о существовании исторического/полевого метода. Не превращать её в инструкцию и продолжать безопасную локализацию по стандартному диагностическому графу.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-SUKHONOSOV-2006",
+          "title": "Пособие машинисту по устранению неисправностей 2ТЭ10М, 2М62У, ЧМЭ3",
+          "url": "https://djvu.online/file/Jz5uzGesWtmL6",
+          "provenanceLabel": "Исторический учебный материал",
+          "statusLabel": "Историческая справка; текущая применимость не подтверждена"
+        },
+        {
+          "sourceRef": "ST2-SRC-CHME3-BAV-FORMULARY",
+          "title": "Формуляр ЧМЭ3 — практические неисправности и способы",
+          "url": "https://www.bav.by/tch-23/270-formulyar-chme-3",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; не проверено как действующий порядок"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-002",
+      "standardScenarioId": "CHME3-DIAG-002",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Требует осторожной локализации и соблюдения штатных ограничений",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-OLTEP-DIESEL",
+          "title": "Неисправности дизеля тепловоза ЧМЭ3",
+          "url": "https://oltep.narod.ru/neispr/neisp_diz.htm",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; не проверено как действующий порядок"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-003",
+      "standardScenarioId": "CHME3-DIAG-003",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "PROHIBITED",
+      "dispositionLabel": "Процедура намеренно не показывается",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "В источниках найден нестандартный аварийный приём, связанный с этой неисправностью. Процедура намеренно не отображается: текущая допустимость и профильная применимость действия не подтверждены.",
+      "terminal": "Использовать запись только как сведения о существовании исторического/полевого метода. Не превращать её в инструкцию и продолжать безопасную локализацию по стандартному диагностическому графу.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-OLTEP-DIESEL",
+          "title": "Неисправности дизеля тепловоза ЧМЭ3",
+          "url": "https://oltep.narod.ru/neispr/neisp_diz.htm",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; не проверено как действующий порядок"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-004",
+      "standardScenarioId": "CHME3-DIAG-004",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Требует осторожной локализации и соблюдения штатных ограничений",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-SCBIST-2023",
+          "title": "Электрическая схема тепловоза ЧМЭ3",
+          "url": "https://scbist.com/xx2/57922-12-2023-elektricheskaya-shema-teplovoza-chme3.html",
+          "provenanceLabel": "Исторический учебный материал",
+          "statusLabel": "Учебный или справочный материал"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-005",
+      "standardScenarioId": "CHME3-DIAG-005",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "PROHIBITED",
+      "dispositionLabel": "Процедура намеренно не показывается",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "В источниках найден нестандартный аварийный приём, связанный с этой неисправностью. Процедура намеренно не отображается: текущая допустимость и профильная применимость действия не подтверждены.",
+      "terminal": "Использовать запись только как сведения о существовании исторического/полевого метода. Не превращать её в инструкцию и продолжать безопасную локализацию по стандартному диагностическому графу.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-LEGACY-COPY",
+          "title": "Локомотивной бригаде по устранению неисправностей ЧМЭ3 — публичная legacy-копия с конфликтным происхождением",
+          "url": "https://cyberpediasu.com/10x96a5.html",
+          "provenanceLabel": "Исторический учебный материал",
+          "statusLabel": "Происхождение источника конфликтно или неясно"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-006",
+      "standardScenarioId": "CHME3-DIAG-006",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Требует осторожной локализации и соблюдения штатных ограничений",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-OLTEP-DIESEL",
+          "title": "Неисправности дизеля тепловоза ЧМЭ3",
+          "url": "https://oltep.narod.ru/neispr/neisp_diz.htm",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; не проверено как действующий порядок"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-007",
+      "standardScenarioId": "CHME3-DIAG-007",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "PROHIBITED",
+      "dispositionLabel": "Процедура намеренно не показывается",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "В источниках найден нестандартный аварийный приём, связанный с этой неисправностью. Процедура намеренно не отображается: текущая допустимость и профильная применимость действия не подтверждены.",
+      "terminal": "Использовать запись только как сведения о существовании исторического/полевого метода. Не превращать её в инструкцию и продолжать безопасную локализацию по стандартному диагностическому графу.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-OLTEP-DIESEL",
+          "title": "Неисправности дизеля тепловоза ЧМЭ3",
+          "url": "https://oltep.narod.ru/neispr/neisp_diz.htm",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; не проверено как действующий порядок"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-008",
+      "standardScenarioId": "CHME3-DIAG-008",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Требует осторожной локализации и соблюдения штатных ограничений",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-996-CDOCKA",
+          "title": "Порядок действий локомотивных бригад по ЧМЭ3 — учебный Q&A по 996/р",
+          "url": "https://www.cdocka.ru/test/1034/",
+          "provenanceLabel": "Архивный официальный материал",
+          "statusLabel": "Вторичный источник; требуется проверка первичного пункта"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-009",
+      "standardScenarioId": "CHME3-DIAG-009",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Требует осторожной локализации и соблюдения штатных ограничений",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-996-SDO",
+          "title": "Порядок действий локомотивных бригад по ЧМЭ3 — СДО-derived Q&A",
+          "url": "https://xn----8sbk4bhhej.xn--p1ai/порядок-действий-локомотивных-брига-9/",
+          "provenanceLabel": "Архивный официальный материал",
+          "statusLabel": "Вторичный источник; требуется проверка первичного пункта"
+        },
+        {
+          "sourceRef": "ST2-SRC-CHME3-SCBIST-PAM",
+          "title": "Тепловоз ЧМЭ3 — памятка по неисправностям",
+          "url": "https://scbist.com/scb/uploaded/1_chme3_pam.pdf",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; без автоматического нормативного статуса"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-010",
+      "standardScenarioId": "CHME3-DIAG-010",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Требует осторожной локализации и соблюдения штатных ограничений",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-OLTEP-DIESEL",
+          "title": "Неисправности дизеля тепловоза ЧМЭ3",
+          "url": "https://oltep.narod.ru/neispr/neisp_diz.htm",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; не проверено как действующий порядок"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-011",
+      "standardScenarioId": "CHME3-DIAG-011",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Требует осторожной локализации и соблюдения штатных ограничений",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-OLTEP-DIESEL",
+          "title": "Неисправности дизеля тепловоза ЧМЭ3",
+          "url": "https://oltep.narod.ru/neispr/neisp_diz.htm",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; не проверено как действующий порядок"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-012",
+      "standardScenarioId": "CHME3-DIAG-012",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "PROHIBITED",
+      "dispositionLabel": "Процедура намеренно не показывается",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "В источниках найден нестандартный аварийный приём, связанный с этой неисправностью. Процедура намеренно не отображается: текущая допустимость и профильная применимость действия не подтверждены.",
+      "terminal": "Использовать запись только как сведения о существовании исторического/полевого метода. Не превращать её в инструкцию и продолжать безопасную локализацию по стандартному диагностическому графу.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-SCBIST-2020",
+          "title": "Устранение неисправностей тепловозов ЧМЭ3",
+          "url": "https://scbist.com/xx2/52634-01-2020-ustranenie-neispravnostei-teplovozov-chme3.html",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; без автоматического нормативного статуса"
+        },
+        {
+          "sourceRef": "ST2-SRC-CHME3-996-CDOCKA",
+          "title": "Порядок действий локомотивных бригад по ЧМЭ3 — учебный Q&A по 996/р",
+          "url": "https://www.cdocka.ru/test/1034/",
+          "provenanceLabel": "Архивный официальный материал",
+          "statusLabel": "Вторичный источник; требуется проверка первичного пункта"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-101",
+      "standardScenarioId": "CHME3-DIAG-101",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "PROHIBITED",
+      "dispositionLabel": "Процедура намеренно не показывается",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "В источниках найден нестандартный аварийный приём, связанный с этой неисправностью. Процедура намеренно не отображается: текущая допустимость и профильная применимость действия не подтверждены.",
+      "terminal": "Использовать запись только как сведения о существовании исторического/полевого метода. Не превращать её в инструкцию и продолжать безопасную локализацию по стандартному диагностическому графу.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-SUKHONOSOV-2006",
+          "title": "Пособие машинисту по устранению неисправностей 2ТЭ10М, 2М62У, ЧМЭ3",
+          "url": "https://djvu.online/file/Jz5uzGesWtmL6",
+          "provenanceLabel": "Исторический учебный материал",
+          "statusLabel": "Историческая справка; текущая применимость не подтверждена"
+        },
+        {
+          "sourceRef": "ST2-SRC-CHME3-BAV-FORMULARY",
+          "title": "Формуляр ЧМЭ3 — практические неисправности и способы",
+          "url": "https://www.bav.by/tch-23/270-formulyar-chme-3",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; не проверено как действующий порядок"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-102",
+      "standardScenarioId": "CHME3-DIAG-102",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "PROHIBITED",
+      "dispositionLabel": "Процедура намеренно не показывается",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "В источниках найден нестандартный аварийный приём, связанный с этой неисправностью. Процедура намеренно не отображается: текущая допустимость и профильная применимость действия не подтверждены.",
+      "terminal": "Использовать запись только как сведения о существовании исторического/полевого метода. Не превращать её в инструкцию и продолжать безопасную локализацию по стандартному диагностическому графу.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-LEGACY-COPY",
+          "title": "Локомотивной бригаде по устранению неисправностей ЧМЭ3 — публичная legacy-копия с конфликтным происхождением",
+          "url": "https://cyberpediasu.com/10x96a5.html",
+          "provenanceLabel": "Исторический учебный материал",
+          "statusLabel": "Происхождение источника конфликтно или неясно"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-103",
+      "standardScenarioId": "CHME3-DIAG-103",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Требует осторожной локализации и соблюдения штатных ограничений",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-996-SDO",
+          "title": "Порядок действий локомотивных бригад по ЧМЭ3 — СДО-derived Q&A",
+          "url": "https://xn----8sbk4bhhej.xn--p1ai/порядок-действий-локомотивных-брига-9/",
+          "provenanceLabel": "Архивный официальный материал",
+          "statusLabel": "Вторичный источник; требуется проверка первичного пункта"
+        },
+        {
+          "sourceRef": "ST2-SRC-CHME3-SCBIST-2023",
+          "title": "Электрическая схема тепловоза ЧМЭ3",
+          "url": "https://scbist.com/xx2/57922-12-2023-elektricheskaya-shema-teplovoza-chme3.html",
+          "provenanceLabel": "Исторический учебный материал",
+          "statusLabel": "Учебный или справочный материал"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-104",
+      "standardScenarioId": "CHME3-DIAG-104",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "PROHIBITED",
+      "dispositionLabel": "Процедура намеренно не показывается",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "В источниках найден нестандартный аварийный приём, связанный с этой неисправностью. Процедура намеренно не отображается: текущая допустимость и профильная применимость действия не подтверждены.",
+      "terminal": "Использовать запись только как сведения о существовании исторического/полевого метода. Не превращать её в инструкцию и продолжать безопасную локализацию по стандартному диагностическому графу.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-SUKHONOSOV-2006",
+          "title": "Пособие машинисту по устранению неисправностей 2ТЭ10М, 2М62У, ЧМЭ3",
+          "url": "https://djvu.online/file/Jz5uzGesWtmL6",
+          "provenanceLabel": "Исторический учебный материал",
+          "statusLabel": "Историческая справка; текущая применимость не подтверждена"
+        },
+        {
+          "sourceRef": "ST2-SRC-CHME3-BAV-FORMULARY",
+          "title": "Формуляр ЧМЭ3 — практические неисправности и способы",
+          "url": "https://www.bav.by/tch-23/270-formulyar-chme-3",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; не проверено как действующий порядок"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-105",
+      "standardScenarioId": "CHME3-DIAG-105",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "PROHIBITED",
+      "dispositionLabel": "Процедура намеренно не показывается",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "В источниках найден нестандартный аварийный приём, связанный с этой неисправностью. Процедура намеренно не отображается: текущая допустимость и профильная применимость действия не подтверждены.",
+      "terminal": "Использовать запись только как сведения о существовании исторического/полевого метода. Не превращать её в инструкцию и продолжать безопасную локализацию по стандартному диагностическому графу.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-SCBIST-2018",
+          "title": "Тепловоз ЧМЭ3: основные электрические цепи. Поиск причин неисправностей",
+          "url": "https://scbist.com/xx2/51294-01-2018-teplovoz-chme3-osnovnye-elektricheskie-cepi-poisk-prichin-neispravnostei.html",
+          "provenanceLabel": "Исторический учебный материал",
+          "statusLabel": "Учебный или справочный материал"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-106",
+      "standardScenarioId": "CHME3-DIAG-106",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "PROHIBITED",
+      "dispositionLabel": "Процедура намеренно не показывается",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "В источниках найден нестандартный аварийный приём, связанный с этой неисправностью. Процедура намеренно не отображается: текущая допустимость и профильная применимость действия не подтверждены.",
+      "terminal": "Использовать запись только как сведения о существовании исторического/полевого метода. Не превращать её в инструкцию и продолжать безопасную локализацию по стандартному диагностическому графу.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-SCBIST-2020",
+          "title": "Устранение неисправностей тепловозов ЧМЭ3",
+          "url": "https://scbist.com/xx2/52634-01-2020-ustranenie-neispravnostei-teplovozov-chme3.html",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; без автоматического нормативного статуса"
+        },
+        {
+          "sourceRef": "ST2-SRC-CHME3-LEGACY-COPY",
+          "title": "Локомотивной бригаде по устранению неисправностей ЧМЭ3 — публичная legacy-копия с конфликтным происхождением",
+          "url": "https://cyberpediasu.com/10x96a5.html",
+          "provenanceLabel": "Исторический учебный материал",
+          "statusLabel": "Происхождение источника конфликтно или неясно"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-107",
+      "standardScenarioId": "CHME3-DIAG-107",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Требует осторожной локализации и соблюдения штатных ограничений",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-SCBIST-PAM",
+          "title": "Тепловоз ЧМЭ3 — памятка по неисправностям",
+          "url": "https://scbist.com/scb/uploaded/1_chme3_pam.pdf",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; без автоматического нормативного статуса"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-108",
+      "standardScenarioId": "CHME3-DIAG-108",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Требует осторожной локализации и соблюдения штатных ограничений",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-SCBIST-PAM",
+          "title": "Тепловоз ЧМЭ3 — памятка по неисправностям",
+          "url": "https://scbist.com/scb/uploaded/1_chme3_pam.pdf",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; без автоматического нормативного статуса"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-109",
+      "standardScenarioId": "CHME3-DIAG-109",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "PROHIBITED",
+      "dispositionLabel": "Процедура намеренно не показывается",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "В источниках найден нестандартный аварийный приём, связанный с этой неисправностью. Процедура намеренно не отображается: текущая допустимость и профильная применимость действия не подтверждены.",
+      "terminal": "Использовать запись только как сведения о существовании исторического/полевого метода. Не превращать её в инструкцию и продолжать безопасную локализацию по стандартному диагностическому графу.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-OLTEP-ELECTRICAL",
+          "title": "Неисправности электрооборудования ЧМЭ3 / основные аварийные схемы",
+          "url": "https://oltep.narod.ru/neispr/neisp_el.htm",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; не проверено как действующий порядок"
+        },
+        {
+          "sourceRef": "ST2-SRC-CHME3-COLLECTION",
+          "title": "Сборник документации по ЧМЭ3, включая поиск неисправностей и аварийные схемы",
+          "url": "https://scbist.com/tyagovyi-podvizhnoi-sostav/12424-teplovoz-chme3-dokumentaciya-print.html",
+          "provenanceLabel": "Исторический учебный материал",
+          "statusLabel": "Поисковый источник; не самостоятельное подтверждение"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-110",
+      "standardScenarioId": "CHME3-DIAG-110",
+      "profiles": [
+        "chme3t-rheostatic"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Требует осторожной локализации и соблюдения штатных ограничений",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3T-EDB-1997",
+          "title": "Реостатный тормоз для тепловозов ЧМЭ3 — работа схемы и возможные неисправности",
+          "url": "https://scbist.com/xx2/9161-reostatnyi-tormoz-dlya-teplovozov-chme3.html",
+          "provenanceLabel": "Исторический учебный материал",
+          "statusLabel": "Профильный технический материал"
+        },
+        {
+          "sourceRef": "ST2-SRC-CHME3T-SCHEMES",
+          "title": "Схемы тепловоза ЧМЭ3Т, включая электронные приборы ЭДБ",
+          "url": "https://scbist.com/tyagovyi-podvizhnoi-sostav/9560-shemy-teplovoza-chme-3t.html",
+          "provenanceLabel": "Исторический учебный материал",
+          "statusLabel": "Поисковый источник; не самостоятельное подтверждение"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-201",
+      "standardScenarioId": "CHME3-DIAG-201",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "PROHIBITED",
+      "dispositionLabel": "Процедура намеренно не показывается",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "В источниках найден нестандартный аварийный приём, связанный с этой неисправностью. Процедура намеренно не отображается: текущая допустимость и профильная применимость действия не подтверждены.",
+      "terminal": "Использовать запись только как сведения о существовании исторического/полевого метода. Не превращать её в инструкцию и продолжать безопасную локализацию по стандартному диагностическому графу.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-OLTEP-DIESEL",
+          "title": "Неисправности дизеля тепловоза ЧМЭ3",
+          "url": "https://oltep.narod.ru/neispr/neisp_diz.htm",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; не проверено как действующий порядок"
+        },
+        {
+          "sourceRef": "ST2-SRC-CHME3-SCBIST-2020",
+          "title": "Устранение неисправностей тепловозов ЧМЭ3",
+          "url": "https://scbist.com/xx2/52634-01-2020-ustranenie-neispravnostei-teplovozov-chme3.html",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; без автоматического нормативного статуса"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-202",
+      "standardScenarioId": "CHME3-DIAG-202",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-SCBIST-PAM",
+          "title": "Тепловоз ЧМЭ3 — памятка по неисправностям",
+          "url": "https://scbist.com/scb/uploaded/1_chme3_pam.pdf",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; без автоматического нормативного статуса"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-203",
+      "standardScenarioId": "CHME3-DIAG-203",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-SCBIST-PAM",
+          "title": "Тепловоз ЧМЭ3 — памятка по неисправностям",
+          "url": "https://scbist.com/scb/uploaded/1_chme3_pam.pdf",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; без автоматического нормативного статуса"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-204",
+      "standardScenarioId": "CHME3-DIAG-204",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-SCBIST-PAM",
+          "title": "Тепловоз ЧМЭ3 — памятка по неисправностям",
+          "url": "https://scbist.com/scb/uploaded/1_chme3_pam.pdf",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; без автоматического нормативного статуса"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-205",
+      "standardScenarioId": "CHME3-DIAG-205",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-SCBIST-PAM",
+          "title": "Тепловоз ЧМЭ3 — памятка по неисправностям",
+          "url": "https://scbist.com/scb/uploaded/1_chme3_pam.pdf",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; без автоматического нормативного статуса"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-206",
+      "standardScenarioId": "CHME3-DIAG-206",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "PROHIBITED",
+      "dispositionLabel": "Процедура намеренно не показывается",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "В источниках найден нестандартный аварийный приём, связанный с этой неисправностью. Процедура намеренно не отображается: текущая допустимость и профильная применимость действия не подтверждены.",
+      "terminal": "Использовать запись только как сведения о существовании исторического/полевого метода. Не превращать её в инструкцию и продолжать безопасную локализацию по стандартному диагностическому графу.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-SCBIST-2020",
+          "title": "Устранение неисправностей тепловозов ЧМЭ3",
+          "url": "https://scbist.com/xx2/52634-01-2020-ustranenie-neispravnostei-teplovozov-chme3.html",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; без автоматического нормативного статуса"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-207",
+      "standardScenarioId": "CHME3-DIAG-207",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Требует осторожной локализации и соблюдения штатных ограничений",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-SCBIST-PAM",
+          "title": "Тепловоз ЧМЭ3 — памятка по неисправностям",
+          "url": "https://scbist.com/scb/uploaded/1_chme3_pam.pdf",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; без автоматического нормативного статуса"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-208",
+      "standardScenarioId": "CHME3-DIAG-208",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Справочная диагностическая информация",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-SCBIST-2020",
+          "title": "Устранение неисправностей тепловозов ЧМЭ3",
+          "url": "https://scbist.com/xx2/52634-01-2020-ustranenie-neispravnostei-teplovozov-chme3.html",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; без автоматического нормативного статуса"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-301",
+      "standardScenarioId": "CHME3-DIAG-301",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Требует осторожной локализации и соблюдения штатных ограничений",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-SCBIST-PAM",
+          "title": "Тепловоз ЧМЭ3 — памятка по неисправностям",
+          "url": "https://scbist.com/scb/uploaded/1_chme3_pam.pdf",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; без автоматического нормативного статуса"
+        },
+        {
+          "sourceRef": "ST2-SRC-CHME3-SCBIST-2018",
+          "title": "Тепловоз ЧМЭ3: основные электрические цепи. Поиск причин неисправностей",
+          "url": "https://scbist.com/xx2/51294-01-2018-teplovoz-chme3-osnovnye-elektricheskie-cepi-poisk-prichin-neispravnostei.html",
+          "provenanceLabel": "Исторический учебный материал",
+          "statusLabel": "Учебный или справочный материал"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-302",
+      "standardScenarioId": "CHME3-DIAG-302",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Требует осторожной локализации и соблюдения штатных ограничений",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-SCBIST-PAM",
+          "title": "Тепловоз ЧМЭ3 — памятка по неисправностям",
+          "url": "https://scbist.com/scb/uploaded/1_chme3_pam.pdf",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; без автоматического нормативного статуса"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-303",
+      "standardScenarioId": "CHME3-DIAG-303",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "PROHIBITED",
+      "dispositionLabel": "Процедура намеренно не показывается",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "В источниках найден нестандартный аварийный приём, связанный с этой неисправностью. Процедура намеренно не отображается: текущая допустимость и профильная применимость действия не подтверждены.",
+      "terminal": "Использовать запись только как сведения о существовании исторического/полевого метода. Не превращать её в инструкцию и продолжать безопасную локализацию по стандартному диагностическому графу.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-OLTEP-ELECTRICAL",
+          "title": "Неисправности электрооборудования ЧМЭ3 / основные аварийные схемы",
+          "url": "https://oltep.narod.ru/neispr/neisp_el.htm",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; не проверено как действующий порядок"
+        },
+        {
+          "sourceRef": "ST2-SRC-CHME3-SCBIST-2018",
+          "title": "Тепловоз ЧМЭ3: основные электрические цепи. Поиск причин неисправностей",
+          "url": "https://scbist.com/xx2/51294-01-2018-teplovoz-chme3-osnovnye-elektricheskie-cepi-poisk-prichin-neispravnostei.html",
+          "provenanceLabel": "Исторический учебный материал",
+          "statusLabel": "Учебный или справочный материал"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-304",
+      "standardScenarioId": "CHME3-DIAG-304",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "PROHIBITED",
+      "dispositionLabel": "Процедура намеренно не показывается",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "В источниках найден нестандартный аварийный приём, связанный с этой неисправностью. Процедура намеренно не отображается: текущая допустимость и профильная применимость действия не подтверждены.",
+      "terminal": "Использовать запись только как сведения о существовании исторического/полевого метода. Не превращать её в инструкцию и продолжать безопасную локализацию по стандартному диагностическому графу.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-SCBIST-2020",
+          "title": "Устранение неисправностей тепловозов ЧМЭ3",
+          "url": "https://scbist.com/xx2/52634-01-2020-ustranenie-neispravnostei-teplovozov-chme3.html",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; без автоматического нормативного статуса"
+        },
+        {
+          "sourceRef": "ST2-SRC-CHME3-BAV-FORMULARY",
+          "title": "Формуляр ЧМЭ3 — практические неисправности и способы",
+          "url": "https://www.bav.by/tch-23/270-formulyar-chme-3",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; не проверено как действующий порядок"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-305",
+      "standardScenarioId": "CHME3-DIAG-305",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Требует осторожной локализации и соблюдения штатных ограничений",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-SCBIST-2023",
+          "title": "Электрическая схема тепловоза ЧМЭ3",
+          "url": "https://scbist.com/xx2/57922-12-2023-elektricheskaya-shema-teplovoza-chme3.html",
+          "provenanceLabel": "Исторический учебный материал",
+          "statusLabel": "Учебный или справочный материал"
+        },
+        {
+          "sourceRef": "ST2-SRC-CHME3-BAV-FORMULARY",
+          "title": "Формуляр ЧМЭ3 — практические неисправности и способы",
+          "url": "https://www.bav.by/tch-23/270-formulyar-chme-3",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; не проверено как действующий порядок"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-306",
+      "standardScenarioId": "CHME3-DIAG-306",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Требует осторожной локализации и соблюдения штатных ограничений",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-SCBIST-2018",
+          "title": "Тепловоз ЧМЭ3: основные электрические цепи. Поиск причин неисправностей",
+          "url": "https://scbist.com/xx2/51294-01-2018-teplovoz-chme3-osnovnye-elektricheskie-cepi-poisk-prichin-neispravnostei.html",
+          "provenanceLabel": "Исторический учебный материал",
+          "statusLabel": "Учебный или справочный материал"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-307",
+      "standardScenarioId": "CHME3-DIAG-307",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Требует осторожной локализации и соблюдения штатных ограничений",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-SUKHONOSOV-2006",
+          "title": "Пособие машинисту по устранению неисправностей 2ТЭ10М, 2М62У, ЧМЭ3",
+          "url": "https://djvu.online/file/Jz5uzGesWtmL6",
+          "provenanceLabel": "Исторический учебный материал",
+          "statusLabel": "Историческая справка; текущая применимость не подтверждена"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-308",
+      "standardScenarioId": "CHME3-DIAG-308",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Требует осторожной локализации и соблюдения штатных ограничений",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-OLTEP-DIESEL",
+          "title": "Неисправности дизеля тепловоза ЧМЭ3",
+          "url": "https://oltep.narod.ru/neispr/neisp_diz.htm",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; не проверено как действующий порядок"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-309",
+      "standardScenarioId": "CHME3-DIAG-309",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Требует осторожной локализации и соблюдения штатных ограничений",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-OLTEP-DIESEL",
+          "title": "Неисправности дизеля тепловоза ЧМЭ3",
+          "url": "https://oltep.narod.ru/neispr/neisp_diz.htm",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; не проверено как действующий порядок"
+        },
+        {
+          "sourceRef": "ST2-SRC-CHME3-SCBIST-PAM",
+          "title": "Тепловоз ЧМЭ3 — памятка по неисправностям",
+          "url": "https://scbist.com/scb/uploaded/1_chme3_pam.pdf",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; без автоматического нормативного статуса"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-310",
+      "standardScenarioId": "CHME3-DIAG-310",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-SCBIST-PAM",
+          "title": "Тепловоз ЧМЭ3 — памятка по неисправностям",
+          "url": "https://scbist.com/scb/uploaded/1_chme3_pam.pdf",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; без автоматического нормативного статуса"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-311",
+      "standardScenarioId": "CHME3-DIAG-311",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Требует осторожной локализации и соблюдения штатных ограничений",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-NOTIK-1996-WEB",
+          "title": "Тепловозы ЧМЭ3, ЧМЭ3Т, ЧМЭ3Э. Пособие машинисту, 2-е изд.",
+          "url": "https://www.sinref.ru/000_uchebniki/05300_transport_jd_teplovozi/170_teplovozi_chme3_chme3t_chme3e_izdanie2_notik_1996/000.htm",
+          "provenanceLabel": "Исторический учебный материал",
+          "statusLabel": "Учебный или справочный материал"
+        },
+        {
+          "sourceRef": "ST2-SRC-CHME3-OLTEP-DIESEL",
+          "title": "Неисправности дизеля тепловоза ЧМЭ3",
+          "url": "https://oltep.narod.ru/neispr/neisp_diz.htm",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; не проверено как действующий порядок"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-312",
+      "standardScenarioId": "CHME3-DIAG-312",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "PROHIBITED",
+      "dispositionLabel": "Процедура намеренно не показывается",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "В источниках найден нестандартный аварийный приём, связанный с этой неисправностью. Процедура намеренно не отображается: текущая допустимость и профильная применимость действия не подтверждены.",
+      "terminal": "Использовать запись только как сведения о существовании исторического/полевого метода. Не превращать её в инструкцию и продолжать безопасную локализацию по стандартному диагностическому графу.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-OLTEP-DIESEL",
+          "title": "Неисправности дизеля тепловоза ЧМЭ3",
+          "url": "https://oltep.narod.ru/neispr/neisp_diz.htm",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; не проверено как действующий порядок"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-313",
+      "standardScenarioId": "CHME3-DIAG-313",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Требует осторожной локализации и соблюдения штатных ограничений",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-SCBIST-PAM",
+          "title": "Тепловоз ЧМЭ3 — памятка по неисправностям",
+          "url": "https://scbist.com/scb/uploaded/1_chme3_pam.pdf",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; без автоматического нормативного статуса"
+        },
+        {
+          "sourceRef": "ST2-SRC-CHME3-996-CDOCKA",
+          "title": "Порядок действий локомотивных бригад по ЧМЭ3 — учебный Q&A по 996/р",
+          "url": "https://www.cdocka.ru/test/1034/",
+          "provenanceLabel": "Архивный официальный материал",
+          "statusLabel": "Вторичный источник; требуется проверка первичного пункта"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-314",
+      "standardScenarioId": "CHME3-DIAG-314",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Требует осторожной локализации и соблюдения штатных ограничений",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-NOTIK-1996-WEB",
+          "title": "Тепловозы ЧМЭ3, ЧМЭ3Т, ЧМЭ3Э. Пособие машинисту, 2-е изд.",
+          "url": "https://www.sinref.ru/000_uchebniki/05300_transport_jd_teplovozi/170_teplovozi_chme3_chme3t_chme3e_izdanie2_notik_1996/000.htm",
+          "provenanceLabel": "Исторический учебный материал",
+          "statusLabel": "Учебный или справочный материал"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-315",
+      "standardScenarioId": "CHME3-DIAG-315",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Требует осторожной локализации и соблюдения штатных ограничений",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-NOTIK-1996-WEB",
+          "title": "Тепловозы ЧМЭ3, ЧМЭ3Т, ЧМЭ3Э. Пособие машинисту, 2-е изд.",
+          "url": "https://www.sinref.ru/000_uchebniki/05300_transport_jd_teplovozi/170_teplovozi_chme3_chme3t_chme3e_izdanie2_notik_1996/000.htm",
+          "provenanceLabel": "Исторический учебный материал",
+          "statusLabel": "Учебный или справочный материал"
+        },
+        {
+          "sourceRef": "ST2-SRC-CHME3-OLTEP-DIESEL",
+          "title": "Неисправности дизеля тепловоза ЧМЭ3",
+          "url": "https://oltep.narod.ru/neispr/neisp_diz.htm",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; не проверено как действующий порядок"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-316",
+      "standardScenarioId": "CHME3-DIAG-316",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "PROHIBITED",
+      "dispositionLabel": "Процедура намеренно не показывается",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "В источниках найден нестандартный аварийный приём, связанный с этой неисправностью. Процедура намеренно не отображается: текущая допустимость и профильная применимость действия не подтверждены.",
+      "terminal": "Использовать запись только как сведения о существовании исторического/полевого метода. Не превращать её в инструкцию и продолжать безопасную локализацию по стандартному диагностическому графу.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-SCBIST-2020",
+          "title": "Устранение неисправностей тепловозов ЧМЭ3",
+          "url": "https://scbist.com/xx2/52634-01-2020-ustranenie-neispravnostei-teplovozov-chme3.html",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; без автоматического нормативного статуса"
+        },
+        {
+          "sourceRef": "ST2-SRC-CHME3-OLTEP-DIESEL",
+          "title": "Неисправности дизеля тепловоза ЧМЭ3",
+          "url": "https://oltep.narod.ru/neispr/neisp_diz.htm",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; не проверено как действующий порядок"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-317",
+      "standardScenarioId": "CHME3-DIAG-317",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-SCBIST-2020",
+          "title": "Устранение неисправностей тепловозов ЧМЭ3",
+          "url": "https://scbist.com/xx2/52634-01-2020-ustranenie-neispravnostei-teplovozov-chme3.html",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; без автоматического нормативного статуса"
+        },
+        {
+          "sourceRef": "ST2-SRC-CHME3-OLTEP-DIESEL",
+          "title": "Неисправности дизеля тепловоза ЧМЭ3",
+          "url": "https://oltep.narod.ru/neispr/neisp_diz.htm",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; не проверено как действующий порядок"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-318",
+      "standardScenarioId": "CHME3-DIAG-318",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-SCBIST-PAM",
+          "title": "Тепловоз ЧМЭ3 — памятка по неисправностям",
+          "url": "https://scbist.com/scb/uploaded/1_chme3_pam.pdf",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; без автоматического нормативного статуса"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-321",
+      "standardScenarioId": "CHME3-DIAG-321",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "PROHIBITED",
+      "dispositionLabel": "Процедура намеренно не показывается",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "В источниках найден нестандартный аварийный приём, связанный с этой неисправностью. Процедура намеренно не отображается: текущая допустимость и профильная применимость действия не подтверждены.",
+      "terminal": "Использовать запись только как сведения о существовании исторического/полевого метода. Не превращать её в инструкцию и продолжать безопасную локализацию по стандартному диагностическому графу.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-996-CDOCKA",
+          "title": "Порядок действий локомотивных бригад по ЧМЭ3 — учебный Q&A по 996/р",
+          "url": "https://www.cdocka.ru/test/1034/",
+          "provenanceLabel": "Архивный официальный материал",
+          "statusLabel": "Вторичный источник; требуется проверка первичного пункта"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-322",
+      "standardScenarioId": "CHME3-DIAG-322",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Требует осторожной локализации и соблюдения штатных ограничений",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-996-CDOCKA",
+          "title": "Порядок действий локомотивных бригад по ЧМЭ3 — учебный Q&A по 996/р",
+          "url": "https://www.cdocka.ru/test/1034/",
+          "provenanceLabel": "Архивный официальный материал",
+          "statusLabel": "Вторичный источник; требуется проверка первичного пункта"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-323",
+      "standardScenarioId": "CHME3-DIAG-323",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "PROHIBITED",
+      "dispositionLabel": "Процедура намеренно не показывается",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "В источниках найден нестандартный аварийный приём, связанный с этой неисправностью. Процедура намеренно не отображается: текущая допустимость и профильная применимость действия не подтверждены.",
+      "terminal": "Использовать запись только как сведения о существовании исторического/полевого метода. Не превращать её в инструкцию и продолжать безопасную локализацию по стандартному диагностическому графу.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-996-CDOCKA",
+          "title": "Порядок действий локомотивных бригад по ЧМЭ3 — учебный Q&A по 996/р",
+          "url": "https://www.cdocka.ru/test/1034/",
+          "provenanceLabel": "Архивный официальный материал",
+          "statusLabel": "Вторичный источник; требуется проверка первичного пункта"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-324",
+      "standardScenarioId": "CHME3-DIAG-324",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "PROHIBITED",
+      "dispositionLabel": "Процедура намеренно не показывается",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "В источниках найден нестандартный аварийный приём, связанный с этой неисправностью. Процедура намеренно не отображается: текущая допустимость и профильная применимость действия не подтверждены.",
+      "terminal": "Использовать запись только как сведения о существовании исторического/полевого метода. Не превращать её в инструкцию и продолжать безопасную локализацию по стандартному диагностическому графу.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-996-CDOCKA",
+          "title": "Порядок действий локомотивных бригад по ЧМЭ3 — учебный Q&A по 996/р",
+          "url": "https://www.cdocka.ru/test/1034/",
+          "provenanceLabel": "Архивный официальный материал",
+          "statusLabel": "Вторичный источник; требуется проверка первичного пункта"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-325",
+      "standardScenarioId": "CHME3-DIAG-325",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "PROHIBITED",
+      "dispositionLabel": "Процедура намеренно не показывается",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "В источниках найден нестандартный аварийный приём, связанный с этой неисправностью. Процедура намеренно не отображается: текущая допустимость и профильная применимость действия не подтверждены.",
+      "terminal": "Использовать запись только как сведения о существовании исторического/полевого метода. Не превращать её в инструкцию и продолжать безопасную локализацию по стандартному диагностическому графу.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-996-CDOCKA",
+          "title": "Порядок действий локомотивных бригад по ЧМЭ3 — учебный Q&A по 996/р",
+          "url": "https://www.cdocka.ru/test/1034/",
+          "provenanceLabel": "Архивный официальный материал",
+          "statusLabel": "Вторичный источник; требуется проверка первичного пункта"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-CHME3-DIAG-326",
+      "standardScenarioId": "CHME3-DIAG-326",
+      "profiles": [
+        "chme3-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Требует осторожной локализации и соблюдения штатных ограничений",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-CHME3-996-CDOCKA",
+          "title": "Порядок действий локомотивных бригад по ЧМЭ3 — учебный Q&A по 996/р",
+          "url": "https://www.cdocka.ru/test/1034/",
+          "provenanceLabel": "Архивный официальный материал",
+          "statusLabel": "Вторичный источник; требуется проверка первичного пункта"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-TEM2-DIAG-001",
+      "standardScenarioId": "TEM2-DIAG-001",
+      "profiles": [
+        "tem2-base"
+      ],
+      "actionDisposition": "PROHIBITED",
+      "dispositionLabel": "Процедура намеренно не показывается",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "В источниках найден нестандартный аварийный приём, связанный с этой неисправностью. Процедура намеренно не отображается: текущая допустимость и профильная применимость действия не подтверждены.",
+      "terminal": "Использовать запись только как сведения о существовании исторического/полевого метода. Не превращать её в инструкцию и продолжать безопасную локализацию по стандартному диагностическому графу.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-TEM2-BOOKSITE-1971",
+          "title": "Исторический материал о безопасном способе запуска ТЭМ2 при отказе кнопки пуска",
+          "url": "https://www.booksite.ru/tyaga/1971/1971_4.pdf",
+          "provenanceLabel": "Исторический учебный материал",
+          "statusLabel": "Историческая справка; текущая применимость не подтверждена"
+        },
+        {
+          "sourceRef": "ST2-SRC-TEM2-TECHTRAIN-2020",
+          "title": "ТЭМ2/ТЭМ2У — техучёба по электрическим схемам и аварийным схемам",
+          "url": "https://ok.ru/club.vlocomotive/topic/150931658058572",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Непроверенная перепубликация; только исследовательское свидетельство"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-TEM2-DIAG-002",
+      "standardScenarioId": "TEM2-DIAG-002",
+      "profiles": [
+        "tem2-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Требует осторожной локализации и соблюдения штатных ограничений",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-TEM2-KOVALEV-1980",
+          "title": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию",
+          "url": "https://djvu.online/file/TvLMZYqQ8uvMb",
+          "provenanceLabel": "Документация изготовителя",
+          "statusLabel": "Историческая заводская документация"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-TEM2-DIAG-003",
+      "standardScenarioId": "TEM2-DIAG-003",
+      "profiles": [
+        "tem2-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Требует осторожной локализации и соблюдения штатных ограничений",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-TEM2-VPOEZDKU-2017",
+          "title": "Обнаружение и устранение неисправностей в пути следования на ТЭМ2",
+          "url": "https://xn--80abla7dhnr.xn--p1ai/обнаружение-и-устранение-неисправно/",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; не проверено как действующий порядок"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-TEM2-DIAG-004",
+      "standardScenarioId": "TEM2-DIAG-004",
+      "profiles": [
+        "tem2-base"
+      ],
+      "actionDisposition": "PROHIBITED",
+      "dispositionLabel": "Процедура намеренно не показывается",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "В источниках найден нестандартный аварийный приём, связанный с этой неисправностью. Процедура намеренно не отображается: текущая допустимость и профильная применимость действия не подтверждены.",
+      "terminal": "Использовать запись только как сведения о существовании исторического/полевого метода. Не превращать её в инструкцию и продолжать безопасную локализацию по стандартному диагностическому графу.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-TEM2-KOVALEV-1980",
+          "title": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию",
+          "url": "https://djvu.online/file/TvLMZYqQ8uvMb",
+          "provenanceLabel": "Документация изготовителя",
+          "statusLabel": "Историческая заводская документация"
+        },
+        {
+          "sourceRef": "ST2-SRC-TEM2-SCBIST-2009",
+          "title": "Цепи управления ТЭМ2: возможные неисправности, способы устранения",
+          "url": "https://scbist.com/xx2/28389-04-2009-cepi-upravleniya-elektrovoza-tem2-vozmozhnye-neispravnosti-sposoby-ustraneniya.html",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; без автоматического нормативного статуса"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-TEM2-DIAG-005",
+      "standardScenarioId": "TEM2-DIAG-005",
+      "profiles": [
+        "tem2-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-TEM2-KOVALEV-1980",
+          "title": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию",
+          "url": "https://djvu.online/file/TvLMZYqQ8uvMb",
+          "provenanceLabel": "Документация изготовителя",
+          "statusLabel": "Историческая заводская документация"
+        },
+        {
+          "sourceRef": "ST2-SRC-TEM2-NOTIK-1980",
+          "title": "Электрические схемы тепловозов ТЭМ2 и ТЭМ1",
+          "url": "https://djvu.online/file/tYg51BErtgtWQ",
+          "provenanceLabel": "Исторический учебный материал",
+          "statusLabel": "Учебный или справочный материал"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-TEM2-DIAG-006",
+      "standardScenarioId": "TEM2-DIAG-006",
+      "profiles": [
+        "tem2-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Требует осторожной локализации и соблюдения штатных ограничений",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-TEM2-VPOEZDKU-2017",
+          "title": "Обнаружение и устранение неисправностей в пути следования на ТЭМ2",
+          "url": "https://xn--80abla7dhnr.xn--p1ai/обнаружение-и-устранение-неисправно/",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; не проверено как действующий порядок"
+        },
+        {
+          "sourceRef": "ST2-SRC-TEM2-SCBIST-2009",
+          "title": "Цепи управления ТЭМ2: возможные неисправности, способы устранения",
+          "url": "https://scbist.com/xx2/28389-04-2009-cepi-upravleniya-elektrovoza-tem2-vozmozhnye-neispravnosti-sposoby-ustraneniya.html",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; без автоматического нормативного статуса"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-TEM2-DIAG-007",
+      "standardScenarioId": "TEM2-DIAG-007",
+      "profiles": [
+        "tem2-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Требует осторожной локализации и соблюдения штатных ограничений",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-TEM2-KOVALEV-1980",
+          "title": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию",
+          "url": "https://djvu.online/file/TvLMZYqQ8uvMb",
+          "provenanceLabel": "Документация изготовителя",
+          "statusLabel": "Историческая заводская документация"
+        },
+        {
+          "sourceRef": "ST2-SRC-TEM2-NOTIK-1980",
+          "title": "Электрические схемы тепловозов ТЭМ2 и ТЭМ1",
+          "url": "https://djvu.online/file/tYg51BErtgtWQ",
+          "provenanceLabel": "Исторический учебный материал",
+          "statusLabel": "Учебный или справочный материал"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-TEM2-DIAG-008",
+      "standardScenarioId": "TEM2-DIAG-008",
+      "profiles": [
+        "tem2-base"
+      ],
+      "actionDisposition": "PROHIBITED",
+      "dispositionLabel": "Процедура намеренно не показывается",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "В источниках найден нестандартный аварийный приём, связанный с этой неисправностью. Процедура намеренно не отображается: текущая допустимость и профильная применимость действия не подтверждены.",
+      "terminal": "Использовать запись только как сведения о существовании исторического/полевого метода. Не превращать её в инструкцию и продолжать безопасную локализацию по стандартному диагностическому графу.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-TEM2-VUNIVERE",
+          "title": "ТЭМ2 — пуск дизеля, назначение блокировок и аварийные способы",
+          "url": "https://vunivere.ru/work67618/page4",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Непроверенная копия; только исследовательское свидетельство"
+        },
+        {
+          "sourceRef": "ST2-SRC-TEM2-TECHTRAIN-2020",
+          "title": "ТЭМ2/ТЭМ2У — техучёба по электрическим схемам и аварийным схемам",
+          "url": "https://ok.ru/club.vlocomotive/topic/150931658058572",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Непроверенная перепубликация; только исследовательское свидетельство"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-TEM2-DIAG-009",
+      "standardScenarioId": "TEM2-DIAG-009",
+      "profiles": [
+        "tem2-base"
+      ],
+      "actionDisposition": "PROHIBITED",
+      "dispositionLabel": "Процедура намеренно не показывается",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "В источниках найден нестандартный аварийный приём, связанный с этой неисправностью. Процедура намеренно не отображается: текущая допустимость и профильная применимость действия не подтверждены.",
+      "terminal": "Использовать запись только как сведения о существовании исторического/полевого метода. Не превращать её в инструкцию и продолжать безопасную локализацию по стандартному диагностическому графу.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-TEM2-SCBIST-2009",
+          "title": "Цепи управления ТЭМ2: возможные неисправности, способы устранения",
+          "url": "https://scbist.com/xx2/28389-04-2009-cepi-upravleniya-elektrovoza-tem2-vozmozhnye-neispravnosti-sposoby-ustraneniya.html",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; без автоматического нормативного статуса"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-TEM2-DIAG-010",
+      "standardScenarioId": "TEM2-DIAG-010",
+      "profiles": [
+        "tem2-base"
+      ],
+      "actionDisposition": "PROHIBITED",
+      "dispositionLabel": "Процедура намеренно не показывается",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "В источниках найден нестандартный аварийный приём, связанный с этой неисправностью. Процедура намеренно не отображается: текущая допустимость и профильная применимость действия не подтверждены.",
+      "terminal": "Использовать запись только как сведения о существовании исторического/полевого метода. Не превращать её в инструкцию и продолжать безопасную локализацию по стандартному диагностическому графу.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-TEM2-VUNIVERE",
+          "title": "ТЭМ2 — пуск дизеля, назначение блокировок и аварийные способы",
+          "url": "https://vunivere.ru/work67618/page4",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Непроверенная копия; только исследовательское свидетельство"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-TEM2-DIAG-011",
+      "standardScenarioId": "TEM2-DIAG-011",
+      "profiles": [
+        "tem2-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Требует осторожной локализации и соблюдения штатных ограничений",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-TEM2-VUNIVERE",
+          "title": "ТЭМ2 — пуск дизеля, назначение блокировок и аварийные способы",
+          "url": "https://vunivere.ru/work67618/page4",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Непроверенная копия; только исследовательское свидетельство"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-TEM2-DIAG-012",
+      "standardScenarioId": "TEM2-DIAG-012",
+      "profiles": [
+        "tem2-base"
+      ],
+      "actionDisposition": "PROHIBITED",
+      "dispositionLabel": "Процедура намеренно не показывается",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "В источниках найден нестандартный аварийный приём, связанный с этой неисправностью. Процедура намеренно не отображается: текущая допустимость и профильная применимость действия не подтверждены.",
+      "terminal": "Использовать запись только как сведения о существовании исторического/полевого метода. Не превращать её в инструкцию и продолжать безопасную локализацию по стандартному диагностическому графу.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-TEM2-SCBIST-2009",
+          "title": "Цепи управления ТЭМ2: возможные неисправности, способы устранения",
+          "url": "https://scbist.com/xx2/28389-04-2009-cepi-upravleniya-elektrovoza-tem2-vozmozhnye-neispravnosti-sposoby-ustraneniya.html",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; без автоматического нормативного статуса"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-TEM2-DIAG-013",
+      "standardScenarioId": "TEM2-DIAG-013",
+      "profiles": [
+        "tem2-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Требует осторожной локализации и соблюдения штатных ограничений",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-TEM2-SCBIST-2009",
+          "title": "Цепи управления ТЭМ2: возможные неисправности, способы устранения",
+          "url": "https://scbist.com/xx2/28389-04-2009-cepi-upravleniya-elektrovoza-tem2-vozmozhnye-neispravnosti-sposoby-ustraneniya.html",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; без автоматического нормативного статуса"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-TEM2-DIAG-014",
+      "standardScenarioId": "TEM2-DIAG-014",
+      "profiles": [
+        "tem2-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Требует осторожной локализации и соблюдения штатных ограничений",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-TEM2-TECHTRAIN-2020",
+          "title": "ТЭМ2/ТЭМ2У — техучёба по электрическим схемам и аварийным схемам",
+          "url": "https://ok.ru/club.vlocomotive/topic/150931658058572",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Непроверенная перепубликация; только исследовательское свидетельство"
+        },
+        {
+          "sourceRef": "ST2-SRC-TEM2-VUNIVERE",
+          "title": "ТЭМ2 — пуск дизеля, назначение блокировок и аварийные способы",
+          "url": "https://vunivere.ru/work67618/page4",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Непроверенная копия; только исследовательское свидетельство"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-TEM2-DIAG-015",
+      "standardScenarioId": "TEM2-DIAG-015",
+      "profiles": [
+        "tem2-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Требует осторожной локализации и соблюдения штатных ограничений",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-TEM2-TECHTRAIN-2020",
+          "title": "ТЭМ2/ТЭМ2У — техучёба по электрическим схемам и аварийным схемам",
+          "url": "https://ok.ru/club.vlocomotive/topic/150931658058572",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Непроверенная перепубликация; только исследовательское свидетельство"
+        },
+        {
+          "sourceRef": "ST2-SRC-TEM2-SCBIST-2009",
+          "title": "Цепи управления ТЭМ2: возможные неисправности, способы устранения",
+          "url": "https://scbist.com/xx2/28389-04-2009-cepi-upravleniya-elektrovoza-tem2-vozmozhnye-neispravnosti-sposoby-ustraneniya.html",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; без автоматического нормативного статуса"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-TEM2-DIAG-016",
+      "standardScenarioId": "TEM2-DIAG-016",
+      "profiles": [
+        "tem2-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-TEM2-KOVALEV-1980",
+          "title": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию",
+          "url": "https://djvu.online/file/TvLMZYqQ8uvMb",
+          "provenanceLabel": "Документация изготовителя",
+          "statusLabel": "Историческая заводская документация"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-TEM2-DIAG-017",
+      "standardScenarioId": "TEM2-DIAG-017",
+      "profiles": [
+        "tem2-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-TEM2-KOVALEV-1980",
+          "title": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию",
+          "url": "https://djvu.online/file/TvLMZYqQ8uvMb",
+          "provenanceLabel": "Документация изготовителя",
+          "statusLabel": "Историческая заводская документация"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-TEM2-DIAG-018",
+      "standardScenarioId": "TEM2-DIAG-018",
+      "profiles": [
+        "tem2-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-BRAKE-3508R-2022",
+          "title": "Инструкция по ТО, ремонту и испытанию тормозного оборудования локомотивов, 3508/р",
+          "url": "https://meganorm.ru/mega_doc/norm/instrukciya/1/instruktsiya_po_tekhnicheskomu_obsluzhivaniyu_remontu_i.html",
+          "provenanceLabel": "Архивный официальный материал",
+          "statusLabel": "Ремонтная инструкция; не автоматическое действие для локомотивной бригады"
+        },
+        {
+          "sourceRef": "ST2-SRC-TEM2-KOVALEV-1980",
+          "title": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию",
+          "url": "https://djvu.online/file/TvLMZYqQ8uvMb",
+          "provenanceLabel": "Документация изготовителя",
+          "statusLabel": "Историческая заводская документация"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-TEM2-DIAG-019",
+      "standardScenarioId": "TEM2-DIAG-019",
+      "profiles": [
+        "tem2-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-BRAKE-3508R-2022",
+          "title": "Инструкция по ТО, ремонту и испытанию тормозного оборудования локомотивов, 3508/р",
+          "url": "https://meganorm.ru/mega_doc/norm/instrukciya/1/instruktsiya_po_tekhnicheskomu_obsluzhivaniyu_remontu_i.html",
+          "provenanceLabel": "Архивный официальный материал",
+          "statusLabel": "Ремонтная инструкция; не автоматическое действие для локомотивной бригады"
+        },
+        {
+          "sourceRef": "ST2-SRC-TEM2-KOVALEV-1980",
+          "title": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию",
+          "url": "https://djvu.online/file/TvLMZYqQ8uvMb",
+          "provenanceLabel": "Документация изготовителя",
+          "statusLabel": "Историческая заводская документация"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-TEM2-DIAG-020",
+      "standardScenarioId": "TEM2-DIAG-020",
+      "profiles": [
+        "tem2-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-BRAKE-3508R-2022",
+          "title": "Инструкция по ТО, ремонту и испытанию тормозного оборудования локомотивов, 3508/р",
+          "url": "https://meganorm.ru/mega_doc/norm/instrukciya/1/instruktsiya_po_tekhnicheskomu_obsluzhivaniyu_remontu_i.html",
+          "provenanceLabel": "Архивный официальный материал",
+          "statusLabel": "Ремонтная инструкция; не автоматическое действие для локомотивной бригады"
+        },
+        {
+          "sourceRef": "ST2-SRC-TEM2-KOVALEV-1980",
+          "title": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию",
+          "url": "https://djvu.online/file/TvLMZYqQ8uvMb",
+          "provenanceLabel": "Документация изготовителя",
+          "statusLabel": "Историческая заводская документация"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-TEM2-DIAG-021",
+      "standardScenarioId": "TEM2-DIAG-021",
+      "profiles": [
+        "tem2-base"
+      ],
+      "actionDisposition": "PROHIBITED",
+      "dispositionLabel": "Процедура намеренно не показывается",
+      "riskLabel": "Повышенный риск — выполнять только штатную безопасную диагностику",
+      "summary": "В источниках найден нестандартный аварийный приём, связанный с этой неисправностью. Процедура намеренно не отображается: текущая допустимость и профильная применимость действия не подтверждены.",
+      "terminal": "Использовать запись только как сведения о существовании исторического/полевого метода. Не превращать её в инструкцию и продолжать безопасную локализацию по стандартному диагностическому графу.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-TEM2-NOTIK-1980",
+          "title": "Электрические схемы тепловозов ТЭМ2 и ТЭМ1",
+          "url": "https://djvu.online/file/tYg51BErtgtWQ",
+          "provenanceLabel": "Исторический учебный материал",
+          "statusLabel": "Учебный или справочный материал"
+        },
+        {
+          "sourceRef": "ST2-SRC-TEM2-SCBIST-2009",
+          "title": "Цепи управления ТЭМ2: возможные неисправности, способы устранения",
+          "url": "https://scbist.com/xx2/28389-04-2009-cepi-upravleniya-elektrovoza-tem2-vozmozhnye-neispravnosti-sposoby-ustraneniya.html",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; без автоматического нормативного статуса"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-TEM2-DIAG-024-TEM2",
+      "standardScenarioId": "TEM2-DIAG-024",
+      "profiles": [
+        "tem2-base"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Требует осторожной локализации и соблюдения штатных ограничений",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-TEM2-VPOEZDKU-2017",
+          "title": "Обнаружение и устранение неисправностей в пути следования на ТЭМ2",
+          "url": "https://xn--80abla7dhnr.xn--p1ai/обнаружение-и-устранение-неисправно/",
+          "provenanceLabel": "Полевая практика",
+          "statusLabel": "Полевая практика; не проверено как действующий порядок"
+        },
+        {
+          "sourceRef": "ST2-SRC-TEM2-INGENERYI",
+          "title": "Неисправности ТЭМ2 — таблица причин и способов устранения",
+          "url": "https://ingeneryi.info/teh-n/rzhd-tehnika/teplovozy-tehnika-rzhd/remont-i-regulirovka/1178-neispravnosti-tem2.html",
+          "provenanceLabel": "Исторический учебный материал",
+          "statusLabel": "Непроверенная копия; только исследовательское свидетельство"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    },
+    {
+      "candidateId": "EXT2-TEM2-DIAG-024-TEM2U",
+      "standardScenarioId": "TEM2-DIAG-024",
+      "profiles": [
+        "tem2u-improved"
+      ],
+      "actionDisposition": "INFORMATION_ONLY",
+      "dispositionLabel": "Дополнительный информационный материал",
+      "riskLabel": "Требует осторожной локализации и соблюдения штатных ограничений",
+      "summary": "Для этой неисправности найден дополнительный исторический, заводской или полевой диагностический материал. Он может расширять гипотезы и локализацию, но не является подтверждённой командой к действию для текущего исполнения.",
+      "terminal": "Сопоставить источник, фактический профиль и результаты стандартного диагностического графа. Выполняемые действия не выводятся из этой расширенной записи без отдельного подтверждения authority и safety-gate.",
+      "sources": [
+        {
+          "sourceRef": "ST2-SRC-TEM2U-PUBDOC",
+          "title": "Электрическая схема ТЭМ2У — публичная копия, включая аварийное питание дизеля",
+          "url": "https://pubdoc.ru/doc/360179/e-lektricheskaya-shema-teplovoza-te-m2u",
+          "provenanceLabel": "Документация изготовителя",
+          "statusLabel": "Поисковая копия; не самостоятельное подтверждение"
+        },
+        {
+          "sourceRef": "ST2-SRC-TEM2U-MANUAL-1988-WEB",
+          "title": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию",
+          "url": "https://raillook.com/materialy/transport/jeleznodorojniy/tyagoviy-podvijnoi-sostav/1988-teplovoz-tem2u-rukovodstvo-po-ekspluatatsii-i-obsluzhivaniyu/",
+          "provenanceLabel": "Документация изготовителя",
+          "statusLabel": "Подтверждённая историческая документация изготовителя"
+        }
+      ],
+      "runtimeSafety": {
+        "exactProfileOnly": true,
+        "executable": false,
+        "procedureVisible": false,
+        "currentAuthorityVerified": false,
+        "runtimeAuthorityUpgradeAllowed": false
+      }
+    }
+  ]
+}
