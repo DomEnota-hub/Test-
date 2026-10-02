@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "modeId": "EXTENDED_EMERGENCY_KNOWLEDGE",
+  "stage": "STAGE_3_ASSISTANT_SEMANTICS",
+  "updatedAt": "2026-10-02",
+  "routingOrder": [
+    "MATCH_TROUBLESHOOTING_INTENT",
+    "RESOLVE_STANDARD_SCENARIO",
+    "RESOLVE_EXACT_PROFILE",
+    "ATTACH_EXPANDED_EVIDENCE_IF_ENABLED",
+    "ATLAS_ONLY_IF_NO_TROUBLESHOOTING_MATCH"
+  ],
+  "routingRules": {
+    "troubleshootingBeatsAtlasForFaultLanguage": true,
+    "standardScenarioSelectionIsCanonical": true,
+    "expandedModeCreatesSeparateIntent": false,
+    "expandedModeAttachesToMatchedScenario": true,
+    "modeOffResult": "STANDARD_ONLY",
+    "modeOnFoundResult": "STANDARD_PLUS_EXTENDED_EVIDENCE",
+    "modeOnNoAdditionalResult": "STANDARD_ONLY_NO_EXTENDED_METHOD",
+    "profileMatch": "EXACT_ONLY",
+    "unknownExecution": "FAIL_CLOSED",
+    "adjacentVariantFallback": false,
+    "oppositeEventsRemainSeparatedByStandardSemantics": true,
+    "rawInternalIdsVisibleToUser": false
+  },
+  "presentationRules": {
+    "expandedSectionPlacement": "DIRECTLY_AFTER_STANDARD_LOCALIZATION",
+    "badge": "Расширенный сценарий",
+    "frameColorName": "бирюзовый",
+    "repeatGeneralWarningPerScenario": false,
+    "alwaysShowSourceAndStatus": true,
+    "informationOnlyCopy": "Дополнительная диагностическая информация. Не является подтверждённой командой к действию.",
+    "prohibitedCopy": "Известен исторический/полевой аварийный приём, но его выполнение не предлагается. Процедура скрыта.",
+    "noAdditionalCopy": "Для этой ветви отдельный расширенный метод не найден; стандартная диагностика остаётся основной."
+  },
+  "safetyRules": {
+    "informationOnlyNeverImperative": true,
+    "prohibitedNeverContainsProcedure": true,
+    "prohibitedNeverExecutable": true,
+    "fieldPracticeNeverUpgradesAuthority": true,
+    "historicalOrManufacturerSourceNeverUpgradesAuthorityByItself": true,
+    "conditionalActionRequiresFutureAuthorityReview": true,
+    "dangerMarkingRemainsIndependentRed": true
+  },
+  "profileIsolation": {
+    "chme3-base": "Only candidates explicitly tagged chme3-base",
+    "chme3t-rheostatic": "Only CHME3-DIAG-110 profile-specific expanded candidate is currently evidenced",
+    "chme3e-electronic": "No expanded candidate currently evidenced; do not inherit base ChME3 field schemes",
+    "tem2-base": "Only candidates explicitly tagged tem2-base",
+    "tem2u-improved": "Only explicit TEM2-DIAG-024 TEM2U candidate is currently evidenced"
+  },
+  "assistantBehaviorExamples": [
+    {
+      "condition": "mode OFF and a troubleshooting query matches a standard scenario",
+      "behavior": "Return the standard diagnostic route only."
+    },
+    {
+      "condition": "mode ON, exact profile matches, INFORMATION_ONLY candidate exists",
+      "behavior": "Return the standard diagnostic route and immediately attach the turquoise expanded evidence card with source/status; do not convert it into an action."
+    },
+    {
+      "condition": "mode ON, exact profile matches, PROHIBITED candidate exists",
+      "behavior": "Return the standard diagnostic route and a turquoise status card that a non-standard method exists, with risk/source/status and no procedure."
+    },
+    {
+      "condition": "mode ON but no candidate exists for the exact profile",
+      "behavior": "Do not inherit a related-series method. Keep the standard route and, only when useful, state that no separate expanded method is evidenced for this profile."
+    }
+  ]
+}
