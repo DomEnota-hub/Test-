@@ -52,7 +52,8 @@ class AssistantDieselStallRoutingTest {
                 assertEquals("$query scenario", "CHME3-DIAG-002", result.hits.first().document.canonicalId)
             }
             val specific = engine.query("при трогании дизель глохнет") as AssistantEngineResult.Matches
-            assertTrue(specific.hits.take(3).any { "Просадка оборотов под нагрузкой" in it.document.title })
+            assertTrue("${family.title}: ${specific.hits.map { it.document.title to it.score }}",
+                specific.hits.take(3).any { "Просадка оборотов под нагрузкой" in it.document.title })
         }
     }
 

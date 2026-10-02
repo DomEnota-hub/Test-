@@ -71,7 +71,7 @@ class InMemoryAssistantIndex(
             },
             describedComponents = AssistantQueryParser.componentKeysInDescription(
                 "${document.title} ${document.summary} ${document.symptomTerms.joinToString(" ")}"
-            ),
+            ) + (if (document.componentIds.any { it.endsWith("-EQ-DIESEL") }) setOf("DIESEL") else emptySet()),
             primaryPhrases = primaryPhrases,
             aliasPhrases = aliasPhrases,
             symptomPhrases = document.symptomTerms.map(String::normalizeAssistantText).filter { it.length >= 4 }.toSet(),
