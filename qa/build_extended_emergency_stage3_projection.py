@@ -13,6 +13,13 @@ DISCOVERY = INTEGRATION / "extended_emergency_stage2_discovery.tsv"
 LIGHT_BORDER = "#0F766E"
 DARK_BORDER = "#5EEAD4"
 MODE_ID = "EXTENDED_EMERGENCY_KNOWLEDGE"
+ALL_PROFILES = [
+    "chme3-base",
+    "chme3t-rheostatic",
+    "chme3e-electronic",
+    "tem2-base",
+    "tem2u-improved",
+]
 
 
 def read_tsv(path: Path):
@@ -176,6 +183,7 @@ def build_projection():
 
     dispositions = Counter(row["actionDisposition"].strip() for row in candidates)
     profiles = Counter(profile for row in candidates for profile in split_pipe(row.get("profiles")))
+    profile_counts = {profile: profiles[profile] for profile in ALL_PROFILES}
     discovery_status = Counter(row["discoveryStatus"].strip() for row in discovery)
 
     return {
@@ -208,7 +216,7 @@ def build_projection():
             "informationOnly": dispositions["INFORMATION_ONLY"],
             "prohibited": dispositions["PROHIBITED"],
             "conditionalAction": dispositions["CONDITIONAL_ACTION"],
-            "profileCandidateCounts": dict(sorted(profiles.items())),
+            "profileCandidateCounts": profile_counts,
         },
         "scenarioRouting": scenario_routing,
         "candidateRoutes": candidate_routes,
