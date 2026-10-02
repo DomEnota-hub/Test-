@@ -1,0 +1,64 @@
+name: Apply expanded emergency settings UI
+
+on:
+  push:
+    branches:
+      - feature/extended-emergency-scenarios
+    paths:
+      - '.github/workflows/apply-extended-emergency-settings.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch-and-verify:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/extended-emergency-scenarios
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+      - name: Patch settings screen labels and section
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('app/src/main/java/ru/railbrake/calculator/ui/BrakeCalculatorApp.kt')
+          text = p.read_text(encoding='utf-8')
+          replacements = [
+              ('SETTINGS("Палитра")', 'SETTINGS("Настройки")', 1),
+              ('label = { Text("Палитра") },', 'label = { Text("Настройки") },', 1),
+              ('PaletteScreen(palette, onPaletteChange, themeMode, onThemeModeChange)', 'SettingsScreen(palette, onPaletteChange, themeMode, onThemeModeChange)', 1),
+              ('private fun PaletteScreen(', 'private fun SettingsScreen(', 1),
+          ]
+          for old, new, expected in replacements:
+              count = text.count(old)
+              if count != expected:
+                  raise SystemExit(f'Expected {expected} occurrence(s) of {old!r}, got {count}')
+              text = text.replace(old, new)
+          anchor = '    RailInfoBand("Тема и цветовой акцент настраиваются независимо. Красный по-прежнему зарезервирован для опасности и ОПП.")'
+          if text.count(anchor) != 1:
+              raise SystemExit('Settings insertion anchor drifted')
+          text = text.replace(anchor, '    ExtendedEmergencySettingsSection()\n' + anchor)
+          if 'Палитра' in text:
+              raise SystemExit('Stale user-facing Палитра label remains in BrakeCalculatorApp.kt')
+          p.write_text(text, encoding='utf-8')
+          PY
+      - name: Kotlin compile
+        run: ./gradlew :app:compileDebugKotlin --no-daemon
+      - name: Unit tests
+        run: ./gradlew :app:testDebugUnitTest --no-daemon
+      - name: Patch hygiene
+        run: git diff --check
+      - name: Commit verified settings integration
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app/src/main/java/ru/railbrake/calculator/ui/BrakeCalculatorApp.kt
+          git diff --cached --quiet && exit 0
+          git commit -m 'feat: rename Palette to Settings and expose expanded emergency toggle'
+          git push origin HEAD:feature/extended-emergency-scenarios
