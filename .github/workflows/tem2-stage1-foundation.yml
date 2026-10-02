@@ -1,0 +1,22 @@
+name: TEM2 Stage 1 foundation
+
+on:
+  push:
+    branches:
+      - integration/chme3-assistant
+    paths:
+      - 'docs/locomotives/diesel/tem2-family/**'
+      - 'docs/locomotives/manifests/locomotive_families.json'
+      - 'qa/validate_tem2_stage1_foundation.py'
+      - '.github/workflows/tem2-stage1-foundation.yml'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate TEM2 family Stage 1
+        run: |
+          python3 qa/validate_tem2_stage1_foundation.py
+          git diff --check
