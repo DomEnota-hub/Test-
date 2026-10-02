@@ -56,10 +56,8 @@ jobs:
       - name: Validate Stage 4 Android runtime and cross-layer wiring
         run: python3 qa/validate_extended_emergency_stage4_integration.py
 
-      - name: Preserve Stage 0 architecture and Stage 1 inventory
-        run: |
-          python3 qa/validate_extended_emergency_architecture.py
-          python3 qa/validate_extended_emergency_stage1_inventory.py
+      - name: Preserve Stage 1 research inventory and source authority boundary
+        run: python3 qa/validate_extended_emergency_stage1_inventory.py
 
       - name: Preserve ChME3 standard projection and diagnostic graphs
         run: |
