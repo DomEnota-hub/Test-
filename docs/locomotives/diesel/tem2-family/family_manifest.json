@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "familyId": "tem2-family",
   "tractionType": "diesel",
-  "updatedAt": "2026-10-02",
-  "migrationState": "STAGE_1_FOUNDATION_COMPLETE",
+  "updatedAt": "2026-10-03",
+  "migrationState": "KNOWLEDGE_FOUNDATION_COMPLETE_READY_FOR_APP_INTEGRATION",
   "canonicalLayers": {
     "common": "common",
     "variants": {
@@ -15,20 +15,30 @@
     {
       "profileId": "tem2-base",
       "series": "ТЭМ2",
-      "supportState": "STAGE_1_FOUNDATION_COMPLETE",
-      "completedStages": ["FOUNDATION"],
+      "supportState": "KNOWLEDGE_FOUNDATION_COMPLETE_READY_FOR_APP_INTEGRATION",
+      "completedStages": [
+        "FOUNDATION",
+        "ATLAS_SCHEMES_INTERACTIVE",
+        "DIAGNOSTICS_ASSISTANT_SEMANTICS",
+        "ACCEPTANCE_CROSS_LAYER_QA"
+      ],
       "sharedBase": "common",
       "variantLayer": "tem2",
-      "requiredBeforeIntegration": ["ATLAS_SCHEMES_INTERACTIVE", "DIAGNOSTICS_ASSISTANT_SEMANTICS", "ACCEPTANCE_CROSS_LAYER_QA"]
+      "requiredBeforeIntegration": []
     },
     {
       "profileId": "tem2u-improved",
       "series": "ТЭМ2У",
-      "supportState": "STAGE_1_FOUNDATION_COMPLETE",
-      "completedStages": ["FOUNDATION"],
+      "supportState": "KNOWLEDGE_FOUNDATION_COMPLETE_READY_FOR_APP_INTEGRATION",
+      "completedStages": [
+        "FOUNDATION",
+        "ATLAS_SCHEMES_INTERACTIVE",
+        "DIAGNOSTICS_ASSISTANT_SEMANTICS",
+        "ACCEPTANCE_CROSS_LAYER_QA"
+      ],
       "sharedBase": "common",
       "variantLayer": "tem2u",
-      "requiredBeforeIntegration": ["ATLAS_SCHEMES_INTERACTIVE", "DIAGNOSTICS_ASSISTANT_SEMANTICS", "ACCEPTANCE_CROSS_LAYER_QA"]
+      "requiredBeforeIntegration": []
     }
   ],
   "inheritancePolicy": {
@@ -45,11 +55,15 @@
     "fieldAndTrainingSourcesMaySupportSearchHypothesesButNotActionAuthority": true,
     "conflictsRemainVisible": true
   },
-  "nextStage": "ATLAS_SCHEMES_INTERACTIVE",
+  "nextStage": "APP_INTEGRATION",
   "integrationBoundary": {
     "foundationReady": true,
+    "atlasSchemesInteractiveReady": true,
+    "diagnosticsAssistantSemanticsReady": true,
+    "acceptanceCrossLayerReady": true,
+    "profileContextRegistered": true,
     "androidRuntimeIntegrated": false,
     "assistantEngineMerged": false,
-    "rule": "Stage 1 establishes sources, profiles, applicability and inheritance only. It does not claim Atlas, schemes, diagnostics, acceptance or Android integration are complete."
+    "rule": "The TEM2/TEM2U knowledge foundation is complete and cross-layer validated. Android assets/repositories/screens, production AssistantEngine/AssistantIndex wiring and application navigation remain a separate integration stage. Unknown or contradictory actual execution stays FAIL_CLOSED."
   }
 }
