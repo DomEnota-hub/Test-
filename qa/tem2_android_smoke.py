@@ -183,17 +183,18 @@ def check_profile(profile, route):
     wait("Сегодня работаю на: "+profile)
     shot(f"{profile}-restarted")
 
-apk=os.environ["APK"]
-subprocess.run(["adb","install","-r",apk],check=True,timeout=120)
-adb("logcat","-c")
-adb("shell","am","force-stop",PACKAGE)
-adb("shell","monkey","-p",PACKAGE,"1")
-wait("Железнодорожный помощник")
-try:
-    check_profile("ТЭМ2","Начать снаружи")
-    check_profile("ТЭМ2У","Начать из кабины")
-    check_warning()
-finally:
-    (OUT / "crash-logcat.txt").write_bytes(adb("logcat","-d","-b","crash"))
-assert b"Process: ru.railbrake.calculator" not in (OUT / "crash-logcat.txt").read_bytes()
-print("TEM2/TEM2U emulator profiles and expanded mode scroll gate PASS")
+if __name__ == "__main__":
+    apk=os.environ["APK"]
+    subprocess.run(["adb","install","-r",apk],check=True,timeout=120)
+    adb("logcat","-c")
+    adb("shell","am","force-stop",PACKAGE)
+    adb("shell","monkey","-p",PACKAGE,"1")
+    wait("Железнодорожный помощник")
+    try:
+        check_profile("ТЭМ2","Начать снаружи")
+        check_profile("ТЭМ2У","Начать из кабины")
+        check_warning()
+    finally:
+        (OUT / "crash-logcat.txt").write_bytes(adb("logcat","-d","-b","crash"))
+    assert b"Process: ru.railbrake.calculator" not in (OUT / "crash-logcat.txt").read_bytes()
+    print("TEM2/TEM2U emulator profiles and expanded mode scroll gate PASS")
