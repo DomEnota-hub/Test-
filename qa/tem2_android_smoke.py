@@ -47,6 +47,14 @@ def tap_node(node):
 def find(root, text):
     return next((n for n in root.iter("node") if label(n) == text), None)
 
+def button(root, text):
+    node=find(root,text)
+    if node is None: return None
+    parents={c:p for p in root.iter() for c in p}
+    while node.get("clickable")!="true" and node in parents:
+        node=parents[node]
+    return node if node.get("clickable")=="true" else None
+
 def wait(text, timeout=60):
     deadline = time.monotonic()+timeout
     while time.monotonic() < deadline:
@@ -126,13 +134,16 @@ def check_warning():
         raise AssertionError("Expanded mode setting unavailable")
 
     root=wait("Пролистайте предупреждение до конца")
-    confirm=find(root,"Включить")
+    confirm=button(root,"Включить")
     if confirm is None or confirm.get("enabled")!="false":
         raise AssertionError("Warning confirmation must initially be disabled")
     shot("expanded-warning-before-scroll")
+    tap_node(confirm)
+    if find(wait("Пролистайте предупреждение до конца"),"Включить") is None:
+        raise AssertionError("Disabled confirmation closed the warning")
     for _ in range(8):
         root=tree()
-        confirm=find(root,"Включить")
+        confirm=button(root,"Включить")
         if confirm is not None and confirm.get("enabled")=="true":
             shot("expanded-warning-after-scroll")
             tap_node(confirm)
