@@ -1,0 +1,87 @@
+name: TEM2 Stage 4 acceptance and cross-layer QA
+
+on:
+  push:
+    branches:
+      - feature/tem2-stage4
+    paths:
+      - 'docs/locomotives/diesel/tem2-family/**'
+      - 'docs/locomotives/manifests/locomotive_families.json'
+      - 'docs/integration/TEM2_STAGE4_FINAL_CHECKPOINT.md'
+      - 'qa/validate_tem2_stage1_foundation.py'
+      - 'app/qa/validate_tem2_stage2.py'
+      - 'app/qa/validate_tem2_stage3.py'
+      - 'app/qa/validate_tem2_stage4.py'
+      - 'qa/validate_locomotive_profile_registry.py'
+      - '.github/workflows/tem2-stage4-acceptance.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Preserve TEM2 Stage 1 foundation contract
+        run: python3 qa/validate_tem2_stage1_foundation.py
+
+      - name: Preserve TEM2 Stage 2 Atlas schemes and interactive contract
+        run: python3 app/qa/validate_tem2_stage2.py
+
+      - name: Preserve TEM2 Stage 3 diagnostics and assistant semantics
+        run: python3 app/qa/validate_tem2_stage3.py
+
+      - name: Validate TEM2 Stage 4 acceptance and cross-layer contract
+        run: python3 app/qa/validate_tem2_stage4.py
+
+      - name: Validate global non-null locomotive profile registry
+        run: python3 qa/validate_locomotive_profile_registry.py
+
+      - name: Preserve expanded-emergency profile/runtime boundary
+        run: python3 qa/validate_extended_emergency_stage4_integration.py
+
+      - name: Enforce TEM2 Stage 4 knowledge-only change boundary
+        run: |
+          python3 - <<'PY'
+          import subprocess
+
+          base = '44d7456267191b7efb3be92b7dea7e39b455fdb0'
+          allowed = {
+              'docs/locomotives/diesel/tem2-family/common/stage4_acceptance.json',
+              'docs/locomotives/diesel/tem2-family/family_manifest.json',
+              'docs/locomotives/manifests/locomotive_families.json',
+              'docs/integration/TEM2_STAGE4_FINAL_CHECKPOINT.md',
+              'qa/validate_tem2_stage1_foundation.py',
+              'app/qa/validate_tem2_stage4.py',
+              '.github/workflows/tem2-stage4-acceptance.yml',
+          }
+          subprocess.run(['git', 'cat-file', '-e', f'{base}^{{commit}}'], check=True)
+          changed = {
+              line.strip()
+              for line in subprocess.check_output(['git', 'diff', '--name-only', f'{base}..HEAD'], text=True).splitlines()
+              if line.strip()
+          }
+          unexpected = sorted(changed - allowed)
+          if unexpected:
+              raise SystemExit('TEM2 Stage 4 boundary violated: ' + ', '.join(unexpected))
+          required = {
+              'docs/locomotives/diesel/tem2-family/common/stage4_acceptance.json',
+              'docs/locomotives/diesel/tem2-family/family_manifest.json',
+              'docs/locomotives/manifests/locomotive_families.json',
+              'app/qa/validate_tem2_stage4.py',
+              '.github/workflows/tem2-stage4-acceptance.yml',
+          }
+          missing = sorted(required - changed)
+          if missing:
+              raise SystemExit('TEM2 Stage 4 required files missing: ' + ', '.join(missing))
+          print('TEM2 Stage 4 change boundary PASS:', ', '.join(sorted(changed)))
+          PY
+
+      - name: Patch hygiene
+        run: git diff --check
