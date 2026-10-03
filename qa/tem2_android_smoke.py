@@ -109,9 +109,15 @@ def check_warning():
         title=find(root,"Расширенный режим выключен")
         if title is not None:
             y=(bounds(title)[1]+bounds(title)[3])//2
-            switches=[n for n in root.iter("node") if n.get("class")=="android.widget.Switch"
-                      and bounds(n)[1]<=y<=bounds(n)[3]]
+            switches=[n for n in root.iter("node") if n.get("checkable")=="true"
+                      and abs((bounds(n)[1]+bounds(n)[3])//2-y)<150]
             if not switches: raise AssertionError("Expanded mode switch unavailable")
+            viewports=[bounds(n)[3] for n in root.iter("node") if n.get("scrollable")=="true"
+                       and bounds(n)[1]<y<=bounds(n)[3] and bounds(n)[3]-bounds(n)[1]>800]
+            if viewports and bounds(switches[0])[3]>min(viewports)-20:
+                adb("shell","input","swipe","500","1800","500","500","420")
+                time.sleep(.5)
+                continue
             tap_node(switches[0])
             break
         adb("shell","input","swipe","500","1800","500","500","420")
