@@ -57,9 +57,12 @@ for profile, family, equipment_count, scenarios in (
             if n['type']=='check':
                 assert 'Ожидается:' in n['text'] and 'При отклонении:' in n['text']
     for route in ('route_from_outside','route_from_cab'):
-        sequence=byid[f'{family.upper()}-ROUTE-{route}']['sequence']
+        route_entry=byid[f'{family.upper()}-ROUTE-{route}']
+        assert route_entry['status']=='ROUTE'
+        sequence=route_entry['sequence']
         assert all(i in byid for i in sequence)
         assert len(sequence)==(14 if family=='tem2' else 16)+equipment_count
+    assert byid[f'{family.upper()}-ROUTE-route_canonical']['status']=='ROUTE'
     assert all(family.upper() not in e['id'] or profile in e.get('app', [profile]) for e in rows)
 
 flow=asset('tem2_stepwise_scheme_flows.json')['sequences']

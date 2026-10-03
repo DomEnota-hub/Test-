@@ -73,7 +73,8 @@ for profile, family in PROFILE_FAMILY.items():
         rows.append(card(eid, 'EQUIPMENT', title, system_title[sid], 'PROFILE_CONFIRMATION_REQUIRED',
             [('Применимость', [family, 'Фактически установленное исполнение подлежит подтверждению']),
              ('Источники', [source_title[i] for i in source_ids])],
-             related=[*related_schemes, *related_diags, f'{family}-ACC-{eid}'], aliases=[title]))
+             related=[*related_schemes, *related_diags, f'{family}-ACC-{eid}'],
+             aliases=[title, f'описание {title}']))
     for scheme in schemes:
         if profile not in scheme['app']: continue
         sid = scheme['id']; view_id = f'{family}-INT-{sid}'
@@ -114,19 +115,20 @@ for profile, family in PROFILE_FAMILY.items():
         phase = STAGE4['expandedAcceptance']['phaseOverrides'].get(eid, STAGE4['expandedAcceptance']['systemPhaseMap'][item[2]])
         rows.append(card(f'{family}-ACC-{eid}','ACCEPTANCE',item[1],phase_names[phase],
             'REFERENCE_CHECK_LOCAL_PROCESS_REQUIRED',
-            [('Проверка',['Сверить фактическое наличие и доступные признаки состояния; объём определяет применимый локальный процесс.'])],related=[eid]))
+            [('Проверка',['Сверить фактическое наличие и доступные признаки состояния; объём определяет применимый локальный процесс.'])],
+            related=[eid], aliases=[f'приёмка {item[1]}', f'осмотр {item[1]}']))
     for route in STAGE4['routes']:
         ordered = [x for phase in route['phases'] for x in checks if x['phase']==phase]
         expanded = [x for phase in route['phases'] for x in applicable.values()
                     if STAGE4['expandedAcceptance']['phaseOverrides'].get(x[0],STAGE4['expandedAcceptance']['systemPhaseMap'][x[2]])==phase]
         route_suffix = 'route_from_outside' if route['phases'][0]=='OUTSIDE' else 'route_from_cab'
         rows.append(card(f'{family}-ROUTE-{route_suffix}','ACCEPTANCE',route['title'],
-            'Маршрут с сохранением отметок и заметок', 'REFERENCE_CHECK_LOCAL_PROCESS_REQUIRED',
+            'Маршрут с сохранением отметок и заметок', 'ROUTE',
             [('Объём',['Core и расширенные справочные пункты; локальный утверждённый процесс имеет приоритет.'])],
             sequence=[*[f'{family}-{x["id"]}' for x in ordered],*[f'{family}-ACC-{x[0]}' for x in expanded]]))
     rows.append(card(f'{family}-ROUTE-route_canonical','ACCEPTANCE','Полный осмотр',
         'Выберите маршрут; отметки физических пунктов общие',
-        'REFERENCE_CHECK_LOCAL_PROCESS_REQUIRED',
+        'ROUTE',
         sequence=[f'{family}-ROUTE-route_from_outside', f'{family}-ROUTE-route_from_cab']))
     assert len([x for x in rows if x['section']=='EQUIPMENT'])==len(applicable)
     write(f'tem2_{family.lower()}_catalog.json',{'schemaVersion':1,'profileId':profile,'entries':rows})
