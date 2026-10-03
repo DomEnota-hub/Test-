@@ -38,6 +38,9 @@ try:
     open_reference()
     scroll_until("Есть повреждение контактной сети")
     tap("Не знаю", 0)
+    for _ in range(4):
+        adb("shell", "input", "swipe", "520", "500", "520", "1800", "320")
+        time.sleep(.3)
     scroll_until("Направление проверки")
     shot("framework-v2-beginner")
 
