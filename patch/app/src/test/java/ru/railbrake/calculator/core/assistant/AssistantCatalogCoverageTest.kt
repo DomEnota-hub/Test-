@@ -31,12 +31,20 @@ class AssistantCatalogCoverageTest {
     )
 
     private fun asset(name: String): JSONObject {
-        val file = listOf(
+        val compressed = listOf(
             File("src/main/assets/technical/$name.json.gz"),
             File("app/src/main/assets/technical/$name.json.gz"),
             File("../app/src/main/assets/technical/$name.json.gz")
+        ).firstOrNull(File::isFile)
+        if (compressed != null) {
+            return JSONObject(GZIPInputStream(compressed.inputStream()).bufferedReader().use { it.readText() })
+        }
+        val plain = listOf(
+            File("src/main/assets/technical/$name.json"),
+            File("app/src/main/assets/technical/$name.json"),
+            File("../app/src/main/assets/technical/$name.json")
         ).firstOrNull(File::isFile) ?: error("Missing $name")
-        return JSONObject(GZIPInputStream(file.inputStream()).bufferedReader().use { it.readText() })
+        return JSONObject(plain.readText())
     }
 
     @Test fun ermakVariantScopeUsesSourceApplicabilityWithoutLosingSharedScenarios() {
