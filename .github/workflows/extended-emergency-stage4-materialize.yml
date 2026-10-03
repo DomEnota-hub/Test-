@@ -7,6 +7,8 @@ on:
     paths:
       - 'app/src/main/assets/technical/extended_emergency_runtime.json'
       - 'patch/app/src/main/assets/technical/extended_emergency_runtime.json'
+      - 'app/src/main/java/ru/railbrake/calculator/core/LocomotiveProfileContext.kt'
+      - 'patch/app/src/main/java/ru/railbrake/calculator/core/LocomotiveProfileContext.kt'
       - 'app/src/main/java/ru/railbrake/calculator/core/ExtendedEmergencyRuntimeRepository.kt'
       - 'patch/app/src/main/java/ru/railbrake/calculator/core/ExtendedEmergencyRuntimeRepository.kt'
       - 'app/src/main/java/ru/railbrake/calculator/ui/ExtendedEmergencyEvidenceSection.kt'
@@ -18,8 +20,10 @@ on:
       - 'qa/build_extended_emergency_stage4_asset.py'
       - 'qa/apply_extended_emergency_stage4_ui.py'
       - 'qa/validate_extended_emergency_stage4_integration.py'
+      - 'qa/validate_locomotive_profile_registry.py'
       - 'docs/integration/EXTENDED_EMERGENCY_STAGE4_CHECKPOINT.md'
       - '.github/workflows/extended-emergency-stage4-materialize.yml'
+      - '.github/workflows/locomotive-profile-registry.yml'
   workflow_dispatch:
 
 permissions:
@@ -55,6 +59,9 @@ jobs:
 
       - name: Validate Stage 4 Android runtime and cross-layer wiring
         run: python3 qa/validate_extended_emergency_stage4_integration.py
+
+      - name: Validate global non-null locomotive profile registry
+        run: python3 qa/validate_locomotive_profile_registry.py
 
       - name: Preserve Stage 1 research inventory and source authority boundary
         run: python3 qa/validate_extended_emergency_stage1_inventory.py
@@ -141,6 +148,8 @@ jobs:
           allowed = {
               'app/src/main/assets/technical/extended_emergency_runtime.json',
               'patch/app/src/main/assets/technical/extended_emergency_runtime.json',
+              'app/src/main/java/ru/railbrake/calculator/core/LocomotiveProfileContext.kt',
+              'patch/app/src/main/java/ru/railbrake/calculator/core/LocomotiveProfileContext.kt',
               'app/src/main/java/ru/railbrake/calculator/core/ExtendedEmergencyRuntimeRepository.kt',
               'patch/app/src/main/java/ru/railbrake/calculator/core/ExtendedEmergencyRuntimeRepository.kt',
               'app/src/main/java/ru/railbrake/calculator/ui/ExtendedEmergencyEvidenceSection.kt',
@@ -152,8 +161,10 @@ jobs:
               'qa/build_extended_emergency_stage4_asset.py',
               'qa/apply_extended_emergency_stage4_ui.py',
               'qa/validate_extended_emergency_stage4_integration.py',
+              'qa/validate_locomotive_profile_registry.py',
               'docs/integration/EXTENDED_EMERGENCY_STAGE4_CHECKPOINT.md',
               '.github/workflows/extended-emergency-stage4-materialize.yml',
+              '.github/workflows/locomotive-profile-registry.yml',
           }
           changed = {
               line.strip()
@@ -168,6 +179,8 @@ jobs:
           required = {
               'app/src/main/assets/technical/extended_emergency_runtime.json',
               'patch/app/src/main/assets/technical/extended_emergency_runtime.json',
+              'app/src/main/java/ru/railbrake/calculator/core/LocomotiveProfileContext.kt',
+              'patch/app/src/main/java/ru/railbrake/calculator/core/LocomotiveProfileContext.kt',
               'app/src/main/java/ru/railbrake/calculator/core/ExtendedEmergencyRuntimeRepository.kt',
               'patch/app/src/main/java/ru/railbrake/calculator/core/ExtendedEmergencyRuntimeRepository.kt',
               'app/src/main/java/ru/railbrake/calculator/ui/ExtendedEmergencyEvidenceSection.kt',
@@ -175,6 +188,8 @@ jobs:
               'app/src/main/java/ru/railbrake/calculator/ui/ErmakDiagnosticsScreen.kt',
               'patch/app/src/main/java/ru/railbrake/calculator/ui/ErmakDiagnosticsScreen.kt',
               'qa/validate_extended_emergency_stage4_integration.py',
+              'qa/validate_locomotive_profile_registry.py',
+              '.github/workflows/locomotive-profile-registry.yml',
           }
           missing = sorted(required - changed)
           if missing:

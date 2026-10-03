@@ -23,13 +23,6 @@ data class ExtendedEmergencyEvidence(
     val prohibited: Boolean get() = actionDisposition == "PROHIBITED"
 }
 
-internal fun expandedEmergencyProfileId(family: TechnicalFamily): String? = when (family) {
-    TechnicalFamily.CHME3 -> "chme3-base"
-    TechnicalFamily.CHME3T -> "chme3t-rheostatic"
-    TechnicalFamily.CHME3E -> "chme3e-electronic"
-    else -> null
-}
-
 class ExtendedEmergencyRuntimeRepository(context: Context) {
     private val appContext = context.applicationContext
     private val records: List<ExtendedEmergencyEvidence> by lazy(LazyThreadSafetyMode.PUBLICATION) {
@@ -38,12 +31,13 @@ class ExtendedEmergencyRuntimeRepository(context: Context) {
 
     fun evidenceFor(
         standardScenarioId: String,
-        profileId: String?,
+        profileContext: LocomotiveProfileContext,
         modeEnabled: Boolean
     ): List<ExtendedEmergencyEvidence> {
-        if (!modeEnabled || standardScenarioId.isBlank() || profileId.isNullOrBlank()) return emptyList()
+        if (!modeEnabled || standardScenarioId.isBlank()) return emptyList()
+        if (!LocomotiveProfileRegistry.isRegisteredExact(profileContext)) return emptyList()
         return records.filter { evidence ->
-            evidence.standardScenarioId == standardScenarioId && profileId in evidence.profiles
+            evidence.standardScenarioId == standardScenarioId && profileContext.profileId in evidence.profiles
         }
     }
 

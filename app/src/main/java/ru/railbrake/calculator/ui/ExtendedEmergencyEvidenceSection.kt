@@ -18,8 +18,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ru.railbrake.calculator.core.ExtendedEmergencyRuntimeRepository
+import ru.railbrake.calculator.core.LocomotiveProfileContext
+import ru.railbrake.calculator.core.LocomotiveProfileRegistry
 import ru.railbrake.calculator.core.TechnicalFamily
-import ru.railbrake.calculator.core.expandedEmergencyProfileId
 import ru.railbrake.calculator.data.ExtendedEmergencyModeRepository
 import ru.railbrake.calculator.ui.theme.RailTheme
 
@@ -28,15 +29,25 @@ internal fun ExtendedEmergencyEvidenceSection(
     standardScenarioId: String,
     family: TechnicalFamily
 ) {
+    ExtendedEmergencyEvidenceSection(
+        standardScenarioId = standardScenarioId,
+        profileContext = LocomotiveProfileRegistry.fromTechnicalFamily(family)
+    )
+}
+
+@Composable
+internal fun ExtendedEmergencyEvidenceSection(
+    standardScenarioId: String,
+    profileContext: LocomotiveProfileContext
+) {
     val context = LocalContext.current
     val modeRepository = remember(context) { ExtendedEmergencyModeRepository(context) }
     val runtimeRepository = remember(context) { ExtendedEmergencyRuntimeRepository(context) }
-    val profileId = expandedEmergencyProfileId(family)
     val modeEnabled = modeRepository.isEnabled()
-    val evidence = remember(standardScenarioId, family, profileId, modeEnabled) {
+    val evidence = remember(standardScenarioId, profileContext, modeEnabled) {
         runtimeRepository.evidenceFor(
             standardScenarioId = standardScenarioId,
-            profileId = profileId,
+            profileContext = profileContext,
             modeEnabled = modeEnabled
         )
     }

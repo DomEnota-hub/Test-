@@ -1,0 +1,31 @@
+name: Locomotive profile registry guard
+
+on:
+  push:
+    paths:
+      - 'docs/locomotives/manifests/locomotive_families.json'
+      - 'app/src/main/java/ru/railbrake/calculator/core/LocomotiveProfileContext.kt'
+      - 'patch/app/src/main/java/ru/railbrake/calculator/core/LocomotiveProfileContext.kt'
+      - 'qa/validate_locomotive_profile_registry.py'
+      - '.github/workflows/locomotive-profile-registry.yml'
+  pull_request:
+    paths:
+      - 'docs/locomotives/manifests/locomotive_families.json'
+      - 'app/src/main/java/ru/railbrake/calculator/core/LocomotiveProfileContext.kt'
+      - 'patch/app/src/main/java/ru/railbrake/calculator/core/LocomotiveProfileContext.kt'
+      - 'qa/validate_locomotive_profile_registry.py'
+      - '.github/workflows/locomotive-profile-registry.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  profile-registry-contract:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Require non-null runtime profile coverage for every manifest profile
+        run: python3 qa/validate_locomotive_profile_registry.py
+      - name: Patch hygiene
+        run: git diff --check

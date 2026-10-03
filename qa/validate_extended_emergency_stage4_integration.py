@@ -12,6 +12,7 @@ PATCH_ASSET = ROOT / "patch/app/src/main/assets/technical/extended_emergency_run
 BUILDER = ROOT / "qa/build_extended_emergency_stage4_asset.py"
 SOURCES = ROOT / "docs/integration/extended_emergency_stage2_sources.tsv"
 WORKFLOW = ROOT / ".github/workflows/extended-emergency-stage4-materialize.yml"
+PROFILE_MANIFEST = ROOT / "docs/locomotives/manifests/locomotive_families.json"
 
 MIRRORS = [
     (
@@ -29,6 +30,10 @@ MIRRORS = [
     (
         ROOT / "app/src/test/java/ru/railbrake/calculator/core/ExtendedEmergencyRuntimePolicyTest.kt",
         ROOT / "patch/app/src/test/java/ru/railbrake/calculator/core/ExtendedEmergencyRuntimePolicyTest.kt",
+    ),
+    (
+        ROOT / "app/src/main/java/ru/railbrake/calculator/core/LocomotiveProfileContext.kt",
+        ROOT / "patch/app/src/main/java/ru/railbrake/calculator/core/LocomotiveProfileContext.kt",
     ),
 ]
 
@@ -127,7 +132,6 @@ def validate_assets():
     candidate_ids = []
     disposition_counts = Counter()
     profile_counts = Counter({key: 0 for key in EXPECTED_PROFILE_COUNTS})
-    user_text_fields = []
     forbidden_procedure = [
         r"между\s+провод",
         r"замкнуть\s+контактор",
@@ -194,7 +198,6 @@ def validate_assets():
                 display_fields.append(value)
 
         visible_text = " ".join(display_fields)
-        user_text_fields.append(visible_text)
         if re.search(r"(?:ST2-SRC-|EXT2-|CHME3-DIAG-|TEM2-DIAG-)", visible_text):
             fail(f"{cid}: raw internal ID leaked into user-facing text")
         for pattern in forbidden_procedure:
@@ -218,6 +221,38 @@ def validate_assets():
         fail("TEM2U expanded evidence must remain isolated to TEM2-DIAG-024")
 
 
+def validate_profile_registry():
+    manifest = load_json(PROFILE_MANIFEST)
+    expected = {
+        (str(profile), str(family.get("familyId")))
+        for family in manifest.get("families") or []
+        for profile in family.get("profiles") or []
+    }
+    registry = MIRRORS[4][0].read_text(encoding="utf-8")
+    marker = "internal val registeredProfiles: Map<String, String> = linkedMapOf("
+    if marker not in registry:
+        fail("central non-null profile registry missing")
+    body = registry.split(marker, 1)[1].split("\n    )", 1)[0]
+    actual = set(re.findall(r'"([^"]+)"\s+to\s+"([^"]+)"', body))
+    if actual != expected:
+        fail(f"manifest/runtime profile registry mismatch: actual={sorted(actual)}, expected={sorted(expected)}")
+    for required in (
+        "UNKNOWN_FAIL_CLOSED",
+        'UNKNOWN_PROFILE_ID = "unknown"',
+        "fun resolve(profileId: String): LocomotiveProfileContext",
+        "fun resolve(profileId: String, expectedFamilyId: String): LocomotiveProfileContext",
+        "fun fromTechnicalFamily(family: TechnicalFamily): LocomotiveProfileContext",
+        "fun isRegisteredExact(context: LocomotiveProfileContext): Boolean",
+        '"tem2-base" to "tem2-family"',
+        '"tem2u-improved" to "tem2-family"',
+    ):
+        if required not in registry:
+            fail(f"non-null profile registry contract missing: {required}")
+    for forbidden in ("LocomotiveProfileContext?", "String?", "return null"):
+        if forbidden in registry:
+            fail(f"nullable profile registry behavior reintroduced: {forbidden}")
+
+
 def validate_android_wiring():
     for app, patch in MIRRORS:
         if not app.is_file() or not patch.is_file():
@@ -227,20 +262,24 @@ def validate_android_wiring():
 
     repo = MIRRORS[0][0].read_text(encoding="utf-8")
     for required in (
-        'TechnicalFamily.CHME3 -> "chme3-base"',
-        'TechnicalFamily.CHME3T -> "chme3t-rheostatic"',
-        'TechnicalFamily.CHME3E -> "chme3e-electronic"',
+        "profileContext: LocomotiveProfileContext",
+        "LocomotiveProfileRegistry.isRegisteredExact(profileContext)",
         'actionDisposition in setOf("INFORMATION_ONLY", "PROHIBITED")',
-        '!executable',
-        '!procedureVisible',
-        '!currentAuthorityVerified',
-        '!runtimeAuthorityUpgradeAllowed',
+        "!executable",
+        "!procedureVisible",
+        "!currentAuthorityVerified",
+        "!runtimeAuthorityUpgradeAllowed",
     ):
         if required not in repo:
             fail(f"Android fail-closed runtime guard missing: {required}")
+    for forbidden in ("profileId: String?", "profileId.isNullOrBlank()", "expandedEmergencyProfileId"):
+        if forbidden in repo:
+            fail(f"nullable/legacy profile path remains in runtime repository: {forbidden}")
 
     ui = MIRRORS[1][0].read_text(encoding="utf-8")
     for required in (
+        "LocomotiveProfileRegistry.fromTechnicalFamily(family)",
+        "profileContext: LocomotiveProfileContext",
         "ExtendedEmergencyModeRepository.BADGE",
         "RailTheme.colors.extendedEmergencyBorder",
         "MaterialTheme.colorScheme.errorContainer",
@@ -250,15 +289,15 @@ def validate_android_wiring():
     ):
         if required not in ui:
             fail(f"expanded evidence presentation missing: {required}")
-    for forbidden in ("candidateId", "sourceRef", "methodClass"):
+    for forbidden in ("candidateId", "sourceRef", "methodClass", "expandedEmergencyProfileId"):
         if forbidden in ui:
-            fail(f"UI references internal field {forbidden}")
+            fail(f"UI references forbidden/internal field {forbidden}")
 
     route = MIRRORS[2][0].read_text(encoding="utf-8")
     marker = 'if (node?.type == "terminal" && family.isChme3)'
     call = "ExtendedEmergencyEvidenceSection("
     if route.count(marker) != 1 or route.count(call) != 1:
-        fail("expanded evidence must attach exactly once and only at completed ChME terminal")
+        fail("expanded evidence must attach exactly once at the currently integrated ChME terminal")
     if route.index(marker) > route.index(call):
         fail("terminal gate must wrap expanded evidence call")
     prohibited_marker = 'if (scenario.prohibited.isNotEmpty())'
@@ -296,12 +335,14 @@ def validate_final_workflow_is_read_only():
 
 def main():
     validate_assets()
+    validate_profile_registry()
     validate_android_wiring()
     validate_final_workflow_is_read_only()
     print(
         "EXTENDED EMERGENCY STAGE 4 PASS: 92/92 routing decisions; 77 safe Android display records; "
-        "49 INFORMATION_ONLY + 28 PROHIBITED; exact-profile fail-closed wiring; human source presentation; "
-        "terminal-only diagnostics/assistant integration; app/patch mirrors and read-only CI contract OK"
+        "49 INFORMATION_ONLY + 28 PROHIBITED; manifest-complete non-null Profile Context; "
+        "exact-profile fail-closed wiring; human source presentation; terminal-only current ChME integration; "
+        "app/patch mirrors and read-only CI contract OK"
     )
 
 
