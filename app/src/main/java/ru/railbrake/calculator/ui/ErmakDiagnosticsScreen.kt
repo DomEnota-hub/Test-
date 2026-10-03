@@ -46,6 +46,7 @@ import ru.railbrake.calculator.core.DiagnosticRepository
 import ru.railbrake.calculator.core.ErmakDiagnosticChoice
 import ru.railbrake.calculator.core.ErmakDiagnosticRepository
 import ru.railbrake.calculator.core.Chme3DiagnosticRepository
+import ru.railbrake.calculator.core.Tem2DiagnosticRepository
 import ru.railbrake.calculator.core.TechnicalFamily
 import ru.railbrake.calculator.core.ErmakDiagnosticScenario
 import ru.railbrake.calculator.core.assistant.availableForAssistantVariant
@@ -136,7 +137,11 @@ fun ErmakDiagnosticsScreen(
     val repository = remember { ErmakDiagnosticRepository(context.applicationContext) }
     val scenarios by produceState<List<ErmakDiagnosticScenario>?>(null, family) {
         value = withContext(Dispatchers.IO) {
-            if (family.isChme3) Chme3DiagnosticRepository(context).scenarios(family) else repository.scenarios()
+            when {
+                family.isChme3 -> Chme3DiagnosticRepository(context).scenarios(family)
+                family.isTem2 -> Tem2DiagnosticRepository(context).scenarios(family)
+                else -> repository.scenarios()
+            }
         }
     }
     var selectedId by rememberSaveable(initialScenarioId, initialEquipmentId) { mutableStateOf(initialScenarioId) }
@@ -146,14 +151,14 @@ fun ErmakDiagnosticsScreen(
     var historyVersion by remember { mutableIntStateOf(0) }
     val sessionRepository = remember { DiagnosticSessionRepository(context) }
     val sessions = remember(historyVersion) {
-        sessionRepository.loadForProfile(if (family.isChme3) family.name else DiagnosticSessionRepository.PROFILE_ERMAK)
+        sessionRepository.loadForProfile(if (family.isChme3 || family.isTem2) family.name else DiagnosticSessionRepository.PROFILE_ERMAK)
     }
     val selected = scenarios?.firstOrNull { it.id == selectedId }
 
     BackHandler(enabled = selected != null) { selectedId = null }
     if (selected != null) {
         Column(Modifier.fillMaxSize()) {
-            if (!family.isChme3 && !selected.availableForAssistantVariant(workingVariantId)) {
+            if (!family.isChme3 && !family.isTem2 && !selected.availableForAssistantVariant(workingVariantId)) {
                 Text("Материал другого варианта Ермака. Рабочий локомотив не изменён.",
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                     color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold)
@@ -166,7 +171,7 @@ fun ErmakDiagnosticsScreen(
     }
 
     val baseScenarios = scenarios.orEmpty().filter { scenario ->
-        (family.isChme3 || scenario.availableForAssistantVariant(workingVariantId)) &&
+        (family.isChme3 || family.isTem2 || scenario.availableForAssistantVariant(workingVariantId)) &&
             (initialEquipmentId == null || initialEquipmentId in scenario.equipmentIds) &&
             ermakMatchesQuery(scenario, query)
     }
@@ -236,7 +241,7 @@ fun ErmakDiagnosticsScreen(
                     Text("Локальный журнал ${family.title}", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
                     if (sessions.isNotEmpty()) {
                         TextButton(onClick = {
-                            sessionRepository.clearProfile(if (family.isChme3) family.name else DiagnosticSessionRepository.PROFILE_ERMAK)
+                            sessionRepository.clearProfile(if (family.isChme3 || family.isTem2) family.name else DiagnosticSessionRepository.PROFILE_ERMAK)
                             historyVersion++
                         }) { Text("Очистить") }
                     }
@@ -488,11 +493,15 @@ private fun ErmakDiagnosticRoute(scenario: ErmakDiagnosticScenario, family: Tech
             ChildBackButton("Диагностика ${family.title}", onBack)
             Text(scenario.title, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
             Text(scenario.symptom, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            if (family.isTem2) Text(
+                "Выбранная серия задаёт информационный профиль, но не подтверждает фактический дизель, электрическое и тормозное исполнение. При расхождении или неизвестном оборудовании профильные действия не выполняются; уточните исполнение по документам и осмотру.",
+                color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodyMedium
+            )
         }
         item {
             InfoCard("Сначала", scenario.immediateActions.ifEmpty { listOf("Зафиксируйте наблюдаемые признаки до дальнейшей проверки.") }, MaterialTheme.colorScheme.tertiaryContainer)
         }
-        if (!family.isChme3) item {
+        if (!family.isChme3 && !family.isTem2) item {
             ErmakProfileContextCard(
                 profile = profileContext,
                 applicability = scenario.applicability,
@@ -687,7 +696,7 @@ private fun ErmakDiagnosticRoute(scenario: ErmakDiagnosticScenario, family: Tech
                 if (scenario.prohibited.isNotEmpty()) {
                     InfoCard("Запрещено", scenario.prohibited, MaterialTheme.colorScheme.errorContainer)
                 }
-                if (node?.type == "terminal" && family.isChme3) {
+                if (node?.type == "terminal" && (family.isChme3 || family.isTem2)) {
                     ExtendedEmergencyEvidenceSection(
                         standardScenarioId = scenario.id,
                         family = family

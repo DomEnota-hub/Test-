@@ -168,7 +168,7 @@ internal fun AssistantHomePanel(workingLocomotive: WorkingLocomotive? = null) {
         if (prepared.isBlank()) return
         val normalized = AssistantQueryParser.normalize(prepared)
         if (AssistantQueryParser.hasConflictingSeries(prepared)) {
-            voiceMessage = "Уточните одну серию: ВЛ80С, 2ЭС5К, 3ЭС5К, ЧМЭ3, ЧМЭ3Т или ЧМЭ3Э."
+            voiceMessage = "Уточните одну серию: ВЛ80С, 2ЭС5К, 3ЭС5К, ЧМЭ3, ЧМЭ3Т, ЧМЭ3Э, ТЭМ2 или ТЭМ2У."
             return
         }
         voiceMessage = null
@@ -457,7 +457,8 @@ private fun intentLabel(intent: AssistantIntent): String = when (intent) {
 private fun familyLabel(family: TechnicalFamily?): String = when (family) {
     TechnicalFamily.VL80S -> "ВЛ80С"
     TechnicalFamily.ERMAK -> "Ермак"
-    TechnicalFamily.CHME3, TechnicalFamily.CHME3T, TechnicalFamily.CHME3E -> family.title
+    TechnicalFamily.CHME3, TechnicalFamily.CHME3T, TechnicalFamily.CHME3E,
+    TechnicalFamily.TEM2, TechnicalFamily.TEM2U -> family.title
     null -> "Общий материал"
 }
 

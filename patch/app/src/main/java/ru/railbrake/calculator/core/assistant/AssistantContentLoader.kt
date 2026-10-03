@@ -4,6 +4,7 @@ import android.content.Context
 import ru.railbrake.calculator.core.DiagnosticRepository
 import ru.railbrake.calculator.core.ErmakDiagnosticRepository
 import ru.railbrake.calculator.core.Chme3DiagnosticRepository
+import ru.railbrake.calculator.core.Tem2DiagnosticRepository
 import ru.railbrake.calculator.core.ErmakDiagnosticScenario
 import ru.railbrake.calculator.core.KnowledgeRepository
 import ru.railbrake.calculator.core.TechnicalDataRepository
@@ -43,6 +44,13 @@ class AssistantContentLoader(
                     Chme3DiagnosticAssistantAdapter.adapt(scenario, selected)
                 }
             }
+        val tem2Diagnostics = (family?.let { listOf(it) } ?: TechnicalFamily.entries)
+            .filter { it.isTem2 }
+            .flatMap { selected ->
+                Tem2DiagnosticRepository(appContext).scenarios(selected).map { scenario ->
+                    Chme3DiagnosticAssistantAdapter.adapt(scenario, selected)
+                }
+            }
 
         val knowledge = KnowledgeRepository.articles
             .map(KnowledgeArticleAssistantAdapter::adapt)
@@ -51,7 +59,7 @@ class AssistantContentLoader(
         val firstAid = firstAidTopics.map(FirstAidAssistantAdapter::adapt)
         val firstAidKit = firstAidKitDocument()
 
-        return (vl80Diagnostics + ermakDiagnostics + chme3Diagnostics + knowledge + firstAid + firstAidKit)
+        return (vl80Diagnostics + ermakDiagnostics + chme3Diagnostics + tem2Diagnostics + knowledge + firstAid + firstAidKit)
             .distinctBy(AssistantDocument::key)
     }
 

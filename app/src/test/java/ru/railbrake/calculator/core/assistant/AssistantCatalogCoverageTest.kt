@@ -77,7 +77,8 @@ class AssistantCatalogCoverageTest {
             val family = when (card.family) {
                 TechnicalFamily.VL80S -> "ВЛ80С"
                 TechnicalFamily.ERMAK -> "Ермак"
-                TechnicalFamily.CHME3, TechnicalFamily.CHME3T, TechnicalFamily.CHME3E -> card.family?.title.orEmpty()
+                TechnicalFamily.CHME3, TechnicalFamily.CHME3T, TechnicalFamily.CHME3E,
+                TechnicalFamily.TEM2, TechnicalFamily.TEM2U -> card.family?.title.orEmpty()
                 null -> ""
             }
             val cue = when (card.section) {
@@ -204,7 +205,8 @@ class AssistantCatalogCoverageTest {
             val family = when (card.family) {
                 TechnicalFamily.VL80S -> "ВЛ80С"
                 TechnicalFamily.ERMAK -> "Ермак"
-                TechnicalFamily.CHME3, TechnicalFamily.CHME3T, TechnicalFamily.CHME3E -> card.family?.title.orEmpty()
+                TechnicalFamily.CHME3, TechnicalFamily.CHME3T, TechnicalFamily.CHME3E,
+                TechnicalFamily.TEM2, TechnicalFamily.TEM2U -> card.family?.title.orEmpty()
                 null -> ""
             }
             val phrase = "$cue $family ${card.title}"

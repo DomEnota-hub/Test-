@@ -63,6 +63,8 @@ fun LocomotiveDiagnosticsScreen(
 
 internal fun diagnosticInitialFamily(scenarioId: String?, equipmentId: String?): TechnicalFamily =
     when {
+        scenarioId?.startsWith("TEM2U-") == true || equipmentId?.startsWith("TEM2U-") == true -> TechnicalFamily.TEM2U
+        scenarioId?.startsWith("TEM2-") == true || equipmentId?.startsWith("TEM2-") == true -> TechnicalFamily.TEM2
         scenarioId?.startsWith("CHME3E-") == true || equipmentId?.startsWith("CHME3E-") == true -> TechnicalFamily.CHME3E
         scenarioId?.startsWith("CHME3T-") == true || equipmentId?.startsWith("CHME3T-") == true -> TechnicalFamily.CHME3T
         scenarioId?.startsWith("CHME3-") == true || equipmentId?.startsWith("CHME3-") == true -> TechnicalFamily.CHME3
@@ -76,6 +78,8 @@ internal fun diagnosticScenarioForFamily(id: String?, family: TechnicalFamily): 
     TechnicalFamily.CHME3 -> id?.takeIf { it.startsWith("CHME3-") }
     TechnicalFamily.CHME3T -> id?.takeIf { it.startsWith("CHME3-") || it.startsWith("CHME3T-") }
     TechnicalFamily.CHME3E -> id?.takeIf { it.startsWith("CHME3-") || it.startsWith("CHME3E-") }
+    TechnicalFamily.TEM2 -> id?.takeIf { it.startsWith("TEM2-") }
+    TechnicalFamily.TEM2U -> id?.takeIf { it.startsWith("TEM2-") || it.startsWith("TEM2U-") }
 }
 
 internal fun diagnosticEquipmentForFamily(id: String?, family: TechnicalFamily): String? = when (family) {
@@ -84,4 +88,6 @@ internal fun diagnosticEquipmentForFamily(id: String?, family: TechnicalFamily):
     TechnicalFamily.CHME3 -> id?.takeIf { it.startsWith("CHME3-") }
     TechnicalFamily.CHME3T -> id?.takeIf { it.startsWith("CHME3-") || it.startsWith("CHME3T-") }
     TechnicalFamily.CHME3E -> id?.takeIf { it.startsWith("CHME3-") || it.startsWith("CHME3E-") }
+    TechnicalFamily.TEM2 -> id?.takeIf { it.startsWith("TEM2-") }
+    TechnicalFamily.TEM2U -> id?.takeIf { it.startsWith("TEM2-") || it.startsWith("TEM2U-") }
 }

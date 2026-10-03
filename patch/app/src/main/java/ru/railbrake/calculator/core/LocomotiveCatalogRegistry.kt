@@ -55,6 +55,16 @@ object LocomotiveCatalogRegistry {
             title = TechnicalFamily.CHME3E.title,
             subtitle = TechnicalFamily.CHME3E.subtitle,
             workingOptions = listOf(WorkingLocomotive.CHME3E)
+        ),
+        LocomotiveCatalogProfile(
+            id = "tem2", family = TechnicalFamily.TEM2,
+            title = TechnicalFamily.TEM2.title, subtitle = TechnicalFamily.TEM2.subtitle,
+            workingOptions = listOf(WorkingLocomotive.TEM2)
+        ),
+        LocomotiveCatalogProfile(
+            id = "tem2u", family = TechnicalFamily.TEM2U,
+            title = TechnicalFamily.TEM2U.title, subtitle = TechnicalFamily.TEM2U.subtitle,
+            workingOptions = listOf(WorkingLocomotive.TEM2U)
         )
     )
 

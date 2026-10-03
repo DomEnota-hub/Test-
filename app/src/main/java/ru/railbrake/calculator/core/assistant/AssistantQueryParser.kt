@@ -13,14 +13,20 @@ object AssistantQueryParser {
         val chme3e = "чмэ3э" in text
         val chme3t = "чмэ3т" in text
         val chme3 = "чмэ3" in text && !chme3e && !chme3t
+        val tem2u = "тэм2у" in text
+        val tem2 = "тэм2" in text && !tem2u
         val ermak = "ермак" in text || twoSections || threeSections
         return (vl80 && ermak) ||
             (twoSections && threeSections) ||
-            listOf(vl80, twoSections, threeSections, chme3e, chme3t, chme3).count { it } > 1 ||
-            (ermak && (chme3e || chme3t || chme3))
+            listOf(vl80, twoSections, threeSections, chme3e, chme3t, chme3, tem2u, tem2).count { it } > 1 ||
+            (ermak && (chme3e || chme3t || chme3 || tem2u || tem2))
     }
 
     private val replacements = listOf(
+        "тэм два у" to "тэм2у",
+        "тэм два" to "тэм2",
+        "тэм 2 у" to "тэм2у",
+        "тэм 2" to "тэм2",
         "чмэ три э" to "чмэ3э",
         "чмэ три тэ" to "чмэ3т",
         "чмэ три т" to "чмэ3т",
@@ -166,6 +172,8 @@ object AssistantQueryParser {
     fun parse(rawText: String): AssistantParsedQuery {
         val normalized = normalize(rawText)
         val family = when {
+            "тэм2у" in normalized -> TechnicalFamily.TEM2U
+            "тэм2" in normalized -> TechnicalFamily.TEM2
             "чмэ3э" in normalized -> TechnicalFamily.CHME3E
             "чмэ3т" in normalized -> TechnicalFamily.CHME3T
             "чмэ3" in normalized -> TechnicalFamily.CHME3
@@ -232,6 +240,8 @@ object AssistantQueryParser {
     fun familyFromAnswer(rawText: String): TechnicalFamily? {
         val normalized = normalize(rawText)
         return when {
+            "тэм2у" in normalized -> TechnicalFamily.TEM2U
+            "тэм2" in normalized -> TechnicalFamily.TEM2
             "чмэ3э" in normalized -> TechnicalFamily.CHME3E
             "чмэ3т" in normalized -> TechnicalFamily.CHME3T
             "чмэ3" in normalized -> TechnicalFamily.CHME3
@@ -266,10 +276,10 @@ object AssistantQueryParser {
     fun componentSearchText(componentKey: String): String? =
         componentVocabulary.firstOrNull { it.key == componentKey }?.enrichment
 
-    /** "Двигатель" refers to the diesel only in a ChME context and without a traction-motor cue. */
+    /** A generic engine means diesel only in a diesel family and without a traction-motor cue. */
     fun dieselFromEngineContext(text: String, family: TechnicalFamily?): String? =
         "DIESEL".takeIf {
-            family?.isChme3 == true && "двигател" in text &&
+            (family?.isChme3 == true || family?.isTem2 == true) && "двигател" in text &&
                 "тягов" !in text && "тэд" !in text && "электродвигател" !in text
         }
 

@@ -9,9 +9,12 @@ enum class TechnicalFamily(val title: String, val subtitle: String) {
     ERMAK("Ермак", "2ЭС5К / 3ЭС5К"),
     CHME3("ЧМЭ3", "Маневровый тепловоз"),
     CHME3T("ЧМЭ3Т", "Реостатное торможение"),
-    CHME3E("ЧМЭ3Э", "Электронное регулирование");
+    CHME3E("ЧМЭ3Э", "Электронное регулирование"),
+    TEM2("ТЭМ2", "Маневровый тепловоз"),
+    TEM2U("ТЭМ2У", "Улучшенное исполнение");
 
     val isChme3: Boolean get() = this == CHME3 || this == CHME3T || this == CHME3E
+    val isTem2: Boolean get() = this == TEM2 || this == TEM2U
 }
 
 enum class TechnicalSection(val title: String) {
@@ -175,9 +178,11 @@ class TechnicalDataRepository internal constructor(private val loadAsset: (Strin
         }
 
     fun sections(family: TechnicalFamily): List<TechnicalSection> = when (family) {
-        TechnicalFamily.CHME3, TechnicalFamily.CHME3T, TechnicalFamily.CHME3E -> listOf(
+        TechnicalFamily.CHME3, TechnicalFamily.CHME3T, TechnicalFamily.CHME3E,
+        TechnicalFamily.TEM2, TechnicalFamily.TEM2U -> listOf(
             TechnicalSection.SYSTEMS, TechnicalSection.EQUIPMENT, TechnicalSection.KNOWLEDGE,
-            TechnicalSection.ELECTRICAL, TechnicalSection.PNEUMATIC
+            TechnicalSection.ELECTRICAL, TechnicalSection.PNEUMATIC, TechnicalSection.DIAGNOSTICS,
+            TechnicalSection.ACCEPTANCE
         )
         TechnicalFamily.VL80S -> listOf(
             TechnicalSection.EQUIPMENT,
@@ -202,7 +207,8 @@ class TechnicalDataRepository internal constructor(private val loadAsset: (Strin
 
     fun entry(id: String, familyHint: TechnicalFamily? = null): TechnicalEntry? {
         val canonicalId = legacyEquipmentIds[id.lowercase()] ?: id
-        if (canonicalId.startsWith("CHME3") && familyHint?.isChme3 == true) {
+        if ((canonicalId.startsWith("CHME3") && familyHint?.isChme3 == true) ||
+            ((canonicalId.startsWith("TEM2") || canonicalId.startsWith("TEM2U")) && familyHint?.isTem2 == true)) {
             return TechnicalSection.entries.firstNotNullOfOrNull { section ->
                 sectionEntries(familyHint, section).firstOrNull { it.id == canonicalId }
             }
@@ -231,7 +237,7 @@ class TechnicalDataRepository internal constructor(private val loadAsset: (Strin
         }
     }
 
-    private val embeddedReference = Regex("(?i)(?:CHME3E|CHME3T|CHME3|VL80|VL|ER|SYS|SAFETY)(?:-[A-Z0-9_]+)+")
+    private val embeddedReference = Regex("(?i)(?:TEM2U|TEM2|CHME3E|CHME3T|CHME3|VL80|VL|ER|SYS|SAFETY)(?:-[A-Z0-9_]+)+")
 
     private fun readableReferences(value: String): String = embeddedReference.replace(value) { match ->
         readableSources[match.value] ?: entry(match.value)?.title ?: ""
@@ -266,6 +272,7 @@ class TechnicalDataRepository internal constructor(private val loadAsset: (Strin
     private fun loadSection(family: TechnicalFamily, section: TechnicalSection): List<TechnicalEntry> = when (family) {
         TechnicalFamily.CHME3, TechnicalFamily.CHME3T, TechnicalFamily.CHME3E ->
             loadChme3Section(family, section)
+        TechnicalFamily.TEM2, TechnicalFamily.TEM2U -> loadTem2Section(family, section)
         TechnicalFamily.VL80S -> when (section) {
             TechnicalSection.PROFILES -> loadVl80sProfiles()
             TechnicalSection.EQUIPMENT -> loadVl80sEquipment()
@@ -291,6 +298,8 @@ class TechnicalDataRepository internal constructor(private val loadAsset: (Strin
     }
 
     private fun candidateSections(id: String): List<Pair<TechnicalFamily, TechnicalSection>> = when {
+        id.startsWith("TEM2") || id.startsWith("TEM2U") -> listOf(TechnicalFamily.TEM2, TechnicalFamily.TEM2U)
+            .flatMap { family -> TechnicalSection.entries.map { family to it } }
         id.startsWith("CHME3") -> listOf(TechnicalFamily.CHME3, TechnicalFamily.CHME3T, TechnicalFamily.CHME3E)
             .flatMap { family -> TechnicalSection.entries.map { family to it } }
         id.startsWith("VL80-ACC-") || id.startsWith("VL80-REQ-") || id.startsWith("VL80-ROUTE-") || id.startsWith("route_") -> listOf(TechnicalFamily.VL80S to TechnicalSection.ACCEPTANCE)
@@ -338,9 +347,33 @@ class TechnicalDataRepository internal constructor(private val loadAsset: (Strin
         }
     }
 
+    private fun loadTem2Section(family: TechnicalFamily, section: TechnicalSection): List<TechnicalEntry> {
+        // Profile-specific asset and applicability are supplied by the foundation manifest projection.
+        val name = if (family == TechnicalFamily.TEM2) "technical/tem2_tem2_catalog.json"
+                   else "technical/tem2_tem2u_catalog.json"
+        val profileId = LocomotiveProfileRegistry.fromTechnicalFamily(family).profileId
+        val root = json(name)
+        if (root.optString("profileId") != profileId) return emptyList()
+        return root.array("entries").objects().filter { it.optString("section") == section.name }.map { raw ->
+            TechnicalEntry(
+                id = raw.optString("id"), family = family, section = section,
+                title = raw.optString("title"), subtitle = raw.optString("subtitle"), status = raw.optString("status"),
+                blocks = raw.array("blocks").objects().map { block ->
+                    TechnicalBlock(block.optString("title"), block.array("lines").strings())
+                },
+                relatedIds = raw.array("relatedIds").strings(), sequence = raw.array("sequence").strings(),
+                hotspots = raw.array("hotspots").objects().map { spot ->
+                    TechnicalHotspot(spot.optString("equipmentId"), spot.optString("label"),
+                        spot.optInt("x"), spot.optInt("y"), spot.optInt("width"), spot.optInt("height"))
+                },
+                searchAliases = raw.array("searchAliases").strings(), searchText = raw.optString("searchText").lowercase()
+            )
+        }
+    }
+
     private fun looksLikeEntryId(value: String): Boolean {
         val id=value.trim()
-        return id.startsWith("CHME3") || id.startsWith("VL-") || id.startsWith("VL80-") || id.startsWith("ER-") || id.startsWith("SYS-") || id.startsWith("SAFETY-") || id.startsWith("route_") || id.matches(Regex("^[a-z][a-z0-9]+(?:-[a-z0-9]+)+$"))
+        return id.startsWith("TEM2") || id.startsWith("CHME3") || id.startsWith("VL-") || id.startsWith("VL80-") || id.startsWith("ER-") || id.startsWith("SYS-") || id.startsWith("SAFETY-") || id.startsWith("route_") || id.matches(Regex("^[a-z][a-z0-9]+(?:-[a-z0-9]+)+$"))
     }
 
     private fun json(asset: String): JSONObject = loadAsset(asset)

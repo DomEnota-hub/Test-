@@ -405,8 +405,11 @@ fun BrakeCalculatorApp(
                             viewingFamilyName = family.name
                             technicalFamilyName = family.name
                             technicalSectionName = TechnicalSection.ELECTRICAL.name
-                            technicalInitialEntryId = if (family == TechnicalFamily.CHME3E)
-                                "CHME3E-INT-TRACTION-CONTROL" else "CHME3-INT-TRACTION"
+                            technicalInitialEntryId = when (family) {
+                                TechnicalFamily.TEM2, TechnicalFamily.TEM2U -> "${family.name}-INT-TEM2-SCH-TRACTION"
+                                TechnicalFamily.CHME3E -> "CHME3E-INT-TRACTION-CONTROL"
+                                else -> "CHME3-INT-TRACTION"
+                            }
                             screenName = AppScreen.LOCOMOTIVE_MATERIAL.name
                         }
                     )

@@ -1,0 +1,2592 @@
+{
+  "scenarios": [
+    {
+      "id": "TEM2-DIAG-001",
+      "title": "Команда пуска дана, коленчатый вал не проворачивается",
+      "symptom": "пуск есть а дизель не крутит; коленвал не проворачивается; не включается проворот; пусковые контакторы не дошли до проворота",
+      "category": "DIESEL_START",
+      "severity": "ELEVATED_ELECTRICAL",
+      "equipmentRefs": [
+        "TEM2-EQ-BAT",
+        "TEM2-EQ-START-CIRCUIT",
+        "TEM2-EQ-CONTROLLER"
+      ],
+      "searchTerms": [
+        "жму пуск а вал вообще не крутится",
+        "маслопрокачка прошла но проворота нет",
+        "ТЭМ2 не идет на проворот",
+        "пуск есть а дизель не крутит",
+        "коленвал не проворачивается",
+        "не включается проворот",
+        "пусковые контакторы не дошли до проворота",
+        "жму пуск вал не крутится",
+        "пуск прошел до насосов и дальше тишина"
+      ],
+      "sourceAgeNote": "Исторические источники не дают действующего разрешения на действия.",
+      "informationConfidence": "SOURCE_BACKED_FUNCTIONAL",
+      "applicability": {
+        "profiles": [
+          "tem2-base",
+          "tem2u-improved"
+        ],
+        "variantSelectionRequired": true
+      },
+      "graph": {
+        "startNodeId": "q-sequence",
+        "nodes": [
+          {
+            "id": "q-sequence",
+            "type": "question",
+            "text": "До команды проворота штатная пусковая последовательность доходит: топливный и маслопрокачивающий насосы отрабатывают?",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": [
+              {
+                "label": "Да, насосы отрабатывают, проворота нет",
+                "nextNodeId": "c-start"
+              },
+              {
+                "label": "Нет, последовательность обрывается раньше",
+                "nextNodeId": "t-upstream"
+              },
+              {
+                "label": "Не знаю / исполнение не подтверждено",
+                "nextNodeId": "t-unknown",
+                "responseKind": "UNKNOWN"
+              }
+            ]
+          },
+          {
+            "id": "c-start",
+            "type": "check",
+            "text": "По штатной индикации и звуку без вскрытия силовой цепи сопоставить состояние аккумуляторной батареи и факт перехода пусковой группы к режиму проворота.\nОжидается: После завершения подготовительной части появляется штатный признак включения пусковой группы и проворот.\nПри отклонении: Если подготовка завершена, а проворота нет, локализация смещается в разрешения/пусковую группу/питание от батареи.",
+            "nextNodeId": "t-start-group",
+            "actionLevel": "CAB",
+            "choices": []
+          },
+          {
+            "id": "t-upstream",
+            "type": "terminal",
+            "text": "Не доходить сразу до пусковых контакторов: сначала локализовать, на каком звене прерывается подготовительная последовательность пуска.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-start-group",
+            "type": "terminal",
+            "text": "Подготовительная последовательность завершена, но проворота нет. Не шунтировать блокировки и не включать пусковые аппараты принудительно; зафиксировать напряжение батареи и последнее сработавшее звено.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-unknown",
+            "type": "terminal",
+            "text": "Недостаточно признаков. Нужны: фактический профиль, состояние батареи, работа топливного/масляного насоса и момент, на котором останавливается последовательность.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          }
+        ]
+      },
+      "sourceRefs": [
+        {
+          "sourceId": "TEM2-SRC-BMZ-MANUAL-1983",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию, 2-е переработанное и дополненное издание (1983; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2U-SRC-BMZ-MANUAL-1988",
+          "document": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-SRC-NOTIK-ELECTRICAL-1980",
+          "document": "Электрические схемы тепловозов ТЭМ2 и ТЭМ1 (1980; HISTORICAL_REFERENCE; применимость: ТЭМ2)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-ST3-KOVALEV-1980",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию (1980; статус не указан; применимость: )",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        }
+      ]
+    },
+    {
+      "id": "TEM2-DIAG-002",
+      "title": "Коленчатый вал проворачивается медленно, дизель не запускается",
+      "symptom": "дизель крутит медленно; вал еле проворачивается; стартерный режим есть но не запускается",
+      "category": "DIESEL_START",
+      "severity": "ELEVATED_ELECTRICAL",
+      "equipmentRefs": [
+        "TEM2-EQ-BAT",
+        "TEM2-EQ-START-CIRCUIT",
+        "TEM2U-EQ-DIESEL"
+      ],
+      "searchTerms": [
+        "крутит очень тяжело и не схватывает",
+        "проворот есть но оборотов на запуск не хватает",
+        "батарея садится на пуске",
+        "дизель крутит медленно",
+        "вал еле проворачивается",
+        "стартерный режим есть но не запускается",
+        "крутит медленно не запускается",
+        "еле крутит и не заводится"
+      ],
+      "sourceAgeNote": "Исторические источники не дают действующего разрешения на действия.",
+      "informationConfidence": "SOURCE_BACKED_FUNCTIONAL",
+      "applicability": {
+        "profiles": [
+          "tem2-base",
+          "tem2u-improved"
+        ],
+        "variantSelectionRequired": true
+      },
+      "graph": {
+        "startNodeId": "q-speed",
+        "nodes": [
+          {
+            "id": "q-speed",
+            "type": "question",
+            "text": "Проворот явно медленнее обычного и напряжение батареи заметно проседает?",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": [
+              {
+                "label": "Да, проворот медленный/батарея проседает",
+                "nextNodeId": "c-battery"
+              },
+              {
+                "label": "Нет, проворот нормальный, но дизель не схватывает",
+                "nextNodeId": "t-fuel-mech"
+              },
+              {
+                "label": "Не знаю / исполнение не подтверждено",
+                "nextNodeId": "t-unknown",
+                "responseKind": "UNKNOWN"
+              }
+            ]
+          },
+          {
+            "id": "c-battery",
+            "type": "check",
+            "text": "Сопоставить напряжение батареи до пуска и во время проворота со штатной реакцией пусковой группы.\nОжидается: Батарея сохраняет достаточное питание, а пусковая группа не демонстрирует аномального падения скорости.\nПри отклонении: Сильная просадка отделяет проблему питания/батареи от топливной и механической причины незапуска.",
+            "nextNodeId": "t-battery",
+            "actionLevel": "CAB",
+            "choices": []
+          },
+          {
+            "id": "t-battery",
+            "type": "terminal",
+            "text": "Приоритетная локализация — батарея/пусковое питание. Не продолжать многократные затяжные попытки пуска; дальнейшая проверка батареи выполняется по разрешённому порядку.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-fuel-mech",
+            "type": "terminal",
+            "text": "Проворот достаточный, но запуска нет: причина не сводится к батарее. Перейти к топливной подаче, блок-магниту/регулятору и фактическому исполнению дизеля.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-unknown",
+            "type": "terminal",
+            "text": "Нужно уточнить скорость проворота, просадку напряжения и есть ли признаки подачи топлива/вспышек.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          }
+        ]
+      },
+      "sourceRefs": [
+        {
+          "sourceId": "TEM2-SRC-BMZ-MANUAL-1983",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию, 2-е переработанное и дополненное издание (1983; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2U-SRC-BMZ-MANUAL-1988",
+          "document": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-ST3-KOVALEV-1980",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию (1980; статус не указан; применимость: )",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        }
+      ]
+    },
+    {
+      "id": "TEM2-DIAG-003",
+      "title": "Дизель запускается, но глохнет при разборе пусковой цепи",
+      "symptom": "запустился и сразу заглох; глохнет когда отключаются Д1 Д2; после пуска не держится",
+      "category": "DIESEL_START_OIL_PERMISSION",
+      "severity": "ELEVATED_MECHANICAL",
+      "equipmentRefs": [
+        "TEM2-EQ-START-CIRCUIT",
+        "TEM2U-EQ-DIESEL"
+      ],
+      "searchTerms": [
+        "дизель схватил и после разбора пуска заглох",
+        "пока крутит работает потом глохнет",
+        "РДМ не удерживает после запуска",
+        "запустился и сразу заглох",
+        "глохнет когда отключаются Д1 Д2",
+        "после пуска не держится",
+        "запустился и заглох когда пуск разобрался",
+        "схватил потом как стартер отпал заглох"
+      ],
+      "sourceAgeNote": "Исторические источники не дают действующего разрешения на действия.",
+      "informationConfidence": "SOURCE_BACKED_FUNCTIONAL",
+      "applicability": {
+        "profiles": [
+          "tem2-base",
+          "tem2u-improved"
+        ],
+        "variantSelectionRequired": true
+      },
+      "graph": {
+        "startNodeId": "q-timing",
+        "nodes": [
+          {
+            "id": "q-timing",
+            "type": "question",
+            "text": "Остановка происходит именно в момент окончания стартерного режима/разбора пусковой цепи?",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": [
+              {
+                "label": "Да, совпадает с разбором пуска",
+                "nextNodeId": "c-oil"
+              },
+              {
+                "label": "Нет, глохнет независимо от этого момента",
+                "nextNodeId": "t-other-stop"
+              },
+              {
+                "label": "Не знаю / исполнение не подтверждено",
+                "nextNodeId": "t-unknown",
+                "responseKind": "UNKNOWN"
+              }
+            ]
+          },
+          {
+            "id": "c-oil",
+            "type": "check",
+            "text": "По штатным приборам сопоставить фактическое давление масла после запуска и наличие разрешающего признака, который должен удерживать работу дизеля после отключения пусковой группы.\nОжидается: Давление масла формируется и разрешение сохраняется после окончания пуска.\nПри отклонении: Отсутствие давления либо разрешения локализует проблему в масляной системе/контроле давления, а не в повторном включении пуска.",
+            "nextNodeId": "t-oil",
+            "actionLevel": "CAB",
+            "choices": []
+          },
+          {
+            "id": "t-oil",
+            "type": "terminal",
+            "text": "Локализация — давление масла/сигнал разрешения после пуска. Не удерживать пусковую цепь искусственно и не обходить контроль давления.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-other-stop",
+            "type": "terminal",
+            "text": "Остановка не привязана к разбору пуска. Рассматривать топливную подачу, регулятор частоты и сценарий самопроизвольной остановки дизеля.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-unknown",
+            "type": "terminal",
+            "text": "Зафиксировать момент остановки относительно отключения пусковой группы и показание давления масла.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          }
+        ]
+      },
+      "sourceRefs": [
+        {
+          "sourceId": "TEM2-SRC-BMZ-MANUAL-1983",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию, 2-е переработанное и дополненное издание (1983; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2U-SRC-BMZ-MANUAL-1988",
+          "document": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-SRC-NOTIK-ELECTRICAL-1980",
+          "document": "Электрические схемы тепловозов ТЭМ2 и ТЭМ1 (1980; HISTORICAL_REFERENCE; применимость: ТЭМ2)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-ST3-KOVALEV-1980",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию (1980; статус не указан; применимость: )",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        }
+      ]
+    },
+    {
+      "id": "TEM2-DIAG-004",
+      "title": "Пусковая цепь не разбирается после устойчивого запуска дизеля",
+      "symptom": "пуск не разбирается; Д1 Д2 остаются включены после запуска; тяговый генератор остается в стартерном режиме",
+      "category": "DIESEL_START_RELEASE",
+      "severity": "EMERGENCY_ELECTRICAL",
+      "equipmentRefs": [
+        "TEM2-EQ-START-CIRCUIT",
+        "TEM2-EQ-BAT",
+        "TEM2U-EQ-DIESEL"
+      ],
+      "searchTerms": [
+        "дизель уже работает а пусковые не отпали",
+        "пусковая схема зависла после запуска",
+        "после пуска стартерный режим не ушел",
+        "пуск не разбирается",
+        "Д1 Д2 остаются включены после запуска",
+        "тяговый генератор остается в стартерном режиме",
+        "дизель работает а пусковые не отпали",
+        "уже завелся а стартерный режим висит"
+      ],
+      "sourceAgeNote": "Исторические источники не дают действующего разрешения на действия.",
+      "informationConfidence": "SOURCE_BACKED_FUNCTIONAL",
+      "applicability": {
+        "profiles": [
+          "tem2-base",
+          "tem2u-improved"
+        ],
+        "variantSelectionRequired": true
+      },
+      "graph": {
+        "startNodeId": "q-confirm",
+        "nodes": [
+          {
+            "id": "q-confirm",
+            "type": "question",
+            "text": "Дизель уже устойчиво работает, а признаки стартерного режима/пусковой группы сохраняются?",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": [
+              {
+                "label": "Да, пуск не разобрался",
+                "nextNodeId": "t-stop"
+              },
+              {
+                "label": "Нет, пуск разобрался штатно",
+                "nextNodeId": "t-not-this"
+              },
+              {
+                "label": "Не знаю / исполнение не подтверждено",
+                "nextNodeId": "t-stop",
+                "responseKind": "UNKNOWN"
+              }
+            ]
+          },
+          {
+            "id": "t-stop",
+            "type": "terminal",
+            "text": "STOP: не продолжать работу с удерживаемой пусковой цепью и не размыкать её вручную под нагрузкой. Зафиксировать состояние и выполнять дальнейшую проверку только после безопасной остановки по действующему порядку.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-not-this",
+            "type": "terminal",
+            "text": "Если пусковая группа отключилась штатно, искать неисправность в другом сценарии по фактическому симптому после запуска.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          }
+        ]
+      },
+      "sourceRefs": [
+        {
+          "sourceId": "TEM2-SRC-BMZ-MANUAL-1983",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию, 2-е переработанное и дополненное издание (1983; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2U-SRC-BMZ-MANUAL-1988",
+          "document": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-SRC-NOTIK-ELECTRICAL-1980",
+          "document": "Электрические схемы тепловозов ТЭМ2 и ТЭМ1 (1980; HISTORICAL_REFERENCE; применимость: ТЭМ2)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-SRC-POT-RZD-342-2025",
+          "document": "ПОТ РЖД-4100612-ЦТР-342-2025. Правила по охране труда при техническом обслуживании и текущем ремонте локомотивов ОАО «РЖД» (редакция не указана; CURRENT_CONFIRMED; применимость: LOCOMOTIVES_RZD_MAINTENANCE)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        }
+      ]
+    },
+    {
+      "id": "TEM2-DIAG-005",
+      "title": "Дизель не останавливается по штатной команде или уходит в неуправляемый рост оборотов",
+      "symptom": "дизель не глушится; дизель не останавливается; дизель идет вразнос; обороты сами растут",
+      "category": "DIESEL_STOP_EMERGENCY",
+      "severity": "EMERGENCY_MECHANICAL",
+      "equipmentRefs": [
+        "TEM2U-EQ-DIESEL",
+        "TEM2-EQ-CONTROLLER"
+      ],
+      "searchTerms": [
+        "выключаю пуск остановку а дизель не глохнет",
+        "обороты сами пошли вверх",
+        "дизель пошел вразнос",
+        "дизель не глушится",
+        "дизель не останавливается",
+        "дизель идет вразнос",
+        "обороты сами растут",
+        "дизель не останавливается",
+        "глушу а он не глохнет"
+      ],
+      "sourceAgeNote": "Исторические источники не дают действующего разрешения на действия.",
+      "informationConfidence": "SOURCE_BACKED_FUNCTIONAL",
+      "applicability": {
+        "profiles": [
+          "tem2-base",
+          "tem2u-improved"
+        ],
+        "variantSelectionRequired": true
+      },
+      "graph": {
+        "startNodeId": "q-emergency",
+        "nodes": [
+          {
+            "id": "q-emergency",
+            "type": "question",
+            "text": "Есть неуправляемый рост оборотов либо дизель не реагирует на штатную команду остановки?",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": [
+              {
+                "label": "Да",
+                "nextNodeId": "t-emergency"
+              },
+              {
+                "label": "Нет, дизель остановился сам",
+                "nextNodeId": "t-opposite"
+              },
+              {
+                "label": "Не знаю / исполнение не подтверждено",
+                "nextNodeId": "t-emergency",
+                "responseKind": "UNKNOWN"
+              }
+            ]
+          },
+          {
+            "id": "t-emergency",
+            "type": "terminal",
+            "text": "STOP / EMERGENCY: приоритет — безопасная остановка по действующей инструкции для фактического исполнения. Runtime не даёт регулировок реек, сервомотора или обходов защит.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-opposite",
+            "type": "terminal",
+            "text": "Это противоположное событие: самопроизвольная остановка дизеля. Использовать TEM2-DIAG-006, а не сценарий отказа остановки.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          }
+        ]
+      },
+      "sourceRefs": [
+        {
+          "sourceId": "TEM2-SRC-BMZ-MANUAL-1983",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию, 2-е переработанное и дополненное издание (1983; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2U-SRC-BMZ-MANUAL-1988",
+          "document": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-ST3-KOVALEV-1980",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию (1980; статус не указан; применимость: )",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-SRC-POT-RZD-342-2025",
+          "document": "ПОТ РЖД-4100612-ЦТР-342-2025. Правила по охране труда при техническом обслуживании и текущем ремонте локомотивов ОАО «РЖД» (редакция не указана; CURRENT_CONFIRMED; применимость: LOCOMOTIVES_RZD_MAINTENANCE)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        }
+      ]
+    },
+    {
+      "id": "TEM2-DIAG-006",
+      "title": "Дизель самопроизвольно останавливается на холостом ходу или при переходе к первой позиции",
+      "symptom": "дизель сам глохнет; глохнет на нуле; глохнет на первой позиции; останавливается при сбросе",
+      "category": "DIESEL_UNEXPECTED_STOP",
+      "severity": "ELEVATED_MECHANICAL",
+      "equipmentRefs": [
+        "TEM2U-EQ-DIESEL",
+        "TEM2-EQ-CONTROLLER"
+      ],
+      "searchTerms": [
+        "дизель сам отключается на холостом",
+        "ставлю первую позицию и он глохнет",
+        "сбрасываю на ноль дизель останавливается",
+        "дизель сам глохнет",
+        "глохнет на нуле",
+        "глохнет на первой позиции",
+        "останавливается при сбросе",
+        "дизель сам глохнет на первой",
+        "сам заглох когда сбросил на ноль",
+        "дизель сам заглох"
+      ],
+      "sourceAgeNote": "Исторические источники не дают действующего разрешения на действия.",
+      "informationConfidence": "SOURCE_BACKED_FUNCTIONAL",
+      "applicability": {
+        "profiles": [
+          "tem2-base",
+          "tem2u-improved"
+        ],
+        "variantSelectionRequired": true
+      },
+      "graph": {
+        "startNodeId": "q-mode",
+        "nodes": [
+          {
+            "id": "q-mode",
+            "type": "question",
+            "text": "Остановка повторяется именно на холостом ходу/нулевой или первой позиции?",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": [
+              {
+                "label": "Да, привязана к этим режимам",
+                "nextNodeId": "c-oil"
+              },
+              {
+                "label": "Нет, на любых режимах",
+                "nextNodeId": "t-general"
+              },
+              {
+                "label": "Не знаю / исполнение не подтверждено",
+                "nextNodeId": "t-unknown",
+                "responseKind": "UNKNOWN"
+              }
+            ]
+          },
+          {
+            "id": "c-oil",
+            "type": "check",
+            "text": "Сопоставить давление масла, температуру и устойчивость минимальных оборотов непосредственно перед остановкой.\nОжидается: Давление масла и минимальные обороты устойчивы, защитный признак не возникает.\nПри отклонении: Падение давления/оборотов перед остановкой указывает на масляную систему, регулятор или механическую устойчивость холостого хода.",
+            "nextNodeId": "t-localized",
+            "actionLevel": "CAB",
+            "choices": []
+          },
+          {
+            "id": "t-localized",
+            "type": "terminal",
+            "text": "Зафиксировать, что первым отклоняется: давление масла, обороты или команда регулятора. Не смешивать с TEM2-DIAG-005: здесь дизель останавливается сам.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-general",
+            "type": "terminal",
+            "text": "Если остановка не привязана к нулевой/первой позиции, требуется более общий поиск по топливу, регулятору и защитам с фиксацией первого исчезнувшего признака.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-unknown",
+            "type": "terminal",
+            "text": "Нужно уточнить позицию контроллера, давление масла, температуру и характер падения оборотов перед остановкой.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          }
+        ]
+      },
+      "sourceRefs": [
+        {
+          "sourceId": "TEM2-SRC-BMZ-MANUAL-1983",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию, 2-е переработанное и дополненное издание (1983; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2U-SRC-BMZ-MANUAL-1988",
+          "document": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-ST3-KOVALEV-1980",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию (1980; статус не указан; применимость: )",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        }
+      ]
+    },
+    {
+      "id": "TEM2-DIAG-007",
+      "title": "Отсутствует заряд аккумуляторной батареи после запуска",
+      "symptom": "нет зарядки аккумулятора; амперметр не показывает заряд; вспомогательный генератор не заряжает",
+      "category": "AUXILIARY_GENERATION",
+      "severity": "ELEVATED_ELECTRICAL",
+      "equipmentRefs": [
+        "TEM2-EQ-AUX-GEN",
+        "TEM2-EQ-VOLT-REG",
+        "TEM2-EQ-BAT"
+      ],
+      "searchTerms": [
+        "после запуска зарядки нет",
+        "батарея не заряжается",
+        "ВГ не дает заряд",
+        "нет зарядки аккумулятора",
+        "амперметр не показывает заряд",
+        "вспомогательный генератор не заряжает",
+        "нет зарядки батареи",
+        "после запуска заряд не идет"
+      ],
+      "sourceAgeNote": "Исторические источники не дают действующего разрешения на действия.",
+      "informationConfidence": "SOURCE_BACKED_FUNCTIONAL",
+      "applicability": {
+        "profiles": [
+          "tem2-base",
+          "tem2u-improved"
+        ],
+        "variantSelectionRequired": true
+      },
+      "graph": {
+        "startNodeId": "q-charge",
+        "nodes": [
+          {
+            "id": "q-charge",
+            "type": "question",
+            "text": "После устойчивого запуска штатный признак зарядки отсутствует на всех доступных режимах?",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": [
+              {
+                "label": "Да, зарядки нет",
+                "nextNodeId": "c-aux"
+              },
+              {
+                "label": "Нет, заряд появляется на повышенной позиции",
+                "nextNodeId": "t-regulation"
+              },
+              {
+                "label": "Не знаю / исполнение не подтверждено",
+                "nextNodeId": "t-unknown",
+                "responseKind": "UNKNOWN"
+              }
+            ]
+          },
+          {
+            "id": "c-aux",
+            "type": "check",
+            "text": "Сопоставить показание напряжения/амперметра с фактом работы вспомогательного генератора и состоянием батареи без вмешательства в регулятор.\nОжидается: После пуска вспомогательный генератор поддерживает зарядный режим.\nПри отклонении: Отделяет отказ генерации/возбуждения от неисправности индикации или самой батареи.",
+            "nextNodeId": "t-aux",
+            "actionLevel": "CAB",
+            "choices": []
+          },
+          {
+            "id": "t-aux",
+            "type": "terminal",
+            "text": "Локализация — вспомогательный генератор, его возбуждение/регулятор напряжения либо цепь батареи. Настройка регулятора в runtime не предлагается.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-regulation",
+            "type": "terminal",
+            "text": "Заряд появляется только при повышении режима: зафиксировать напряжение по позициям; это отличается от полного отсутствия генерации.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-unknown",
+            "type": "terminal",
+            "text": "Нужны показания напряжения/амперметра после запуска и при изменении позиции.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          }
+        ]
+      },
+      "sourceRefs": [
+        {
+          "sourceId": "TEM2-SRC-BMZ-MANUAL-1983",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию, 2-е переработанное и дополненное издание (1983; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2U-SRC-BMZ-MANUAL-1988",
+          "document": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-SRC-NOTIK-ELECTRICAL-1980",
+          "document": "Электрические схемы тепловозов ТЭМ2 и ТЭМ1 (1980; HISTORICAL_REFERENCE; применимость: ТЭМ2)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-ST3-KOVALEV-1980",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию (1980; статус не указан; применимость: )",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        }
+      ]
+    },
+    {
+      "id": "TEM2-DIAG-008",
+      "title": "Тепловоз не трогается после перевода контроллера в рабочее положение",
+      "symptom": "не трогается; позиция есть тяги нет; поездные контакторы не собираются; генератор не нагружается",
+      "category": "TRACTION_NO_MOVE",
+      "severity": "ELEVATED_ELECTRICAL",
+      "equipmentRefs": [
+        "TEM2-EQ-CONTROLLER",
+        "TEM2-EQ-P1",
+        "TEM2-EQ-P2",
+        "TEM2-EQ-REV",
+        "TEM2-EQ-TG",
+        "TEM2-EQ-MOTOR-CUTOUT"
+      ],
+      "searchTerms": [
+        "даю первую позицию тепловоз стоит",
+        "ТЭМ2 не трогается с места",
+        "позиция набрана а тяги нет",
+        "не трогается",
+        "позиция есть тяги нет",
+        "поездные контакторы не собираются",
+        "генератор не нагружается",
+        "позиция есть а тепловоз не трогается",
+        "первую дал он стоит"
+      ],
+      "sourceAgeNote": "Исторические источники не дают действующего разрешения на действия.",
+      "informationConfidence": "SOURCE_BACKED_FUNCTIONAL",
+      "applicability": {
+        "profiles": [
+          "tem2-base",
+          "tem2u-improved"
+        ],
+        "variantSelectionRequired": true
+      },
+      "graph": {
+        "startNodeId": "q-control",
+        "nodes": [
+          {
+            "id": "q-control",
+            "type": "question",
+            "text": "Команда направления и рабочая позиция контроллера распознаются, а давление воздуха управления находится в штатном рабочем диапазоне?",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": [
+              {
+                "label": "Да, команда/воздух есть",
+                "nextNodeId": "c-traction"
+              },
+              {
+                "label": "Нет, не выполнено одно из разрешений",
+                "nextNodeId": "t-permission"
+              },
+              {
+                "label": "Не знаю / исполнение не подтверждено",
+                "nextNodeId": "t-unknown",
+                "responseKind": "UNKNOWN"
+              }
+            ]
+          },
+          {
+            "id": "c-traction",
+            "type": "check",
+            "text": "По штатным признакам определить, собираются ли поездные контакторы П1/П2 и появляется ли возбуждение тягового генератора.\nОжидается: П1/П2 и возбуждение собираются в требуемой последовательности.\nПри отклонении: Отделяет отказ цепи разрешения/контакторов от силовой неисправности после уже собранной схемы.",
+            "nextNodeId": "t-traction",
+            "actionLevel": "CAB",
+            "choices": []
+          },
+          {
+            "id": "t-permission",
+            "type": "terminal",
+            "text": "Сначала восстановить понимание отсутствующего разрешения: направление, управление, отключатель моторов, блокировки, давление управления. Не принуждать аппараты.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-traction",
+            "type": "terminal",
+            "text": "Если П1/П2 или возбуждение не собираются — локализация в цепи тягового управления. Если всё собирается, а движения нет — силовой путь/тяговые двигатели требуют отдельной безопасной проверки.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-unknown",
+            "type": "terminal",
+            "text": "Нужны: направление, давление управления, состояние П1/П2 и признаки возбуждения генератора.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          }
+        ]
+      },
+      "sourceRefs": [
+        {
+          "sourceId": "TEM2-SRC-BMZ-MANUAL-1983",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию, 2-е переработанное и дополненное издание (1983; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2U-SRC-BMZ-MANUAL-1988",
+          "document": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-SRC-NOTIK-ELECTRICAL-1980",
+          "document": "Электрические схемы тепловозов ТЭМ2 и ТЭМ1 (1980; HISTORICAL_REFERENCE; применимость: ТЭМ2)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-ST3-KOVALEV-1980",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию (1980; статус не указан; применимость: )",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        }
+      ]
+    },
+    {
+      "id": "TEM2-DIAG-009",
+      "title": "Срабатывает реле заземления и снимается нагрузка",
+      "symptom": "сработало РЗ; реле заземления снимает нагрузку; сброс нагрузки по земле; РЗ снова выбивает",
+      "category": "GROUND_PROTECTION",
+      "severity": "ELEVATED_ELECTRICAL",
+      "equipmentRefs": [
+        "TEM2-EQ-GROUND-RELAY",
+        "TEM2-EQ-TG",
+        "TEM2-EQ-TM1-3",
+        "TEM2-EQ-TM4-6",
+        "TEM2-EQ-KV",
+        "TEM2-EQ-VV"
+      ],
+      "searchTerms": [
+        "на позиции срабатывает РЗ",
+        "реле заземления повторно встает на защелку",
+        "сброс нагрузки и лампа РЗ",
+        "сработало РЗ",
+        "реле заземления снимает нагрузку",
+        "сброс нагрузки по земле",
+        "РЗ снова выбивает",
+        "срабатывает реле заземления",
+        "земля выбила и нагрузку сняло",
+        "выбило защиту"
+      ],
+      "sourceAgeNote": "Исторические источники не дают действующего разрешения на действия.",
+      "informationConfidence": "SOURCE_BACKED_FUNCTIONAL",
+      "applicability": {
+        "profiles": [
+          "tem2-base",
+          "tem2u-improved"
+        ],
+        "variantSelectionRequired": true
+      },
+      "graph": {
+        "startNodeId": "q-repeat",
+        "nodes": [
+          {
+            "id": "q-repeat",
+            "type": "question",
+            "text": "Реле заземления срабатывает повторно после штатного восстановления или есть дым/запах/следы повреждения?",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": [
+              {
+                "label": "Да, повторяется или есть признаки повреждения",
+                "nextNodeId": "t-stop"
+              },
+              {
+                "label": "Нет, было однократно без явных признаков",
+                "nextNodeId": "c-state"
+              },
+              {
+                "label": "Не знаю / исполнение не подтверждено",
+                "nextNodeId": "t-stop",
+                "responseKind": "UNKNOWN"
+              }
+            ]
+          },
+          {
+            "id": "c-state",
+            "type": "check",
+            "text": "После безопасного снятия тяговой нагрузки зафиксировать, при какой позиции и какой конфигурации тяговых двигателей возникло срабатывание; не отключать защиту для продолжения опыта.\nОжидается: Защита не повторяется, нет признаков повреждения и причина не маскируется отключением РЗ.\nПри отклонении: Повторяемость локализует событие в силовой цепи/изоляции и требует прекращения экспериментов с нагрузкой.",
+            "nextNodeId": "t-record",
+            "actionLevel": "SAFE_STOP",
+            "choices": []
+          },
+          {
+            "id": "t-stop",
+            "type": "terminal",
+            "text": "STOP: повторное РЗ или признаки повреждения требуют прекращения дальнейшего набора нагрузки. Отключение/обход реле заземления в runtime запрещены.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-record",
+            "type": "terminal",
+            "text": "Зафиксировать позицию, направление, ток/напряжение и состав включённых тяговых ветвей для последующей безопасной локализации изоляции.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          }
+        ]
+      },
+      "sourceRefs": [
+        {
+          "sourceId": "TEM2-SRC-NOTIK-ELECTRICAL-1980",
+          "document": "Электрические схемы тепловозов ТЭМ2 и ТЭМ1 (1980; HISTORICAL_REFERENCE; применимость: ТЭМ2)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-SRC-BMZ-MANUAL-1983",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию, 2-е переработанное и дополненное издание (1983; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2U-SRC-BMZ-MANUAL-1988",
+          "document": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-SRC-POT-RZD-342-2025",
+          "document": "ПОТ РЖД-4100612-ЦТР-342-2025. Правила по охране труда при техническом обслуживании и текущем ремонте локомотивов ОАО «РЖД» (редакция не указана; CURRENT_CONFIRMED; применимость: LOCOMOTIVES_RZD_MAINTENANCE)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        }
+      ]
+    },
+    {
+      "id": "TEM2-DIAG-010",
+      "title": "Реле боксования срабатывает при трогании или без явного боксования",
+      "symptom": "РБ срабатывает; ложное боксование; звенит боксование на первой позиции; сбрасывает возбуждение по РБ",
+      "category": "WHEEL_SLIP_PROTECTION",
+      "severity": "ELEVATED_TRACTION",
+      "equipmentRefs": [
+        "TEM2-EQ-SLIP-RELAYS",
+        "TEM2-EQ-TM1-3",
+        "TEM2-EQ-TM4-6",
+        "TEM2-EQ-VV"
+      ],
+      "searchTerms": [
+        "на первой позиции сразу РБ",
+        "колеса не буксуют а реле боксования срабатывает",
+        "при трогании снимает нагрузку по боксованию",
+        "РБ срабатывает",
+        "ложное боксование",
+        "звенит боксование на первой позиции",
+        "сбрасывает возбуждение по РБ",
+        "реле боксования срабатывает без буксовки",
+        "буксовки нет а РБ орет"
+      ],
+      "sourceAgeNote": "Исторические источники не дают действующего разрешения на действия.",
+      "informationConfidence": "SOURCE_BACKED_FUNCTIONAL",
+      "applicability": {
+        "profiles": [
+          "tem2-base",
+          "tem2u-improved"
+        ],
+        "variantSelectionRequired": true
+      },
+      "graph": {
+        "startNodeId": "q-actual",
+        "nodes": [
+          {
+            "id": "q-actual",
+            "type": "question",
+            "text": "Есть фактические признаки боксования колесной пары одновременно со срабатыванием РБ?",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": [
+              {
+                "label": "Да, боксование реальное",
+                "nextNodeId": "t-adhesion"
+              },
+              {
+                "label": "Нет, явного боксования нет",
+                "nextNodeId": "c-compare"
+              },
+              {
+                "label": "Не знаю / исполнение не подтверждено",
+                "nextNodeId": "t-unknown",
+                "responseKind": "UNKNOWN"
+              }
+            ]
+          },
+          {
+            "id": "c-compare",
+            "type": "check",
+            "text": "Сопоставить токи/поведение двух групп тяговых двигателей и момент срабатывания РБ без отсоединения цепей защиты.\nОжидается: При отсутствии боксования группы ведут себя согласованно и РБ не должно срабатывать от устойчивого режима.\nПри отклонении: Асимметрия указывает на цепь РБ, тяговый двигатель или механическую передачу, а не на адгезию.",
+            "nextNodeId": "t-false",
+            "actionLevel": "CAB",
+            "choices": []
+          },
+          {
+            "id": "t-adhesion",
+            "type": "terminal",
+            "text": "Есть реальное боксование: применить штатное управление тягой/песком по действующей инструкции, не отключая защиту.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-false",
+            "type": "terminal",
+            "text": "Срабатывание без явного боксования требует проверки цепи РБ и симметрии тяговых ветвей. Отключение реле как способ диагностики в runtime не допускается.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-unknown",
+            "type": "terminal",
+            "text": "Уточнить: есть ли фактическое проскальзывание, на какой позиции и как ведут себя токи тяговых ветвей.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          }
+        ]
+      },
+      "sourceRefs": [
+        {
+          "sourceId": "TEM2-SRC-NOTIK-ELECTRICAL-1980",
+          "document": "Электрические схемы тепловозов ТЭМ2 и ТЭМ1 (1980; HISTORICAL_REFERENCE; применимость: ТЭМ2)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-SRC-BMZ-MANUAL-1983",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию, 2-е переработанное и дополненное издание (1983; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2U-SRC-BMZ-MANUAL-1988",
+          "document": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-ST3-KOVALEV-1980",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию (1980; статус не указан; применимость: )",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        }
+      ]
+    },
+    {
+      "id": "TEM2-DIAG-011",
+      "title": "Тепловоз развивает тягу только в одном направлении",
+      "symptom": "едет только вперед; едет только назад; реверсор не переводится в одно направление; нет тяги в одном направлении",
+      "category": "REVERSER_DIRECTION",
+      "severity": "ELEVATED_ELECTRICAL",
+      "equipmentRefs": [
+        "TEM2-EQ-CONTROLLER",
+        "TEM2-EQ-REV",
+        "TEM2-EQ-TM1-3",
+        "TEM2-EQ-TM4-6"
+      ],
+      "searchTerms": [
+        "вперед едет назад нет",
+        "в одну сторону тяга есть в другую нет",
+        "реверсор одно направление не собирает",
+        "едет только вперед",
+        "едет только назад",
+        "реверсор не переводится в одно направление",
+        "нет тяги в одном направлении",
+        "вперед едет назад нет",
+        "назад не едет вперед нормально"
+      ],
+      "sourceAgeNote": "Исторические источники не дают действующего разрешения на действия.",
+      "informationConfidence": "SOURCE_BACKED_FUNCTIONAL",
+      "applicability": {
+        "profiles": [
+          "tem2-base",
+          "tem2u-improved"
+        ],
+        "variantSelectionRequired": true
+      },
+      "graph": {
+        "startNodeId": "q-command",
+        "nodes": [
+          {
+            "id": "q-command",
+            "type": "question",
+            "text": "В неисправном направлении сама команда направления на контроллере определяется однозначно?",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": [
+              {
+                "label": "Да, команда есть",
+                "nextNodeId": "c-reverser"
+              },
+              {
+                "label": "Нет, команда направления не формируется",
+                "nextNodeId": "t-controller"
+              },
+              {
+                "label": "Не знаю / исполнение не подтверждено",
+                "nextNodeId": "t-unknown",
+                "responseKind": "UNKNOWN"
+              }
+            ]
+          },
+          {
+            "id": "c-reverser",
+            "type": "check",
+            "text": "По штатным признакам проверить, соответствует ли фактическое положение реверсора выбранному направлению без ручного принуждения аппарата.\nОжидается: Реверсор занимает требуемое положение и разрешает сбор тяговой цепи.\nПри отклонении: Команда есть, а реверсор не соответствует — локализация в его приводе/блокировках.",
+            "nextNodeId": "t-reverser",
+            "actionLevel": "CAB",
+            "choices": []
+          },
+          {
+            "id": "t-controller",
+            "type": "terminal",
+            "text": "Не формируется сама команда направления: локализовать контакты/блокировки контроллера, а не силовую цепь тяговых двигателей.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-reverser",
+            "type": "terminal",
+            "text": "Команда есть, но фактическое положение реверсора не соответствует. Не переводить аппарат вручную под током; дальнейшая проверка — только в безопасном состоянии.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-unknown",
+            "type": "terminal",
+            "text": "Нужно уточнить, какая сторона работает и меняется ли фактическое положение реверсора.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          }
+        ]
+      },
+      "sourceRefs": [
+        {
+          "sourceId": "TEM2-SRC-NOTIK-ELECTRICAL-1980",
+          "document": "Электрические схемы тепловозов ТЭМ2 и ТЭМ1 (1980; HISTORICAL_REFERENCE; применимость: ТЭМ2)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-SRC-BMZ-MANUAL-1983",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию, 2-е переработанное и дополненное издание (1983; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2U-SRC-BMZ-MANUAL-1988",
+          "document": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-ST3-KOVALEV-1980",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию (1980; статус не указан; применимость: )",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        }
+      ]
+    },
+    {
+      "id": "TEM2-DIAG-012",
+      "title": "Не включается ослабление возбуждения тяговых электродвигателей",
+      "symptom": "не включается ОП; не срабатывают Ш1 Ш2 Ш3 Ш4; не происходит ослабление поля; нет перехода",
+      "category": "FIELD_WEAKENING",
+      "severity": "ELEVATED_TRACTION",
+      "equipmentRefs": [
+        "TEM2-EQ-FIELD-SHUNT",
+        "TEM2-EQ-CURRENT-LIMIT",
+        "TEM2-EQ-TG",
+        "TEM2-EQ-TM1-3",
+        "TEM2-EQ-TM4-6"
+      ],
+      "searchTerms": [
+        "ослабление поля вообще не включается",
+        "ОП не срабатывает",
+        "переходы не работают",
+        "не включается ОП",
+        "не срабатывают Ш1 Ш2 Ш3 Ш4",
+        "не происходит ослабление поля",
+        "нет перехода",
+        "не включается ослабление поля",
+        "переходы на поле не включаются"
+      ],
+      "sourceAgeNote": "Исторические источники не дают действующего разрешения на действия.",
+      "informationConfidence": "SOURCE_BACKED_FUNCTIONAL",
+      "applicability": {
+        "profiles": [
+          "tem2-base",
+          "tem2u-improved"
+        ],
+        "variantSelectionRequired": true
+      },
+      "graph": {
+        "startNodeId": "q-conditions",
+        "nodes": [
+          {
+            "id": "q-conditions",
+            "type": "question",
+            "text": "Режим тока/напряжения и позиция действительно дошли до условий, при которых должен происходить переход на ослабление возбуждения?",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": [
+              {
+                "label": "Да, условия достигнуты",
+                "nextNodeId": "c-transition"
+              },
+              {
+                "label": "Нет или не уверен",
+                "nextNodeId": "t-conditions"
+              },
+              {
+                "label": "Не знаю / исполнение не подтверждено",
+                "nextNodeId": "t-conditions",
+                "responseKind": "UNKNOWN"
+              }
+            ]
+          },
+          {
+            "id": "c-transition",
+            "type": "check",
+            "text": "Сопоставить реакцию реле переходов и контакторов шунтировки с фактическими током/напряжением без принудительного включения контакторов.\nОжидается: При достижении условия последовательно появляется команда соответствующей ступени ОП.\nПри отклонении: Отделяет отсутствие команды перехода от отказа исполнительного контактора шунтировки.",
+            "nextNodeId": "t-transition",
+            "actionLevel": "CAB",
+            "choices": []
+          },
+          {
+            "id": "t-conditions",
+            "type": "terminal",
+            "text": "Сначала подтвердить, что достигнуты условия перехода; отсутствие ОП вне этих условий не считать неисправностью.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-transition",
+            "type": "terminal",
+            "text": "Если команда перехода не формируется — локализация в РП/их цепях; если команда есть, а ступень не собирается — в контакторах/силовой ветви ОП. Принудительное включение запрещено.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          }
+        ]
+      },
+      "sourceRefs": [
+        {
+          "sourceId": "TEM2-SRC-NOTIK-ELECTRICAL-1980",
+          "document": "Электрические схемы тепловозов ТЭМ2 и ТЭМ1 (1980; HISTORICAL_REFERENCE; применимость: ТЭМ2)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-SRC-BMZ-MANUAL-1983",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию, 2-е переработанное и дополненное издание (1983; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2U-SRC-BMZ-MANUAL-1988",
+          "document": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-ST3-KOVALEV-1980",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию (1980; статус не указан; применимость: )",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        }
+      ]
+    },
+    {
+      "id": "TEM2-DIAG-013",
+      "title": "Ослабление возбуждения включается и сразу отпадает либо работает не по режиму",
+      "symptom": "ОП включается и отпадает; переходы дергаются; ступень ОП включается не вовремя; скорость после перехода не растет",
+      "category": "FIELD_WEAKENING_UNSTABLE",
+      "severity": "ELEVATED_TRACTION",
+      "equipmentRefs": [
+        "TEM2-EQ-FIELD-SHUNT",
+        "TEM2-EQ-CURRENT-LIMIT",
+        "TEM2-EQ-TG",
+        "TEM2-EQ-TM1-3",
+        "TEM2-EQ-TM4-6"
+      ],
+      "searchTerms": [
+        "Ш1 включился и сразу отпал",
+        "ОП щелкает туда сюда",
+        "переход на поле есть но эффекта нет",
+        "ОП включается и отпадает",
+        "переходы дергаются",
+        "ступень ОП включается не вовремя",
+        "скорость после перехода не растет",
+        "ОП включается и сразу отпадает",
+        "переход включился и тут же отвалился"
+      ],
+      "sourceAgeNote": "Исторические источники не дают действующего разрешения на действия.",
+      "informationConfidence": "SOURCE_BACKED_FUNCTIONAL",
+      "applicability": {
+        "profiles": [
+          "tem2-base",
+          "tem2u-improved"
+        ],
+        "variantSelectionRequired": true
+      },
+      "graph": {
+        "startNodeId": "q-kind",
+        "nodes": [
+          {
+            "id": "q-kind",
+            "type": "question",
+            "text": "Что наблюдается: команда ступени появляется и сразу исчезает или контактор остаётся включён, но тяговый эффект отсутствует?",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": [
+              {
+                "label": "Команда/контактор сразу отпадает",
+                "nextNodeId": "c-relay"
+              },
+              {
+                "label": "Контактор остаётся, эффекта нет",
+                "nextNodeId": "t-power"
+              },
+              {
+                "label": "Не знаю / исполнение не подтверждено",
+                "nextNodeId": "t-unknown",
+                "responseKind": "UNKNOWN"
+              }
+            ]
+          },
+          {
+            "id": "c-relay",
+            "type": "check",
+            "text": "Зафиксировать ток и напряжение непосредственно до и после отпадания ступени, чтобы отделить изменение условий РП от нестабильной цепи контактора.\nОжидается: Ступень сохраняется, пока условия перехода остаются выполненными.\nПри отклонении: Если условия не меняются, а ступень отпадает, искать цепь управления/контактор; если условия скачут — входные ток/напряжение и тяговую асимметрию.",
+            "nextNodeId": "t-control",
+            "actionLevel": "CAB",
+            "choices": []
+          },
+          {
+            "id": "t-control",
+            "type": "terminal",
+            "text": "Локализация зависит от устойчивости входных условий перехода; не менять уставки реле и не удерживать контактор вручную.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-power",
+            "type": "terminal",
+            "text": "Команда ОП сохраняется, но эффекта нет: искать силовой контакт/резистор шунтировки либо повреждение тяговой ветви, а не реле перехода.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-unknown",
+            "type": "terminal",
+            "text": "Нужно уточнить, отпадает ли сама ступень или остаётся включённой без ожидаемого изменения тяги/скорости.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          }
+        ]
+      },
+      "sourceRefs": [
+        {
+          "sourceId": "TEM2-SRC-NOTIK-ELECTRICAL-1980",
+          "document": "Электрические схемы тепловозов ТЭМ2 и ТЭМ1 (1980; HISTORICAL_REFERENCE; применимость: ТЭМ2)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-SRC-BMZ-MANUAL-1983",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию, 2-е переработанное и дополненное издание (1983; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2U-SRC-BMZ-MANUAL-1988",
+          "document": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-ST3-KOVALEV-1980",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию (1980; статус не указан; применимость: )",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        }
+      ]
+    },
+    {
+      "id": "TEM2-DIAG-014",
+      "title": "При переводе контроллера на следующую позицию обороты дизеля не растут или резко меняются",
+      "symptom": "обороты не растут по позициям; обороты резко прыгают; регулятор не отрабатывает позицию; электропневматический привод не меняет обороты",
+      "category": "DIESEL_SPEED_CONTROL",
+      "severity": "ELEVATED_MECHANICAL",
+      "equipmentRefs": [
+        "TEM2-EQ-CONTROLLER",
+        "TEM2U-EQ-DIESEL",
+        "TEM2-EQ-FEED-PIPE"
+      ],
+      "searchTerms": [
+        "даю следующую позицию а обороты те же",
+        "обороты дизеля скачком улетают",
+        "контроллер позиции меняет а регулятор нет",
+        "обороты не растут по позициям",
+        "обороты резко прыгают",
+        "регулятор не отрабатывает позицию",
+        "электропневматический привод не меняет обороты",
+        "обороты не растут по позициям",
+        "позиции добавляю обороты стоят"
+      ],
+      "sourceAgeNote": "Исторические источники не дают действующего разрешения на действия.",
+      "informationConfidence": "SOURCE_BACKED_FUNCTIONAL",
+      "applicability": {
+        "profiles": [
+          "tem2-base",
+          "tem2u-improved"
+        ],
+        "variantSelectionRequired": true
+      },
+      "graph": {
+        "startNodeId": "q-air",
+        "nodes": [
+          {
+            "id": "q-air",
+            "type": "question",
+            "text": "Давление воздуха управления достаточно и при смене позиции слышна/видна реакция электропневматического привода регулятора?",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": [
+              {
+                "label": "Воздух есть, привод реагирует",
+                "nextNodeId": "c-response"
+              },
+              {
+                "label": "Нет реакции привода или мало воздуха",
+                "nextNodeId": "t-control-air"
+              },
+              {
+                "label": "Не знаю / исполнение не подтверждено",
+                "nextNodeId": "t-unknown",
+                "responseKind": "UNKNOWN"
+              }
+            ]
+          },
+          {
+            "id": "c-response",
+            "type": "check",
+            "text": "Сопоставить выбранную позицию, фактические обороты и плавность перемещения регулятора без регулировки его механизма на работающем дизеле.\nОжидается: Обороты изменяются последовательно и устойчиво согласно позиции.\nПри отклонении: Привод получает команду, но обороты неверны — локализация смещается к механизму регулятора/рейкам и требует квалифицированной проверки.",
+            "nextNodeId": "t-governor",
+            "actionLevel": "CAB",
+            "choices": []
+          },
+          {
+            "id": "t-control-air",
+            "type": "terminal",
+            "text": "Нет реакции привода/давления управления: искать пневматическое питание и цепь команды привода раньше механического регулятора.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-governor",
+            "type": "terminal",
+            "text": "Команда и привод есть, а обороты не соответствуют: локализация в регуляторе/механической передаче управления. Runtime не даёт регулировок реек или сервомотора.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-unknown",
+            "type": "terminal",
+            "text": "Нужны давление управления, выбранная позиция и фактическая реакция оборотов.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          }
+        ]
+      },
+      "sourceRefs": [
+        {
+          "sourceId": "TEM2-SRC-BMZ-MANUAL-1983",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию, 2-е переработанное и дополненное издание (1983; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2U-SRC-BMZ-MANUAL-1988",
+          "document": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-ST3-KOVALEV-1980",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию (1980; статус не указан; применимость: )",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        }
+      ]
+    },
+    {
+      "id": "TEM2-DIAG-015",
+      "title": "Тепловоз трогается нормально, но на второй и последующих позициях мощность/скорость почти не растёт",
+      "symptom": "трогается но дальше не разгоняется; на второй позиции нет прибавки мощности; плохое возбуждение возбудителя; скорость не растет по позициям",
+      "category": "TRACTION_POWER_LIMIT",
+      "severity": "ELEVATED_TRACTION",
+      "equipmentRefs": [
+        "TEM2-EQ-EXCITER",
+        "TEM2-EQ-VV",
+        "TEM2-EQ-KV",
+        "TEM2-EQ-TG",
+        "TEM2-EQ-CURRENT-LIMIT",
+        "TEM2U-EQ-DIESEL"
+      ],
+      "searchTerms": [
+        "с первой тронулся дальше тяга не добавляется",
+        "на второй и выше почти ничего не меняется",
+        "дизель набирает а генератор мощность не дает",
+        "трогается но дальше не разгоняется",
+        "на второй позиции нет прибавки мощности",
+        "плохое возбуждение возбудителя",
+        "скорость не растет по позициям",
+        "трогается но дальше тяга не растет",
+        "с места ушел а дальше не тянет"
+      ],
+      "sourceAgeNote": "Исторические источники не дают действующего разрешения на действия.",
+      "informationConfidence": "SOURCE_BACKED_FUNCTIONAL",
+      "applicability": {
+        "profiles": [
+          "tem2-base",
+          "tem2u-improved"
+        ],
+        "variantSelectionRequired": true
+      },
+      "graph": {
+        "startNodeId": "q-engine",
+        "nodes": [
+          {
+            "id": "q-engine",
+            "type": "question",
+            "text": "При переходе на следующие позиции обороты дизеля действительно увеличиваются?",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": [
+              {
+                "label": "Да, дизель набирает обороты, тяга не растёт",
+                "nextNodeId": "c-excitation"
+              },
+              {
+                "label": "Нет, обороты тоже не растут",
+                "nextNodeId": "t-speed-control"
+              },
+              {
+                "label": "Не знаю / исполнение не подтверждено",
+                "nextNodeId": "t-unknown",
+                "responseKind": "UNKNOWN"
+              }
+            ]
+          },
+          {
+            "id": "c-excitation",
+            "type": "check",
+            "text": "Сопоставить рост напряжения/тока тягового генератора и состояние цепи возбуждения ВВ/КВ при увеличении позиции.\nОжидается: При росте оборотов и позиции электрическая мощность генератора также возрастает в допустимом режиме.\nПри отклонении: Обороты растут, а электрическая мощность нет — локализация в возбуждении/ограничении/генераторе, а не в регуляторе дизеля.",
+            "nextNodeId": "t-excitation",
+            "actionLevel": "CAB",
+            "choices": []
+          },
+          {
+            "id": "t-speed-control",
+            "type": "terminal",
+            "text": "Если вместе с тягой не растут и обороты дизеля, использовать TEM2-DIAG-014 — это другая ветвь неисправности.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-excitation",
+            "type": "terminal",
+            "text": "Локализация — возбуждение возбудителя/тягового генератора или ограничение тока. Не принуждать ВВ/КВ и не обходить защитные цепи.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-unknown",
+            "type": "terminal",
+            "text": "Нужно сравнить изменение оборотов дизеля и электрических параметров генератора между первой и следующими позициями.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          }
+        ]
+      },
+      "sourceRefs": [
+        {
+          "sourceId": "TEM2-SRC-NOTIK-ELECTRICAL-1980",
+          "document": "Электрические схемы тепловозов ТЭМ2 и ТЭМ1 (1980; HISTORICAL_REFERENCE; применимость: ТЭМ2)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-SRC-BMZ-MANUAL-1983",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию, 2-е переработанное и дополненное издание (1983; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2U-SRC-BMZ-MANUAL-1988",
+          "document": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-ST3-KOVALEV-1980",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию (1980; статус не указан; применимость: )",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        }
+      ]
+    },
+    {
+      "id": "TEM2-DIAG-016",
+      "title": "Компрессор не разгружается: давление в главных резервуарах растёт выше нормального диапазона",
+      "symptom": "компрессор не отключается; давление растет выше нормы; срабатывает предохранительный клапан; регулятор давления не разгружает компрессор",
+      "category": "AIR_COMPRESSOR_OVERPRESSURE",
+      "severity": "SAFETY_CRITICAL_PNEUMATIC",
+      "equipmentRefs": [
+        "TEM2-EQ-COMP",
+        "TEM2-EQ-PRESS-REG",
+        "TEM2-EQ-MAIN-RES",
+        "TEM2-EQ-FEED-PIPE"
+      ],
+      "searchTerms": [
+        "компрессор молотит и не отключается",
+        "главные резервуары уходят вверх по давлению",
+        "срабатывает предохранительный клапан компрессора",
+        "компрессор не отключается",
+        "давление растет выше нормы",
+        "срабатывает предохранительный клапан",
+        "регулятор давления не разгружает компрессор",
+        "компрессор не отключается давление растет",
+        "компрессор качает без остановки",
+        "компрессор не выключается"
+      ],
+      "sourceAgeNote": "Исторические источники не дают действующего разрешения на действия.",
+      "informationConfidence": "SOURCE_BACKED_FUNCTIONAL",
+      "applicability": {
+        "profiles": [
+          "tem2-base",
+          "tem2u-improved"
+        ],
+        "variantSelectionRequired": true
+      },
+      "graph": {
+        "startNodeId": "q-pressure",
+        "nodes": [
+          {
+            "id": "q-pressure",
+            "type": "question",
+            "text": "Давление продолжает расти после достижения обычной точки разгрузки и/или срабатывает предохранительный клапан?",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": [
+              {
+                "label": "Да",
+                "nextNodeId": "t-safety"
+              },
+              {
+                "label": "Нет, проблема в медленном наборе давления",
+                "nextNodeId": "t-opposite"
+              },
+              {
+                "label": "Не знаю / исполнение не подтверждено",
+                "nextNodeId": "t-safety",
+                "responseKind": "UNKNOWN"
+              }
+            ]
+          },
+          {
+            "id": "t-safety",
+            "type": "terminal",
+            "text": "Safety gate: прекратить попытки повышать давление и локализовать регулятор давления/разгрузочное устройство по действующему порядку. Регулировочные винты и клапаны runtime не настраивает.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-opposite",
+            "type": "terminal",
+            "text": "Это противоположный симптом — пониженная производительность/медленный набор давления. Использовать TEM2-DIAG-017.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          }
+        ]
+      },
+      "sourceRefs": [
+        {
+          "sourceId": "TEM2-SRC-BMZ-MANUAL-1983",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию, 2-е переработанное и дополненное издание (1983; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2U-SRC-BMZ-MANUAL-1988",
+          "document": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-SRC-BRAKES-2026",
+          "document": "Правила технического обслуживания тормозного оборудования и управления тормозами железнодорожного подвижного состава, приложение № 65 к протоколу № 83 (редакция не указана; CURRENT_CONFIRMED; применимость: LOCOMOTIVES_GENERAL)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-ST3-KOVALEV-1980",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию (1980; статус не указан; применимость: )",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        }
+      ]
+    },
+    {
+      "id": "TEM2-DIAG-017",
+      "title": "Компрессор работает, но давление набирается слишком медленно или не достигает рабочего уровня",
+      "symptom": "компрессор не качает; давление медленно растет; пониженная производительность компрессора; не набирает главные резервуары",
+      "category": "AIR_COMPRESSOR_LOW_OUTPUT",
+      "severity": "SAFETY_CRITICAL_PNEUMATIC",
+      "equipmentRefs": [
+        "TEM2-EQ-COMP",
+        "TEM2-EQ-MAIN-RES",
+        "TEM2-EQ-OIL-SEP",
+        "TEM2-EQ-FEED-PIPE"
+      ],
+      "searchTerms": [
+        "компрессор работает а воздуха почти не прибавляется",
+        "главные резервуары очень долго качает",
+        "давление не доходит до рабочего",
+        "компрессор не качает",
+        "давление медленно растет",
+        "пониженная производительность компрессора",
+        "не набирает главные резервуары",
+        "компрессор работает но не качает",
+        "компрессор молотит давление еле растет"
+      ],
+      "sourceAgeNote": "Исторические источники не дают действующего разрешения на действия.",
+      "informationConfidence": "SOURCE_BACKED_FUNCTIONAL",
+      "applicability": {
+        "profiles": [
+          "tem2-base",
+          "tem2u-improved"
+        ],
+        "variantSelectionRequired": true
+      },
+      "graph": {
+        "startNodeId": "q-leak",
+        "nodes": [
+          {
+            "id": "q-leak",
+            "type": "question",
+            "text": "Есть заметная внешняя утечка воздуха из питательной/тормозной системы, объясняющая медленный набор?",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": [
+              {
+                "label": "Да, утечка слышна/видна по падению",
+                "nextNodeId": "t-leak"
+              },
+              {
+                "label": "Нет явной утечки",
+                "nextNodeId": "c-compressor"
+              },
+              {
+                "label": "Не знаю / исполнение не подтверждено",
+                "nextNodeId": "t-unknown",
+                "responseKind": "UNKNOWN"
+              }
+            ]
+          },
+          {
+            "id": "c-compressor",
+            "type": "check",
+            "text": "Сопоставить рост давления, температуру компрессора и наличие ненормального выброса воздуха/масла через сапун без разборки клапанов.\nОжидается: Давление растёт устойчиво без признаков внутреннего перепуска или перегрева.\nПри отклонении: При отсутствии внешней утечки признаки перегрева/перепуска указывают на внутреннюю неисправность компрессора или его клапанов.",
+            "nextNodeId": "t-compressor",
+            "actionLevel": "CAB",
+            "choices": []
+          },
+          {
+            "id": "t-leak",
+            "type": "terminal",
+            "text": "Приоритет — локализация внешней утечки; не обвинять компрессор, пока расход воздуха системой объясняет медленный набор.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-compressor",
+            "type": "terminal",
+            "text": "Внешняя утечка не подтверждена: локализация — компрессор/клапаны/разгрузочное устройство. Разборка в runtime не описывается.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-unknown",
+            "type": "terminal",
+            "text": "Нужно уточнить скорость роста давления, наличие утечки, нагрев компрессора и выброс через сапун.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          }
+        ]
+      },
+      "sourceRefs": [
+        {
+          "sourceId": "TEM2-SRC-BMZ-MANUAL-1983",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию, 2-е переработанное и дополненное издание (1983; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2U-SRC-BMZ-MANUAL-1988",
+          "document": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-SRC-BRAKES-2026",
+          "document": "Правила технического обслуживания тормозного оборудования и управления тормозами железнодорожного подвижного состава, приложение № 65 к протоколу № 83 (редакция не указана; CURRENT_CONFIRMED; применимость: LOCOMOTIVES_GENERAL)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-ST3-KOVALEV-1980",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию (1980; статус не указан; применимость: )",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        }
+      ]
+    },
+    {
+      "id": "TEM2-DIAG-018",
+      "title": "Самопроизвольно снижается давление в уравнительном резервуаре / тормозной магистрали",
+      "symptom": "само падает давление в уравнительном; тормозная магистраль самопроизвольно разряжается; в четвертом положении падает УР",
+      "category": "TRAIN_BRAKE_PRESSURE_DRIFT",
+      "severity": "SAFETY_CRITICAL_BRAKE",
+      "equipmentRefs": [
+        "TEM2-EQ-DRV-BRAKE",
+        "TEM2-EQ-EQ-RES",
+        "TEM2-EQ-BRAKE-PIPE",
+        "TEM2-EQ-FEED-PIPE"
+      ],
+      "searchTerms": [
+        "в четвертом положении уравнительный сам падает",
+        "ТМ начинает снижаться без команды",
+        "давление тормозной магистрали ползет вниз",
+        "само падает давление в уравнительном",
+        "тормозная магистраль самопроизвольно разряжается",
+        "в четвертом положении падает УР",
+        "уравнительный сам падает",
+        "в четвертом положении давление само уходит"
+      ],
+      "sourceAgeNote": "Исторические источники не дают действующего разрешения на действия.",
+      "informationConfidence": "SOURCE_BACKED_FUNCTIONAL",
+      "applicability": {
+        "profiles": [
+          "tem2-base",
+          "tem2u-improved"
+        ],
+        "variantSelectionRequired": true
+      },
+      "graph": {
+        "startNodeId": "q-follow",
+        "nodes": [
+          {
+            "id": "q-follow",
+            "type": "question",
+            "text": "При самопроизвольном падении уравнительного резервуара давление тормозной магистрали тоже следует вниз?",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": [
+              {
+                "label": "Да, снижается и ТМ",
+                "nextNodeId": "c-leak"
+              },
+              {
+                "label": "Нет, меняется только УР",
+                "nextNodeId": "t-control"
+              },
+              {
+                "label": "Не знаю / исполнение не подтверждено",
+                "nextNodeId": "t-safety",
+                "responseKind": "UNKNOWN"
+              }
+            ]
+          },
+          {
+            "id": "c-leak",
+            "type": "check",
+            "text": "В безопасном режиме сопоставить темп падения УР и ТМ и наличие слышимой утечки в соединениях, не разбирая кран машиниста.\nОжидается: В фиксированном положении давление устойчиво в пределах действующих норм.\nПри отклонении: Совместное падение УР/ТМ смещает поиск к утечке или управляющему узлу, а не только к показанию одного прибора.",
+            "nextNodeId": "t-leak",
+            "actionLevel": "CAB",
+            "choices": []
+          },
+          {
+            "id": "t-control",
+            "type": "terminal",
+            "text": "Меняется только УР: локализация ближе к его соединениям/управляющей части крана. Дальнейшая проверка — по действующим тормозным правилам.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-leak",
+            "type": "terminal",
+            "text": "УР и ТМ падают совместно: локализовать утечку/управляющий канал и оценить допустимость дальнейшего движения только по действующим правилам тормозов.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-safety",
+            "type": "terminal",
+            "text": "Если характер падения неясен, не считать тормоза исправными. Зафиксировать давления и выполнить предусмотренную правилами проверку тормозов.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          }
+        ]
+      },
+      "sourceRefs": [
+        {
+          "sourceId": "TEM2-SRC-BRAKES-2026",
+          "document": "Правила технического обслуживания тормозного оборудования и управления тормозами железнодорожного подвижного состава, приложение № 65 к протоколу № 83 (редакция не указана; CURRENT_CONFIRMED; применимость: LOCOMOTIVES_GENERAL)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-SRC-BMZ-MANUAL-1983",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию, 2-е переработанное и дополненное издание (1983; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2U-SRC-BMZ-MANUAL-1988",
+          "document": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-ST3-KOVALEV-1980",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию (1980; статус не указан; применимость: )",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        }
+      ]
+    },
+    {
+      "id": "TEM2-DIAG-019",
+      "title": "При первой ступени вспомогательного тормоза нет давления в тормозных цилиндрах",
+      "symptom": "вспомогательный тормоз не тормозит; нет давления в ТЦ; 254 кран не дает давление; первая ступень без тормоза",
+      "category": "INDEPENDENT_BRAKE_NO_APPLY",
+      "severity": "SAFETY_CRITICAL_BRAKE",
+      "equipmentRefs": [
+        "TEM2-EQ-INDEP-BRAKE",
+        "TEM2-EQ-FEED-PIPE",
+        "TEM2-EQ-BC"
+      ],
+      "searchTerms": [
+        "ставлю первую ступень а тормозные цилиндры ноль",
+        "локомотивный тормоз не срабатывает",
+        "кран 254 не дает давление",
+        "вспомогательный тормоз не тормозит",
+        "нет давления в ТЦ",
+        "254 кран не дает давление",
+        "первая ступень без тормоза",
+        "вспомогательный тормоз не тормозит",
+        "254 поставил тормоза нет"
+      ],
+      "sourceAgeNote": "Исторические источники не дают действующего разрешения на действия.",
+      "informationConfidence": "SOURCE_BACKED_FUNCTIONAL",
+      "applicability": {
+        "profiles": [
+          "tem2-base",
+          "tem2u-improved"
+        ],
+        "variantSelectionRequired": true
+      },
+      "graph": {
+        "startNodeId": "q-feed",
+        "nodes": [
+          {
+            "id": "q-feed",
+            "type": "question",
+            "text": "Питательное давление присутствует, но при команде вспомогательного тормоза давление в ТЦ не появляется?",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": [
+              {
+                "label": "Да, питание есть, ТЦ не наполняются",
+                "nextNodeId": "c-path"
+              },
+              {
+                "label": "Нет, нет и питающего давления",
+                "nextNodeId": "t-feed"
+              },
+              {
+                "label": "Не знаю / исполнение не подтверждено",
+                "nextNodeId": "t-safety",
+                "responseKind": "UNKNOWN"
+              }
+            ]
+          },
+          {
+            "id": "c-path",
+            "type": "check",
+            "text": "Сопоставить команду крана и начало изменения давления ТЦ; не разбирать кран и не регулировать его в эксплуатации.\nОжидается: ТЦ начинают наполняться согласно команде вспомогательного тормоза.\nПри отклонении: При наличии питания отсутствие реакции локализует кран/канал к ТЦ, а не компрессор.",
+            "nextNodeId": "t-valve",
+            "actionLevel": "CAB",
+            "choices": []
+          },
+          {
+            "id": "t-feed",
+            "type": "terminal",
+            "text": "Нет питающего давления — сначала решать пневматическое питание, а не кран вспомогательного тормоза.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-valve",
+            "type": "terminal",
+            "text": "Питание есть, ТЦ не реагируют: локализация в кране/канале к цилиндрам. Исправность тормоза не подтверждена; дальнейшие действия — по действующим правилам.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-safety",
+            "type": "terminal",
+            "text": "Если не удаётся подтвердить работу вспомогательного тормоза, считать функцию не подтверждённой и перейти к предусмотренной проверке тормозов.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          }
+        ]
+      },
+      "sourceRefs": [
+        {
+          "sourceId": "TEM2-SRC-BRAKES-2026",
+          "document": "Правила технического обслуживания тормозного оборудования и управления тормозами железнодорожного подвижного состава, приложение № 65 к протоколу № 83 (редакция не указана; CURRENT_CONFIRMED; применимость: LOCOMOTIVES_GENERAL)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-SRC-BMZ-MANUAL-1983",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию, 2-е переработанное и дополненное издание (1983; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2U-SRC-BMZ-MANUAL-1988",
+          "document": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-ST3-KOVALEV-1980",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию (1980; статус не указан; применимость: )",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        }
+      ]
+    },
+    {
+      "id": "TEM2-DIAG-020",
+      "title": "После команды отпуска вспомогательного тормоза давление в тормозных цилиндрах не уходит",
+      "symptom": "тормоз не отпускает; давление в ТЦ остается после отпуска; 254 не выпускает; локомотив заторможен после отпуска",
+      "category": "INDEPENDENT_BRAKE_NO_RELEASE",
+      "severity": "SAFETY_CRITICAL_BRAKE",
+      "equipmentRefs": [
+        "TEM2-EQ-INDEP-BRAKE",
+        "TEM2-EQ-BC"
+      ],
+      "searchTerms": [
+        "отпускаю 254 а цилиндры остаются",
+        "вспомогательный тормоз не отпустил",
+        "давление ТЦ не падает",
+        "тормоз не отпускает",
+        "давление в ТЦ остается после отпуска",
+        "254 не выпускает",
+        "локомотив заторможен после отпуска",
+        "вспомогательный тормоз не отпускает",
+        "254 отпустил а цилиндры держат"
+      ],
+      "sourceAgeNote": "Исторические источники не дают действующего разрешения на действия.",
+      "informationConfidence": "SOURCE_BACKED_FUNCTIONAL",
+      "applicability": {
+        "profiles": [
+          "tem2-base",
+          "tem2u-improved"
+        ],
+        "variantSelectionRequired": true
+      },
+      "graph": {
+        "startNodeId": "q-release",
+        "nodes": [
+          {
+            "id": "q-release",
+            "type": "question",
+            "text": "После перевода крана в отпускное положение давление ТЦ остаётся и механический отпуск не подтверждается?",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": [
+              {
+                "label": "Да, давление остаётся",
+                "nextNodeId": "c-exhaust"
+              },
+              {
+                "label": "Нет, давление ушло, но есть ощущение торможения",
+                "nextNodeId": "t-mechanical"
+              },
+              {
+                "label": "Не знаю / исполнение не подтверждено",
+                "nextNodeId": "t-safety",
+                "responseKind": "UNKNOWN"
+              }
+            ]
+          },
+          {
+            "id": "c-exhaust",
+            "type": "check",
+            "text": "По манометру и слышимому выпуску определить, начинается ли разрядка ТЦ после команды отпуска, не вмешиваясь в клапаны.\nОжидается: После команды отпуска давление ТЦ устойчиво снижается к отпускному состоянию.\nПри отклонении: Нет начала выпуска — управляющая/атмосферная часть; выпуск есть, но давление сохраняется — downstream канал/механическая часть требует проверки.",
+            "nextNodeId": "t-pneumatic",
+            "actionLevel": "CAB",
+            "choices": []
+          },
+          {
+            "id": "t-pneumatic",
+            "type": "terminal",
+            "text": "Отпуск пневматически не подтверждён. Не продолжать движение, пока тормозное состояние не оценено по действующим правилам.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-mechanical",
+            "type": "terminal",
+            "text": "Давление ТЦ ушло, но торможение ощущается: это уже не отказ выпуска воздуха; требуется проверка тормозной рычажной/механической части в безопасном состоянии.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-safety",
+            "type": "terminal",
+            "text": "Неясный отпуск тормоза считать неподтверждённым до проверки.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          }
+        ]
+      },
+      "sourceRefs": [
+        {
+          "sourceId": "TEM2-SRC-BRAKES-2026",
+          "document": "Правила технического обслуживания тормозного оборудования и управления тормозами железнодорожного подвижного состава, приложение № 65 к протоколу № 83 (редакция не указана; CURRENT_CONFIRMED; применимость: LOCOMOTIVES_GENERAL)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-SRC-BMZ-MANUAL-1983",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию, 2-е переработанное и дополненное издание (1983; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2U-SRC-BMZ-MANUAL-1988",
+          "document": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-ST3-KOVALEV-1980",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию (1980; статус не указан; применимость: )",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        }
+      ]
+    },
+    {
+      "id": "TEM2-DIAG-021",
+      "title": "Растёт температура воды/масла и происходит сброс нагрузки либо не включается охлаждение",
+      "symptom": "перегрев воды; перегрев масла; не включается вентилятор холодильника; по температуре сбрасывает нагрузку",
+      "category": "COOLING_OVERHEAT",
+      "severity": "ELEVATED_THERMAL",
+      "equipmentRefs": [
+        "TEM2U-EQ-DIESEL",
+        "TEM2-EQ-CONTROLLER"
+      ],
+      "searchTerms": [
+        "температура растет а охлаждение не включается",
+        "по воде сбрасывает нагрузку",
+        "жалюзи или вентилятор не отрабатывают",
+        "перегрев воды",
+        "перегрев масла",
+        "не включается вентилятор холодильника",
+        "по температуре сбрасывает нагрузку",
+        "перегрев и не включается охлаждение",
+        "вода растет вентилятор не включается"
+      ],
+      "sourceAgeNote": "Исторические источники не дают действующего разрешения на действия.",
+      "informationConfidence": "SOURCE_BACKED_FUNCTIONAL",
+      "applicability": {
+        "profiles": [
+          "tem2-base",
+          "tem2u-improved"
+        ],
+        "variantSelectionRequired": true
+      },
+      "graph": {
+        "startNodeId": "q-cooling",
+        "nodes": [
+          {
+            "id": "q-cooling",
+            "type": "question",
+            "text": "При росте температуры штатная автоматика охлаждения даёт признаки открытия жалюзи/включения вентилятора?",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": [
+              {
+                "label": "Нет, автоматика не реагирует",
+                "nextNodeId": "t-control"
+              },
+              {
+                "label": "Да, охлаждение работает, температура всё равно растёт",
+                "nextNodeId": "c-load"
+              },
+              {
+                "label": "Не знаю / исполнение не подтверждено",
+                "nextNodeId": "t-safety",
+                "responseKind": "UNKNOWN"
+              }
+            ]
+          },
+          {
+            "id": "c-load",
+            "type": "check",
+            "text": "Сопоставить рост температуры с нагрузкой дизеля и состоянием охлаждения, не повышая нагрузку для проверки.\nОжидается: При исправном охлаждении температура стабилизируется в допустимом диапазоне для фактического исполнения.\nПри отклонении: Охлаждение включено, но температура растёт — причина не сводится к автоматике; требуется проверка циркуляции/теплоотвода.",
+            "nextNodeId": "t-capacity",
+            "actionLevel": "CAB",
+            "choices": []
+          },
+          {
+            "id": "t-control",
+            "type": "terminal",
+            "text": "Температура растёт, автоматика охлаждения не реагирует: локализация в управлении охлаждением/датчиках. Не шунтировать температурную защиту.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-capacity",
+            "type": "terminal",
+            "text": "Автоматика работает, но тепло не отводится: снизить нагрузку в рамках действующей инструкции и локализовать циркуляцию/холодильную часть в безопасном состоянии.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-safety",
+            "type": "terminal",
+            "text": "Если температура уже вышла в опасную область или произошёл защитный сброс, не восстанавливать нагрузку до выяснения причины.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          }
+        ]
+      },
+      "sourceRefs": [
+        {
+          "sourceId": "TEM2-SRC-BMZ-MANUAL-1983",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию, 2-е переработанное и дополненное издание (1983; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2U-SRC-BMZ-MANUAL-1988",
+          "document": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-ST3-KOVALEV-1980",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию (1980; статус не указан; применимость: )",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        }
+      ]
+    },
+    {
+      "id": "TEM2-DIAG-022",
+      "title": "ТЭМ2У: не работает управление одним лицом при исправном основном управлении",
+      "symptom": "не работает управление одним лицом; основной контроллер работает а одно-лицовое управление нет; ТЭМ2У не принимает команду режима одним лицом",
+      "category": "TEM2U_ONE_PERSON_CONTROL",
+      "severity": "ELEVATED_CONTROL",
+      "equipmentRefs": [
+        "TEM2U-EQ-ONE-PERSON",
+        "TEM2-EQ-CONTROLLER"
+      ],
+      "searchTerms": [
+        "на ТЭМ2У обычное управление есть а одним лицом нет",
+        "одно-лицовое управление не реагирует",
+        "профильное управление ТЭМ2У не работает",
+        "не работает управление одним лицом",
+        "основной контроллер работает а одно-лицовое управление нет",
+        "ТЭМ2У не принимает команду режима одним лицом",
+        "ТЭМ2У управление одним лицом не работает",
+        "одно лицо на ТЭМ2У не принимает команды"
+      ],
+      "sourceAgeNote": "Исторические источники не дают действующего разрешения на действия.",
+      "informationConfidence": "SOURCE_BACKED_FUNCTIONAL",
+      "applicability": {
+        "profiles": [
+          "tem2u-improved"
+        ],
+        "variantSelectionRequired": true
+      },
+      "graph": {
+        "startNodeId": "q-profile",
+        "nodes": [
+          {
+            "id": "q-profile",
+            "type": "question",
+            "text": "Фактически установленное оборудование управления одним лицом на этом ТЭМ2У подтверждено?",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": [
+              {
+                "label": "Да, оборудование подтверждено",
+                "nextNodeId": "c-mode"
+              },
+              {
+                "label": "Нет или неизвестно",
+                "nextNodeId": "t-profile"
+              },
+              {
+                "label": "Не знаю / исполнение не подтверждено",
+                "nextNodeId": "t-profile",
+                "responseKind": "UNKNOWN"
+              }
+            ]
+          },
+          {
+            "id": "c-mode",
+            "type": "check",
+            "text": "Сопоставить работу основного контроллера и профильного режима на одной и той же разрешённой функции без обхода блокировок.\nОжидается: При корректном выборе режима профильный канал передаёт ту же разрешённую команду.\nПри отклонении: Основной канал работает, профильный нет — локализация в профильной цепи ТЭМ2У, а не в общей тяговой цепи.",
+            "nextNodeId": "t-profile-channel",
+            "actionLevel": "CAB",
+            "choices": []
+          },
+          {
+            "id": "t-profile",
+            "type": "terminal",
+            "text": "FAIL CLOSED: наличие оборудования не подтверждено. Не применять схему ТЭМ2У по одному названию серии; сначала подтвердить фактическое исполнение.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-profile-channel",
+            "type": "terminal",
+            "text": "Общее управление исправно, отказ только профильного канала — локализация в оборудовании управления одним лицом/его разрешениях. Перемычки не использовать.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          }
+        ]
+      },
+      "sourceRefs": [
+        {
+          "sourceId": "TEM2U-SRC-BMZ-MANUAL-1988",
+          "document": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        }
+      ]
+    },
+    {
+      "id": "TEM2-DIAG-023",
+      "title": "ТЭМ2У: ведомый тепловоз по системе многих единиц не повторяет команды",
+      "symptom": "ведомый ТЭМ2У не повторяет команды; СМЕ не работает; второй тепловоз не набирает позиции; команды между тепловозами не проходят",
+      "category": "TEM2U_MULTIPLE_UNIT_CONTROL",
+      "severity": "ELEVATED_CONTROL",
+      "equipmentRefs": [
+        "TEM2U-EQ-MU-CONTROL",
+        "TEM2-EQ-CONTROLLER"
+      ],
+      "searchTerms": [
+        "по СМЕ второй ТЭМ2У не реагирует",
+        "ведомый не повторяет позицию",
+        "межтепловозное управление не передает команду",
+        "ведомый ТЭМ2У не повторяет команды",
+        "СМЕ не работает",
+        "второй тепловоз не набирает позиции",
+        "команды между тепловозами не проходят",
+        "ТЭМ2У второй по СМЕ не реагирует",
+        "второй лок по СМЕ позиции не повторяет"
+      ],
+      "sourceAgeNote": "Исторические источники не дают действующего разрешения на действия.",
+      "informationConfidence": "SOURCE_BACKED_FUNCTIONAL",
+      "applicability": {
+        "profiles": [
+          "tem2u-improved"
+        ],
+        "variantSelectionRequired": true
+      },
+      "graph": {
+        "startNodeId": "q-profile",
+        "nodes": [
+          {
+            "id": "q-profile",
+            "type": "question",
+            "text": "Система многих единиц и совместимое исполнение обоих тепловозов подтверждены документально/по фактическому оборудованию?",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": [
+              {
+                "label": "Да, исполнение подтверждено",
+                "nextNodeId": "c-compare"
+              },
+              {
+                "label": "Нет или неизвестно",
+                "nextNodeId": "t-profile"
+              },
+              {
+                "label": "Не знаю / исполнение не подтверждено",
+                "nextNodeId": "t-profile",
+                "responseKind": "UNKNOWN"
+              }
+            ]
+          },
+          {
+            "id": "c-compare",
+            "type": "check",
+            "text": "Сопоставить одну безопасную команду на ведущем и её штатный признак на ведомом, не вмешиваясь в межтепловозные соединения под напряжением.\nОжидается: Команда ведущего имеет согласованный штатный признак на ведомом.\nПри отклонении: Команда есть на ведущем и отсутствует на ведомом — локализация в канале СМЕ/разрешениях/межтепловозном соединении.",
+            "nextNodeId": "t-channel",
+            "actionLevel": "CAB",
+            "choices": []
+          },
+          {
+            "id": "t-profile",
+            "type": "terminal",
+            "text": "FAIL CLOSED: совместимость/исполнение СМЕ не подтверждены. Не использовать предположения по серии и не давать инструкции по распиновке/перемычкам.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-channel",
+            "type": "terminal",
+            "text": "Локализация в канале СМЕ между подтверждёнными исполнениями. Точная распиновка и физическое вмешательство требуют документации конкретного исполнения и безопасного состояния.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          }
+        ]
+      },
+      "sourceRefs": [
+        {
+          "sourceId": "TEM2U-SRC-BMZ-MANUAL-1988",
+          "document": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        }
+      ]
+    },
+    {
+      "id": "TEM2-DIAG-024",
+      "title": "Топливоподкачивающий насос не работает либо работает, но не создаёт нормального давления",
+      "symptom": "топливный насос не работает; топливный насос работает но давления нет; низкое давление топлива; воздух в топливной системе",
+      "category": "FUEL_SUPPLY",
+      "severity": "ELEVATED_MECHANICAL",
+      "equipmentRefs": [
+        "TEM2U-EQ-DIESEL",
+        "TEM2-EQ-BAT",
+        "TEM2-EQ-START-CIRCUIT"
+      ],
+      "searchTerms": [
+        "топливоподкачивающий вообще не гудит",
+        "насос работает а давление топлива низкое",
+        "перед пуском нет нормального давления топлива",
+        "топливный насос не работает",
+        "топливный насос работает но давления нет",
+        "низкое давление топлива",
+        "воздух в топливной системе",
+        "топливный насос работает а давления нет",
+        "насос жужжит а топлива по давлению нет"
+      ],
+      "sourceAgeNote": "Исторические источники не дают действующего разрешения на действия.",
+      "informationConfidence": "SOURCE_BACKED_FUNCTIONAL",
+      "applicability": {
+        "profiles": [
+          "tem2-base",
+          "tem2u-improved"
+        ],
+        "variantSelectionRequired": true
+      },
+      "graph": {
+        "startNodeId": "q-running",
+        "nodes": [
+          {
+            "id": "q-running",
+            "type": "question",
+            "text": "Сам электродвигатель топливоподкачивающего насоса работает?",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": [
+              {
+                "label": "Нет, насос не работает",
+                "nextNodeId": "t-electrical"
+              },
+              {
+                "label": "Да, насос работает, давления недостаточно",
+                "nextNodeId": "c-pressure"
+              },
+              {
+                "label": "Не знаю / исполнение не подтверждено",
+                "nextNodeId": "t-unknown",
+                "responseKind": "UNKNOWN"
+              }
+            ]
+          },
+          {
+            "id": "c-pressure",
+            "type": "check",
+            "text": "По штатному манометру/признакам оценить давление и наличие признаков воздуха/подсоса без перехода к аварийным схемам питания топливом.\nОжидается: Работающий насос создаёт устойчивое давление, достаточное для штатного пуска конкретного исполнения.\nПри отклонении: Работа двигателя насоса при низком давлении отделяет гидравлическую/топливную причину от электрического отказа насоса.",
+            "nextNodeId": "t-fuel",
+            "actionLevel": "CAB",
+            "choices": []
+          },
+          {
+            "id": "t-electrical",
+            "type": "terminal",
+            "text": "Насос не работает: локализация в его питании/электродвигателе и пусковой последовательности. Аварийные обходы исторических руководств не являются runtime-действием.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-fuel",
+            "type": "terminal",
+            "text": "Насос работает, давление низкое: искать воздух, фильтрацию, подсос или неисправность насоса. Полевые аварийные схемы не применять без текущего разрешающего источника.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          },
+          {
+            "id": "t-unknown",
+            "type": "terminal",
+            "text": "Сначала различить: насос не работает вообще или работает, но не создаёт давление — это разные ветви одного симптома.",
+            "nextNodeId": null,
+            "actionLevel": "INFORMATION_ONLY",
+            "choices": []
+          }
+        ]
+      },
+      "sourceRefs": [
+        {
+          "sourceId": "TEM2-SRC-BMZ-MANUAL-1983",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию, 2-е переработанное и дополненное издание (1983; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2U-SRC-BMZ-MANUAL-1988",
+          "document": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-ST3-KOVALEV-1980",
+          "document": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию (1980; статус не указан; применимость: )",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        },
+        {
+          "sourceId": "TEM2-ST3-VPOEZDKU-2017",
+          "document": "Обнаружение и устранение неисправностей в пути следования на ТЭМ2 (2017; статус не указан; применимость: )",
+          "role": "FACTORY_BASELINE_OR_CURRENT_REFERENCE"
+        }
+      ]
+    }
+  ]
+}

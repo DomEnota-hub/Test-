@@ -1,0 +1,825 @@
+{
+  "sequences": [
+    {
+      "id": "TEM2-TEM2-SCH-TRACTION-FLOW",
+      "family": "TEM2",
+      "sourceSchemeRef": "TEM2-INT-TEM2-SCH-TRACTION",
+      "title": "Тяговая силовая цепь",
+      "functionalDisclaimer": "Функциональная последовательность по источникам; не является монтажной схемой и не подтверждает фактически установленное оборудование.",
+      "steps": [
+        {
+          "title": "Тяговая силовая цепь",
+          "explanation": "Функциональная последовательность; проверьте фактическое исполнение.",
+          "edges": [
+            {
+              "fromEquipmentId": "TEM2-EQ-TG",
+              "toEquipmentId": "TEM2-EQ-P1",
+              "flowKind": "TRACTION_CURRENT",
+              "label": "electrical traction current"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-P1",
+              "toEquipmentId": "TEM2-EQ-TM1-3",
+              "flowKind": "TRACTION_CURRENT",
+              "label": "electrical traction current"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-TM1-3",
+              "toEquipmentId": "TEM2-EQ-REV",
+              "flowKind": "TRACTION_CURRENT",
+              "label": "electrical traction current"
+            }
+          ]
+        },
+        {
+          "title": "Тяговая силовая цепь",
+          "explanation": "Функциональная последовательность; проверьте фактическое исполнение.",
+          "edges": [
+            {
+              "fromEquipmentId": "TEM2-EQ-TG",
+              "toEquipmentId": "TEM2-EQ-P2",
+              "flowKind": "TRACTION_CURRENT",
+              "label": "electrical traction current"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-P2",
+              "toEquipmentId": "TEM2-EQ-TM4-6",
+              "flowKind": "TRACTION_CURRENT",
+              "label": "electrical traction current"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-TM4-6",
+              "toEquipmentId": "TEM2-EQ-REV",
+              "flowKind": "TRACTION_CURRENT",
+              "label": "electrical traction current"
+            }
+          ]
+        }
+      ],
+      "sourcePresentations": [
+        {
+          "title": "Электрические схемы тепловозов ТЭМ2 и ТЭМ1 (1980; HISTORICAL_REFERENCE; применимость: ТЭМ2)",
+          "documentDetails": ""
+        },
+        {
+          "title": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "documentDetails": "ПО «Брянский машиностроительный завод» имени В. И. Ленина"
+        }
+      ]
+    },
+    {
+      "id": "TEM2-TEM2-SCH-EXCITATION-FLOW",
+      "family": "TEM2",
+      "sourceSchemeRef": "TEM2-INT-TEM2-SCH-EXCITATION",
+      "title": "Возбуждение тягового генератора",
+      "functionalDisclaimer": "Функциональная последовательность по источникам; не является монтажной схемой и не подтверждает фактически установленное оборудование.",
+      "steps": [
+        {
+          "title": "Возбуждение тягового генератора",
+          "explanation": "Функциональная последовательность; проверьте фактическое исполнение.",
+          "edges": [
+            {
+              "fromEquipmentId": "TEM2-EQ-AUX-GEN",
+              "toEquipmentId": "TEM2-EQ-VV",
+              "flowKind": "EXCITATION",
+              "label": "electrical excitation"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-VV",
+              "toEquipmentId": "TEM2-EQ-EXCITER",
+              "flowKind": "EXCITATION",
+              "label": "electrical excitation"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-EXCITER",
+              "toEquipmentId": "TEM2-EQ-KV",
+              "flowKind": "EXCITATION",
+              "label": "electrical excitation"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-KV",
+              "toEquipmentId": "TEM2-EQ-TG",
+              "flowKind": "EXCITATION",
+              "label": "electrical excitation"
+            }
+          ]
+        }
+      ],
+      "sourcePresentations": [
+        {
+          "title": "Электрические схемы тепловозов ТЭМ2 и ТЭМ1 (1980; HISTORICAL_REFERENCE; применимость: ТЭМ2)",
+          "documentDetails": ""
+        },
+        {
+          "title": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "documentDetails": "ПО «Брянский машиностроительный завод» имени В. И. Ленина"
+        }
+      ]
+    },
+    {
+      "id": "TEM2-TEM2-SCH-START-FLOW",
+      "family": "TEM2",
+      "sourceSchemeRef": "TEM2-INT-TEM2-SCH-START",
+      "title": "Пуск дизеля и аккумуляторная цепь",
+      "functionalDisclaimer": "Функциональная последовательность по источникам; не является монтажной схемой и не подтверждает фактически установленное оборудование.",
+      "steps": [
+        {
+          "title": "Пуск дизеля и аккумуляторная цепь",
+          "explanation": "Функциональная последовательность; проверьте фактическое исполнение.",
+          "edges": [
+            {
+              "fromEquipmentId": "TEM2-EQ-BAT",
+              "toEquipmentId": "TEM2-EQ-START-CIRCUIT",
+              "flowKind": "CONTROL_POWER",
+              "label": "electrical control power"
+            }
+          ]
+        }
+      ],
+      "sourcePresentations": [
+        {
+          "title": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию, 2-е переработанное и дополненное издание (1983; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2)",
+          "documentDetails": "ПО «Брянский машиностроительный завод»"
+        },
+        {
+          "title": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "documentDetails": "ПО «Брянский машиностроительный завод» имени В. И. Ленина"
+        }
+      ]
+    },
+    {
+      "id": "TEM2-TEM2-SCH-AUX-FLOW",
+      "family": "TEM2",
+      "sourceSchemeRef": "TEM2-INT-TEM2-SCH-AUX",
+      "title": "Вспомогательное электроснабжение и заряд",
+      "functionalDisclaimer": "Функциональная последовательность по источникам; не является монтажной схемой и не подтверждает фактически установленное оборудование.",
+      "steps": [
+        {
+          "title": "Вспомогательное электроснабжение и заряд",
+          "explanation": "Функциональная последовательность; проверьте фактическое исполнение.",
+          "edges": [
+            {
+              "fromEquipmentId": "TEM2-EQ-AUX-GEN",
+              "toEquipmentId": "TEM2-EQ-VOLT-REG",
+              "flowKind": "AUXILIARY_POWER",
+              "label": "electrical aux power"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-VOLT-REG",
+              "toEquipmentId": "TEM2-EQ-BAT",
+              "flowKind": "AUXILIARY_POWER",
+              "label": "electrical aux power"
+            }
+          ]
+        }
+      ],
+      "sourcePresentations": [
+        {
+          "title": "Электрические схемы тепловозов ТЭМ2 и ТЭМ1 (1980; HISTORICAL_REFERENCE; применимость: ТЭМ2)",
+          "documentDetails": ""
+        },
+        {
+          "title": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "documentDetails": "ПО «Брянский машиностроительный завод» имени В. И. Ленина"
+        }
+      ]
+    },
+    {
+      "id": "TEM2-TEM2-SCH-CONTROL-FLOW",
+      "family": "TEM2",
+      "sourceSchemeRef": "TEM2-INT-TEM2-SCH-CONTROL",
+      "title": "Функциональная цепь тягового управления и защит",
+      "functionalDisclaimer": "Функциональная последовательность по источникам; не является монтажной схемой и не подтверждает фактически установленное оборудование.",
+      "steps": [
+        {
+          "title": "Функциональная цепь тягового управления и защит",
+          "explanation": "Функциональная последовательность; проверьте фактическое исполнение.",
+          "edges": [
+            {
+              "fromEquipmentId": "TEM2-EQ-CONTROLLER",
+              "toEquipmentId": "TEM2-EQ-REV",
+              "flowKind": "COMMAND",
+              "label": "control command"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-REV",
+              "toEquipmentId": "TEM2-EQ-P1",
+              "flowKind": "COMMAND",
+              "label": "control command"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-P1",
+              "toEquipmentId": "TEM2-EQ-P2",
+              "flowKind": "COMMAND",
+              "label": "control command"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-P2",
+              "toEquipmentId": "TEM2-EQ-VV",
+              "flowKind": "COMMAND",
+              "label": "control command"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-VV",
+              "toEquipmentId": "TEM2-EQ-KV",
+              "flowKind": "COMMAND",
+              "label": "control command"
+            }
+          ]
+        }
+      ],
+      "sourcePresentations": [
+        {
+          "title": "Электрические схемы тепловозов ТЭМ2 и ТЭМ1 (1980; HISTORICAL_REFERENCE; применимость: ТЭМ2)",
+          "documentDetails": ""
+        },
+        {
+          "title": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "documentDetails": "ПО «Брянский машиностроительный завод» имени В. И. Ленина"
+        }
+      ]
+    },
+    {
+      "id": "TEM2-TEM2-SCH-AIR-SUPPLY-FLOW",
+      "family": "TEM2",
+      "sourceSchemeRef": "TEM2-INT-TEM2-SCH-AIR-SUPPLY",
+      "title": "Получение сжатого воздуха и питательная магистраль",
+      "functionalDisclaimer": "Функциональная последовательность по источникам; не является монтажной схемой и не подтверждает фактически установленное оборудование.",
+      "steps": [
+        {
+          "title": "Получение сжатого воздуха и питательная магистраль",
+          "explanation": "Функциональная последовательность; проверьте фактическое исполнение.",
+          "edges": [
+            {
+              "fromEquipmentId": "TEM2-EQ-COMP",
+              "toEquipmentId": "TEM2-EQ-MAIN-RES",
+              "flowKind": "AIR_SUPPLY",
+              "label": "pneumatic supply"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-MAIN-RES",
+              "toEquipmentId": "TEM2-EQ-OIL-SEP",
+              "flowKind": "AIR_SUPPLY",
+              "label": "pneumatic supply"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-OIL-SEP",
+              "toEquipmentId": "TEM2-EQ-FEED-PIPE",
+              "flowKind": "AIR_SUPPLY",
+              "label": "pneumatic supply"
+            }
+          ]
+        }
+      ],
+      "sourcePresentations": [
+        {
+          "title": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию, 2-е переработанное и дополненное издание (1983; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2)",
+          "documentDetails": "ПО «Брянский машиностроительный завод»"
+        },
+        {
+          "title": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "documentDetails": "ПО «Брянский машиностроительный завод» имени В. И. Ленина"
+        }
+      ]
+    },
+    {
+      "id": "TEM2-TEM2-SCH-TRAIN-BRAKE-FLOW",
+      "family": "TEM2",
+      "sourceSchemeRef": "TEM2-INT-TEM2-SCH-TRAIN-BRAKE",
+      "title": "Автоматический поездной тормоз",
+      "functionalDisclaimer": "Функциональная последовательность по источникам; не является монтажной схемой и не подтверждает фактически установленное оборудование.",
+      "steps": [
+        {
+          "title": "Автоматический поездной тормоз",
+          "explanation": "Функциональная последовательность; проверьте фактическое исполнение.",
+          "edges": [
+            {
+              "fromEquipmentId": "TEM2-EQ-FEED-PIPE",
+              "toEquipmentId": "TEM2-EQ-DRV-BRAKE",
+              "flowKind": "CONTROL_PRESSURE",
+              "label": "pneumatic brake control"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-DRV-BRAKE",
+              "toEquipmentId": "TEM2-EQ-EQ-RES",
+              "flowKind": "CONTROL_PRESSURE",
+              "label": "pneumatic brake control"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-EQ-RES",
+              "toEquipmentId": "TEM2-EQ-BRAKE-PIPE",
+              "flowKind": "CONTROL_PRESSURE",
+              "label": "pneumatic brake control"
+            }
+          ]
+        },
+        {
+          "title": "Автоматический поездной тормоз",
+          "explanation": "Функциональная последовательность; проверьте фактическое исполнение.",
+          "edges": [
+            {
+              "fromEquipmentId": "TEM2-EQ-BRAKE-PIPE",
+              "toEquipmentId": "TEM2-EQ-AIR-DIST",
+              "flowKind": "BRAKE_CYLINDER_CONTROL",
+              "label": "pneumatic brake actuation"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-AIR-DIST",
+              "toEquipmentId": "TEM2-EQ-AUX-RES",
+              "flowKind": "BRAKE_CYLINDER_CONTROL",
+              "label": "pneumatic brake actuation"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-AUX-RES",
+              "toEquipmentId": "TEM2-EQ-BC",
+              "flowKind": "BRAKE_CYLINDER_CONTROL",
+              "label": "pneumatic brake actuation"
+            }
+          ]
+        }
+      ],
+      "sourcePresentations": [
+        {
+          "title": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию, 2-е переработанное и дополненное издание (1983; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2)",
+          "documentDetails": "ПО «Брянский машиностроительный завод»"
+        },
+        {
+          "title": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "documentDetails": "ПО «Брянский машиностроительный завод» имени В. И. Ленина"
+        },
+        {
+          "title": "Правила технического обслуживания тормозного оборудования и управления тормозами железнодорожного подвижного состава, приложение № 65 к протоколу № 83 (редакция не указана; CURRENT_CONFIRMED; применимость: LOCOMOTIVES_GENERAL)",
+          "documentDetails": "Совет по железнодорожному транспорту государств — участников Содружества"
+        }
+      ]
+    },
+    {
+      "id": "TEM2-TEM2-SCH-LOCO-BRAKE-FLOW",
+      "family": "TEM2",
+      "sourceSchemeRef": "TEM2-INT-TEM2-SCH-LOCO-BRAKE",
+      "title": "Вспомогательный прямодействующий тормоз локомотива",
+      "functionalDisclaimer": "Функциональная последовательность по источникам; не является монтажной схемой и не подтверждает фактически установленное оборудование.",
+      "steps": [
+        {
+          "title": "Вспомогательный прямодействующий тормоз локомотива",
+          "explanation": "Функциональная последовательность; проверьте фактическое исполнение.",
+          "edges": [
+            {
+              "fromEquipmentId": "TEM2-EQ-FEED-PIPE",
+              "toEquipmentId": "TEM2-EQ-INDEP-BRAKE",
+              "flowKind": "CONTROL_PRESSURE",
+              "label": "pneumatic brake control"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-INDEP-BRAKE",
+              "toEquipmentId": "TEM2-EQ-BC",
+              "flowKind": "CONTROL_PRESSURE",
+              "label": "pneumatic brake control"
+            }
+          ]
+        }
+      ],
+      "sourcePresentations": [
+        {
+          "title": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию, 2-е переработанное и дополненное издание (1983; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2)",
+          "documentDetails": "ПО «Брянский машиностроительный завод»"
+        },
+        {
+          "title": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "documentDetails": "ПО «Брянский машиностроительный завод» имени В. И. Ленина"
+        },
+        {
+          "title": "Правила технического обслуживания тормозного оборудования и управления тормозами железнодорожного подвижного состава, приложение № 65 к протоколу № 83 (редакция не указана; CURRENT_CONFIRMED; применимость: LOCOMOTIVES_GENERAL)",
+          "documentDetails": "Совет по железнодорожному транспорту государств — участников Содружества"
+        }
+      ]
+    },
+    {
+      "id": "TEM2U-TEM2-SCH-TRACTION-FLOW",
+      "family": "TEM2U",
+      "sourceSchemeRef": "TEM2U-INT-TEM2-SCH-TRACTION",
+      "title": "Тяговая силовая цепь",
+      "functionalDisclaimer": "Функциональная последовательность по источникам; не является монтажной схемой и не подтверждает фактически установленное оборудование.",
+      "steps": [
+        {
+          "title": "Тяговая силовая цепь",
+          "explanation": "Функциональная последовательность; проверьте фактическое исполнение.",
+          "edges": [
+            {
+              "fromEquipmentId": "TEM2-EQ-TG",
+              "toEquipmentId": "TEM2-EQ-P1",
+              "flowKind": "TRACTION_CURRENT",
+              "label": "electrical traction current"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-P1",
+              "toEquipmentId": "TEM2-EQ-TM1-3",
+              "flowKind": "TRACTION_CURRENT",
+              "label": "electrical traction current"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-TM1-3",
+              "toEquipmentId": "TEM2-EQ-REV",
+              "flowKind": "TRACTION_CURRENT",
+              "label": "electrical traction current"
+            }
+          ]
+        },
+        {
+          "title": "Тяговая силовая цепь",
+          "explanation": "Функциональная последовательность; проверьте фактическое исполнение.",
+          "edges": [
+            {
+              "fromEquipmentId": "TEM2-EQ-TG",
+              "toEquipmentId": "TEM2-EQ-P2",
+              "flowKind": "TRACTION_CURRENT",
+              "label": "electrical traction current"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-P2",
+              "toEquipmentId": "TEM2-EQ-TM4-6",
+              "flowKind": "TRACTION_CURRENT",
+              "label": "electrical traction current"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-TM4-6",
+              "toEquipmentId": "TEM2-EQ-REV",
+              "flowKind": "TRACTION_CURRENT",
+              "label": "electrical traction current"
+            }
+          ]
+        }
+      ],
+      "sourcePresentations": [
+        {
+          "title": "Электрические схемы тепловозов ТЭМ2 и ТЭМ1 (1980; HISTORICAL_REFERENCE; применимость: ТЭМ2)",
+          "documentDetails": ""
+        },
+        {
+          "title": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "documentDetails": "ПО «Брянский машиностроительный завод» имени В. И. Ленина"
+        }
+      ]
+    },
+    {
+      "id": "TEM2U-TEM2-SCH-EXCITATION-FLOW",
+      "family": "TEM2U",
+      "sourceSchemeRef": "TEM2U-INT-TEM2-SCH-EXCITATION",
+      "title": "Возбуждение тягового генератора",
+      "functionalDisclaimer": "Функциональная последовательность по источникам; не является монтажной схемой и не подтверждает фактически установленное оборудование.",
+      "steps": [
+        {
+          "title": "Возбуждение тягового генератора",
+          "explanation": "Функциональная последовательность; проверьте фактическое исполнение.",
+          "edges": [
+            {
+              "fromEquipmentId": "TEM2-EQ-AUX-GEN",
+              "toEquipmentId": "TEM2-EQ-VV",
+              "flowKind": "EXCITATION",
+              "label": "electrical excitation"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-VV",
+              "toEquipmentId": "TEM2-EQ-EXCITER",
+              "flowKind": "EXCITATION",
+              "label": "electrical excitation"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-EXCITER",
+              "toEquipmentId": "TEM2-EQ-KV",
+              "flowKind": "EXCITATION",
+              "label": "electrical excitation"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-KV",
+              "toEquipmentId": "TEM2-EQ-TG",
+              "flowKind": "EXCITATION",
+              "label": "electrical excitation"
+            }
+          ]
+        }
+      ],
+      "sourcePresentations": [
+        {
+          "title": "Электрические схемы тепловозов ТЭМ2 и ТЭМ1 (1980; HISTORICAL_REFERENCE; применимость: ТЭМ2)",
+          "documentDetails": ""
+        },
+        {
+          "title": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "documentDetails": "ПО «Брянский машиностроительный завод» имени В. И. Ленина"
+        }
+      ]
+    },
+    {
+      "id": "TEM2U-TEM2-SCH-START-FLOW",
+      "family": "TEM2U",
+      "sourceSchemeRef": "TEM2U-INT-TEM2-SCH-START",
+      "title": "Пуск дизеля и аккумуляторная цепь",
+      "functionalDisclaimer": "Функциональная последовательность по источникам; не является монтажной схемой и не подтверждает фактически установленное оборудование.",
+      "steps": [
+        {
+          "title": "Пуск дизеля и аккумуляторная цепь",
+          "explanation": "Функциональная последовательность; проверьте фактическое исполнение.",
+          "edges": [
+            {
+              "fromEquipmentId": "TEM2-EQ-BAT",
+              "toEquipmentId": "TEM2-EQ-START-CIRCUIT",
+              "flowKind": "CONTROL_POWER",
+              "label": "electrical control power"
+            }
+          ]
+        }
+      ],
+      "sourcePresentations": [
+        {
+          "title": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию, 2-е переработанное и дополненное издание (1983; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2)",
+          "documentDetails": "ПО «Брянский машиностроительный завод»"
+        },
+        {
+          "title": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "documentDetails": "ПО «Брянский машиностроительный завод» имени В. И. Ленина"
+        }
+      ]
+    },
+    {
+      "id": "TEM2U-TEM2-SCH-AUX-FLOW",
+      "family": "TEM2U",
+      "sourceSchemeRef": "TEM2U-INT-TEM2-SCH-AUX",
+      "title": "Вспомогательное электроснабжение и заряд",
+      "functionalDisclaimer": "Функциональная последовательность по источникам; не является монтажной схемой и не подтверждает фактически установленное оборудование.",
+      "steps": [
+        {
+          "title": "Вспомогательное электроснабжение и заряд",
+          "explanation": "Функциональная последовательность; проверьте фактическое исполнение.",
+          "edges": [
+            {
+              "fromEquipmentId": "TEM2-EQ-AUX-GEN",
+              "toEquipmentId": "TEM2-EQ-VOLT-REG",
+              "flowKind": "AUXILIARY_POWER",
+              "label": "electrical aux power"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-VOLT-REG",
+              "toEquipmentId": "TEM2-EQ-BAT",
+              "flowKind": "AUXILIARY_POWER",
+              "label": "electrical aux power"
+            }
+          ]
+        }
+      ],
+      "sourcePresentations": [
+        {
+          "title": "Электрические схемы тепловозов ТЭМ2 и ТЭМ1 (1980; HISTORICAL_REFERENCE; применимость: ТЭМ2)",
+          "documentDetails": ""
+        },
+        {
+          "title": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "documentDetails": "ПО «Брянский машиностроительный завод» имени В. И. Ленина"
+        }
+      ]
+    },
+    {
+      "id": "TEM2U-TEM2-SCH-CONTROL-FLOW",
+      "family": "TEM2U",
+      "sourceSchemeRef": "TEM2U-INT-TEM2-SCH-CONTROL",
+      "title": "Функциональная цепь тягового управления и защит",
+      "functionalDisclaimer": "Функциональная последовательность по источникам; не является монтажной схемой и не подтверждает фактически установленное оборудование.",
+      "steps": [
+        {
+          "title": "Функциональная цепь тягового управления и защит",
+          "explanation": "Функциональная последовательность; проверьте фактическое исполнение.",
+          "edges": [
+            {
+              "fromEquipmentId": "TEM2-EQ-CONTROLLER",
+              "toEquipmentId": "TEM2-EQ-REV",
+              "flowKind": "COMMAND",
+              "label": "control command"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-REV",
+              "toEquipmentId": "TEM2-EQ-P1",
+              "flowKind": "COMMAND",
+              "label": "control command"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-P1",
+              "toEquipmentId": "TEM2-EQ-P2",
+              "flowKind": "COMMAND",
+              "label": "control command"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-P2",
+              "toEquipmentId": "TEM2-EQ-VV",
+              "flowKind": "COMMAND",
+              "label": "control command"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-VV",
+              "toEquipmentId": "TEM2-EQ-KV",
+              "flowKind": "COMMAND",
+              "label": "control command"
+            }
+          ]
+        }
+      ],
+      "sourcePresentations": [
+        {
+          "title": "Электрические схемы тепловозов ТЭМ2 и ТЭМ1 (1980; HISTORICAL_REFERENCE; применимость: ТЭМ2)",
+          "documentDetails": ""
+        },
+        {
+          "title": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "documentDetails": "ПО «Брянский машиностроительный завод» имени В. И. Ленина"
+        }
+      ]
+    },
+    {
+      "id": "TEM2U-TEM2-SCH-AIR-SUPPLY-FLOW",
+      "family": "TEM2U",
+      "sourceSchemeRef": "TEM2U-INT-TEM2-SCH-AIR-SUPPLY",
+      "title": "Получение сжатого воздуха и питательная магистраль",
+      "functionalDisclaimer": "Функциональная последовательность по источникам; не является монтажной схемой и не подтверждает фактически установленное оборудование.",
+      "steps": [
+        {
+          "title": "Получение сжатого воздуха и питательная магистраль",
+          "explanation": "Функциональная последовательность; проверьте фактическое исполнение.",
+          "edges": [
+            {
+              "fromEquipmentId": "TEM2-EQ-COMP",
+              "toEquipmentId": "TEM2-EQ-MAIN-RES",
+              "flowKind": "AIR_SUPPLY",
+              "label": "pneumatic supply"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-MAIN-RES",
+              "toEquipmentId": "TEM2-EQ-OIL-SEP",
+              "flowKind": "AIR_SUPPLY",
+              "label": "pneumatic supply"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-OIL-SEP",
+              "toEquipmentId": "TEM2-EQ-FEED-PIPE",
+              "flowKind": "AIR_SUPPLY",
+              "label": "pneumatic supply"
+            }
+          ]
+        }
+      ],
+      "sourcePresentations": [
+        {
+          "title": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию, 2-е переработанное и дополненное издание (1983; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2)",
+          "documentDetails": "ПО «Брянский машиностроительный завод»"
+        },
+        {
+          "title": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "documentDetails": "ПО «Брянский машиностроительный завод» имени В. И. Ленина"
+        }
+      ]
+    },
+    {
+      "id": "TEM2U-TEM2-SCH-TRAIN-BRAKE-FLOW",
+      "family": "TEM2U",
+      "sourceSchemeRef": "TEM2U-INT-TEM2-SCH-TRAIN-BRAKE",
+      "title": "Автоматический поездной тормоз",
+      "functionalDisclaimer": "Функциональная последовательность по источникам; не является монтажной схемой и не подтверждает фактически установленное оборудование.",
+      "steps": [
+        {
+          "title": "Автоматический поездной тормоз",
+          "explanation": "Функциональная последовательность; проверьте фактическое исполнение.",
+          "edges": [
+            {
+              "fromEquipmentId": "TEM2-EQ-FEED-PIPE",
+              "toEquipmentId": "TEM2-EQ-DRV-BRAKE",
+              "flowKind": "CONTROL_PRESSURE",
+              "label": "pneumatic brake control"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-DRV-BRAKE",
+              "toEquipmentId": "TEM2-EQ-EQ-RES",
+              "flowKind": "CONTROL_PRESSURE",
+              "label": "pneumatic brake control"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-EQ-RES",
+              "toEquipmentId": "TEM2-EQ-BRAKE-PIPE",
+              "flowKind": "CONTROL_PRESSURE",
+              "label": "pneumatic brake control"
+            }
+          ]
+        },
+        {
+          "title": "Автоматический поездной тормоз",
+          "explanation": "Функциональная последовательность; проверьте фактическое исполнение.",
+          "edges": [
+            {
+              "fromEquipmentId": "TEM2-EQ-BRAKE-PIPE",
+              "toEquipmentId": "TEM2-EQ-AIR-DIST",
+              "flowKind": "BRAKE_CYLINDER_CONTROL",
+              "label": "pneumatic brake actuation"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-AIR-DIST",
+              "toEquipmentId": "TEM2-EQ-AUX-RES",
+              "flowKind": "BRAKE_CYLINDER_CONTROL",
+              "label": "pneumatic brake actuation"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-AUX-RES",
+              "toEquipmentId": "TEM2-EQ-BC",
+              "flowKind": "BRAKE_CYLINDER_CONTROL",
+              "label": "pneumatic brake actuation"
+            }
+          ]
+        }
+      ],
+      "sourcePresentations": [
+        {
+          "title": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию, 2-е переработанное и дополненное издание (1983; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2)",
+          "documentDetails": "ПО «Брянский машиностроительный завод»"
+        },
+        {
+          "title": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "documentDetails": "ПО «Брянский машиностроительный завод» имени В. И. Ленина"
+        },
+        {
+          "title": "Правила технического обслуживания тормозного оборудования и управления тормозами железнодорожного подвижного состава, приложение № 65 к протоколу № 83 (редакция не указана; CURRENT_CONFIRMED; применимость: LOCOMOTIVES_GENERAL)",
+          "documentDetails": "Совет по железнодорожному транспорту государств — участников Содружества"
+        }
+      ]
+    },
+    {
+      "id": "TEM2U-TEM2-SCH-LOCO-BRAKE-FLOW",
+      "family": "TEM2U",
+      "sourceSchemeRef": "TEM2U-INT-TEM2-SCH-LOCO-BRAKE",
+      "title": "Вспомогательный прямодействующий тормоз локомотива",
+      "functionalDisclaimer": "Функциональная последовательность по источникам; не является монтажной схемой и не подтверждает фактически установленное оборудование.",
+      "steps": [
+        {
+          "title": "Вспомогательный прямодействующий тормоз локомотива",
+          "explanation": "Функциональная последовательность; проверьте фактическое исполнение.",
+          "edges": [
+            {
+              "fromEquipmentId": "TEM2-EQ-FEED-PIPE",
+              "toEquipmentId": "TEM2-EQ-INDEP-BRAKE",
+              "flowKind": "CONTROL_PRESSURE",
+              "label": "pneumatic brake control"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-INDEP-BRAKE",
+              "toEquipmentId": "TEM2-EQ-BC",
+              "flowKind": "CONTROL_PRESSURE",
+              "label": "pneumatic brake control"
+            }
+          ]
+        }
+      ],
+      "sourcePresentations": [
+        {
+          "title": "Тепловоз ТЭМ2. Руководство по эксплуатации и обслуживанию, 2-е переработанное и дополненное издание (1983; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2)",
+          "documentDetails": "ПО «Брянский машиностроительный завод»"
+        },
+        {
+          "title": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "documentDetails": "ПО «Брянский машиностроительный завод» имени В. И. Ленина"
+        },
+        {
+          "title": "Правила технического обслуживания тормозного оборудования и управления тормозами железнодорожного подвижного состава, приложение № 65 к протоколу № 83 (редакция не указана; CURRENT_CONFIRMED; применимость: LOCOMOTIVES_GENERAL)",
+          "documentDetails": "Совет по железнодорожному транспорту государств — участников Содружества"
+        }
+      ]
+    },
+    {
+      "id": "TEM2U-TEM2U-SCH-PROFILE-CONTROL-FLOW",
+      "family": "TEM2U",
+      "sourceSchemeRef": "TEM2U-INT-TEM2U-SCH-PROFILE-CONTROL",
+      "title": "Профильные цепи управления ТЭМ2У",
+      "functionalDisclaimer": "Функциональная последовательность по источникам; не является монтажной схемой и не подтверждает фактически установленное оборудование.",
+      "steps": [
+        {
+          "title": "Профильные цепи управления ТЭМ2У",
+          "explanation": "Функциональная последовательность; проверьте фактическое исполнение.",
+          "edges": [
+            {
+              "fromEquipmentId": "TEM2U-EQ-ONE-PERSON",
+              "toEquipmentId": "TEM2-EQ-CONTROLLER",
+              "flowKind": "COMMAND",
+              "label": "control command"
+            },
+            {
+              "fromEquipmentId": "TEM2-EQ-CONTROLLER",
+              "toEquipmentId": "TEM2U-EQ-MU-CONTROL",
+              "flowKind": "COMMAND",
+              "label": "control command"
+            }
+          ]
+        }
+      ],
+      "sourcePresentations": [
+        {
+          "title": "Тепловоз ТЭМ2У. Руководство по эксплуатации и обслуживанию (1988; HISTORICAL_FACTORY_BASELINE; применимость: ТЭМ2У)",
+          "documentDetails": "ПО «Брянский машиностроительный завод» имени В. И. Ленина"
+        }
+      ]
+    }
+  ]
+}

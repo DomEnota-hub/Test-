@@ -40,6 +40,15 @@ class AssistantEngine(
             )
         }
 
+        if (parsed.family?.isTem2 == true && listOf(
+                "реостатный тормоз", "эдт", "тэм2т", "тэм2ум", "тэм2а", "1пд-4а"
+            ).any { it in parsed.normalizedText }) {
+            return AssistantEngineResult.NoResult(
+                parsedQuery = parsed,
+                message = "Это оборудование не подтверждено для выбранного профиля ТЭМ2/ТЭМ2У. Уточните фактическое исполнение и документацию; данные соседних вариантов автоматически не применяются."
+            )
+        }
+
         if (parsed.intent == AssistantIntent.SAFETY && parsed.safetyTopicIds.isEmpty() &&
             parsed.normalizedText in setOf("опп", "первая помощь", "первую помощь", "помоги человеку")) {
             return AssistantEngineResult.NoResult(

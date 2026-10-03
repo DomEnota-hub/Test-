@@ -65,11 +65,17 @@ private class StepwiseSchemeData(private val context: Context) {
         }
     }
     val sequences: List<SchemeSequence> = run {
-        val layouts = asset("scheme_layout_metadata.json").getJSONArray("layouts")
+        val layouts = asset("scheme_layout_metadata.json").getJSONArray("layouts").apply {
+            val extra = asset("tem2_scheme_layout_metadata.json").getJSONArray("layouts")
+            for (i in 0 until extra.length()) put(extra.getJSONObject(i))
+        }
         val byId = (0 until layouts.length()).associate { i ->
             layouts.getJSONObject(i).getString("sequenceId") to layouts.getJSONObject(i)
         }
-        val flow = asset("stepwise_scheme_flows.json").getJSONArray("sequences")
+        val flow = asset("stepwise_scheme_flows.json").getJSONArray("sequences").apply {
+            val extra = asset("tem2_stepwise_scheme_flows.json").getJSONArray("sequences")
+            for (i in 0 until extra.length()) put(extra.getJSONObject(i))
+        }
         (0 until flow.length()).map { i ->
             val item = flow.getJSONObject(i)
             val layout = byId.getValue(item.getString("id"))
@@ -110,7 +116,7 @@ private class StepwiseSchemeData(private val context: Context) {
         val source = when (entry.id) {
             "CHME3-INT-PNEUMATIC" -> "CHME3-SCH-PNEUMATIC"
             "CHME3E-INT-START" -> "CHME3E-SCH-START-ELECTRONIC"
-            else -> entry.id.replace("-INT-", "-SCH-")
+            else -> if (entry.family.isTem2) entry.id else entry.id.replace("-INT-", "-SCH-")
         }
         val matching = sequences.filter { it.family == entry.family && it.sourceSchemeRef == source }
         if (matching.isNotEmpty() || !entry.family.isChme3 || entry.hotspots.isEmpty()) return matching

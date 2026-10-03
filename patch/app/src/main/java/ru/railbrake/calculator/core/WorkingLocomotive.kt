@@ -11,7 +11,9 @@ enum class WorkingLocomotive(
     ERMAK_3ES5K("3ЭС5К «Ермак»", TechnicalFamily.ERMAK, "3ES5K"),
     CHME3("ЧМЭ3", TechnicalFamily.CHME3),
     CHME3T("ЧМЭ3Т", TechnicalFamily.CHME3T),
-    CHME3E("ЧМЭ3Э", TechnicalFamily.CHME3E);
+    CHME3E("ЧМЭ3Э", TechnicalFamily.CHME3E),
+    TEM2("ТЭМ2", TechnicalFamily.TEM2),
+    TEM2U("ТЭМ2У", TechnicalFamily.TEM2U);
 
     companion object {
         fun fromStored(value: String?): WorkingLocomotive? = entries.firstOrNull { it.name == value }
@@ -19,6 +21,8 @@ enum class WorkingLocomotive(
         fun explicitlyNamed(text: String): WorkingLocomotive? {
             val normalized = text.lowercase().replace('ё', 'е')
             return when {
+                "тэм2у" in normalized || "тэм 2 у" in normalized -> TEM2U
+                "тэм2" in normalized || "тэм 2" in normalized -> TEM2
                 "чмэ3э" in normalized || "чмэ 3 э" in normalized || "чмэ три э" in normalized -> CHME3E
                 "чмэ3т" in normalized || "чмэ 3 т" in normalized || "чмэ три т" in normalized -> CHME3T
                 "чмэ3" in normalized || "чмэ 3" in normalized || "чмэ три" in normalized -> CHME3

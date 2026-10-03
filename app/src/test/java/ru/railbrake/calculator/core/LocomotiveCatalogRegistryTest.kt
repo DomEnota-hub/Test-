@@ -14,7 +14,9 @@ class LocomotiveCatalogRegistryTest {
                 TechnicalFamily.ERMAK,
                 TechnicalFamily.CHME3,
                 TechnicalFamily.CHME3T,
-                TechnicalFamily.CHME3E
+                TechnicalFamily.CHME3E,
+                TechnicalFamily.TEM2,
+                TechnicalFamily.TEM2U
             ),
             LocomotiveCatalogRegistry.families
         )
@@ -31,8 +33,8 @@ class LocomotiveCatalogRegistryTest {
     @Test
     fun workingOptionsAndBrowsingFamiliesAreDifferentConcepts() {
         assertEquals(WorkingLocomotive.entries.toList(), LocomotiveCatalogRegistry.workingOptions)
-        assertEquals(6, LocomotiveCatalogRegistry.workingOptions.size)
-        assertEquals(5, LocomotiveCatalogRegistry.families.size)
+        assertEquals(8, LocomotiveCatalogRegistry.workingOptions.size)
+        assertEquals(7, LocomotiveCatalogRegistry.families.size)
 
         val working = WorkingLocomotive.CHME3
         val viewing = TechnicalFamily.ERMAK

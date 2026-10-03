@@ -294,10 +294,10 @@ def validate_android_wiring():
             fail(f"UI references forbidden/internal field {forbidden}")
 
     route = MIRRORS[2][0].read_text(encoding="utf-8")
-    marker = 'if (node?.type == "terminal" && family.isChme3)'
+    marker = 'if (node?.type == "terminal" && (family.isChme3 || family.isTem2))'
     call = "ExtendedEmergencyEvidenceSection("
     if route.count(marker) != 1 or route.count(call) != 1:
-        fail("expanded evidence must attach exactly once at the currently integrated ChME terminal")
+        fail("expanded evidence must attach exactly once at the integrated diesel terminal")
     if route.index(marker) > route.index(call):
         fail("terminal gate must wrap expanded evidence call")
     prohibited_marker = 'if (scenario.prohibited.isNotEmpty())'

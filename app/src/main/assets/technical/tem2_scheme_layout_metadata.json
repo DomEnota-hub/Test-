@@ -1,0 +1,1192 @@
+{
+  "layouts": [
+    {
+      "sequenceId": "TEM2-TEM2-SCH-TRACTION-FLOW",
+      "contentBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 750,
+        "bottom": 385
+      },
+      "nodes": [
+        {
+          "nodeKey": "TEM2-EQ-TG",
+          "equipmentId": "TEM2-EQ-TG",
+          "label": "Тяговый генератор",
+          "position": {
+            "x": 20,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-P1",
+          "equipmentId": "TEM2-EQ-P1",
+          "label": "Поездной контактор П1",
+          "position": {
+            "x": 270,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-P2",
+          "equipmentId": "TEM2-EQ-P2",
+          "label": "Поездной контактор П2",
+          "position": {
+            "x": 520,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-TM1-3",
+          "equipmentId": "TEM2-EQ-TM1-3",
+          "label": "Тяговые электродвигатели 1–3",
+          "position": {
+            "x": 20,
+            "y": 135,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-TM4-6",
+          "equipmentId": "TEM2-EQ-TM4-6",
+          "label": "Тяговые электродвигатели 4–6",
+          "position": {
+            "x": 270,
+            "y": 135,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-REV",
+          "equipmentId": "TEM2-EQ-REV",
+          "label": "Реверсор",
+          "position": {
+            "x": 520,
+            "y": 135,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-FIELD-SHUNT",
+          "equipmentId": "TEM2-EQ-FIELD-SHUNT",
+          "label": "Контакторы и резисторы ослабления возбуждения ТЭД",
+          "position": {
+            "x": 20,
+            "y": 250,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-MOTOR-CUTOUT",
+          "equipmentId": "TEM2-EQ-MOTOR-CUTOUT",
+          "label": "Отключатель тяговых электродвигателей",
+          "position": {
+            "x": 270,
+            "y": 250,
+            "width": 220,
+            "height": 88
+          }
+        }
+      ]
+    },
+    {
+      "sequenceId": "TEM2-TEM2-SCH-EXCITATION-FLOW",
+      "contentBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 750,
+        "bottom": 270
+      },
+      "nodes": [
+        {
+          "nodeKey": "TEM2-EQ-AUX-GEN",
+          "equipmentId": "TEM2-EQ-AUX-GEN",
+          "label": "Вспомогательный генератор",
+          "position": {
+            "x": 20,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-EXCITER",
+          "equipmentId": "TEM2-EQ-EXCITER",
+          "label": "Возбудитель",
+          "position": {
+            "x": 270,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-VV",
+          "equipmentId": "TEM2-EQ-VV",
+          "label": "Контактор возбуждения возбудителя ВВ",
+          "position": {
+            "x": 520,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-KV",
+          "equipmentId": "TEM2-EQ-KV",
+          "label": "Контактор возбуждения тягового генератора КВ",
+          "position": {
+            "x": 20,
+            "y": 135,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-TG",
+          "equipmentId": "TEM2-EQ-TG",
+          "label": "Тяговый генератор",
+          "position": {
+            "x": 270,
+            "y": 135,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-CURRENT-LIMIT",
+          "equipmentId": "TEM2-EQ-CURRENT-LIMIT",
+          "label": "Реле ограничения тока",
+          "position": {
+            "x": 520,
+            "y": 135,
+            "width": 220,
+            "height": 88
+          }
+        }
+      ]
+    },
+    {
+      "sequenceId": "TEM2-TEM2-SCH-START-FLOW",
+      "contentBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 750,
+        "bottom": 230
+      },
+      "nodes": [
+        {
+          "nodeKey": "TEM2-EQ-BAT",
+          "equipmentId": "TEM2-EQ-BAT",
+          "label": "Аккумуляторная батарея",
+          "position": {
+            "x": 20,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-START-CIRCUIT",
+          "equipmentId": "TEM2-EQ-START-CIRCUIT",
+          "label": "Пусковая функциональная группа",
+          "position": {
+            "x": 270,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-DIESEL",
+          "equipmentId": "TEM2-EQ-DIESEL",
+          "label": "Дизель ПД1 / фактически установленное исполнение",
+          "position": {
+            "x": 520,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        }
+      ]
+    },
+    {
+      "sequenceId": "TEM2-TEM2-SCH-AUX-FLOW",
+      "contentBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 750,
+        "bottom": 230
+      },
+      "nodes": [
+        {
+          "nodeKey": "TEM2-EQ-AUX-GEN",
+          "equipmentId": "TEM2-EQ-AUX-GEN",
+          "label": "Вспомогательный генератор",
+          "position": {
+            "x": 20,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-VOLT-REG",
+          "equipmentId": "TEM2-EQ-VOLT-REG",
+          "label": "Регулятор напряжения вспомогательного генератора",
+          "position": {
+            "x": 270,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-BAT",
+          "equipmentId": "TEM2-EQ-BAT",
+          "label": "Аккумуляторная батарея",
+          "position": {
+            "x": 520,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        }
+      ]
+    },
+    {
+      "sequenceId": "TEM2-TEM2-SCH-CONTROL-FLOW",
+      "contentBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 750,
+        "bottom": 385
+      },
+      "nodes": [
+        {
+          "nodeKey": "TEM2-EQ-CONTROLLER",
+          "equipmentId": "TEM2-EQ-CONTROLLER",
+          "label": "Контроллер машиниста",
+          "position": {
+            "x": 20,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-REV",
+          "equipmentId": "TEM2-EQ-REV",
+          "label": "Реверсор",
+          "position": {
+            "x": 270,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-P1",
+          "equipmentId": "TEM2-EQ-P1",
+          "label": "Поездной контактор П1",
+          "position": {
+            "x": 520,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-P2",
+          "equipmentId": "TEM2-EQ-P2",
+          "label": "Поездной контактор П2",
+          "position": {
+            "x": 20,
+            "y": 135,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-VV",
+          "equipmentId": "TEM2-EQ-VV",
+          "label": "Контактор возбуждения возбудителя ВВ",
+          "position": {
+            "x": 270,
+            "y": 135,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-KV",
+          "equipmentId": "TEM2-EQ-KV",
+          "label": "Контактор возбуждения тягового генератора КВ",
+          "position": {
+            "x": 520,
+            "y": 135,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-GROUND-RELAY",
+          "equipmentId": "TEM2-EQ-GROUND-RELAY",
+          "label": "Реле заземления",
+          "position": {
+            "x": 20,
+            "y": 250,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-SLIP-RELAYS",
+          "equipmentId": "TEM2-EQ-SLIP-RELAYS",
+          "label": "Реле боксования",
+          "position": {
+            "x": 270,
+            "y": 250,
+            "width": 220,
+            "height": 88
+          }
+        }
+      ]
+    },
+    {
+      "sequenceId": "TEM2-TEM2-SCH-AIR-SUPPLY-FLOW",
+      "contentBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 750,
+        "bottom": 270
+      },
+      "nodes": [
+        {
+          "nodeKey": "TEM2-EQ-COMP",
+          "equipmentId": "TEM2-EQ-COMP",
+          "label": "Компрессор",
+          "position": {
+            "x": 20,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-PRESS-REG",
+          "equipmentId": "TEM2-EQ-PRESS-REG",
+          "label": "Регулятор давления компрессора",
+          "position": {
+            "x": 270,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-MAIN-RES",
+          "equipmentId": "TEM2-EQ-MAIN-RES",
+          "label": "Главные резервуары",
+          "position": {
+            "x": 520,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-OIL-SEP",
+          "equipmentId": "TEM2-EQ-OIL-SEP",
+          "label": "Маслоотделитель / подготовка воздуха",
+          "position": {
+            "x": 20,
+            "y": 135,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-FEED-PIPE",
+          "equipmentId": "TEM2-EQ-FEED-PIPE",
+          "label": "Питательная магистраль",
+          "position": {
+            "x": 270,
+            "y": 135,
+            "width": 220,
+            "height": 88
+          }
+        }
+      ]
+    },
+    {
+      "sequenceId": "TEM2-TEM2-SCH-TRAIN-BRAKE-FLOW",
+      "contentBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 750,
+        "bottom": 385
+      },
+      "nodes": [
+        {
+          "nodeKey": "TEM2-EQ-FEED-PIPE",
+          "equipmentId": "TEM2-EQ-FEED-PIPE",
+          "label": "Питательная магистраль",
+          "position": {
+            "x": 20,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-DRV-BRAKE",
+          "equipmentId": "TEM2-EQ-DRV-BRAKE",
+          "label": "Кран машиниста поездного тормоза",
+          "position": {
+            "x": 270,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-EQ-RES",
+          "equipmentId": "TEM2-EQ-EQ-RES",
+          "label": "Уравнительный резервуар",
+          "position": {
+            "x": 520,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-BRAKE-PIPE",
+          "equipmentId": "TEM2-EQ-BRAKE-PIPE",
+          "label": "Тормозная магистраль",
+          "position": {
+            "x": 20,
+            "y": 135,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-AIR-DIST",
+          "equipmentId": "TEM2-EQ-AIR-DIST",
+          "label": "Воздухораспределитель локомотива",
+          "position": {
+            "x": 270,
+            "y": 135,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-AUX-RES",
+          "equipmentId": "TEM2-EQ-AUX-RES",
+          "label": "Запасный / дополнительный резервуар тормозной системы",
+          "position": {
+            "x": 520,
+            "y": 135,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-BC",
+          "equipmentId": "TEM2-EQ-BC",
+          "label": "Тормозные цилиндры",
+          "position": {
+            "x": 20,
+            "y": 250,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-EPC-AUTOSTOP",
+          "equipmentId": "TEM2-EQ-EPC-AUTOSTOP",
+          "label": "Электропневматический клапан автостопа",
+          "position": {
+            "x": 270,
+            "y": 250,
+            "width": 220,
+            "height": 88
+          }
+        }
+      ]
+    },
+    {
+      "sequenceId": "TEM2-TEM2-SCH-LOCO-BRAKE-FLOW",
+      "contentBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 750,
+        "bottom": 230
+      },
+      "nodes": [
+        {
+          "nodeKey": "TEM2-EQ-FEED-PIPE",
+          "equipmentId": "TEM2-EQ-FEED-PIPE",
+          "label": "Питательная магистраль",
+          "position": {
+            "x": 20,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-INDEP-BRAKE",
+          "equipmentId": "TEM2-EQ-INDEP-BRAKE",
+          "label": "Кран вспомогательного тормоза локомотива",
+          "position": {
+            "x": 270,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-BC",
+          "equipmentId": "TEM2-EQ-BC",
+          "label": "Тормозные цилиндры",
+          "position": {
+            "x": 520,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        }
+      ]
+    },
+    {
+      "sequenceId": "TEM2U-TEM2-SCH-TRACTION-FLOW",
+      "contentBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 750,
+        "bottom": 385
+      },
+      "nodes": [
+        {
+          "nodeKey": "TEM2-EQ-TG",
+          "equipmentId": "TEM2-EQ-TG",
+          "label": "Тяговый генератор",
+          "position": {
+            "x": 20,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-P1",
+          "equipmentId": "TEM2-EQ-P1",
+          "label": "Поездной контактор П1",
+          "position": {
+            "x": 270,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-P2",
+          "equipmentId": "TEM2-EQ-P2",
+          "label": "Поездной контактор П2",
+          "position": {
+            "x": 520,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-TM1-3",
+          "equipmentId": "TEM2-EQ-TM1-3",
+          "label": "Тяговые электродвигатели 1–3",
+          "position": {
+            "x": 20,
+            "y": 135,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-TM4-6",
+          "equipmentId": "TEM2-EQ-TM4-6",
+          "label": "Тяговые электродвигатели 4–6",
+          "position": {
+            "x": 270,
+            "y": 135,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-REV",
+          "equipmentId": "TEM2-EQ-REV",
+          "label": "Реверсор",
+          "position": {
+            "x": 520,
+            "y": 135,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-FIELD-SHUNT",
+          "equipmentId": "TEM2-EQ-FIELD-SHUNT",
+          "label": "Контакторы и резисторы ослабления возбуждения ТЭД",
+          "position": {
+            "x": 20,
+            "y": 250,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-MOTOR-CUTOUT",
+          "equipmentId": "TEM2-EQ-MOTOR-CUTOUT",
+          "label": "Отключатель тяговых электродвигателей",
+          "position": {
+            "x": 270,
+            "y": 250,
+            "width": 220,
+            "height": 88
+          }
+        }
+      ]
+    },
+    {
+      "sequenceId": "TEM2U-TEM2-SCH-EXCITATION-FLOW",
+      "contentBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 750,
+        "bottom": 270
+      },
+      "nodes": [
+        {
+          "nodeKey": "TEM2-EQ-AUX-GEN",
+          "equipmentId": "TEM2-EQ-AUX-GEN",
+          "label": "Вспомогательный генератор",
+          "position": {
+            "x": 20,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-EXCITER",
+          "equipmentId": "TEM2-EQ-EXCITER",
+          "label": "Возбудитель",
+          "position": {
+            "x": 270,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-VV",
+          "equipmentId": "TEM2-EQ-VV",
+          "label": "Контактор возбуждения возбудителя ВВ",
+          "position": {
+            "x": 520,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-KV",
+          "equipmentId": "TEM2-EQ-KV",
+          "label": "Контактор возбуждения тягового генератора КВ",
+          "position": {
+            "x": 20,
+            "y": 135,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-TG",
+          "equipmentId": "TEM2-EQ-TG",
+          "label": "Тяговый генератор",
+          "position": {
+            "x": 270,
+            "y": 135,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-CURRENT-LIMIT",
+          "equipmentId": "TEM2-EQ-CURRENT-LIMIT",
+          "label": "Реле ограничения тока",
+          "position": {
+            "x": 520,
+            "y": 135,
+            "width": 220,
+            "height": 88
+          }
+        }
+      ]
+    },
+    {
+      "sequenceId": "TEM2U-TEM2-SCH-START-FLOW",
+      "contentBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 750,
+        "bottom": 230
+      },
+      "nodes": [
+        {
+          "nodeKey": "TEM2-EQ-BAT",
+          "equipmentId": "TEM2-EQ-BAT",
+          "label": "Аккумуляторная батарея",
+          "position": {
+            "x": 20,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-START-CIRCUIT",
+          "equipmentId": "TEM2-EQ-START-CIRCUIT",
+          "label": "Пусковая функциональная группа",
+          "position": {
+            "x": 270,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2U-EQ-DIESEL",
+          "equipmentId": "TEM2U-EQ-DIESEL",
+          "label": "Дизель ПД1М / фактически установленное исполнение",
+          "position": {
+            "x": 520,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        }
+      ]
+    },
+    {
+      "sequenceId": "TEM2U-TEM2-SCH-AUX-FLOW",
+      "contentBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 750,
+        "bottom": 230
+      },
+      "nodes": [
+        {
+          "nodeKey": "TEM2-EQ-AUX-GEN",
+          "equipmentId": "TEM2-EQ-AUX-GEN",
+          "label": "Вспомогательный генератор",
+          "position": {
+            "x": 20,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-VOLT-REG",
+          "equipmentId": "TEM2-EQ-VOLT-REG",
+          "label": "Регулятор напряжения вспомогательного генератора",
+          "position": {
+            "x": 270,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-BAT",
+          "equipmentId": "TEM2-EQ-BAT",
+          "label": "Аккумуляторная батарея",
+          "position": {
+            "x": 520,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        }
+      ]
+    },
+    {
+      "sequenceId": "TEM2U-TEM2-SCH-CONTROL-FLOW",
+      "contentBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 750,
+        "bottom": 385
+      },
+      "nodes": [
+        {
+          "nodeKey": "TEM2-EQ-CONTROLLER",
+          "equipmentId": "TEM2-EQ-CONTROLLER",
+          "label": "Контроллер машиниста",
+          "position": {
+            "x": 20,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-REV",
+          "equipmentId": "TEM2-EQ-REV",
+          "label": "Реверсор",
+          "position": {
+            "x": 270,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-P1",
+          "equipmentId": "TEM2-EQ-P1",
+          "label": "Поездной контактор П1",
+          "position": {
+            "x": 520,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-P2",
+          "equipmentId": "TEM2-EQ-P2",
+          "label": "Поездной контактор П2",
+          "position": {
+            "x": 20,
+            "y": 135,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-VV",
+          "equipmentId": "TEM2-EQ-VV",
+          "label": "Контактор возбуждения возбудителя ВВ",
+          "position": {
+            "x": 270,
+            "y": 135,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-KV",
+          "equipmentId": "TEM2-EQ-KV",
+          "label": "Контактор возбуждения тягового генератора КВ",
+          "position": {
+            "x": 520,
+            "y": 135,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-GROUND-RELAY",
+          "equipmentId": "TEM2-EQ-GROUND-RELAY",
+          "label": "Реле заземления",
+          "position": {
+            "x": 20,
+            "y": 250,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-SLIP-RELAYS",
+          "equipmentId": "TEM2-EQ-SLIP-RELAYS",
+          "label": "Реле боксования",
+          "position": {
+            "x": 270,
+            "y": 250,
+            "width": 220,
+            "height": 88
+          }
+        }
+      ]
+    },
+    {
+      "sequenceId": "TEM2U-TEM2-SCH-AIR-SUPPLY-FLOW",
+      "contentBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 750,
+        "bottom": 270
+      },
+      "nodes": [
+        {
+          "nodeKey": "TEM2-EQ-COMP",
+          "equipmentId": "TEM2-EQ-COMP",
+          "label": "Компрессор",
+          "position": {
+            "x": 20,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-PRESS-REG",
+          "equipmentId": "TEM2-EQ-PRESS-REG",
+          "label": "Регулятор давления компрессора",
+          "position": {
+            "x": 270,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-MAIN-RES",
+          "equipmentId": "TEM2-EQ-MAIN-RES",
+          "label": "Главные резервуары",
+          "position": {
+            "x": 520,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-OIL-SEP",
+          "equipmentId": "TEM2-EQ-OIL-SEP",
+          "label": "Маслоотделитель / подготовка воздуха",
+          "position": {
+            "x": 20,
+            "y": 135,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-FEED-PIPE",
+          "equipmentId": "TEM2-EQ-FEED-PIPE",
+          "label": "Питательная магистраль",
+          "position": {
+            "x": 270,
+            "y": 135,
+            "width": 220,
+            "height": 88
+          }
+        }
+      ]
+    },
+    {
+      "sequenceId": "TEM2U-TEM2-SCH-TRAIN-BRAKE-FLOW",
+      "contentBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 750,
+        "bottom": 385
+      },
+      "nodes": [
+        {
+          "nodeKey": "TEM2-EQ-FEED-PIPE",
+          "equipmentId": "TEM2-EQ-FEED-PIPE",
+          "label": "Питательная магистраль",
+          "position": {
+            "x": 20,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-DRV-BRAKE",
+          "equipmentId": "TEM2-EQ-DRV-BRAKE",
+          "label": "Кран машиниста поездного тормоза",
+          "position": {
+            "x": 270,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-EQ-RES",
+          "equipmentId": "TEM2-EQ-EQ-RES",
+          "label": "Уравнительный резервуар",
+          "position": {
+            "x": 520,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-BRAKE-PIPE",
+          "equipmentId": "TEM2-EQ-BRAKE-PIPE",
+          "label": "Тормозная магистраль",
+          "position": {
+            "x": 20,
+            "y": 135,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-AIR-DIST",
+          "equipmentId": "TEM2-EQ-AIR-DIST",
+          "label": "Воздухораспределитель локомотива",
+          "position": {
+            "x": 270,
+            "y": 135,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-AUX-RES",
+          "equipmentId": "TEM2-EQ-AUX-RES",
+          "label": "Запасный / дополнительный резервуар тормозной системы",
+          "position": {
+            "x": 520,
+            "y": 135,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-BC",
+          "equipmentId": "TEM2-EQ-BC",
+          "label": "Тормозные цилиндры",
+          "position": {
+            "x": 20,
+            "y": 250,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-EPC-AUTOSTOP",
+          "equipmentId": "TEM2-EQ-EPC-AUTOSTOP",
+          "label": "Электропневматический клапан автостопа",
+          "position": {
+            "x": 270,
+            "y": 250,
+            "width": 220,
+            "height": 88
+          }
+        }
+      ]
+    },
+    {
+      "sequenceId": "TEM2U-TEM2-SCH-LOCO-BRAKE-FLOW",
+      "contentBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 750,
+        "bottom": 230
+      },
+      "nodes": [
+        {
+          "nodeKey": "TEM2-EQ-FEED-PIPE",
+          "equipmentId": "TEM2-EQ-FEED-PIPE",
+          "label": "Питательная магистраль",
+          "position": {
+            "x": 20,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-INDEP-BRAKE",
+          "equipmentId": "TEM2-EQ-INDEP-BRAKE",
+          "label": "Кран вспомогательного тормоза локомотива",
+          "position": {
+            "x": 270,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-BC",
+          "equipmentId": "TEM2-EQ-BC",
+          "label": "Тормозные цилиндры",
+          "position": {
+            "x": 520,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        }
+      ]
+    },
+    {
+      "sequenceId": "TEM2U-TEM2U-SCH-PROFILE-CONTROL-FLOW",
+      "contentBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 750,
+        "bottom": 230
+      },
+      "nodes": [
+        {
+          "nodeKey": "TEM2U-EQ-ONE-PERSON",
+          "equipmentId": "TEM2U-EQ-ONE-PERSON",
+          "label": "Оборудование управления одним лицом — только при фактическом наличии",
+          "position": {
+            "x": 20,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2U-EQ-MU-CONTROL",
+          "equipmentId": "TEM2U-EQ-MU-CONTROL",
+          "label": "Цепи системы многих единиц — только при фактическом наличии",
+          "position": {
+            "x": 270,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        },
+        {
+          "nodeKey": "TEM2-EQ-CONTROLLER",
+          "equipmentId": "TEM2-EQ-CONTROLLER",
+          "label": "Контроллер машиниста",
+          "position": {
+            "x": 520,
+            "y": 20,
+            "width": 220,
+            "height": 88
+          }
+        }
+      ]
+    }
+  ]
+}

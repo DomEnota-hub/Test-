@@ -181,7 +181,7 @@ fun TechnicalCatalogScreen(
     fun openTarget(target: TechnicalEntry) {
         val source = selected
         if (
-            (target.family == TechnicalFamily.ERMAK || target.family.isChme3) &&
+            (target.family == TechnicalFamily.ERMAK || target.family.isChme3 || target.family.isTem2) &&
             target.section == TechnicalSection.DIAGNOSTICS &&
             source != null &&
             onOpenDiagnosticScenario != null
@@ -731,6 +731,7 @@ private fun AcceptanceStartChoice(
     onSelect: (String) -> Unit
 ) {
     val routePrefix = when {
+        family.isTem2 -> family.name
         family.isChme3 -> "${family.name}-CHME3"
         family == TechnicalFamily.ERMAK -> "ER"
         else -> "VL80"

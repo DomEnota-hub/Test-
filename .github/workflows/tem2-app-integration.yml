@@ -1,0 +1,68 @@
+name: TEM2 app integration validation
+
+on:
+  push:
+    branches: [integration/tem2-app]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Stage 1–4, registry, expanded and projection QA
+        run: |
+          set -euo pipefail
+          python3 qa/validate_tem2_stage1_foundation.py
+          python3 app/qa/validate_tem2_stage2.py
+          python3 app/qa/validate_tem2_stage3.py
+          python3 app/qa/validate_tem2_stage4.py
+          python3 qa/validate_locomotive_profile_registry.py
+          python3 qa/validate_extended_emergency_stage4_integration.py
+          python3 qa/verify_tem2_android_assets.py
+          python3 qa/verify_chme3_android_assets.py
+          git diff --check
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+      - name: Install Android SDK 34
+        run: |
+          yes | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
+          "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-34' 'build-tools;34.0.0'
+      - name: Prepare disposable Android build tree
+        run: |
+          set -euo pipefail
+          mkdir -p buildsrc
+          unzip -q RailBrakeCalculator.zip -d buildsrc
+          cp -a patch/. buildsrc/RailBrakeCalculator/
+          test -f buildsrc/RailBrakeCalculator/settings.gradle.kts
+      - name: Resolve pinned real offline ASR AAR
+        run: |
+          set -euo pipefail
+          mkdir -p buildsrc/RailBrakeCalculator/app/libs
+          curl -fL --retry 3 --connect-timeout 20 \
+            https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.13.8/sherpa-onnx-1.13.8.aar \
+            -o buildsrc/RailBrakeCalculator/app/libs/sherpa-onnx.aar
+          printf '%s  %s\n' \
+            633c24321e06b1fe79feafa03ea16cbc0f8a286641e2da3559bac91bdb13bd96 \
+            buildsrc/RailBrakeCalculator/app/libs/sherpa-onnx.aar | sha256sum --check
+      - name: Android unit tests, lint and debug build
+        working-directory: buildsrc/RailBrakeCalculator
+        run: gradle :app:testDebugUnitTest :app:lintDebug :app:assembleDebug --no-daemon --console=plain
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tem2-integration-qa
+          path: |
+            buildsrc/RailBrakeCalculator/app/build/reports/tests/testDebugUnitTest/
+            buildsrc/RailBrakeCalculator/app/build/reports/lint-results-debug.html
+            buildsrc/RailBrakeCalculator/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: ignore

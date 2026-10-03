@@ -63,6 +63,8 @@ object LocomotiveProfileRegistry {
         TechnicalFamily.CHME3 -> resolve("chme3-base", "chme3-family")
         TechnicalFamily.CHME3T -> resolve("chme3t-rheostatic", "chme3-family")
         TechnicalFamily.CHME3E -> resolve("chme3e-electronic", "chme3-family")
+        TechnicalFamily.TEM2 -> resolve("tem2-base", "tem2-family")
+        TechnicalFamily.TEM2U -> resolve("tem2u-improved", "tem2-family")
         TechnicalFamily.VL80S -> unknown("vl80s-family")
         TechnicalFamily.ERMAK -> unknown("ermak-family")
     }
