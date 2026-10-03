@@ -19,6 +19,7 @@ def scroll_until(text, swipes=12):
 
 def open_reference():
     open_menu("Диагностика")
+    tap("ВЛ80С", 0)
     wait("Диагностика ВЛ80С")
     tap("Токоприёмник не поднимается", 6)
     root = wait("Локомотив: ВЛ80С")
