@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import ru.railbrake.calculator.core.DiagnosticActionLevel
 import ru.railbrake.calculator.core.DiagnosticCheck
 import ru.railbrake.calculator.core.DiagnosticRepository
+import ru.railbrake.calculator.core.DiagnosticFrameworkV2
 import ru.railbrake.calculator.core.DiagnosticResponse
 import ru.railbrake.calculator.core.DiagnosticScenario
 import ru.railbrake.calculator.core.DiagnosticSeverity
@@ -49,11 +50,13 @@ import ru.railbrake.calculator.core.EquipmentReference
 import ru.railbrake.calculator.core.ExamQuestion
 import ru.railbrake.calculator.core.ExamQuestionRepository
 import ru.railbrake.calculator.core.LocomotiveProfiles
+import ru.railbrake.calculator.core.TechnicalDataRepository
 import ru.railbrake.calculator.core.Vl80sObservationCatalog
 import ru.railbrake.calculator.core.Vl80sNormalValues
 import ru.railbrake.calculator.data.DiagnosticSessionRecord
 import ru.railbrake.calculator.data.DiagnosticSessionRepository
 import ru.railbrake.calculator.data.LocomotiveProfileRepository
+import ru.railbrake.calculator.data.KnowledgeDisplayRepository
 import ru.railbrake.calculator.data.SecretAccessRepository
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -389,6 +392,13 @@ private fun DiagnosticDetails(
     val profileId = profileRepository.selectedProfileId()
     val variantId = profileRepository.selectedVariantId()
     val selectedVariant = LocomotiveProfiles.variant(variantId)
+    val frameworkModule = remember(context, scenario.id) {
+        DiagnosticFrameworkV2.load(context).firstOrNull { it.scenarioId == scenario.id }
+    }?.takeIf { it.profileId == profileId &&
+        (it.variantIds.contains(LocomotiveProfiles.VL80S_GENERAL) || variantId in it.variantIds) }
+    val knowledgeSettings = remember(context) { KnowledgeDisplayRepository(context) }
+    val knowledgeMode = knowledgeSettings.mode()
+    val knowledgeDepth = knowledgeSettings.depth()
     val scenarioMatchesVariant = LocomotiveProfiles.appliesToVariant(variantId, scenario.applicableVariantIds)
     val relatedScenarioIds = scenario.relatedScenarioIds.filter { relatedId ->
         DiagnosticRepository.scenario(relatedId)?.let { relatedScenario ->
@@ -403,17 +413,19 @@ private fun DiagnosticDetails(
     ) {
         item {
             TextButton(onClick = onBack) { Text("← Все неисправности") }
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                RailStatusPill(scenario.category)
-                SeverityLabel(scenario.severity)
+            if (frameworkModule == null) {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    RailStatusPill(scenario.category)
+                    SeverityLabel(scenario.severity)
+                }
+                Text(scenario.title, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
+                Text(scenario.summary, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(
+                    "Профиль: ${selectedVariant?.title ?: "ВЛ80С — проверка исполнения обязательна"}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
-            Text(scenario.title, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
-            Text(scenario.summary, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Text(
-                "Профиль: ${selectedVariant?.title ?: "ВЛ80С — проверка исполнения обязательна"}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
             if (!scenarioMatchesVariant) {
                 Text(
                     "Этот сценарий не помечен применимым к выбранному исполнению. Используйте его только как указатель и сверяйте схему конкретной секции.",
@@ -422,6 +434,23 @@ private fun DiagnosticDetails(
                     fontWeight = FontWeight.Bold
                 )
             }
+        }
+        if (frameworkModule != null) item {
+            HybridDiagnosticCardV2(
+                module = frameworkModule,
+                scenario = scenario,
+                locomotiveTitle = LocomotiveProfiles.profile(frameworkModule.profileId)?.title ?: "Локомотив не указан",
+                variantTitle = selectedVariant?.title ?: "Исполнение не уточнено",
+                systemTitles = frameworkModule.systemIds.mapNotNull { systemId ->
+                    TechnicalDataRepository(context).entry(systemId)?.title
+                },
+                mode = knowledgeMode,
+                depth = knowledgeDepth,
+                answerTrail = answerTrail.mapNotNull { record ->
+                    val response = runCatching { DiagnosticResponse.valueOf(record.substringAfter('\t')) }.getOrNull()
+                    response?.let { record.substringBefore('\t') to it }
+                }
+            )
         }
         item { DiagnosticSafetyNotice() }
         item { InfoCard("Сначала", scenario.immediateActions, MaterialTheme.colorScheme.primaryContainer) }
@@ -511,7 +540,7 @@ private fun DiagnosticDetails(
                 )
             }
         }
-        if (scenario.systemExplanation.isNotEmpty()) {
+        if (scenario.systemExplanation.isNotEmpty() && frameworkModule == null) {
             item { InfoCard("Как связана система", scenario.systemExplanation, MaterialTheme.colorScheme.secondaryContainer) }
         }
         val leadingCauses = scenario.diagnosticCauses
@@ -526,7 +555,9 @@ private fun DiagnosticDetails(
                 )
             }
         }
-        item { InfoCard("Вероятные причины", scenario.probableCauses, MaterialTheme.colorScheme.surfaceVariant) }
+        if (frameworkModule == null || answerTrail.isNotEmpty()) {
+            item { InfoCard("Вероятные причины — гипотезы, не вывод", scenario.probableCauses, MaterialTheme.colorScheme.surfaceVariant) }
+        }
         if (scenario.operationalConsequences.isNotEmpty()) {
             item { InfoCard("К чему может привести", scenario.operationalConsequences, MaterialTheme.colorScheme.errorContainer) }
         }
@@ -538,7 +569,7 @@ private fun DiagnosticDetails(
             )
         }
         items(scenario.checks) { check -> DiagnosticCheckCard(check) }
-        if (scenario.trainingNotes.isNotEmpty()) {
+        if (scenario.trainingNotes.isNotEmpty() && frameworkModule == null) {
             item { InfoCard("Почему алгоритм спрашивает именно это", scenario.trainingNotes, MaterialTheme.colorScheme.tertiaryContainer) }
         }
         item { InfoCard("Запрещено", scenario.prohibited, MaterialTheme.colorScheme.errorContainer) }

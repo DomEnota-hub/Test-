@@ -2,7 +2,7 @@ name: TEM2 app integration validation
 
 on:
   push:
-    branches: [integration/tem2-app]
+    branches: [integration/tem2-app, feature/diagnostic-framework-v2]
   workflow_dispatch:
 
 permissions:

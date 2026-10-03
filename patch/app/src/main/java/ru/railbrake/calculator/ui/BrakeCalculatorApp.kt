@@ -1567,6 +1567,7 @@ private fun SettingsScreen(
             )
         }
     }
+    KnowledgeDisplaySettingsSection()
     ExtendedEmergencySettingsSection()
     RailInfoBand("Тема и цветовой акцент настраиваются независимо. Красный по-прежнему зарезервирован для опасности и ОПП.")
     SectionCard("О приложении", "Текущая рабочая сборка") {

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "diagnostic-framework-v2/1",
+  "modules": [
+    {
+      "scenarioId": "pantograph-no-rise",
+      "profileId": "vl80s",
+      "variantIds": ["vl80s-general"],
+      "canonicalEquipmentAsset": "technical/vl80s_equipment.json",
+      "systemIds": ["VL-SYS-HV", "VL-SYS-PN"],
+      "componentIds": ["VL-EQ-HV-002", "VL-EQ-PN-002", "VL-EQ-PN-007", "VL-EQ-PN-013", "VL-EQ-PN-016"],
+      "symptom": "После команды подъёма токоприёмник не занимает рабочее положение или сразу опускается.",
+      "directions": [
+        {"id": "safety", "title": "Опасные внешние признаки", "questionKey": "pnr-danger", "componentIds": ["VL-EQ-HV-002"], "explanation": "При опасных признаках обычная локализация прекращается; состояние высоковольтного оборудования не устанавливается по предположению."},
+        {"id": "permission", "title": "Разрешающие условия", "questionKey": "pnr-permission", "componentIds": ["VL-EQ-HV-002"], "explanation": "Проверяются доступные признаки питания и штатного состояния блокировок без их обхода."},
+        {"id": "air", "title": "Пневматическое питание", "questionKey": "pnr-pressure", "componentIds": ["VL-EQ-PN-007", "VL-EQ-PN-013", "VL-EQ-PN-016"], "explanation": "Отделите отсутствие запаса воздуха от отказа цепи команды. Показания и условия подъёма сверяйте по фактическому исполнению."},
+        {"id": "scope", "title": "Один или все токоприёмники", "questionKey": "pnr-scope", "componentIds": ["VL-EQ-HV-002"], "explanation": "Различие помогает выбрать локальную или общую ветвь поиска; само по себе не устанавливает причину."},
+        {"id": "valve", "title": "Команда и клапан", "questionKey": "pnr-valve", "componentIds": ["VL-EQ-PN-002"], "explanation": "Признак работы клапана разделяет электрическую и пневматическую ветви, но не подтверждает исправность привода."}
+      ],
+      "knowledge": [
+        {"id": "vl80s-pantograph-principle", "classification": "TRAINING", "title": "Как устроен подъём", "body": "Команда проходит через разрешающие условия к электропневматическому клапану. Воздух из цепи управления обеспечивает движение привода токоприёмника. Состав блокировок и обозначения сверяются по схеме конкретной секции.", "componentIds": ["VL-EQ-HV-002", "VL-EQ-PN-002", "VL-EQ-PN-016"], "sourceIds": ["VL-SRC-006"], "quality": "REQUIRES_VARIANT_CHECK"},
+        {"id": "vl80s-pantograph-system", "classification": "TECHNICAL", "title": "Связанные элементы", "body": "Резервуар и магистраль цепей управления связаны с клапаном, а клапан — с приводом токоприёмника. Карточки элементов открываются из общих объектов Атласа.", "componentIds": ["VL-EQ-PN-013", "VL-EQ-PN-016", "VL-EQ-PN-002", "VL-EQ-HV-002"], "sourceIds": ["VL-SRC-004", "VL-SRC-006"], "quality": "REQUIRES_VARIANT_CHECK"},
+        {"id": "vl80s-pantograph-meaning", "classification": "DIAGNOSTIC", "title": "Зачем нужны эти вопросы", "body": "Наличие воздуха, охват отказа и признак работы клапана уточняют направление поиска. Неизвестный ответ сохраняет обе альтернативы; ни одна причина не считается установленной без подтверждения.", "componentIds": ["VL-EQ-PN-002", "VL-EQ-HV-002"], "sourceIds": ["VL-SRC-001"], "quality": "REQUIRES_VARIANT_CHECK"},
+        {"id": "vl80s-pantograph-experience", "classification": "OPERATIONAL_EXPERIENCE", "title": "Наблюдения из эксплуатации", "body": "При докладе полезно отдельно записать, какой токоприёмник выбран, слышен ли отклик клапана и что показывают приборы. Это наблюдения для локализации, а не обязательная операция или разрешение на работу с оборудованием.", "componentIds": ["VL-EQ-HV-002", "VL-EQ-PN-002"], "sourceIds": ["VL-SRC-001"], "quality": "REFERENCE_ONLY"}
+      ]
+    }
+  ]
+}
