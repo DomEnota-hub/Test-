@@ -17,6 +17,17 @@ def scroll_until(text, swipes=12):
     raise AssertionError(f"Missing after scrolling: {text}")
 
 
+def scroll_up_until(text, swipes=18):
+    for attempt in range(swipes + 1):
+        root = tree()
+        if any(text in label(n) for n in root.iter("node")):
+            return root
+        if attempt < swipes:
+            adb("shell", "input", "swipe", "520", "500", "520", "1800", "390")
+            time.sleep(.5)
+    raise AssertionError(f"Missing after scrolling upward: {text}")
+
+
 def open_reference():
     open_menu("Диагностика")
     tap("ВЛ80С", 0)
@@ -35,10 +46,7 @@ try:
     open_reference()
     scroll_until("Есть повреждение контактной сети")
     tap("Не знаю", 0)
-    for _ in range(4):
-        adb("shell", "input", "swipe", "520", "500", "520", "1800", "320")
-        time.sleep(.3)
-    scroll_until("Направление проверки")
+    scroll_up_until("Направление проверки")
     shot("framework-v2-beginner")
 
     open_menu("Настройки")
