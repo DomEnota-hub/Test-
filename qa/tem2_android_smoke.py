@@ -62,10 +62,14 @@ def tap(text, vertical_swipes=2):
         node=find(root,text)
         if node is not None:
             parents={c:p for p in root.iter() for c in p}
-            while node.get("clickable") != "true" and node in parents:
+            while (
+                node.get("clickable") != "true"
+                and node.get("checkable") != "true"
+                and node in parents
+            ):
                 node=parents[node]
-            if node.get("clickable") != "true":
-                raise AssertionError(f"No clickable target for {text}")
+            if node.get("clickable") != "true" and node.get("checkable") != "true":
+                raise AssertionError(f"No actionable target for {text}")
             tap_node(node)
             return
         if attempt < vertical_swipes:
