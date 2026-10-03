@@ -57,6 +57,9 @@ jobs:
       - name: Android unit tests, lint and debug build
         working-directory: buildsrc/RailBrakeCalculator
         run: gradle :app:testDebugUnitTest :app:lintDebug :app:assembleDebug --no-daemon --console=plain
+      - name: Build unsigned release APK
+        working-directory: buildsrc/RailBrakeCalculator
+        run: gradle :app:assembleRelease --no-daemon --console=plain
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -66,6 +69,11 @@ jobs:
             buildsrc/RailBrakeCalculator/app/build/reports/lint-results-debug.html
             buildsrc/RailBrakeCalculator/app/build/outputs/apk/debug/*.apk
           if-no-files-found: ignore
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tem2-release-unsigned
+          path: buildsrc/RailBrakeCalculator/app/build/outputs/apk/release/*unsigned.apk
+          if-no-files-found: error
 
   emulator-smoke:
     needs: validate
