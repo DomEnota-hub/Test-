@@ -1,10 +1,13 @@
 package ru.railbrake.calculator.ui
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
@@ -16,6 +19,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ru.railbrake.calculator.data.ExtendedEmergencyModeRepository
@@ -119,32 +124,57 @@ internal fun ExtendedEmergencySettingsSection() {
     }
 
     if (showEnableWarning) {
+        val warningScrollState = rememberScrollState()
+        val warningHeight = LocalConfiguration.current.screenHeightDp.dp * 0.5f
+        val reachedWarningEnd by remember(warningScrollState) {
+            derivedStateOf {
+                warningScrollState.maxValue != Int.MAX_VALUE &&
+                    warningScrollState.value >= warningScrollState.maxValue
+            }
+        }
         AlertDialog(
             onDismissRequest = { showEnableWarning = false },
             title = { Text("Расширенные аварийные приёмы") },
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text(
-                        "При включении приложение сможет предлагать дополнительные способы диагностики и действий, которые могут отсутствовать в действующих нормативных документах. Они могут быть взяты из архивных инструкций, документации изготовителя, учебных материалов или описанной практики работников."
-                    )
-                    Text(
-                        "Расширенные сценарии будут выделяться бирюзовой рамкой и пометкой «Расширенный сценарий». Внутри сценария также будет указан источник и его статус.",
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        "Наличие такого сценария в приложении не означает, что описанное действие разрешено действующими инструкциями или применимо к конкретному исполнению локомотива. Необходимо учитывать фактическое оборудование, действующие нормативы и требования безопасности."
-                    )
-                    Text(
-                        "После подтверждения это общее предупреждение не будет повторяться при открытии каждого расширенного сценария. Опасные или запрещённые действия внутри сценария сохраняют отдельную красную маркировку."
-                    )
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Column(
+                        modifier = Modifier.heightIn(max = warningHeight).verticalScroll(warningScrollState),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Text(
+                            "При включении приложение сможет предлагать дополнительные способы диагностики и действий, которые могут отсутствовать в действующих нормативных документах. Они могут быть взяты из архивных инструкций, документации изготовителя, учебных материалов или описанной практики работников."
+                        )
+                        Text(
+                            "Расширенные сценарии будут выделяться бирюзовой рамкой и пометкой «Расширенный сценарий». Внутри сценария также будет указан источник и его статус.",
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            "Наличие такого сценария в приложении не означает, что описанное действие разрешено действующими инструкциями или применимо к конкретному исполнению локомотива. Необходимо учитывать фактическое оборудование, действующие нормативы и требования безопасности."
+                        )
+                        Text(
+                            "После подтверждения это общее предупреждение не будет повторяться при открытии каждого расширенного сценария. Опасные или запрещённые действия внутри сценария сохраняют отдельную красную маркировку."
+                        )
+                    }
+                    if (!reachedWarningEnd) {
+                        Text(
+                            "Пролистайте предупреждение до конца, чтобы включить режим.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             },
             confirmButton = {
-                TextButton(onClick = {
-                    repository.enableAfterAcknowledgement()
-                    enabled = true
-                    showEnableWarning = false
-                }) {
+                TextButton(
+                    enabled = reachedWarningEnd,
+                    onClick = {
+                        if (reachedWarningEnd) {
+                            repository.enableAfterAcknowledgement()
+                            enabled = true
+                            showEnableWarning = false
+                        }
+                    }
+                ) {
                     Text("Включить")
                 }
             },

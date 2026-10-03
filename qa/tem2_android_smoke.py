@@ -102,6 +102,44 @@ def working(profile):
 def shot(name):
     (OUT / f"{name}.png").write_bytes(adb("exec-out","screencap","-p"))
 
+def check_warning():
+    open_menu("Настройки")
+    for _ in range(12):
+        root=tree()
+        title=find(root,"Расширенный режим выключен")
+        if title is not None:
+            y=(bounds(title)[1]+bounds(title)[3])//2
+            switches=[n for n in root.iter("node") if n.get("class")=="android.widget.Switch"
+                      and bounds(n)[1]<=y<=bounds(n)[3]]
+            if not switches: raise AssertionError("Expanded mode switch unavailable")
+            tap_node(switches[0])
+            break
+        adb("shell","input","swipe","500","1800","500","500","420")
+        time.sleep(.5)
+    else:
+        raise AssertionError("Expanded mode setting unavailable")
+
+    root=wait("Пролистайте предупреждение до конца")
+    confirm=find(root,"Включить")
+    if confirm is None or confirm.get("enabled")!="false":
+        raise AssertionError("Warning confirmation must initially be disabled")
+    shot("expanded-warning-before-scroll")
+    for _ in range(8):
+        root=tree()
+        confirm=find(root,"Включить")
+        if confirm is not None and confirm.get("enabled")=="true":
+            shot("expanded-warning-after-scroll")
+            tap_node(confirm)
+            wait("Расширенный режим включён")
+            return
+        scrolls=[n for n in root.iter("node") if n.get("scrollable")=="true"
+                 and n.get("package")==PACKAGE and bounds(n)[3]-bounds(n)[1]>250]
+        if not scrolls: raise AssertionError("Warning text scroll unavailable")
+        x1,y1,x2,y2=bounds(scrolls[-1]); x=(x1+x2)//2
+        adb("shell","input","swipe",str(x),str(y2-30),str(x),str(y1+30),"400")
+        time.sleep(.5)
+    raise AssertionError("Warning confirmation stayed disabled after scrolling")
+
 def check_profile(profile, route):
     working(profile)
     shot(f"{profile}-home")
@@ -137,7 +175,8 @@ wait("Железнодорожный помощник")
 try:
     check_profile("ТЭМ2","Начать снаружи")
     check_profile("ТЭМ2У","Начать из кабины")
+    check_warning()
 finally:
     (OUT / "crash-logcat.txt").write_bytes(adb("logcat","-d","-b","crash"))
 assert b"Process: ru.railbrake.calculator" not in (OUT / "crash-logcat.txt").read_bytes()
-print("TEM2/TEM2U emulator working profile, Atlas, scheme, diagnostics, acceptance and restart PASS")
+print("TEM2/TEM2U emulator profiles and expanded mode scroll gate PASS")
