@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-02",
+  "updatedAt": "2026-10-03",
   "layoutPolicy": {
     "root": "docs/locomotives",
     "levels": ["tractionType", "family", "variant"],
@@ -24,7 +24,7 @@
       "familyId": "tem2-family",
       "tractionType": "diesel",
       "canonicalRoot": "docs/locomotives/diesel/tem2-family",
-      "migrationState": "STAGE_1_FOUNDATION_COMPLETE",
+      "migrationState": "KNOWLEDGE_FOUNDATION_COMPLETE_READY_FOR_APP_INTEGRATION",
       "profiles": ["tem2-base", "tem2u-improved"]
     }
   ]
