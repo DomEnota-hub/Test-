@@ -3,7 +3,7 @@
 import re
 import time
 
-from tem2_android_smoke import PACKAGE, OUT, adb, find, label, open_menu, shot, tap, tree, wait
+from tem2_android_smoke import PACKAGE, OUT, adb, label, open_menu, shot, tap, tree, wait
 
 
 def scroll_until(text, swipes=12):
@@ -29,10 +29,6 @@ def open_reference():
     if any(re.search(r"\b(?:VL-EQ|VL-SYS|pnr-)[A-Za-z0-9-]*", x) for x in labels):
         raise AssertionError("Internal knowledge identifier visible in card")
 
-
-adb("shell", "pm", "clear", PACKAGE)
-adb("shell", "monkey", "-p", PACKAGE, "1")
-wait("Железнодорожный помощник")
 
 try:
     open_reference()
