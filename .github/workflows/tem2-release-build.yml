@@ -1,0 +1,99 @@
+name: TEM2 signed release build
+
+on:
+  push:
+    branches: [release/tem2-app]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      RELEASE_KEYSTORE_B64: ${{ secrets.RAILBRAKE_KEYSTORE_BASE64 }}
+      EXPECTED_SIGNING_CERT_SHA256: ea9fe9341a6ba72b585bd7ff82ce29c8fc5b7b59e76b8b134df203eaab8e2788
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate TEM2 integration
+        run: |
+          set -euo pipefail
+          python3 qa/validate_tem2_stage1_foundation.py
+          python3 app/qa/validate_tem2_stage2.py
+          python3 app/qa/validate_tem2_stage3.py
+          python3 app/qa/validate_tem2_stage4.py
+          python3 qa/validate_locomotive_profile_registry.py
+          python3 qa/validate_extended_emergency_stage4_integration.py
+          python3 qa/verify_tem2_android_assets.py
+          python3 qa/verify_chme3_android_assets.py
+          git diff --check
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+      - name: Install Android SDK 34
+        run: |
+          yes | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
+          "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-34' 'build-tools;34.0.0'
+      - name: Prepare release source
+        run: |
+          set -euo pipefail
+          rm -rf buildsrc
+          mkdir -p buildsrc
+          unzip -q RailBrakeCalculator.zip -d buildsrc
+          cp -a patch/. buildsrc/RailBrakeCalculator/
+          test -f buildsrc/RailBrakeCalculator/settings.gradle.kts
+          sed -i 's/versionCode = 202/versionCode = 203/' buildsrc/RailBrakeCalculator/app/build.gradle.kts
+          sed -i 's/versionName = "1.2.2-dev14-beta53-chme3"/versionName = "1.2.2-dev14-tem2"/' buildsrc/RailBrakeCalculator/app/build.gradle.kts
+          grep -Fq 'versionCode = 203' buildsrc/RailBrakeCalculator/app/build.gradle.kts
+          grep -Fq 'versionName = "1.2.2-dev14-tem2"' buildsrc/RailBrakeCalculator/app/build.gradle.kts
+      - name: Resolve pinned offline ASR AAR
+        run: |
+          set -euo pipefail
+          mkdir -p buildsrc/RailBrakeCalculator/app/libs
+          curl -fL --retry 3 --connect-timeout 20 https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.13.8/sherpa-onnx-1.13.8.aar -o buildsrc/RailBrakeCalculator/app/libs/sherpa-onnx.aar
+          printf '%s  %s\n' 633c24321e06b1fe79feafa03ea16cbc0f8a286641e2da3559bac91bdb13bd96 buildsrc/RailBrakeCalculator/app/libs/sherpa-onnx.aar | sha256sum --check
+      - name: Unit tests and lint
+        working-directory: buildsrc/RailBrakeCalculator
+        run: gradle :app:testDebugUnitTest :app:lintDebug --no-daemon --console=plain
+      - name: Decode release signing key
+        working-directory: buildsrc/RailBrakeCalculator
+        run: |
+          set -euo pipefail
+          test -n "$RELEASE_KEYSTORE_B64"
+          printf '%s' "$RELEASE_KEYSTORE_B64" | base64 --decode > release.keystore
+          test -s release.keystore
+          printf '%s  %s\n' f196d0295e2587b0cb6338a6db5a4b3f73e70c50ef45720b2b5862090361049b release.keystore | sha256sum --check
+      - name: Build signed release APK
+        working-directory: buildsrc/RailBrakeCalculator
+        env:
+          RAILBRAKE_KEYSTORE_PATH: ${{ github.workspace }}/buildsrc/RailBrakeCalculator/release.keystore
+          RAILBRAKE_STORE_PASSWORD: ${{ secrets.RAILBRAKE_STORE_PASSWORD }}
+          RAILBRAKE_KEY_ALIAS: ${{ secrets.RAILBRAKE_KEY_ALIAS }}
+          RAILBRAKE_KEY_PASSWORD: ${{ secrets.RAILBRAKE_KEY_PASSWORD }}
+        run: gradle :app:assembleRelease --no-daemon --console=plain
+      - name: Verify release
+        run: |
+          set -euo pipefail
+          APK=buildsrc/RailBrakeCalculator/app/build/outputs/apk/release/app-release.apk
+          test -f "$APK"
+          "$ANDROID_SDK_ROOT/build-tools/34.0.0/aapt" dump badging "$APK" | tee apk-badging.log
+          grep -Fq "package: name='ru.railbrake.calculator' versionCode='203' versionName='1.2.2-dev14-tem2'" apk-badging.log
+          "$ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner" verify --verbose --print-certs "$APK" | tee signed-apksigner.log
+          grep -qi "Signer #1 certificate SHA-256 digest: $EXPECTED_SIGNING_CERT_SHA256" signed-apksigner.log
+          sha256sum "$APK" | tee release-apk.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RailBrakeCalculator-1.2.2-dev14-tem2-release-signed
+          path: |
+            buildsrc/RailBrakeCalculator/app/build/outputs/apk/release/app-release.apk
+            apk-badging.log
+            signed-apksigner.log
+            release-apk.sha256
+          if-no-files-found: error
+          retention-days: 30
