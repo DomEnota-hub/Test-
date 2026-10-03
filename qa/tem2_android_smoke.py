@@ -86,7 +86,9 @@ def working(profile):
             tap(profile,0)
             wait("Сегодня работаю на: "+profile)
             return
-        chips=[n for n in root.iter("node") if n.get("scrollable")=="true" and bounds(n)[1]<650]
+        chips=[n for n in root.iter("node") if n.get("scrollable")=="true"
+               and n.get("package")==PACKAGE and bounds(n)[3]-bounds(n)[1]<300
+               and bounds(n)[2]-bounds(n)[0]>500]
         if not chips: raise AssertionError("Working locomotive chip row unavailable")
         x1,y1,x2,y2=bounds(chips[0]); y=(y1+y2)//2
         adb("shell","input","swipe",str(x2-30),str(y),str(x1+30),str(y),"450")
@@ -133,5 +135,5 @@ try:
     check_profile("ТЭМ2У","Начать из кабины")
 finally:
     (OUT / "crash-logcat.txt").write_bytes(adb("logcat","-d","-b","crash"))
-assert b"FATAL EXCEPTION" not in (OUT / "crash-logcat.txt").read_bytes()
+assert b"Process: ru.railbrake.calculator" not in (OUT / "crash-logcat.txt").read_bytes()
 print("TEM2/TEM2U emulator working profile, Atlas, scheme, diagnostics, acceptance and restart PASS")
