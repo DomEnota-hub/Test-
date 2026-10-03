@@ -57,9 +57,30 @@ jobs:
       - name: Android unit tests, lint and debug build
         working-directory: buildsrc/RailBrakeCalculator
         run: gradle :app:testDebugUnitTest :app:lintDebug :app:assembleDebug --no-daemon --console=plain
-      - name: Build unsigned release APK
+      - name: Decode stable signing key
         working-directory: buildsrc/RailBrakeCalculator
+        env:
+          RELEASE_KEYSTORE_B64: ${{ secrets.RAILBRAKE_KEYSTORE_BASE64 }}
+        run: |
+          set -euo pipefail
+          test -n "$RELEASE_KEYSTORE_B64"
+          printf '%s' "$RELEASE_KEYSTORE_B64" | base64 --decode > release.keystore
+          test -s release.keystore
+      - name: Build signed release APK
+        working-directory: buildsrc/RailBrakeCalculator
+        env:
+          RAILBRAKE_KEYSTORE_PATH: ${{ github.workspace }}/buildsrc/RailBrakeCalculator/release.keystore
+          RAILBRAKE_STORE_PASSWORD: ${{ secrets.RAILBRAKE_STORE_PASSWORD }}
+          RAILBRAKE_KEY_ALIAS: ${{ secrets.RAILBRAKE_KEY_ALIAS }}
+          RAILBRAKE_KEY_PASSWORD: ${{ secrets.RAILBRAKE_KEY_PASSWORD }}
         run: gradle :app:assembleRelease --no-daemon --console=plain
+      - name: Verify signed release identity
+        run: |
+          set -euo pipefail
+          APK=buildsrc/RailBrakeCalculator/app/build/outputs/apk/release/app-release.apk
+          "$ANDROID_SDK_ROOT/build-tools/34.0.0/aapt" dump badging "$APK" | grep -F "package: name='ru.railbrake.calculator'"
+          "$ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner" verify --verbose --print-certs "$APK" > signed-apksigner.log
+          grep -qi 'Signer #1 certificate SHA-256 digest: ea9fe9341a6ba72b585bd7ff82ce29c8fc5b7b59e76b8b134df203eaab8e2788' signed-apksigner.log
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -71,8 +92,8 @@ jobs:
           if-no-files-found: ignore
       - uses: actions/upload-artifact@v4
         with:
-          name: tem2-release-unsigned
-          path: buildsrc/RailBrakeCalculator/app/build/outputs/apk/release/*unsigned.apk
+          name: railbrake-framework-v2-release-signed
+          path: buildsrc/RailBrakeCalculator/app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
 
   emulator-smoke:
