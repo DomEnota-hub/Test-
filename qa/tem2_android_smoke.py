@@ -80,7 +80,7 @@ def open_menu(text):
 
 def working(profile):
     open_menu("Главная") if not any("Сегодня работаю на:" in label(n) for n in tree().iter("node")) else None
-    for _ in range(6):
+    for _ in range(9):
         root=tree()
         if find(root,profile):
             tap(profile,0)
