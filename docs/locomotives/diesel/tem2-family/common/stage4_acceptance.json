@@ -1,0 +1,297 @@
+{
+  "schemaVersion": 4,
+  "familyId": "tem2-family",
+  "stage": "STAGE_4_ACCEPTANCE_CROSS_LAYER_QA",
+  "updatedAt": "2026-10-03",
+  "classification": "SOURCE_BACKED_ACCEPTANCE_WITH_LOCAL_SCOPE_BOUNDARY",
+  "profiles": ["tem2-base", "tem2u-improved"],
+  "sessionContract": {
+    "states": ["NOT_CHECKED", "OK", "NOTE", "NOT_APPLICABLE"],
+    "routeStateShared": true,
+    "notesPerPhysicalItem": true,
+    "resumeSupported": true,
+    "routeSwitchKeepsSession": true
+  },
+  "scopePolicy": {
+    "networkWideMandatoryClaimAllowed": false,
+    "localApprovedProcessMayExtendScope": true,
+    "currentBrakeRulesTakePriorityFrom": "2026-07-01",
+    "historicalFactoryManualsAreCurrentActionAuthority": false,
+    "actualInstalledEquipmentOverridesSeriesAssumption": true,
+    "unknownExecution": "FAIL_CLOSED",
+    "adjacentVariantInheritance": "DENY",
+    "note": "Stage 4 defines a knowledge/acceptance contract and deterministic coverage. Exact mandatory TO-1 or depot acceptance volume remains bound to the current applicable operator/depot process unless a current network-wide source explicitly establishes it."
+  },
+  "routes": [
+    {
+      "id": "TEM2-ACC-ROUTE-OUTSIDE-FIRST",
+      "title": "Начать снаружи",
+      "phases": ["OUTSIDE", "ENGINE_ROOM", "CAB", "BRAKE_PNEUMATIC"]
+    },
+    {
+      "id": "TEM2-ACC-ROUTE-CAB-FIRST",
+      "title": "Начать из кабины",
+      "phases": ["CAB", "BRAKE_PNEUMATIC", "ENGINE_ROOM", "OUTSIDE"]
+    }
+  ],
+  "expandedAcceptance": {
+    "mode": "ATLAS_FILTER_BY_PROFILE",
+    "expectedEquipmentCountByProfile": {
+      "tem2-base": 33,
+      "tem2u-improved": 35
+    },
+    "systemPhaseMap": {
+      "SYS-DIESEL": "ENGINE_ROOM",
+      "SYS-TRACTION": "ENGINE_ROOM",
+      "SYS-EXCITATION": "ENGINE_ROOM",
+      "SYS-START": "ENGINE_ROOM",
+      "SYS-AUX": "ENGINE_ROOM",
+      "SYS-AIR": "ENGINE_ROOM",
+      "SYS-TRAIN-BRAKE": "BRAKE_PNEUMATIC",
+      "SYS-LOCO-BRAKE": "BRAKE_PNEUMATIC",
+      "SYS-CONTROL": "CAB"
+    },
+    "phaseOverrides": {
+      "TEM2-EQ-BC": "OUTSIDE",
+      "TEM2-EQ-BRAKE-PIPE": "OUTSIDE"
+    },
+    "policy": "Every Stage-2 equipment entity applicable to the exact profile is exposed as an expanded acceptance item. This gives deterministic Atlas↔Acceptance coverage without claiming that every generated item is a network-wide mandatory TO-1 operation."
+  },
+  "coreChecks": [
+    {
+      "id": "TEM2-ACC-001",
+      "title": "Фактическое исполнение дизеля и отсутствие явных внешних отклонений",
+      "profiles": ["tem2-base", "tem2u-improved"],
+      "phase": "ENGINE_ROOM",
+      "scopeStatus": "REFERENCE_CHECK_LOCAL_PROCESS_REQUIRED",
+      "checkType": "OBSERVATION",
+      "observation": "Сверить фактически установленное исполнение дизеля с выбранным профилем и отметить явные течи, повреждения или нештатные признаки, доступные без разборки.",
+      "normalState": "Фактическое исполнение подтверждено; явных внешних отклонений не отмечено.",
+      "deviationState": "Исполнение не подтверждается либо обнаружен явный внешний признак отклонения — профильные выводы закрыть до уточнения.",
+      "equipmentRefs": ["TEM2-EQ-DIESEL", "TEM2U-EQ-DIESEL"],
+      "diagnosticRefs": [],
+      "sourceRefs": ["TEM2-SRC-BMZ-MANUAL-1983", "TEM2U-SRC-BMZ-MANUAL-1988", "TEM2-SRC-RZD-TEM2-IO-2004"]
+    },
+    {
+      "id": "TEM2-ACC-002",
+      "title": "Аккумуляторная батарея и пусковая функциональная группа",
+      "profiles": ["tem2-base", "tem2u-improved"],
+      "phase": "ENGINE_ROOM",
+      "scopeStatus": "REFERENCE_CHECK_LOCAL_PROCESS_REQUIRED",
+      "checkType": "FUNCTIONAL_OBSERVATION",
+      "observation": "Проверить доступные штатные признаки состояния батареи и готовности пусковой группы без обхода блокировок и без принудительного включения аппаратов.",
+      "normalState": "Штатные признаки питания и готовности пуска соответствуют выбранному исполнению.",
+      "deviationState": "Просадка питания, отсутствие готовности или нештатная последовательность — перейти к диагностике пуска.",
+      "equipmentRefs": ["TEM2-EQ-BAT", "TEM2-EQ-START-CIRCUIT"],
+      "diagnosticRefs": ["TEM2-DIAG-001", "TEM2-DIAG-002", "TEM2-DIAG-003", "TEM2-DIAG-004"],
+      "sourceRefs": ["TEM2-SRC-BMZ-MANUAL-1983", "TEM2U-SRC-BMZ-MANUAL-1988", "TEM2-SRC-NOTIK-ELECTRICAL-1980", "TEM2-SRC-POT-RZD-342-2025"]
+    },
+    {
+      "id": "TEM2-ACC-003",
+      "title": "Контроллер машиниста и реверсивное управление",
+      "profiles": ["tem2-base", "tem2u-improved"],
+      "phase": "CAB",
+      "scopeStatus": "REFERENCE_CHECK_LOCAL_PROCESS_REQUIRED",
+      "checkType": "FUNCTIONAL_OBSERVATION",
+      "observation": "Сопоставить положения органов управления и штатные признаки выбранного направления без вмешательства в аппаратные блокировки.",
+      "normalState": "Органы управления и выбранное направление согласованы с фактическим состоянием.",
+      "deviationState": "Направление, блокировка или реакция цепи не соответствуют команде — использовать диагностическую ветку управления/реверсора.",
+      "equipmentRefs": ["TEM2-EQ-CONTROLLER", "TEM2-EQ-REV"],
+      "diagnosticRefs": [],
+      "sourceRefs": ["TEM2-SRC-BMZ-MANUAL-1983", "TEM2U-SRC-BMZ-MANUAL-1988", "TEM2-SRC-NOTIK-ELECTRICAL-1980"]
+    },
+    {
+      "id": "TEM2-ACC-004",
+      "title": "Тяговый генератор и поездные контакторы",
+      "profiles": ["tem2-base", "tem2u-improved"],
+      "phase": "ENGINE_ROOM",
+      "scopeStatus": "REFERENCE_CHECK_LOCAL_PROCESS_REQUIRED",
+      "checkType": "OBSERVATION",
+      "observation": "Проверить доступные без разборки признаки состояния тягового генератора, поездных контакторов и отсутствие явных следов перегрева/повреждения.",
+      "normalState": "Явных внешних признаков повреждения или перегрева не отмечено.",
+      "deviationState": "Следы перегрева, повреждения или несоответствие штатной реакции — зафиксировать и перейти к диагностике тяговой цепи.",
+      "equipmentRefs": ["TEM2-EQ-TG", "TEM2-EQ-P1", "TEM2-EQ-P2"],
+      "diagnosticRefs": [],
+      "sourceRefs": ["TEM2-SRC-BMZ-MANUAL-1983", "TEM2U-SRC-BMZ-MANUAL-1988", "TEM2-SRC-NOTIK-ELECTRICAL-1980", "TEM2-SRC-RZD-TEM2-IO-2004"]
+    },
+    {
+      "id": "TEM2-ACC-005",
+      "title": "Тяговые электродвигатели и отключатель ТЭД",
+      "profiles": ["tem2-base", "tem2u-improved"],
+      "phase": "ENGINE_ROOM",
+      "scopeStatus": "REFERENCE_CHECK_LOCAL_PROCESS_REQUIRED",
+      "checkType": "OBSERVATION",
+      "observation": "Проверить доступные штатные признаки групп ТЭД, отключателя двигателей и цепи ослабления возбуждения без изменения схемы.",
+      "normalState": "Нет явных признаков повреждения; положение отключателя соответствует фактической конфигурации.",
+      "deviationState": "Обнаружено несоответствие конфигурации, следы перегрева или иной явный признак — профиль и доступную тягу считать требующими уточнения.",
+      "equipmentRefs": ["TEM2-EQ-TM1-3", "TEM2-EQ-TM4-6", "TEM2-EQ-MOTOR-CUTOUT", "TEM2-EQ-FIELD-SHUNT"],
+      "diagnosticRefs": [],
+      "sourceRefs": ["TEM2-SRC-BMZ-MANUAL-1983", "TEM2U-SRC-BMZ-MANUAL-1988", "TEM2-SRC-NOTIK-ELECTRICAL-1980"]
+    },
+    {
+      "id": "TEM2-ACC-006",
+      "title": "Возбуждение и ограничение тока",
+      "profiles": ["tem2-base", "tem2u-improved"],
+      "phase": "ENGINE_ROOM",
+      "scopeStatus": "REFERENCE_CHECK_LOCAL_PROCESS_REQUIRED",
+      "checkType": "OBSERVATION",
+      "observation": "Проверить доступные признаки возбудителя, контакторов ВВ/КВ и аппаратуры ограничения тока без принудительного включения аппаратов.",
+      "normalState": "Явных внешних отклонений нет; состояние соответствует выбранному исполнению.",
+      "deviationState": "Нештатный признак или несоответствие исполнения — переход к локализации цепи возбуждения с fail-closed для неизвестной модернизации.",
+      "equipmentRefs": ["TEM2-EQ-EXCITER", "TEM2-EQ-VV", "TEM2-EQ-KV", "TEM2-EQ-CURRENT-LIMIT"],
+      "diagnosticRefs": [],
+      "sourceRefs": ["TEM2-SRC-BMZ-MANUAL-1983", "TEM2U-SRC-BMZ-MANUAL-1988", "TEM2-SRC-NOTIK-ELECTRICAL-1980"]
+    },
+    {
+      "id": "TEM2-ACC-007",
+      "title": "Вспомогательный генератор и регулятор напряжения",
+      "profiles": ["tem2-base", "tem2u-improved"],
+      "phase": "ENGINE_ROOM",
+      "scopeStatus": "REFERENCE_CHECK_LOCAL_PROCESS_REQUIRED",
+      "checkType": "FUNCTIONAL_OBSERVATION",
+      "observation": "Сопоставить штатные признаки зарядки и состояния вспомогательного генератора/регулятора с показаниями доступных приборов.",
+      "normalState": "Штатные признаки зарядки присутствуют, явных отклонений нет.",
+      "deviationState": "Зарядка отсутствует или поведение регулятора нештатное — перейти к диагностике вспомогательного электроснабжения.",
+      "equipmentRefs": ["TEM2-EQ-AUX-GEN", "TEM2-EQ-VOLT-REG", "TEM2-EQ-BAT"],
+      "diagnosticRefs": [],
+      "sourceRefs": ["TEM2-SRC-BMZ-MANUAL-1983", "TEM2U-SRC-BMZ-MANUAL-1988", "TEM2-SRC-NOTIK-ELECTRICAL-1980"]
+    },
+    {
+      "id": "TEM2-ACC-008",
+      "title": "Реле заземления и боксования",
+      "profiles": ["tem2-base", "tem2u-improved"],
+      "phase": "CAB",
+      "scopeStatus": "REFERENCE_CHECK_LOCAL_PROCESS_REQUIRED",
+      "checkType": "STATUS_OBSERVATION",
+      "observation": "Проверить отсутствие активного нештатного признака защит по доступной штатной индикации; не сбрасывать повторно срабатывающую защиту без локализации причины.",
+      "normalState": "Активного нештатного признака защиты нет.",
+      "deviationState": "Защита активна или повторно срабатывает — диагностика имеет приоритет, повторное принудительное восстановление не применяется.",
+      "equipmentRefs": ["TEM2-EQ-GROUND-RELAY", "TEM2-EQ-SLIP-RELAYS"],
+      "diagnosticRefs": [],
+      "sourceRefs": ["TEM2-SRC-NOTIK-ELECTRICAL-1980", "TEM2-SRC-POT-RZD-342-2025"]
+    },
+    {
+      "id": "TEM2-ACC-009",
+      "title": "Компрессор, регулятор давления и главные резервуары",
+      "profiles": ["tem2-base", "tem2u-improved"],
+      "phase": "ENGINE_ROOM",
+      "scopeStatus": "REFERENCE_CHECK_LOCAL_PROCESS_REQUIRED",
+      "checkType": "FUNCTIONAL_OBSERVATION",
+      "observation": "Сопоставить работу компрессора, регулятора давления и набор давления с фактическими штатными показаниями без вмешательства в регулировки.",
+      "normalState": "Набор давления и управление компрессором не имеют явных отклонений.",
+      "deviationState": "Компрессор не качает, не отключается, наблюдается утечка или иной нештатный признак — перейти к соответствующей диагностике.",
+      "equipmentRefs": ["TEM2-EQ-COMP", "TEM2-EQ-PRESS-REG", "TEM2-EQ-MAIN-RES"],
+      "diagnosticRefs": [],
+      "sourceRefs": ["TEM2-SRC-BMZ-MANUAL-1983", "TEM2U-SRC-BMZ-MANUAL-1988", "TEM2-SRC-POT-RZD-342-2025"]
+    },
+    {
+      "id": "TEM2-ACC-010",
+      "title": "Подготовка воздуха и питательная магистраль",
+      "profiles": ["tem2-base", "tem2u-improved"],
+      "phase": "ENGINE_ROOM",
+      "scopeStatus": "REFERENCE_CHECK_LOCAL_PROCESS_REQUIRED",
+      "checkType": "OBSERVATION",
+      "observation": "Проверить доступные признаки состояния подготовки воздуха и питательной магистрали, включая отсутствие явных утечек в доступных местах.",
+      "normalState": "Явных утечек или внешних повреждений не отмечено.",
+      "deviationState": "Есть утечка, повреждение или нештатный признак — отметить замечание и локализовать пневматическую неисправность.",
+      "equipmentRefs": ["TEM2-EQ-OIL-SEP", "TEM2-EQ-FEED-PIPE"],
+      "diagnosticRefs": [],
+      "sourceRefs": ["TEM2-SRC-BMZ-MANUAL-1983", "TEM2U-SRC-BMZ-MANUAL-1988", "TEM2-SRC-POT-RZD-342-2025"]
+    },
+    {
+      "id": "TEM2-ACC-011",
+      "title": "Поездной тормоз: органы управления, уравнительный резервуар и тормозная магистраль",
+      "profiles": ["tem2-base", "tem2u-improved"],
+      "phase": "BRAKE_PNEUMATIC",
+      "scopeStatus": "CURRENT_NORMATIVE_CONTEXT_LOCAL_VOLUME_REQUIRED",
+      "checkType": "BRAKE_ACCEPTANCE_CONTEXT",
+      "observation": "Проверить по действующему порядку применимые для локомотива признаки исправности управления поездным тормозом и состояния тормозной магистрали; конкретный объём и последовательность брать из текущего применимого процесса.",
+      "normalState": "Проверяемые по текущему порядку признаки соответствуют нормальному состоянию.",
+      "deviationState": "Есть несоответствие, утечка или неправильная реакция — эксплуатационный вывод по тормозам не делать до применения действующего порядка.",
+      "equipmentRefs": ["TEM2-EQ-DRV-BRAKE", "TEM2-EQ-EQ-RES", "TEM2-EQ-BRAKE-PIPE"],
+      "diagnosticRefs": [],
+      "sourceRefs": ["TEM2-SRC-BRAKES-2026", "TEM2-SRC-POT-RZD-342-2025"]
+    },
+    {
+      "id": "TEM2-ACC-012",
+      "title": "Воздухораспределитель, резервуар и тормозные цилиндры",
+      "profiles": ["tem2-base", "tem2u-improved"],
+      "phase": "BRAKE_PNEUMATIC",
+      "scopeStatus": "CURRENT_NORMATIVE_CONTEXT_LOCAL_VOLUME_REQUIRED",
+      "checkType": "BRAKE_ACCEPTANCE_CONTEXT",
+      "observation": "Проверить применимые по действующему порядку признаки срабатывания/отпуска и отсутствие явных внешних дефектов доступных элементов тормозной системы.",
+      "normalState": "Срабатывание и отпуск по применимому порядку соответствуют ожидаемому состоянию; явных дефектов нет.",
+      "deviationState": "Тормоз не срабатывает, не отпускает, срабатывает самопроизвольно либо имеется утечка/дефект — перейти к тормозной диагностике и действующим ограничениям.",
+      "equipmentRefs": ["TEM2-EQ-AIR-DIST", "TEM2-EQ-AUX-RES", "TEM2-EQ-BC"],
+      "diagnosticRefs": [],
+      "sourceRefs": ["TEM2-SRC-BRAKES-2026", "TEM2-SRC-POT-RZD-342-2025"]
+    },
+    {
+      "id": "TEM2-ACC-013",
+      "title": "Вспомогательный тормоз локомотива",
+      "profiles": ["tem2-base", "tem2u-improved"],
+      "phase": "BRAKE_PNEUMATIC",
+      "scopeStatus": "CURRENT_NORMATIVE_CONTEXT_LOCAL_VOLUME_REQUIRED",
+      "checkType": "BRAKE_ACCEPTANCE_CONTEXT",
+      "observation": "Проверить применимые по действующему порядку признаки действия вспомогательного тормоза локомотива.",
+      "normalState": "Реакция вспомогательного тормоза соответствует применимому текущему порядку.",
+      "deviationState": "Реакция отсутствует, неполная либо не соответствует команде — перейти к локализации и действующим ограничениям.",
+      "equipmentRefs": ["TEM2-EQ-INDEP-BRAKE", "TEM2-EQ-BC"],
+      "diagnosticRefs": [],
+      "sourceRefs": ["TEM2-SRC-BRAKES-2026", "TEM2-SRC-POT-RZD-342-2025"]
+    },
+    {
+      "id": "TEM2-ACC-014",
+      "title": "ЭПК автостопа — фактическое исполнение и применимый контроль",
+      "profiles": ["tem2-base", "tem2u-improved"],
+      "phase": "CAB",
+      "scopeStatus": "REFERENCE_CHECK_LOCAL_PROCESS_REQUIRED",
+      "checkType": "PROFILE_AND_STATUS_OBSERVATION",
+      "observation": "Подтвердить фактическое наличие/исполнение ЭПК и выполнять только тот контроль, который предусмотрен применимым действующим процессом для данного оборудования.",
+      "normalState": "Исполнение подтверждено; применимый контроль не выявляет отклонения.",
+      "deviationState": "Исполнение не подтверждено либо контроль выявил отклонение — не переносить правила от другого исполнения, использовать действующий источник/процесс.",
+      "equipmentRefs": ["TEM2-EQ-EPC-AUTOSTOP"],
+      "diagnosticRefs": [],
+      "sourceRefs": ["TEM2-SRC-BMZ-MANUAL-1983", "TEM2U-SRC-BMZ-MANUAL-1988", "TEM2-SRC-POT-RZD-342-2025"]
+    }
+  ],
+  "profileChecks": [
+    {
+      "id": "TEM2U-ACC-015",
+      "title": "Управление одним лицом — только при фактическом наличии оборудования",
+      "profiles": ["tem2u-improved"],
+      "phase": "CAB",
+      "scopeStatus": "PROFILE_EXTENDED_CHECK_IF_INSTALLED",
+      "checkType": "PROFILE_CONFIRMATION",
+      "observation": "Подтвердить фактическое наличие и исполнение оборудования управления одним лицом до любых профильных выводов; конкретный обязательный объём определяется применимым текущим процессом.",
+      "normalState": "Оборудование фактически подтверждено и его доступные штатные признаки не показывают отклонения.",
+      "deviationState": "Оборудование отсутствует, исполнение неизвестно или есть отклонение — профильный пункт отметить NOT_APPLICABLE либо NOTE и не наследовать его на ТЭМ2.",
+      "equipmentRefs": ["TEM2U-EQ-ONE-PERSON"],
+      "diagnosticRefs": [],
+      "sourceRefs": ["TEM2U-SRC-BMZ-MANUAL-1988", "TEM2-SRC-RZD-TEM2-IO-2004"]
+    },
+    {
+      "id": "TEM2U-ACC-016",
+      "title": "Система многих единиц — только при фактическом наличии оборудования",
+      "profiles": ["tem2u-improved"],
+      "phase": "CAB",
+      "scopeStatus": "PROFILE_EXTENDED_CHECK_IF_INSTALLED",
+      "checkType": "PROFILE_CONFIRMATION",
+      "observation": "Подтвердить фактическое наличие и исполнение цепей СМЕ до профильного контроля; не переносить схему от соседних вариантов семейства.",
+      "normalState": "Фактическое исполнение СМЕ подтверждено и доступные штатные признаки не показывают отклонения.",
+      "deviationState": "СМЕ отсутствует, исполнение неизвестно или есть отклонение — пункт NOT_APPLICABLE/NOTE, соседние исполнения не наследовать.",
+      "equipmentRefs": ["TEM2U-EQ-MU-CONTROL"],
+      "diagnosticRefs": [],
+      "sourceRefs": ["TEM2U-SRC-BMZ-MANUAL-1988", "TEM2-SRC-RZD-TEM2-IO-2004"]
+    }
+  ],
+  "crossLayerPolicy": {
+    "atlasToAcceptance": "Every Stage-2 equipment entity applicable to the selected profile must resolve through deterministic expanded acceptance or a core/profile check.",
+    "acceptanceToDiagnostics": "Every diagnostic scenario must reference Stage-2 equipment applicable to its profile; because expanded acceptance covers all applicable equipment, each diagnostic has at least one deterministic Acceptance↔Diagnostics bridge even when a direct scenario button is not claimed.",
+    "acceptanceToSources": "Every authored core/profile check keeps explicit source references. Historical manufacturer/training material may support architecture and observation points but does not by itself establish current network-wide action authority.",
+    "profileIsolation": "TEM2U-only equipment/checks never become active TEM2 acceptance content. TEM2T, TEM2UM, TEM2A and later TEM-family variants are denied until a dedicated evidenced profile is added.",
+    "brakePriority": "Brake acceptance context uses the rules effective from 2026-07-01; older material is historical/reference only where conflict exists.",
+    "unknownExecution": "Variant-dependent conclusions fail closed until actual installed equipment is confirmed."
+  },
+  "integrationDecision": "READY_FOR_APP_INTEGRATION only after Stage 1, Stage 2, Stage 3 and Stage 4 validators plus global locomotive profile registry guard pass on the same head SHA."
+}
