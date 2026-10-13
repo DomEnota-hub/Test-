@@ -41,6 +41,10 @@ internal object Vu45HistorySnapshots {
         context.getSharedPreferences(VU45_HISTORY_STORE, Context.MODE_PRIVATE)
             .getString(timestampMillis.toString(), null)
 
+    fun clear(context: Context) {
+        context.getSharedPreferences(VU45_HISTORY_STORE, Context.MODE_PRIVATE).edit().clear().apply()
+    }
+
     fun save(context: Context, timestampMillis: Long, snapshot: String) {
         val written = context.getSharedPreferences(VU45_HISTORY_STORE, Context.MODE_PRIVATE)
             .edit().putString(timestampMillis.toString(), snapshot).commit()

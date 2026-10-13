@@ -105,6 +105,7 @@ private enum class AppScreen(val title: String) {
     CALCULATIONS("Расчёты"),
     MASS("По массе"),
     APPENDIX("ИДП №12"),
+    VU45("ВУ-45"),
     HISTORY("История"),
     EXAM_QUESTIONS("Вопросы и ответы"),
     SETTINGS("Палитра")
@@ -147,6 +148,7 @@ fun BrakeCalculatorApp(
     var historyVersion by remember { mutableIntStateOf(0) }
     var screenName by rememberSaveable { mutableStateOf(AppScreen.HOME.name) }
     var appendixPrefill by remember { mutableStateOf<AppendixPrefill?>(null) }
+    var vu45Prefill by remember { mutableStateOf<String?>(null) }
     var knowledgeStartArticleId by rememberSaveable { mutableStateOf<String?>(null) }
     var knowledgeStartQuery by rememberSaveable { mutableStateOf<String?>(null) }
     var diagnosticStartScenarioId by rememberSaveable { mutableStateOf<String?>(null) }
@@ -243,7 +245,7 @@ fun BrakeCalculatorApp(
                 toolItems.forEach { item ->
                     NavigationDrawerItem(
                         label = { Text(item.title) },
-                        selected = screen == item || (item == AppScreen.CALCULATIONS && screen in listOf(AppScreen.MASS, AppScreen.APPENDIX)),
+                        selected = screen == item || (item == AppScreen.CALCULATIONS && screen in listOf(AppScreen.MASS, AppScreen.APPENDIX, AppScreen.VU45)),
                         onClick = {
                             when (item) {
                                 AppScreen.HISTORY -> historyRootVersion++
@@ -269,7 +271,7 @@ fun BrakeCalculatorApp(
     ) {
         BackHandler(enabled = screen != AppScreen.HOME) {
             screenName = when (screen) {
-                AppScreen.MASS, AppScreen.APPENDIX -> AppScreen.CALCULATIONS.name
+                AppScreen.MASS, AppScreen.APPENDIX, AppScreen.VU45 -> AppScreen.CALCULATIONS.name
                 AppScreen.LOCOMOTIVE_MATERIAL, AppScreen.LOCOMOTIVE_LEGACY -> AppScreen.LOCOMOTIVES.name
                 AppScreen.DIAGNOSTICS -> diagnosticReturnScreenName
                 else -> AppScreen.HOME.name
@@ -314,7 +316,8 @@ fun BrakeCalculatorApp(
                 AppScreen.CALCULATIONS -> ScrollPage {
                     CalculationsHub(
                         onMass = { screenName = AppScreen.MASS.name },
-                        onAppendix = { screenName = AppScreen.APPENDIX.name }
+                        onAppendix = { screenName = AppScreen.APPENDIX.name },
+                        onVu45 = { vu45Prefill = null; screenName = AppScreen.VU45.name }
                     )
                 }
                 AppScreen.MASS -> ScrollPage {
@@ -345,11 +348,24 @@ fun BrakeCalculatorApp(
                         }
                     )
                 }
+                AppScreen.VU45 -> key(vu45Prefill) {
+                    ScrollPage {
+                        ChildBackButton("Расчёты") { screenName = AppScreen.CALCULATIONS.name }
+                        Vu45Screen(
+                            initialSnapshot = vu45Prefill,
+                            onSaved = { historyRepository.add(it); historyVersion++ }
+                        )
+                    }
+                }
                 AppScreen.HISTORY -> key(historyRootVersion) {
                     HistoryScreen(
                         repository = historyRepository,
                         version = historyVersion,
-                        onCleared = { historyVersion++ }
+                        onCleared = { historyVersion++ },
+                        onRepeatVu45 = { snapshot ->
+                            vu45Prefill = snapshot
+                            screenName = AppScreen.VU45.name
+                        }
                     )
                 }
                 AppScreen.LOCOMOTIVES -> key(locomotiveRootVersion) {
@@ -526,7 +542,7 @@ internal fun ChildBackButton(parentTitle: String, onBack: () -> Unit) {
 }
 
 @Composable
-private fun CalculationsHub(onMass: () -> Unit, onAppendix: () -> Unit) {
+private fun CalculationsHub(onMass: () -> Unit, onAppendix: () -> Unit, onVu45: () -> Unit) {
     RailSectionHeader("Расчёты", "Инструменты тормозных расчётов вынесены из главной страницы")
     RailHeroCard(
         title = "По массе",
@@ -539,6 +555,13 @@ private fun CalculationsHub(onMass: () -> Unit, onAppendix: () -> Unit) {
         subtitle = "Отдельный расчёт по приложению №12 с учётом уклона, ветра и условий закрепления.",
         marker = "№12",
         onClick = onAppendix,
+        modifier = Modifier.fillMaxWidth()
+    )
+    RailNavCard(
+        title = "ВУ-45 · Тормозное нажатие",
+        subtitle = "Отдельный расчёт по введённым данным состава, с сохранением в общую историю. Не официальный документ.",
+        marker = "45",
+        onClick = onVu45,
         modifier = Modifier.fillMaxWidth()
     )
     RailInfoBand("Результаты сохраняются локально в разделе «История». Учебный режим с формулами остаётся доступен внутри расчёта.")
@@ -1261,13 +1284,15 @@ private fun AppendixResultCard(result: Appendix12Result, slope: Double, oily: Bo
 }
 
 @Composable
-private fun HistoryScreen(repository: HistoryRepository, version: Int, onCleared: () -> Unit) {
+private fun HistoryScreen(repository: HistoryRepository, version: Int, onCleared: () -> Unit, onRepeatVu45: (String) -> Unit) {
+    val context = LocalContext.current
     val records = remember(version) { repository.load() }
     var filter by rememberSaveable { mutableStateOf("Все") }
     val visible = remember(records, filter) {
         when (filter) {
             "По массе" -> records.filter { it.mode == "По массе" }
             "ИДП №12" -> records.filter { it.mode == "ИДП №12" }
+            "ВУ-45" -> records.filter { it.mode == "ВУ-45" }
             else -> records
         }
     }
@@ -1280,13 +1305,13 @@ private fun HistoryScreen(repository: HistoryRepository, version: Int, onCleared
                 RailSectionHeader("История расчётов", "Локальный журнал рабочих расчётов")
             }
             if (records.isNotEmpty()) {
-                TextButton(onClick = { repository.clear(); onCleared() }) { Text("Очистить") }
+                TextButton(onClick = { repository.clear(); Vu45HistorySnapshots.clear(context); onCleared() }) { Text("Очистить") }
             }
         }
 
         if (records.isNotEmpty()) {
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                items(listOf("Все", "По массе", "ИДП №12")) { item ->
+                items(listOf("Все", "По массе", "ИДП №12", "ВУ-45")) { item ->
                     FilterChip(
                         selected = filter == item,
                         onClick = { filter = item },
@@ -1320,6 +1345,14 @@ private fun HistoryScreen(repository: HistoryRepository, version: Int, onCleared
                             Text(record.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
                             Text(record.summary, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary)
                             Text(record.details, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            if (record.mode == "ВУ-45") {
+                                val snapshot = Vu45HistorySnapshots.load(context, record.timestampMillis)
+                                if (snapshot != null) {
+                                    OutlinedButton(onClick = { onRepeatVu45(snapshot) }) {
+                                        Text("Повторить расчёт")
+                                    }
+                                }
+                            }
                         }
                     }
                 }
