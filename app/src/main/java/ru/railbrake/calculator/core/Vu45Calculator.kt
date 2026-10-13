@@ -23,6 +23,7 @@ object Vu45Calculator {
     data class Input(
         val mode: FreightMode,
         val trainMassTons: String,
+        /** Total train axles from the VU-45 certificate, including WAGONS entry mode. */
         val trainAxles: Int,
         val groups: List<AxleGroup>,
         val densityTimeIISeconds: String? = null,
@@ -44,6 +45,7 @@ object Vu45Calculator {
         val unbrakedAxles: Int,
         val requirementMetMathematically: Boolean,
         val density: Density?,
+        /** Both quantities are ALWAYS in axles, independent of input mode. */
         val enteredQuantity: Int,
         val unassignedQuantity: Int,
         val handBrakeAxles: Int?,
@@ -109,26 +111,25 @@ object Vu45Calculator {
         require(input.selectedNorm in listOf(33, 44, 55)) { "Выберите норматив 33, 44 или 55" }
         require(input.groups.isNotEmpty()) { "Заполните таблицу нажатий" }
 
-        var counted = 0L
+        // trainAxles is ALWAYS the number of axes, never the number of wagons.
+        // The edit mode only determines how each row's entered quantity is expressed.
+        var countedAxles = 0L
         var actual = BigDecimal.ZERO
-        var brakedAxes = 0L
         input.groups.forEachIndexed { index, group ->
             require(group.brakingAxles >= 0) { "В строке ${index + 1} количество отрицательное" }
             val force = parsePositive(group.forcePerAxleTonForce, "нажатие в строке ${index + 1}")
             if (input.quantityMode == QuantityMode.WAGONS) {
                 require(group.wagonAxles in listOf(4, 6, 8)) { "Укажите осность вагона: 4, 6 или 8" }
             }
-            counted += group.brakingAxles.toLong()
-            require(counted <= input.trainAxles.toLong()) {
-                "Распределено больше ${if (input.quantityMode == QuantityMode.AXLES) "осей" else "вагонов"}, чем указано"
-            }
             val axesInGroup = group.brakingAxles.toLong() *
                 (if (input.quantityMode == QuantityMode.WAGONS) group.wagonAxles else 1)
-            brakedAxes += axesInGroup
-            require(brakedAxes <= Int.MAX_VALUE.toLong()) { "Слишком большое число осей" }
+            countedAxles += axesInGroup
+            require(countedAxles <= input.trainAxles.toLong()) {
+                "Распределено больше осей, чем указано в составе"
+            }
             actual = actual.add(force.multiply(BigDecimal.valueOf(axesInGroup)))
         }
-        require(counted > 0) { "Укажите количество хотя бы в одной строке" }
+        require(countedAxles > 0) { "Укажите количество хотя бы в одной строке" }
 
         val required = mass.multiply(BigDecimal.valueOf(input.selectedNorm.toLong()))
             .divide(BigDecimal.valueOf(100L), 0, RoundingMode.CEILING)
@@ -153,17 +154,19 @@ object Vu45Calculator {
                 .intValueExact()
         }
 
-        val entered = counted.toInt()
+        val entered = countedAxles.toInt()
         val remaining = input.trainAxles - entered
         return Result(
             requiredTonForce = required,
             actualTonForce = actual,
             actualPer100TonsTonForce = per100,
             differenceTonForce = actual.subtract(required),
-            brakingAxles = brakedAxes.toInt(),
-            // В режиме вагонов число осей оставшихся вагонов неизвестно без осности.
-            unbrakedAxles = if (input.quantityMode == QuantityMode.AXLES) remaining else 0,
-            requirementMetMathematically = actual >= required,
+            brakingAxles = entered,
+            // The declared total is always in axes; an unassigned remainder is not proof of unbraked equipment.
+            unbrakedAxles = remaining,
+            // An incomplete breakdown must never be reported as a successful check.
+            // This is ONLY arithmetic against the user-selected number, not regulatory applicability.
+            requirementMetMathematically = remaining == 0 && actual >= required,
             density = density,
             enteredQuantity = entered,
             unassignedQuantity = remaining,
