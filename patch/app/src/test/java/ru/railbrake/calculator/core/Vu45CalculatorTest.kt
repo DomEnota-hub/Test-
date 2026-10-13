@@ -55,7 +55,7 @@ class Vu45CalculatorTest {
     }
     @Test fun leftoversExcludeCurrentRow() {
         assertEquals(212, Vu45Calculator.remainingForRow(312, listOf(100,0,0),1))
-        assertEquals(112, Vu45Calculator.remainingForRow(312, listOf(100,100,0),1))
+        assertEquals(212, Vu45Calculator.remainingForRow(312, listOf(100,100,0),1))
         assertNull(Vu45Calculator.remainingForRow(312, listOf(320,0),1))
         assertNull(Vu45Calculator.remainingForRow(null, listOf(0,0),0))
         assertNull(Vu45Calculator.remainingForRow(312, listOf(0),3))
