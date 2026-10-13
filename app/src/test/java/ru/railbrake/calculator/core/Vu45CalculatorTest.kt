@@ -42,7 +42,7 @@ class Vu45CalculatorTest {
     }
     @Test fun wagonModeUsesActualAxlesPerRow() {
         val input = Vu45Calculator.Input(
-            Vu45Calculator.FreightMode.LOADED, "2000", 14, listOf(
+            Vu45Calculator.FreightMode.LOADED, "2000", 64, listOf(
                 Vu45Calculator.AxleGroup("5", 10, 4),
                 Vu45Calculator.AxleGroup("7", 4, 6)
             ), quantityMode=Vu45Calculator.QuantityMode.WAGONS
@@ -50,9 +50,56 @@ class Vu45CalculatorTest {
         val r = Vu45Calculator.calculate(input)
         assertEquals(0, r.actualTonForce.compareTo("368".toBigDecimal()))
         assertEquals(64, r.brakingAxles)
-        assertEquals(14, r.enteredQuantity)
+        assertEquals(64, r.enteredQuantity) // always measured in axes
         assertEquals(0, r.unassignedQuantity)
+        assertEquals(0, r.unbrakedAxles)
+        assertFalse(r.requirementMetMathematically) // 368 < 660 at selected 33 tс/100 т
     }
+    @Test fun wagonModeRequiresDeclaredAxesNotWagonCount() {
+        val input = Vu45Calculator.Input(
+            Vu45Calculator.FreightMode.LOADED, "2000", 14, listOf(
+                Vu45Calculator.AxleGroup("5", 10, 4),
+                Vu45Calculator.AxleGroup("7", 4, 6)
+            ), quantityMode=Vu45Calculator.QuantityMode.WAGONS
+        )
+        try {
+            Vu45Calculator.calculate(input)
+            fail("14 wagons cannot be confused with 64 declared axles")
+        } catch (_: IllegalArgumentException) {}
+    }
+
+    @Test fun wagonModeUnassignedQuantityIsAlwaysAxles() {
+        val r = Vu45Calculator.calculate(Vu45Calculator.Input(
+            Vu45Calculator.FreightMode.LOADED, "2000", 72, listOf(
+                Vu45Calculator.AxleGroup("5", 10, 4),
+                Vu45Calculator.AxleGroup("7", 4, 6)
+            ), quantityMode=Vu45Calculator.QuantityMode.WAGONS
+        ))
+        assertEquals(64, r.enteredQuantity)
+        assertEquals(8, r.unassignedQuantity)
+        assertEquals(8, r.unbrakedAxles)
+    }
+
+    @Test fun noAffirmativeStatusWithUnassignedAxlesEvenIfMathThresholdIsMet() {
+        val r = Vu45Calculator.calculate(Vu45Calculator.Input(
+            Vu45Calculator.FreightMode.LOADED, "100", 8,
+            listOf(Vu45Calculator.AxleGroup("12", 4))
+        ))
+        assertTrue(r.actualTonForce > r.requiredTonForce)
+        assertEquals(4, r.unassignedQuantity)
+        assertFalse(r.requirementMetMathematically)
+    }
+
+    @Test fun validCompletedDistributionCanPassSelectedArithmeticThreshold() {
+        val r = Vu45Calculator.calculate(Vu45Calculator.Input(
+            Vu45Calculator.FreightMode.LOADED, "100", 4,
+            listOf(Vu45Calculator.AxleGroup("12", 4))
+        ))
+        assertEquals(0, r.unassignedQuantity)
+        assertTrue(r.requirementMetMathematically)
+        // Not a regulatory/operational approval: source applicability remains to be confirmed.
+    }
+
     @Test fun leftoversExcludeCurrentRow() {
         assertEquals(212, Vu45Calculator.remainingForRow(312, listOf(100,0,0),1))
         assertEquals(212, Vu45Calculator.remainingForRow(312, listOf(100,100,0),1))
