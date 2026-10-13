@@ -61,8 +61,8 @@ jobs:
           unzip -q RailBrakeCalculator.zip -d buildsrc
           test -f buildsrc/RailBrakeCalculator/settings.gradle.kts
           cp -a patch/. buildsrc/RailBrakeCalculator/
-          grep -Fq 'versionCode = 202' buildsrc/RailBrakeCalculator/app/build.gradle.kts
-          grep -Fq 'versionName = "1.2.2-dev14-vu45-arm64-test1"' buildsrc/RailBrakeCalculator/app/build.gradle.kts
+          grep -Fq 'versionCode = 203' buildsrc/RailBrakeCalculator/app/build.gradle.kts
+          grep -Fq 'versionName = "1.2.2-dev14-vu45-arm64-test2"' buildsrc/RailBrakeCalculator/app/build.gradle.kts
 
       - name: Kotlin/JVM unit tests (includes VU-45)
         working-directory: buildsrc/RailBrakeCalculator
@@ -104,7 +104,7 @@ jobs:
           "$ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner" verify --verbose --print-certs "$apk" | tee /tmp/apksigner-vu45.log
           grep -qi "Signer #1 certificate SHA-256 digest: $EXPECTED_CERT_SHA256" /tmp/apksigner-vu45.log
           "$ANDROID_SDK_ROOT/build-tools/34.0.0/aapt" dump badging "$apk" | tee /tmp/vu45-badging.log
-          grep -Fq "versionCode='202' versionName='1.2.2-dev14-vu45-arm64-test1'" /tmp/vu45-badging.log
+          grep -Fq "versionCode='203' versionName='1.2.2-dev14-vu45-arm64-test2'" /tmp/vu45-badging.log
           mkdir -p dist
           cp "$apk" dist/RailBrakeCalculator-VU45-arm64-v8a-release.apk
 
