@@ -1,0 +1,44 @@
+name: VU-45 Core Checks
+
+on:
+  push:
+    branches:
+      - fix/vu45-axis-units-20261013
+    paths:
+      - app/src/main/java/ru/railbrake/calculator/core/Vu45Calculator.kt
+      - patch/app/src/main/java/ru/railbrake/calculator/core/Vu45Calculator.kt
+      - app/src/test/java/ru/railbrake/calculator/core/Vu45CalculatorTest.kt
+      - patch/app/src/test/java/ru/railbrake/calculator/core/Vu45CalculatorTest.kt
+      - .github/workflows/vu45-core-check.yml
+
+permissions:
+  contents: read
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify VU-45 app/patch mirrors
+        run: |
+          cmp app/src/main/java/ru/railbrake/calculator/core/Vu45Calculator.kt patch/app/src/main/java/ru/railbrake/calculator/core/Vu45Calculator.kt
+          cmp app/src/test/java/ru/railbrake/calculator/core/Vu45CalculatorTest.kt patch/app/src/test/java/ru/railbrake/calculator/core/Vu45CalculatorTest.kt
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+      - name: Build over original app source
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p buildsrc
+          unzip -q RailBrakeCalculator.zip -d buildsrc
+          cp -a patch/. buildsrc/RailBrakeCalculator/
+      - name: Run VU-45 JVM tests
+        working-directory: buildsrc/RailBrakeCalculator
+        shell: bash
+        run: gradle :app:testDebugUnitTest --tests '*Vu45CalculatorTest' --console=plain --stacktrace

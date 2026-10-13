@@ -4,7 +4,10 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 
 /**
- * ВУ-45: отдельные показатели расчёта тормозного нажатия и табл. М.1.
+ * ВУ-45: арифметическая перепроверка показателей справки.
+ * Основание: 808-2022 ПКБ ЦВ, приложение М (расчёт нажатия и табл. М.1).
+ * Нормативная применимость выбранных величин и местные условия проверяются отдельно;
+ * вычисленный результат НЕ является разрешением на движение.
  * Коэффициенты нажатия на ось пользователь задаёт по фактическому оборудованию.
  */
 object Vu45Calculator {
@@ -23,6 +26,7 @@ object Vu45Calculator {
     data class Input(
         val mode: FreightMode,
         val trainMassTons: String,
+        /** Total train axles from the VU-45 certificate, including WAGONS entry mode. */
         val trainAxles: Int,
         val groups: List<AxleGroup>,
         val densityTimeIISeconds: String? = null,
@@ -41,9 +45,11 @@ object Vu45Calculator {
         val actualPer100TonsTonForce: BigDecimal,
         val differenceTonForce: BigDecimal,
         val brakingAxles: Int,
+        /** Legacy name: UNASSIGNED axles in the entered table, not proven unbraked axles. */
         val unbrakedAxles: Int,
         val requirementMetMathematically: Boolean,
         val density: Density?,
+        /** Both quantities are ALWAYS in axles, independent of input mode. */
         val enteredQuantity: Int,
         val unassignedQuantity: Int,
         val handBrakeAxles: Int?,
@@ -55,6 +61,8 @@ object Vu45Calculator {
         "7", "7.5", "8", "8.5", "9", "10", "11", "11.5",
         "12", "13", "14", "15", "16", "18", "19", "21"
     )
+    // Display choices only. Values over 0.012 require a separately established local rule.
+    // Their presence in this list does not authorize calculation of hand-brake axles.
     val availableSlopeValues = listOf(
         "0.000", "0.002", "0.004", "0.006", "0.008", "0.010", "0.012",
         "0.014", "0.016", "0.018", "0.020"
@@ -88,9 +96,13 @@ object Vu45Calculator {
     }
 
     /**
-     * Табл. М.1 приложения М инструкции 808-2022 ПКБ ЦВ: осей/100 т.
-     * Для уклонов круче 0,012 и иных местных случаев — местная норма,
-     * поэтому произвольная интерполяция отсутствует.
+     * Базовые коэффициенты таблицы М.1 (808-2022 ПКБ ЦВ), ручных тормозных осей/100 т.
+     * Таблица М.1 также содержит строки 0.014–0.020, однако п. 9 приложения М
+     * требует местного установления потребности при уклонах круче 0.012
+     * (и для отдельных местных случаев). Поэтому здесь сознательно возвращаем null.
+     * Null означает «без подтверждённой применимой местной нормы не рассчитано», НЕ 0.
+     * Промежуточные уклоны не интерполируются, ближайшее значение не подставляется.
+     * Источник: https://base.garant.ru/407616662/f52b32b623103013c77c8c319c288f45/
      */
     fun manualBrakeAxlesPer100(slope: String): BigDecimal? {
         val s = parseNonNegative(slope, "уклон")
@@ -105,33 +117,35 @@ object Vu45Calculator {
 
     fun calculate(input: Input): Result {
         val mass = parsePositive(input.trainMassTons, "массу состава")
-        require(input.trainAxles > 0) { "Укажите общее число осей/вагонов" }
+        require(input.trainAxles > 0) { "Укажите общее число осей состава" }
         require(input.selectedNorm in listOf(33, 44, 55)) { "Выберите норматив 33, 44 или 55" }
         require(input.groups.isNotEmpty()) { "Заполните таблицу нажатий" }
 
-        var counted = 0L
+        // trainAxles is ALWAYS the number of axes, never the number of wagons.
+        // The edit mode only determines how each row's entered quantity is expressed.
+        var countedAxles = 0L
         var actual = BigDecimal.ZERO
-        var brakedAxes = 0L
         input.groups.forEachIndexed { index, group ->
             require(group.brakingAxles >= 0) { "В строке ${index + 1} количество отрицательное" }
             val force = parsePositive(group.forcePerAxleTonForce, "нажатие в строке ${index + 1}")
             if (input.quantityMode == QuantityMode.WAGONS) {
                 require(group.wagonAxles in listOf(4, 6, 8)) { "Укажите осность вагона: 4, 6 или 8" }
             }
-            counted += group.brakingAxles.toLong()
-            require(counted <= input.trainAxles.toLong()) {
-                "Распределено больше ${if (input.quantityMode == QuantityMode.AXLES) "осей" else "вагонов"}, чем указано"
-            }
             val axesInGroup = group.brakingAxles.toLong() *
                 (if (input.quantityMode == QuantityMode.WAGONS) group.wagonAxles else 1)
-            brakedAxes += axesInGroup
-            require(brakedAxes <= Int.MAX_VALUE.toLong()) { "Слишком большое число осей" }
+            countedAxles += axesInGroup
+            require(countedAxles <= input.trainAxles.toLong()) {
+                "Распределено больше осей, чем указано в составе"
+            }
             actual = actual.add(force.multiply(BigDecimal.valueOf(axesInGroup)))
         }
-        require(counted > 0) { "Укажите количество хотя бы в одной строке" }
+        require(countedAxles > 0) { "Укажите количество хотя бы в одной строке" }
 
+        // P_required = CEIL(mass_t * selected_ton_force_per_100_t / 100).
+        // selectedNorm is user-supplied; matching its number is not source applicability.
         val required = mass.multiply(BigDecimal.valueOf(input.selectedNorm.toLong()))
             .divide(BigDecimal.valueOf(100L), 0, RoundingMode.CEILING)
+        // P_actual_per100 = P_actual / mass_t * 100 (avoid the misleading APK report).
         val per100 = actual.multiply(BigDecimal.valueOf(100L))
             .divide(mass, 16, RoundingMode.HALF_UP)
 
@@ -147,23 +161,27 @@ object Vu45Calculator {
             )
         } else null
 
+        // N_hand_axes = CEIL(mass_t * coefficient_from_M_1 / 100), if applicable.
+        // Actual available manual-brake axles are observed, not calculated here.
         val handRate = manualBrakeAxlesPer100(input.slope)
         val handAxes = handRate?.let {
             mass.multiply(it).divide(BigDecimal.valueOf(100L), 0, RoundingMode.CEILING)
                 .intValueExact()
         }
 
-        val entered = counted.toInt()
+        val entered = countedAxles.toInt()
         val remaining = input.trainAxles - entered
         return Result(
             requiredTonForce = required,
             actualTonForce = actual,
             actualPer100TonsTonForce = per100,
             differenceTonForce = actual.subtract(required),
-            brakingAxles = brakedAxes.toInt(),
-            // В режиме вагонов число осей оставшихся вагонов неизвестно без осности.
-            unbrakedAxles = if (input.quantityMode == QuantityMode.AXLES) remaining else 0,
-            requirementMetMathematically = actual >= required,
+            brakingAxles = entered,
+            // The declared total is always in axes; an unassigned remainder is not proof of unbraked equipment.
+            unbrakedAxles = remaining,
+            // An incomplete breakdown must never be reported as a successful check.
+            // This is ONLY arithmetic against the user-selected number, not regulatory applicability.
+            requirementMetMathematically = remaining == 0 && actual >= required,
             density = density,
             enteredQuantity = entered,
             unassignedQuantity = remaining,
