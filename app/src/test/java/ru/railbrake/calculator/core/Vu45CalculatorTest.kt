@@ -100,6 +100,25 @@ class Vu45CalculatorTest {
         // Not a regulatory/operational approval: source applicability remains to be confirmed.
     }
 
+    @Test fun screenshotReferencePer100AndSelectedNorm44() {
+        // The source APK SCREEN shows 1400 / 4500 * 100 = 31.1,
+        // NOT 0.3 as claimed in the older APK extraction markdown report.
+        // User-selected 44 -> 1980 tf required; 31.1 is below this selected figure.
+        val r = Vu45Calculator.calculate(Vu45Calculator.Input(
+            Vu45Calculator.FreightMode.LOADED, "4500", 200,
+            listOf(Vu45Calculator.AxleGroup("7", 200)),
+            selectedNorm = 44, slope = "0.007"
+        ))
+        assertEquals(0, r.actualTonForce.compareTo("1400".toBigDecimal()))
+        assertEquals(0, r.requiredTonForce.compareTo("1980".toBigDecimal()))
+        assertEquals(0, r.actualPer100TonsTonForce.setScale(1, java.math.RoundingMode.HALF_UP)
+            .compareTo("31.1".toBigDecimal()))
+        assertFalse(r.requirementMetMathematically)
+        assertEquals(0, r.unassignedQuantity)
+        // Manual brake axle count is intentionally NOT asserted here:
+        // the APK's ceil(mass*slope) and the current Test table differ.
+    }
+
     @Test fun leftoversExcludeCurrentRow() {
         assertEquals(212, Vu45Calculator.remainingForRow(312, listOf(100,0,0),1))
         assertEquals(212, Vu45Calculator.remainingForRow(312, listOf(100,100,0),1))
