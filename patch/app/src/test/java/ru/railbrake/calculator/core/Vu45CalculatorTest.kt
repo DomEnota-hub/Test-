@@ -126,6 +126,67 @@ class Vu45CalculatorTest {
         assertNull(Vu45Calculator.remainingForRow(null, listOf(0,0),0))
         assertNull(Vu45Calculator.remainingForRow(312, listOf(0),3))
     }
+    @Test fun manualBrakeTableM1VerifiedCoefficients() {
+        // 808-2022 ПКБ ЦВ, приложение М, таблица М.1: осей ручного торможения на 100 т.
+        val verified = mapOf(
+            "0.000" to "0.4", "0.002" to "0.4", "0.004" to "0.4",
+            "0.006" to "0.4", "0.008" to "0.6", "0.010" to "0.8",
+            "0.012" to "1.0"
+        )
+        verified.forEach { (slope, coefficient) ->
+            val actual = Vu45Calculator.manualBrakeAxlesPer100(slope)
+            assertNotNull("Missing table M.1 coefficient for $slope", actual)
+            assertEquals(0, actual!!.compareTo(coefficient.toBigDecimal()))
+        }
+        assertEquals(0, Vu45Calculator.manualBrakeAxlesPer100("0,008")!!
+            .compareTo("0.6".toBigDecimal()))
+    }
+
+    @Test fun manualBrakeDemandUsesTableInsteadOfSourceApkMassTimesSlope() {
+        val result = Vu45Calculator.calculate(Vu45Calculator.Input(
+            Vu45Calculator.FreightMode.LOADED, "1000", 4,
+            listOf(Vu45Calculator.AxleGroup("7", 4)),
+            slope = "0.008"
+        ))
+        // ceil(1000 * 0.6 / 100) = 6, not ceil(1000 * 0.008) = 8.
+        assertEquals(6, result.handBrakeAxles)
+        assertEquals(0, result.manualAxlesPer100Tons!!.compareTo("0.6".toBigDecimal()))
+    }
+
+    @Test fun instructionMHandBrakeExampleAndRoundingUp() {
+        val exact = Vu45Calculator.calculate(sample().copy(slope = "0.010"))
+        // Instruction 808-2022 appendix M: 4000 t * 0.8 / 100 = 32 axes.
+        assertEquals(32, exact.handBrakeAxles)
+        val fractional = Vu45Calculator.calculate(sample().copy(
+            trainMassTons = "1001", slope = "0.010"
+        ))
+        assertEquals(9, fractional.handBrakeAxles) // ceil(8.008)
+    }
+
+    @Test fun handBrakeNeedsLocalRuleForSteepOrIntermediateSlopes() {
+        // The source TABLE mentions 0.014–0.020, but >0.012 requires local rules;
+        // do not silently use the row as a universal legal norm.
+        listOf("0.007", "0.014", "0.018", "0.020", "0.022").forEach { slope ->
+            assertNull(Vu45Calculator.manualBrakeAxlesPer100(slope))
+            val result = Vu45Calculator.calculate(sample().copy(slope = slope))
+            assertNull(result.handBrakeAxles) // Unknown, never 0 or a made-up value
+            assertNull(result.manualAxlesPer100Tons)
+        }
+    }
+
+    @Test fun requiredBrakePressRoundsFractionUpPerAppendixM() {
+        val r = Vu45Calculator.calculate(Vu45Calculator.Input(
+            Vu45Calculator.FreightMode.LOADED, "101", 4,
+            listOf(Vu45Calculator.AxleGroup("5", 4)), selectedNorm = 33
+        ))
+        assertEquals(0, r.requiredTonForce.compareTo("34".toBigDecimal()))
+        assertEquals(0, r.actualTonForce.compareTo("20".toBigDecimal()))
+        assertEquals(0, r.actualPer100TonsTonForce.compareTo(
+            "20".toBigDecimal().multiply("100".toBigDecimal())
+                .divide("101".toBigDecimal(), 16, java.math.RoundingMode.HALF_UP)
+        ))
+    }
+
     @Test fun slopeOutOfTableRequiresLocalValue() {
         assertNull(Vu45Calculator.manualBrakeAxlesPer100("0.014"))
         assertNull(Vu45Calculator.manualBrakeAxlesPer100("0.007"))
