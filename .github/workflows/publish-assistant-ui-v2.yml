@@ -1,0 +1,54 @@
+name: Publish verified Assistant UI v2 ARM64
+
+on:
+  push:
+    branches: [design/assistant-ui-framework-v2-20261014]
+    paths:
+      - .github/workflows/publish-assistant-ui-v2.yml
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  prerelease:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Download APK from successful compile and emulator audit run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          repo="$GITHUB_REPOSITORY"
+          run_id="38523332876"
+          status="$(gh run view "$run_id" --repo "$repo" --json conclusion --jq .conclusion)"
+          test "$status" = "success"
+          mkdir -p audit build
+          gh run download "$run_id" --repo "$repo" --name assistant-ui-compose-real-android-screenshots --dir audit
+          test -s audit/yes-home.png
+          test -s audit/no-home.png
+          gh run download "$run_id" --repo "$repo" --name assistant-ui-compose-preview --dir build
+          apk="$(find build -name 'app-debug.apk' -type f -print -quit)"
+          test -n "$apk"
+          mkdir -p release
+          cp "$apk" release/Assistant-UI-v2-ARM64.apk
+          sha256sum release/Assistant-UI-v2-ARM64.apk
+
+      - name: Publish isolated preview pre-release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          repo="$GITHUB_REPOSITORY"
+          tag="ui-compose-v2-3253132c5"
+          if gh release view "$tag" --repo "$repo" >/dev/null 2>&1; then
+            echo "Pre-release already exists: $tag"
+            exit 0
+          fi
+          gh release create "$tag" release/Assistant-UI-v2-ARM64.apk \
+            --repo "$repo" \
+            --target "3253132c53505c7aa98051fac85793b713a21f1f" \
+            --prerelease \
+            --title "Ассистент — Compose UI v2 · ARM64" \
+            --notes "Вторая итерация UI-концепта. Собрана на изолированной ветке Test и проверена модульными тестами и снимками Android API 34 в светлой и тёмной темах. Визуальная оценка ещё не проведена. Пакет ru.railbrake.calculator.uipreview устанавливается отдельно, сборка 203 и Beta не изменялись. Не является производственным релизом."
