@@ -111,6 +111,7 @@ private enum class AppScreen(val title: String) {
     MASS("По массе"),
     APPENDIX("ИДП №12"),
     HISTORY("История"),
+    WORK_RECORDS("Рабочие записи"),
     EXAM_QUESTIONS("Вопросы и ответы"),
     SETTINGS("Настройки")
 }
@@ -205,7 +206,7 @@ fun BrakeCalculatorApp(
                         modifier = Modifier.size(50.dp)
                     )
                     Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
-                        Text("Железнодорожный помощник", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                        Text("Ассистент", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
                         Text("Сегодня: ${workingLocomotive?.title ?: "локомотив не выбран"}",
                             style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
                     }
@@ -214,6 +215,7 @@ fun BrakeCalculatorApp(
                 val mainItems = listOf(AppScreen.HOME, AppScreen.DIAGNOSTICS, AppScreen.LOCOMOTIVES, AppScreen.ACCEPTANCE, AppScreen.KNOWLEDGE, AppScreen.SAFETY, AppScreen.FIRST_AID)
                 val toolItems = buildList {
                     add(AppScreen.CALCULATIONS)
+                    add(AppScreen.WORK_RECORDS)
                     add(AppScreen.HISTORY)
                     if (auxiliaryToolsVisible) add(AppScreen.EXAM_QUESTIONS)
                 }
@@ -339,7 +341,8 @@ fun BrakeCalculatorApp(
                         screenName = AppScreen.KNOWLEDGE.name
                     },
                     onLocomotives = { screenName = AppScreen.LOCOMOTIVES.name },
-                    onCalculations = { screenName = AppScreen.CALCULATIONS.name }
+                    onCalculations = { screenName = AppScreen.CALCULATIONS.name },
+                    onWorkRecords = { screenName = AppScreen.WORK_RECORDS.name }
                 )
                 AppScreen.CALCULATIONS -> ScrollPage {
                     CalculationsHub(
@@ -374,6 +377,9 @@ fun BrakeCalculatorApp(
                             historyVersion++
                         }
                     )
+                }
+                AppScreen.WORK_RECORDS -> ScrollPage {
+                    WorkRecordsLanding(onHistory = { screenName = AppScreen.HISTORY.name })
                 }
                 AppScreen.HISTORY -> key(historyRootVersion) {
                     HistoryScreen(
@@ -558,12 +564,12 @@ private fun AppHeader(onOpenMenu: () -> Unit, onOpenFirstAid: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(3.dp)
         ) {
             Text(
-                "Железнодорожный помощник",
+                "Ассистент",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Black
             )
             Text(
-                "Рабочий помощник локомотивной бригады",
+                "Помощник локомотивной бригады",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -1568,25 +1574,8 @@ private fun SettingsScreen(
             onSelect = { index -> onThemeModeChange(AppThemeMode.entries[index]) }
         )
     }
-    SectionCard("Цветовой акцент", "Выбранный цвет работает независимо от светлой или тёмной темы") {
-        AccentPalette.entries.forEach { option ->
-            ChoiceOption(
-                title = option.title,
-                subtitle = when (option) {
-                    AccentPalette.BLUE -> "Классический холодный синий акцент приложения"
-                    AccentPalette.AMBER -> "Тёплый янтарный акцент прежнего оформления"
-                    AccentPalette.GREEN -> "Спокойный зелёный для альтернативного оформления"
-                    AccentPalette.YELLOW -> "Более светлый сигнальный акцент"
-                    AccentPalette.PURPLE -> "Холодный дополнительный акцент"
-                },
-                selected = palette == option,
-                onClick = { onPaletteChange(option) }
-            )
-        }
-    }
     KnowledgeDisplaySettingsSection()
     ExtendedEmergencySettingsSection()
-    RailInfoBand("Тема и цветовой акцент настраиваются независимо. Красный по-прежнему зарезервирован для опасности и ОПП.")
     SectionCard("О приложении", "Текущая рабочая сборка") {
         Metric("Версия", "${packageInfo.versionName ?: "—"} ($actualVersionCode)")
         Metric("Профиль", "Рабочий")
