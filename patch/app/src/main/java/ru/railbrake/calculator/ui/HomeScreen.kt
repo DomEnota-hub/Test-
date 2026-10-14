@@ -172,7 +172,7 @@ private fun HomeLocomotiveCard(title: String, onClick: () -> Unit) {
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
                 Text(
                     "РАБОЧИЙ ЛОКОМОТИВ",
-                    style = schemeTypographyLabel(),
+                    style = MaterialTheme.typography.labelSmall,
                     color = scheme.onSurfaceVariant
                 )
                 Text(
@@ -187,9 +187,6 @@ private fun HomeLocomotiveCard(title: String, onClick: () -> Unit) {
         }
     }
 }
-
-@Composable
-private fun schemeTypographyLabel() = MaterialTheme.typography.labelSmall
 
 @Composable
 private fun HomeGlyph(symbol: String, accent: Color) {
@@ -278,7 +275,12 @@ private fun WorkingLocomotivePicker(
         "Электровозы" to options.filter { it == WorkingLocomotive.VL80S || it == WorkingLocomotive.ERMAK_2ES5K || it == WorkingLocomotive.ERMAK_3ES5K },
         "Тепловозы ЧМЭ3" to options.filter { it == WorkingLocomotive.CHME3 || it == WorkingLocomotive.CHME3T || it == WorkingLocomotive.CHME3E },
         "Тепловозы ТЭМ2" to options.filter { it == WorkingLocomotive.TEM2 || it == WorkingLocomotive.TEM2U }
-    )
+    ).let { established ->
+        // Future profiles added to the Test registry must remain selectable.
+        val known = established.flatMap { it.second }.toSet()
+        val others = options.filterNot { it in known }
+        if (others.isEmpty()) established else established + ("Другие серии" to others)
+    }
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Рабочий локомотив") },
