@@ -81,7 +81,7 @@ internal fun TechnicalPanel(
             .border(BorderStroke(if (prominent) 1.4.dp else 1.dp, outline), shape)
             .clip(shape)
     ) {
-        TechnicalLineArt(motif = motif, accent = accent, modifier = Modifier.fillMaxSize(), subtle = !prominent)
+        TechnicalLineArt(motif = motif, accent = accent, modifier = Modifier.matchParentSize(), subtle = !prominent)
         content()
     }
 }
