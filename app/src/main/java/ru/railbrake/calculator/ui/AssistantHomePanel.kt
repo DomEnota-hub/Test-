@@ -215,23 +215,25 @@ internal fun AssistantHomePanel(workingLocomotive: WorkingLocomotive? = null) {
         }
     }
 
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(18.dp),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.43f)),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.22f)
-        )
+    TechnicalPanel(
+        accent = DesignBlue,
+        motif = TechnicalMotif.ASSISTANT,
+        prominent = true,
+        modifier = Modifier.fillMaxWidth()
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            Text(
-                "Помощник",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Black
-            )
+            Row(horizontalArrangement = Arrangement.spacedBy(11.dp),
+                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                TechnicalIcon(TechnicalMotif.ASSISTANT, DesignBlue)
+                Text(
+                    "Помощник",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Black
+                )
+            }
             Text(
                 "Поиск по материалам приложения",
                 style = MaterialTheme.typography.bodyMedium,
@@ -246,7 +248,7 @@ internal fun AssistantHomePanel(workingLocomotive: WorkingLocomotive? = null) {
                 minLines = 1,
                 maxLines = 3,
                 placeholder = { Text("Спросить по приложению…") },
-                shape = RoundedCornerShape(14.dp),
+                shape = RoundedCornerShape(10.dp),
                 trailingIcon = {
                     IconButton(
                         onClick = {
