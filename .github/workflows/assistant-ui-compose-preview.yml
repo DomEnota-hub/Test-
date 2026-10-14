@@ -16,7 +16,7 @@ concurrency:
 jobs:
   compile-and-preview:
     runs-on: ubuntu-24.04
-    timeout-minutes: 40
+    timeout-minutes: 75
     steps:
       - name: Checkout isolated Test design branch
         uses: actions/checkout@v4
@@ -94,3 +94,38 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
+      - name: Prepare x86_64 build solely for Android visual audit
+        working-directory: buildsrc/RailBrakeCalculator
+        run: |
+          set -euo pipefail
+          sed -i 's/abiFilters.add("arm64-v8a")/abiFilters.add("x86_64")/' app/build.gradle.kts
+          grep -q 'abiFilters.add("x86_64")' app/build.gradle.kts
+          gradle :app:assembleDebug --no-daemon --console=plain
+
+      - name: Enable KVM for Android emulator
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS:="static_node"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules >/dev/null
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Capture real Android UI screenshots
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          arch: x86_64
+          target: google_apis
+          profile: pixel_6
+          avd-name: assistant-compose-visual
+          disable-animations: true
+          emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
+          script: bash "$GITHUB_WORKSPACE/qa/capture_assistant_ui_preview.sh"
+
+      - name: Upload screenshot and UI hierarchy evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: assistant-ui-compose-real-android-screenshots
+          path: qa-ui-evidence/
+          if-no-files-found: warn
+          retention-days: 14
