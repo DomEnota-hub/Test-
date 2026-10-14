@@ -5,6 +5,8 @@ import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,6 +22,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -34,6 +37,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -207,8 +217,10 @@ internal fun AssistantHomePanel(workingLocomotive: WorkingLocomotive? = null) {
 
     Card(
         modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.43f)),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.34f)
+            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.22f)
         )
     ) {
         Column(
@@ -221,14 +233,8 @@ internal fun AssistantHomePanel(workingLocomotive: WorkingLocomotive? = null) {
                 fontWeight = FontWeight.Black
             )
             Text(
-                "Спросите по материалам приложения. Голосовой ввод и поиск работают без интернета.",
+                "Поиск по материалам приложения",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Text(
-                "Рабочий локомотив: ${workingLocomotive?.title ?: "не выбран"}. " +
-                    "Названная в вопросе другая серия откроется разово.",
-                style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             OutlinedTextField(
@@ -239,32 +245,40 @@ internal fun AssistantHomePanel(workingLocomotive: WorkingLocomotive? = null) {
                 singleLine = false,
                 minLines = 1,
                 maxLines = 3,
-                label = { Text("Спросить по приложению…") },
-                placeholder = { Text("Введите вопрос") },
+                placeholder = { Text("Спросить по приложению…") },
+                shape = RoundedCornerShape(14.dp),
+                trailingIcon = {
+                    IconButton(
+                        onClick = {
+                            if (voiceJob?.isActive == true) {
+                                voiceInput.stop()
+                            } else if (
+                                ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO)
+                                == PackageManager.PERMISSION_GRANTED
+                            ) {
+                                startVoice()
+                            } else {
+                                microphonePermission.launch(Manifest.permission.RECORD_AUDIO)
+                            }
+                        },
+                        enabled = engine != null,
+                        modifier = Modifier.semantics {
+                            contentDescription = if (voiceJob?.isActive == true)
+                                "Завершить голосовой ввод" else "Голосовой ввод"
+                        }
+                    ) {
+                        AssistantMicrophoneGlyph(isListening = voiceJob?.isActive == true)
+                    }
+                },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions(onSearch = { submit() })
             )
-
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                 Button(
                     onClick = { submit() },
                     enabled = engine != null && query.isNotBlank() && !searchingOtherFamily
                 ) {
                     Text("Найти")
-                }
-                OutlinedButton(
-                    onClick = {
-                        if (voiceJob?.isActive == true) {
-                            voiceInput.stop()
-                        } else if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
-                            startVoice()
-                        } else {
-                            microphonePermission.launch(Manifest.permission.RECORD_AUDIO)
-                        }
-                    },
-                    enabled = engine != null
-                ) {
-                    Text(if (voiceJob?.isActive == true) "Завершить запись" else "Голос")
                 }
             }
             if (searchingOtherFamily) Text("Загружаю каталог названной серии…")
@@ -425,6 +439,35 @@ internal fun AssistantHomePanel(workingLocomotive: WorkingLocomotive? = null) {
                 }
             }
         }
+    }
+}
+
+/** A real vector microphone, not a system emoji or a separate Voice button. */
+@Composable
+private fun AssistantMicrophoneGlyph(isListening: Boolean) {
+    val color = if (isListening) MaterialTheme.colorScheme.error
+        else MaterialTheme.colorScheme.primary
+    Canvas(Modifier.size(22.dp)) {
+        val w = size.width
+        val h = size.height
+        val stroke = 1.9.dp.toPx()
+        drawRoundRect(
+            color = color,
+            topLeft = Offset(w * 0.37f, h * 0.10f),
+            size = Size(w * 0.26f, h * 0.47f),
+            cornerRadius = CornerRadius(w * 0.13f, w * 0.13f)
+        )
+        drawArc(
+            color = color,
+            startAngle = 0f,
+            sweepAngle = 180f,
+            useCenter = false,
+            topLeft = Offset(w * 0.23f, h * 0.25f),
+            size = Size(w * 0.54f, h * 0.52f),
+            style = Stroke(width = stroke)
+        )
+        drawLine(color, Offset(w * 0.50f, h * 0.76f), Offset(w * 0.50f, h * 0.93f), stroke)
+        drawLine(color, Offset(w * 0.35f, h * 0.93f), Offset(w * 0.65f, h * 0.93f), stroke)
     }
 }
 
