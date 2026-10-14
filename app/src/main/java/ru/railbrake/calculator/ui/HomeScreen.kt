@@ -1,10 +1,8 @@
 package ru.railbrake.calculator.ui
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -15,13 +13,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
@@ -35,7 +29,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -45,8 +38,8 @@ import ru.railbrake.calculator.core.WorkingLocomotive
 import ru.railbrake.calculator.data.HistoryRecord
 
 /**
- * Design iteration 01. Keeps the framework-v2 Assistant runtime, navigation handlers and
- * locomotive selection repository intact. Cards are visual navigation, not mock calculations.
+ * Second native Compose concept: the approved hierarchy is unchanged.
+ * Only presentation changes. All callbacks route into the existing Framework v2 engine.
  */
 @Composable
 internal fun HomeScreen(
@@ -60,7 +53,6 @@ internal fun HomeScreen(
     onWorkRecords: () -> Unit
 ) {
     var selectorOpen by remember { mutableStateOf(false) }
-
     if (selectorOpen) {
         WorkingLocomotivePicker(
             selected = workingLocomotive,
@@ -75,105 +67,87 @@ internal fun HomeScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    listOf(
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.055f),
-                        MaterialTheme.colorScheme.background,
-                        MaterialTheme.colorScheme.background
-                    )
-                )
-            )
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+            .padding(horizontal = 14.dp, vertical = 10.dp),
+        verticalArrangement = Arrangement.spacedBy(11.dp)
     ) {
-        HomeLocomotiveCard(
+        WorkingSeriesPanel(
             title = workingLocomotive?.title ?: "Не выбран",
             onClick = { selectorOpen = true }
         )
 
-        // This is the real offline assistant; do not replace with a demo search field.
+        // The original AssistantRuntime and voice pipeline remain active.
         key(workingLocomotive?.name) {
             AssistantHomePanel(workingLocomotive)
         }
 
-        // Calculations are the main work tool, so this card gets the strongest accent.
-        HomeFeatureCard(
+        SectionNavigationPanel(
             title = "Расчёты",
-            description = "Тормозные расчёты и проверка исходных данных",
-            glyph = "▦",
-            accent = Color(0xFFE3A33F),
-            emphasized = true,
+            description = "По массе · ИДП №12 · ВУ-45",
+            motif = TechnicalMotif.CALCULATOR,
+            accent = DesignAmber,
+            prominent = true,
             onClick = onCalculations,
             modifier = Modifier.fillMaxWidth()
         )
 
-        // Pair is intentional: diagnostics must not dominate the main screen.
         Row(
             modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min),
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            HomeFeatureCard(
+            SectionNavigationPanel(
                 title = "Диагностика",
                 description = "Поиск неисправностей",
-                glyph = "⌁",
-                accent = Color(0xFFCC6974),
+                motif = TechnicalMotif.EQUIPMENT,
+                accent = DesignRose,
+                compact = true,
                 onClick = onDiagnostics,
-                modifier = Modifier.weight(1f).fillMaxHeight(),
-                compact = true
+                modifier = Modifier.weight(1f).fillMaxHeight()
             )
-            HomeFeatureCard(
+            SectionNavigationPanel(
                 title = "Атлас",
                 description = "Оборудование и схемы",
-                glyph = "▤",
-                accent = Color(0xFF32B7BF),
+                motif = TechnicalMotif.CIRCUIT,
+                accent = DesignCyan,
+                compact = true,
                 onClick = onLocomotives,
-                modifier = Modifier.weight(1f).fillMaxHeight(),
-                compact = true
+                modifier = Modifier.weight(1f).fillMaxHeight()
             )
         }
 
-        HomeFeatureCard(
+        SectionNavigationPanel(
             title = "Рабочие записи",
             description = "Замечания, история и личные заметки",
-            glyph = "≡",
-            accent = Color(0xFF957AD8),
-            onClick = onWorkRecords,
-            modifier = Modifier.fillMaxWidth()
+            motif = TechnicalMotif.NOTES,
+            accent = DesignViolet,
+            modifier = Modifier.fillMaxWidth(),
+            onClick = onWorkRecords
         )
 
-        Spacer(Modifier.height(10.dp))
+        Spacer(Modifier.height(14.dp))
     }
 }
 
 @Composable
-private fun HomeLocomotiveCard(title: String, onClick: () -> Unit) {
+private fun WorkingSeriesPanel(title: String, onClick: () -> Unit) {
     val scheme = MaterialTheme.colorScheme
-    Card(
-        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
-        shape = RoundedCornerShape(17.dp),
-        border = BorderStroke(1.dp, scheme.primary.copy(alpha = 0.42f)),
-        colors = CardDefaults.cardColors(containerColor = scheme.surface)
+    TechnicalPanel(
+        accent = DesignBlue,
+        motif = TechnicalMotif.TRAIN,
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick)
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    Brush.horizontalGradient(
-                        listOf(scheme.primary.copy(alpha = 0.10f), Color.Transparent)
-                    )
-                )
-                .padding(15.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 15.dp, vertical = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(11.dp)
         ) {
-            HomeGlyph("▣", scheme.primary)
-            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
+            TechnicalIcon(TechnicalMotif.TRAIN, DesignBlue)
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(
                     "РАБОЧИЙ ЛОКОМОТИВ",
                     style = MaterialTheme.typography.labelSmall,
-                    color = scheme.onSurfaceVariant
+                    color = scheme.onSurfaceVariant,
+                    fontWeight = FontWeight.Medium
                 )
                 Text(
                     title,
@@ -183,81 +157,84 @@ private fun HomeLocomotiveCard(title: String, onClick: () -> Unit) {
                     overflow = TextOverflow.Ellipsis
                 )
             }
-            Text("›", style = MaterialTheme.typography.headlineMedium, color = scheme.primary)
+            Text("›", color = scheme.primary, style = MaterialTheme.typography.headlineMedium)
         }
     }
 }
 
 @Composable
-private fun HomeGlyph(symbol: String, accent: Color) {
-    Box(
-        modifier = Modifier
-            .size(42.dp)
-            .background(accent.copy(alpha = 0.14f), RoundedCornerShape(12.dp)),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(symbol, color = accent, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-    }
-}
-
-@Composable
-private fun HomeFeatureCard(
+private fun SectionNavigationPanel(
     title: String,
     description: String,
-    glyph: String,
+    motif: TechnicalMotif,
     accent: Color,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    emphasized: Boolean = false,
-    compact: Boolean = false
+    compact: Boolean = false,
+    prominent: Boolean = false
 ) {
     val scheme = MaterialTheme.colorScheme
-    Card(
-        modifier = modifier.clickable(onClick = onClick),
-        shape = RoundedCornerShape(17.dp),
-        border = BorderStroke(
-            if (emphasized) 1.4.dp else 1.dp,
-            accent.copy(alpha = if (emphasized) 0.78f else 0.38f)
-        ),
-        colors = CardDefaults.cardColors(containerColor = scheme.surface)
+    TechnicalPanel(
+        accent = accent,
+        motif = motif,
+        prominent = prominent,
+        modifier = modifier.clickable(onClick = onClick)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    Brush.linearGradient(
-                        listOf(accent.copy(alpha = if (emphasized) 0.13f else 0.07f), Color.Transparent)
-                    )
+        if (compact) {
+            Column(
+                modifier = Modifier.fillMaxWidth().heightIn(min = 133.dp).padding(13.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                TechnicalIcon(motif, accent)
+                Text(
+                    title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 2
                 )
-                .padding(if (compact) 13.dp else 16.dp),
-            verticalArrangement = Arrangement.spacedBy(if (compact) 8.dp else 10.dp)
-        ) {
-            if (compact) {
-                HomeGlyph(glyph, accent)
-                Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                 Text(
                     description,
                     style = MaterialTheme.typography.bodySmall,
                     color = scheme.onSurfaceVariant,
-                    minLines = 2
+                    minLines = 2,
+                    maxLines = 3
                 )
-                Text("Открыть  ›", color = accent, style = MaterialTheme.typography.labelMedium)
-            } else {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+            }
+        } else {
+            Row(
+                modifier = Modifier.fillMaxWidth().heightIn(min = if (prominent) 111.dp else 84.dp)
+                    .padding(horizontal = 16.dp, vertical = 15.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                TechnicalIcon(motif, accent)
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(7.dp)
                 ) {
-                    HomeGlyph(glyph, accent)
-                    Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                    Text(
+                        title,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        description,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = scheme.onSurfaceVariant,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    if (prominent) {
                         Text(
-                            description,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = scheme.onSurfaceVariant
+                            "ОТКРЫТЬ РАСЧЁТЫ  →",
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = accent
                         )
                     }
-                    Text("›", style = MaterialTheme.typography.headlineMedium, color = accent)
+                }
+                if (!prominent) {
+                    Text("›", color = accent, style = MaterialTheme.typography.headlineMedium)
                 }
             }
         }
