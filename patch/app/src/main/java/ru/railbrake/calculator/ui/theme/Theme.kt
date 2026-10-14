@@ -4,6 +4,7 @@ import android.app.Activity
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
@@ -24,6 +25,7 @@ enum class AccentPalette(val title: String, val primary: Color, val container: C
 }
 
 enum class AppThemeMode(val title: String) {
+    SYSTEM("Как в системе"),
     LIGHT("Светлая"),
     DARK("Тёмная")
 }
@@ -176,10 +178,14 @@ private fun lightSemanticColors(palette: AccentPalette): RailSemanticColors {
 @Composable
 fun RailBrakeTheme(
     palette: AccentPalette = AccentPalette.BLUE,
-    themeMode: AppThemeMode = AppThemeMode.LIGHT,
+    themeMode: AppThemeMode = AppThemeMode.SYSTEM,
     content: @Composable () -> Unit
 ) {
-    val isLight = themeMode == AppThemeMode.LIGHT
+    val isLight = when (themeMode) {
+        AppThemeMode.SYSTEM -> !isSystemInDarkTheme()
+        AppThemeMode.LIGHT -> true
+        AppThemeMode.DARK -> false
+    }
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
