@@ -2,6 +2,8 @@ package ru.railbrake.calculator.ui
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -59,7 +61,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -544,45 +548,66 @@ fun BrakeCalculatorApp(
 
 @Composable
 private fun AppHeader(onOpenMenu: () -> Unit, onOpenFirstAid: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 8.dp, end = 18.dp, top = 12.dp, bottom = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
+    val scheme = MaterialTheme.colorScheme
+    val dark = scheme.background.luminance() < 0.38f
+    Box(
+        modifier = Modifier.fillMaxWidth()
+            .background(
+                Brush.horizontalGradient(
+                    if (dark) listOf(Color(0xFF081321), Color(0xFF102847))
+                    else listOf(Color(0xFFF7FAFF), Color(0xFFE7F1FC))
+                )
+            )
     ) {
-        IconButton(onClick = onOpenMenu) {
-            Text("☰", style = MaterialTheme.typography.headlineMedium)
-        }
-        Image(
-            painter = painterResource(R.drawable.ic_launcher_art),
-            contentDescription = null,
-            modifier = Modifier.size(42.dp)
+        TechnicalLineArt(
+            motif = TechnicalMotif.TRAIN,
+            accent = DesignBlue,
+            modifier = Modifier.matchParentSize(),
+            subtle = true
         )
-        Spacer(Modifier.size(8.dp))
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(3.dp)
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(start = 10.dp, end = 15.dp, top = 12.dp, bottom = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            Text(
-                "Ассистент",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Black
-            )
-            Text(
-                "Помощник локомотивной бригады",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-        Column(
-            modifier = Modifier
-                .clickable(onClick = onOpenFirstAid)
-                .padding(horizontal = 8.dp, vertical = 2.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(0.dp)
-        ) {
-            Text("✚", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Black)
-            Text("ОПП", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Black)
+            IconButton(onClick = onOpenMenu) {
+                Text("☰", style = MaterialTheme.typography.headlineMedium, color = scheme.onSurface)
+            }
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(3.dp)
+            ) {
+                Text(
+                    "Ассистент",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Black,
+                    color = scheme.onSurface
+                )
+                Text(
+                    "Помощник локомотивной бригады",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = scheme.onSurfaceVariant,
+                    maxLines = 2
+                )
+            }
+            Surface(
+                onClick = onOpenFirstAid,
+                shape = RoundedCornerShape(10.dp),
+                color = scheme.error.copy(alpha = if (dark) 0.11f else 0.065f),
+                border = BorderStroke(1.dp, scheme.error.copy(alpha = 0.70f))
+            ) {
+                Column(
+                    modifier = Modifier.padding(horizontal = 11.dp, vertical = 5.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text("✚", color = scheme.error,
+                        fontWeight = FontWeight.Black,
+                        style = MaterialTheme.typography.headlineSmall)
+                    Text("ОПП", color = scheme.error,
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.labelSmall)
+                }
+            }
         }
     }
 }
