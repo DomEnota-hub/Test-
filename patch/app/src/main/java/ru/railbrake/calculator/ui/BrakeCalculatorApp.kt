@@ -1567,7 +1567,7 @@ private fun SettingsScreen(
         @Suppress("DEPRECATION")
         packageInfo.versionCode.toLong()
     }
-    SectionCard("Тема", "Светлая используется по умолчанию") {
+    SectionCard("Тема", "По умолчанию используется тема устройства") {
         ChoiceRow(
             options = AppThemeMode.entries.map { it.title },
             selectedIndex = AppThemeMode.entries.indexOf(themeMode),
