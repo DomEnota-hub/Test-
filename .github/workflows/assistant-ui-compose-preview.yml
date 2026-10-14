@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: assistant-ui-preview
@@ -94,23 +94,3 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
-      - name: Publish ARM64 UI preview as GitHub pre-release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          if [[ "$GITHUB_REF" != "refs/heads/design/assistant-ui-framework-v2-20261014" ]]; then
-            echo "Skipping release outside isolated design branch"
-            exit 0
-          fi
-          apk="buildsrc/RailBrakeCalculator/app/build/outputs/apk/debug/app-debug.apk"
-          test -s "$apk"
-          mkdir -p release-upload
-          cp "$apk" release-upload/Assistant-UI-Preview-ARM64.apk
-          sha256sum release-upload/Assistant-UI-Preview-ARM64.apk
-          tag="ui-compose-preview-$(echo "$GITHUB_SHA" | cut -c 1-9)"
-          if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            echo "Pre-release already exists; not overwriting: $tag"
-            exit 0
-          fi
-          gh release create "$tag"             release-upload/Assistant-UI-Preview-ARM64.apk             --repo "$GITHUB_REPOSITORY"             --target "$GITHUB_SHA"             --prerelease             --title "Ассистент · Compose UI Preview · ARM64"             --notes "Тестовый APK новой главной страницы Ассистента в двух темах. Только arm64-v8a, отдельный пакет ru.railbrake.calculator.uipreview; не заменяет установленную сборку 203. Дизайн не утверждён, тесты/сборка выполнены в GitHub Actions. Не производственный релиз."
