@@ -23,34 +23,23 @@ class MainActivity : ComponentActivity() {
             val preferences = remember {
                 getSharedPreferences("calculation_inputs", Context.MODE_PRIVATE)
             }
-            var palette by remember {
-                mutableStateOf(
-                    runCatching {
-                        AccentPalette.valueOf(
-                            preferences.getString("accent_palette", AccentPalette.BLUE.name)
-                                ?: AccentPalette.BLUE.name
-                        )
-                    }.getOrDefault(AccentPalette.BLUE)
-                )
-            }
+            // Visual concept: one fixed blue accent, no user palette editor.
+            val palette = AccentPalette.BLUE
             var themeMode by remember {
                 mutableStateOf(
                     runCatching {
                         AppThemeMode.valueOf(
-                            preferences.getString("theme_mode", AppThemeMode.LIGHT.name)
-                                ?: AppThemeMode.LIGHT.name
+                            preferences.getString("theme_mode", AppThemeMode.SYSTEM.name)
+                                ?: AppThemeMode.SYSTEM.name
                         )
-                    }.getOrDefault(AppThemeMode.LIGHT)
+                    }.getOrDefault(AppThemeMode.SYSTEM)
                 )
             }
 
             RailBrakeTheme(palette = palette, themeMode = themeMode) {
                 BrakeCalculatorApp(
                     palette = palette,
-                    onPaletteChange = { selected ->
-                        palette = selected
-                        preferences.edit().putString("accent_palette", selected.name).apply()
-                    },
+                    onPaletteChange = { /* Palette selection retired in this UI iteration. */ },
                     themeMode = themeMode,
                     onThemeModeChange = { selected ->
                         themeMode = selected
