@@ -83,7 +83,7 @@ internal fun HomeScreen(
 
         SectionNavigationPanel(
             title = "Расчёты",
-            description = "По массе · ИДП №12 · ВУ-45",
+            description = "По массе · ИДП №12",
             motif = TechnicalMotif.CALCULATOR,
             accent = DesignAmber,
             prominent = true,
