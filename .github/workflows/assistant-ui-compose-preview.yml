@@ -1,0 +1,82 @@
+name: Assistant UI Compose preview
+
+on:
+  push:
+    branches:
+      - design/assistant-ui-framework-v2-20261014
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: assistant-ui-preview
+  cancel-in-progress: true
+
+jobs:
+  compile-and-preview:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - name: Checkout isolated Test design branch
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Gradle 8.7
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.7"
+
+      - name: Install Android SDK 34
+        run: |
+          set -euo pipefail
+          yes | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
+          "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" "platforms;android-34" "build-tools;34.0.0"
+
+      - name: Overlay Framework v2 sources
+        run: |
+          set -euo pipefail
+          mkdir buildsrc
+          unzip -q RailBrakeCalculator.zip -d buildsrc
+          test -f buildsrc/RailBrakeCalculator/settings.gradle.kts
+          cp -a patch/. buildsrc/RailBrakeCalculator/
+          grep -q 'fun HomeScreen(' buildsrc/RailBrakeCalculator/app/src/main/java/ru/railbrake/calculator/ui/HomeScreen.kt
+          grep -q 'WorkRecordsLanding' buildsrc/RailBrakeCalculator/app/src/main/java/ru/railbrake/calculator/ui/BrakeCalculatorApp.kt
+
+      - name: Resolve pinned offline speech recognition library
+        run: |
+          set -euo pipefail
+          mkdir -p buildsrc/RailBrakeCalculator/app/libs
+          curl -fL --retry 3 --connect-timeout 20 \
+            https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.13.8/sherpa-onnx-1.13.8.aar \
+            -o buildsrc/RailBrakeCalculator/app/libs/sherpa-onnx.aar
+          echo '633c24321e06b1fe79feafa03ea16cbc0f8a286641e2da3559bac91bdb13bd96  buildsrc/RailBrakeCalculator/app/libs/sherpa-onnx.aar' \
+            | sha256sum --check
+
+      - name: Keep preview separate from installed signed Test app
+        run: |
+          set -euo pipefail
+          cd buildsrc/RailBrakeCalculator
+          sed -i 's/applicationId = "ru.railbrake.calculator"/applicationId = "ru.railbrake.calculator.uipreview"/' app/build.gradle.kts
+          grep -q 'applicationId = "ru.railbrake.calculator.uipreview"' app/build.gradle.kts
+          echo "The preview installs separately and does not replace the signed Test app."
+
+      - name: Compile Compose, run unit tests and assemble preview APK
+        working-directory: buildsrc/RailBrakeCalculator
+        run: gradle :app:testDebugUnitTest :app:assembleDebug --no-daemon --console=plain
+
+      - name: Upload unsigned preview build and unit test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: assistant-ui-compose-preview
+          path: |
+            buildsrc/RailBrakeCalculator/app/build/outputs/apk/debug/*.apk
+            buildsrc/RailBrakeCalculator/app/build/reports/tests/testDebugUnitTest/
+          if-no-files-found: warn
+          retention-days: 14
